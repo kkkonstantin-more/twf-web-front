@@ -1,0 +1,66 @@
+@import "../../../styles/abstracts/variables";
+@import "../../../styles/abstracts/mixins";
+
+.ratings-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 2rem 0;
+
+  @include respond(tab-port) {
+    flex-direction: column;
+  }
+
+  &__description {
+    color: $color-grey;
+    max-width: 50rem;
+    width: 50%;
+    text-align: center;
+
+    & > h1 {
+      font-size: $bg-font-size;
+      margin-bottom: 3rem;
+    }
+
+    @include respond(tab-port) {
+      width: 100%;
+    }
+  }
+
+  &__table-header {
+    text-align: center;
+    color: $color-primary-light;
+    font-size: $bg-font-size;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .5rem;
+  }
+
+  &__table {
+    width: 50%;
+    max-width: 60rem;
+
+    @include respond(tab-port) {
+      width: 100%;
+    }
+  }
+
+  &__table-link {
+    font-weight: 700;
+    float: right;
+    margin-right: 2rem;
+    color: $color-grey;
+
+    @include click-scaling;
+
+    &:hover {
+      text-decoration: none;
+      color: white;
+    }
+  }
+
+  &__wrapper {
+    background-color: $color-primary;
+  }
+}

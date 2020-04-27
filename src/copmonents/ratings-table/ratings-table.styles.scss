@@ -1,0 +1,8 @@
+@import "../../styles/abstracts/variables";
+
+.ratings-table {
+  padding: 2rem;
+  & > *:not(:last-child) {
+    margin-bottom: 2rem;
+  }
+}

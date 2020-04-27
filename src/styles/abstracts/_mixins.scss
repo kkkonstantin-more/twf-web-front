@@ -1,0 +1,52 @@
+//  MEDIA QUERY MANAGER
+
+/*
+0-500px:     Phone
+500-900px:   Tablet Portrait
+900-1200px:  Tablet Landscape
+1200px-1800: Desktop
+1800px-...:  Big Desktop
+
+TOP Screens:
+1.    360×640 – 14.49%
+2.    1366×768 – 8.77%
+3.    1920×1080 – 7.88%
+4.    375×667 – 4.42%
+5.    1440×900 – 2.68%
+6.    1280×800 – 1.6%
+ */
+
+/*
+breakpoint argument choices:
+- phone
+- tab-port
+- tap-land
+- big desktop
+ */
+
+@mixin respond($breakpoint) {
+  @if $breakpoint == phone {
+    @media (max-width: 40.63em) { @content } // 650px
+  }
+  @if $breakpoint == tab-port {
+    @media (max-width: 56.25em) { @content } // 900 px
+  }
+  @if $breakpoint == tab-land {
+    @media (max-width: 75em) { @content } // 1200 px
+  }
+  @if $breakpoint == big-desktop {
+    @media (min-width: 112.5em) { @content } // 1800px
+  }
+}
+
+@mixin click-scaling() {
+  transition: transform .2s;
+
+  &:hover {
+    transform: scale(1.2);
+  }
+
+  &:active {
+    transform: scale(.9);
+  }
+}

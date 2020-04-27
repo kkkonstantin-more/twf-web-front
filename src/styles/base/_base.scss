@@ -1,0 +1,46 @@
+@import url('https://fonts.googleapis.com/css?family=Manrope:400,700&display=swap&subset=cyrillic');
+
+html {
+  box-sizing: border-box;
+  // this specifies what 1rem is
+  font-size: 62.5%; // 1 rem = 10px; 10px/16px = 62.5%
+
+  @include respond(tab-land) {
+    font-size: 56.25%; // 1 rem = 9px;
+  }
+
+  @include respond(tab-port) {
+    font-size: 50%; // 1 rem = 8px;
+  }
+
+  @include respond(phone) {
+    font-size: 45%;
+  }
+
+  @include respond(big-desktop) {
+    font-size: 75%; // 1 rem = 12
+  }
+}
+
+*,
+*::after,
+*::before {
+  margin: 0;
+  padding: 0;
+  box-sizing: inherit;
+}
+
+body {
+  font-family: 'Manrope', sans-serif;
+  font-weight: 400;
+  line-height: 1.6;
+  font-size: $md-font-size;
+  color: $color-text-primary;
+  background-color: var(--color-grey-light);
+}
+
+a {
+  color: $color-text-primary;
+  text-decoration: none;
+  display: inline-block;
+}
