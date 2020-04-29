@@ -7,11 +7,14 @@ import RatingsTablePreview from "../../../copmonents/ratings-table/ratings-table
 
 import { demoRatingsTop5Users, demoUserRating } from "../../../data/demo-data";
 
+import translate from "../../../i18n/translate";
+
 const RatingsSection: React.FC = () => {
     return (
         <div className={`ratings-section__wrapper`}>
             <div className={`ratings-section u-container`}>
                 <div className="ratings-section__description">
+                    { translate("hello") }
                     <h1>Играй и поднимайся наверх в рейтинге игроков!</h1>
                     <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam architecto aut autem beatae dicta dolores in inventore minima numquam odio officia qui quia quis repellendus similique sit, ut veritatis voluptates.</p>
                 </div>
