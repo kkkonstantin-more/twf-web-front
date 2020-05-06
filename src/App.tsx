@@ -6,7 +6,7 @@ import { TranslationProvider } from "./i18n";
 import { LOCALES } from "./i18n";
 import translate from "./i18n/translate";
 // PAGES
-import HomePage from "./pages/home-page/home-page.component";
+import HomePage from "./pages/home-page/home-page";
 import RatingsPage from "./pages/ratings-page/ratings-page.component";
 // LAYOUT
 import NavigationBar from "./layout/navigation-bar/navigation-bar.jsx";
@@ -29,6 +29,10 @@ const App: React.FC = () => {
   return (
     <TranslationProvider locale={locale}>
       <NavigationBar currentLanguage={locale} setLanguage={setLocale} />
+      <Switch>
+        <Route exact path={"/"} component={HomePage} />
+        <Route exact path={"/ratings"} component={RatingsPage} />
+      </Switch>
       <div className="u-container  u-mt-md u-mb-md">
         <h1 className="u-mb-sm">{translate("demo.fetchAvatar")}</h1>
         <GoogleLogin
@@ -38,10 +42,6 @@ const App: React.FC = () => {
           cookiePolicy={"single_host_origin"}
         />
       </div>
-      <Switch>
-        <Route exact path={"/"} component={HomePage} />
-        <Route exact path={"/ratings"} component={RatingsPage} />
-      </Switch>
     </TranslationProvider>
   );
 };

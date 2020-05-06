@@ -1,5 +1,5 @@
-@import "../../../styles/abstracts/variables";
-@import "../../../styles/abstracts/mixins";
+@import "../../../../styles/abstracts/variables";
+@import "../../../../styles/abstracts/mixins";
 
 .ratings-section {
   display: flex;
@@ -12,8 +12,11 @@
     flex-direction: column;
   }
 
+  &__wrapper {
+    background-color: $color-grey-light;
+  }
+
   &__description {
-    color: $color-grey;
     max-width: 50rem;
     width: 50%;
     text-align: center;
@@ -30,11 +33,11 @@
 
   &__table-header {
     text-align: center;
-    color: $color-primary-light;
     font-size: $bg-font-size;
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5rem;
+    color: $color-primary-dark;
   }
 
   &__table {
@@ -50,17 +53,12 @@
     font-weight: 700;
     float: right;
     margin-right: 2rem;
-    color: $color-grey;
+    color: $color-primary-dark;
 
     @include click-scaling;
 
     &:hover {
       text-decoration: none;
-      color: white;
     }
-  }
-
-  &__wrapper {
-    background-color: $color-primary;
   }
 }

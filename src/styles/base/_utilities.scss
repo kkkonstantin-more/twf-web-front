@@ -2,6 +2,10 @@
   max-width: 80%;
   margin: 0 auto;
 
+  @include respond(phone) {
+    padding: 0 1rem;
+  }
+
   @include respond(tab-land) {
     max-width: 800px;
   }

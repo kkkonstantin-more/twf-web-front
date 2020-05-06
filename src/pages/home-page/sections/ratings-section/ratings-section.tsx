@@ -1,21 +1,23 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-import "./ratings-section.styles.scss";
+import "./ratings-section.scss";
 
-import RatingsTablePreview from "../../../copmonents/ratings-table/ratings-table.component";
+import RatingsTable from "../../../../copmonents/ratings-table/ratings-table";
 
-import { demoRatingsTop5Users, demoUserRating } from "../../../data/demo-data";
+import {
+  demoRatingsTop5Users,
+  demoUserRating,
+} from "../../../../data/demo-data";
 
-import translate from "../../../i18n/translate";
+import translate from "../../../../i18n/translate";
 
 const RatingsSection: React.FC = () => {
   return (
     <div className={`ratings-section__wrapper`}>
       <div className={`ratings-section u-container`}>
         <div className="ratings-section__description">
-          {translate("hello")}
-          <h1>Играй и поднимайся наверх в рейтинге игроков!</h1>
+          <h1>{translate("homePage.ratingsSection.sectionHeader")}</h1>
           <p>
             Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam
             architecto aut autem beatae dicta dolores in inventore minima
@@ -24,13 +26,15 @@ const RatingsSection: React.FC = () => {
           </p>
         </div>
         <div className="ratings-section__table">
-          <h1 className={"ratings-section__table-header"}>Рейтинг игроков</h1>
-          <RatingsTablePreview
+          <h1 className={"ratings-section__table-header"}>
+            {translate("homePage.ratingsSection.leaderBoardHeader")}
+          </h1>
+          <RatingsTable
             data={demoRatingsTop5Users}
             currentUserData={demoUserRating}
           />
           <Link to={"/ratings"} className={"ratings-section__table-link"}>
-            Подробный рейтинг игроков
+            {translate("homePage.ratingsSection.link")}
           </Link>
         </div>
       </div>

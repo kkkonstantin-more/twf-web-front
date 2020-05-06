@@ -1,0 +1,40 @@
+@import "../../../../styles/abstracts/variables";
+
+.hero-section {
+  display: flex;
+  height: 100%;
+
+  &__wrapper {
+    height: 45vh;
+    width: 100%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-image: linear-gradient(
+        to right bottom,
+        rgba($color-primary-dark, 0.6),
+        rgba(black, 0.8)
+      ),
+      url("../../../../assets/hero.jpg");
+  }
+
+  &__text-box {
+    margin-left: auto;
+    margin-top: auto;
+    margin-bottom: auto;
+    color: $color-primary-light;
+    width: 70rem;
+  }
+
+  &__title {
+    font-size: $lg-font-size;
+    letter-spacing: 0.5rem;
+    text-shadow: 1px 1px #000;
+    border-bottom: 1px solid $color-primary-light;
+    padding-bottom: 0.5rem;
+  }
+
+  &__sub-title {
+    line-height: 2.5rem;
+  }
+}

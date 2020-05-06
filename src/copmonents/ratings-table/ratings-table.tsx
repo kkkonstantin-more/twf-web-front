@@ -1,10 +1,10 @@
 import React from "react";
 
-import UserRatingTab from "../user-rating-tab/user-rating-tab.component";
+import UserRatingTab from "../user-rating-tab/user-rating-tab";
 
-import { UserRatingTabProps } from "../user-rating-tab/user-rating-tab.component";
+import { UserRatingTabProps } from "../user-rating-tab/user-rating-tab";
 
-import "./ratings-table.styles.scss";
+import "./ratings-table.scss";
 
 interface RatingTableProps {
   data: Array<UserRatingTabProps>;

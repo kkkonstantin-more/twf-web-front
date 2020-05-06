@@ -3,7 +3,7 @@ import React from "react";
 import Icon from "@mdi/react";
 import { mdiStar, mdiTrophy } from "@mdi/js";
 
-import "./user-rating-tab.styles.scss";
+import "./user-rating-tab.scss";
 
 export interface UserRatingTabProps {
   avatarUrl: string;
