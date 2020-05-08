@@ -11,11 +11,6 @@
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
-    background-image: linear-gradient(
-        to right bottom,
-        rgba($color-primary-dark, 0.6),
-        rgba($color-primary-light, 0.6)
-      ),
-      url("../../../../assets/hero.jpg");
+    background-image: url("../../../../assets/hero.jpg");
   }
 }
