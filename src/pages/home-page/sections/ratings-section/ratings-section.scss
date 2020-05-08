@@ -13,13 +13,14 @@
   }
 
   &__wrapper {
-    background-color: $color-grey-light;
+    background-color: $color-primary-dark;
   }
 
   &__description {
     max-width: 50rem;
     width: 50%;
     text-align: center;
+    color: $color-primary-light;
 
     & > h1 {
       font-size: $bg-font-size;
@@ -37,7 +38,7 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5rem;
-    color: $color-primary-dark;
+    color: $color-primary-light;
   }
 
   &__table {
@@ -53,7 +54,7 @@
     font-weight: 700;
     float: right;
     margin-right: 2rem;
-    color: $color-primary-dark;
+    color: $color-primary-light;
 
     @include click-scaling;
 

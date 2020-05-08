@@ -13,17 +13,13 @@ import {
 import translate from "../../../../i18n/translate";
 
 const RatingsSection: React.FC = () => {
+  const svg = require("../../../../assets/winner-cup.svg");
   return (
     <div className={`ratings-section__wrapper`}>
       <div className={`ratings-section u-container`}>
         <div className="ratings-section__description">
           <h1>{translate("homePage.ratingsSection.sectionHeader")}</h1>
-          <p>
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam
-            architecto aut autem beatae dicta dolores in inventore minima
-            numquam odio officia qui quia quis repellendus similique sit, ut
-            veritatis voluptates.
-          </p>
+          <img src={svg} width="100%" height="auto" />
         </div>
         <div className="ratings-section__table">
           <h1 className={"ratings-section__table-header"}>

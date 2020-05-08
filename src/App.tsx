@@ -15,7 +15,7 @@ import "./styles/App.scss";
 
 // ===== FOR DEMO PURPOSES ===== //
 // fetch avatar from google
-import GoogleLogin from "react-google-login";
+// import GoogleLogin from "react-google-login";
 
 // ===== FOR DEMO PURPOSES ===== //
 // fetch avatar from google
@@ -33,15 +33,15 @@ const App: React.FC = () => {
         <Route exact path={"/"} component={HomePage} />
         <Route exact path={"/ratings"} component={RatingsPage} />
       </Switch>
-      <div className="u-container  u-mt-md u-mb-md">
-        <h1 className="u-mb-sm">{translate("demo.fetchAvatar")}</h1>
-        <GoogleLogin
-          clientId="739547301958-dgfpc93t5q1t3tqd4oe7cscfh491876o.apps.googleusercontent.com"
-          onSuccess={responseGoogle}
-          onFailure={responseGoogle}
-          cookiePolicy={"single_host_origin"}
-        />
-      </div>
+      {/*<div className="u-container  u-mt-md u-mb-md">*/}
+      {/*  <h1 className="u-mb-sm">{translate("demo.fetchAvatar")}</h1>*/}
+      {/*  <GoogleLogin*/}
+      {/*    clientId="739547301958-dgfpc93t5q1t3tqd4oe7cscfh491876o.apps.googleusercontent.com"*/}
+      {/*    onSuccess={responseGoogle}*/}
+      {/*    onFailure={responseGoogle}*/}
+      {/*    cookiePolicy={"single_host_origin"}*/}
+      {/*  />*/}
+      {/*</div>*/}
     </TranslationProvider>
   );
 };
