@@ -1,0 +1,31 @@
+@import "../../styles/abstracts/variables";
+
+.phone-game-preview {
+  display: flex;
+  align-items: center;
+  &__phone-image {
+    width: 15rem;
+  }
+  &__text-box {
+    display: flex;
+    flex-direction: column;
+    background-color: rgba($color-primary-light, 0.5);
+    border-radius: 5px;
+    padding: 2rem;
+  }
+  &__title {
+    font-size: $bg-font-size;
+    text-transform: uppercase;
+    letter-spacing: 0.5rem;
+    border-bottom: 1px solid black;
+    padding-bottom: 0.5rem;
+    font-weight: 700;
+  }
+  &__button {
+    display: block;
+    width: 15rem;
+    background-color: transparent;
+    border: none;
+    //margin: 0 auto;
+  }
+}

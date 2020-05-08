@@ -1,21 +1,15 @@
 import React from "react";
 
+import PhoneGamePreview from "../../../../copmonents/phone-game-preview/phone-game-preview";
+
 import "./hero-section.scss";
 
 const HeroSection: React.FC = () => {
   return (
     <div className={`hero-section__wrapper`}>
       <div className={`hero-section u-container`}>
-        <div className={`hero-section__text-box`}>
-          <h1 className={`hero-section__title`}>Math Helper</h1>
-          <h3 className={`hero-section__sub-title`}>
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aliquam
-            assumenda aut culpa dignissimos eveniet id, illo incidunt ipsam
-            magnam natus nihil obcaecati
-          </h3>
-        </div>
+        <PhoneGamePreview />
       </div>
-      ;
     </div>
   );
 };
