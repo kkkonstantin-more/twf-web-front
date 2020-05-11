@@ -25,11 +25,23 @@ const NavigationBar: React.FC<NavigationBarProps> = ({
   const logoUrl: string = require("../../assets/logo.svg");
   const links: Array<LinkInterface> = [
     {
-      linkNameId: "linkName.aboutUs",
+      linkNameId: "Для игроков",
       path: "/about-us",
     },
     {
-      linkNameId: "linkName.login",
+      linkNameId: "Конструктор",
+      path: "/about-us",
+    },
+    {
+      linkNameId: "Лекторам",
+      path: "/login",
+    },
+    {
+      linkNameId: "О нас",
+      path: "/login",
+    },
+    {
+      linkNameId: "Войти",
       path: "/login",
     },
   ];
@@ -70,7 +82,8 @@ const NavigationBar: React.FC<NavigationBarProps> = ({
                 key={link.linkNameId}
                 className={`navigation-bar__link`}
               >
-                {translate(link.linkNameId)}
+                {/*{translate(link.linkNameId)}*/}
+                {link.linkNameId}
               </Link>
             );
           })}

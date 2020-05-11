@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 // ROUTER
 import { Switch, Route } from "react-router-dom";
 // TRANSLATION CONFIG

@@ -4,7 +4,25 @@
   display: flex;
   align-items: center;
   &__phone-image {
-    width: 15rem;
+    height: 45rem;
+    width: 28rem;
+    background-image: url("../../assets/game-on-phone.png");
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    order: 2;
+  }
+  &__screenshots-container {
+    width: 69%;
+    margin: auto;
+    overflow: hidden;
+  }
+  &__screenshot {
+    display: flex;
+    width: 100%;
   }
   &__text-box {
     display: flex;
@@ -12,6 +30,7 @@
     background-color: rgba($color-primary-light, 0.8);
     border-radius: 5px;
     padding: 2rem;
+    width: 60rem;
   }
   &__title {
     font-size: $bg-font-size;
