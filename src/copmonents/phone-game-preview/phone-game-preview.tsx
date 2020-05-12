@@ -1,16 +1,13 @@
-import React, { useEffect, useState } from "react";
-
+import React from "react";
+import { Carousel } from "react-bootstrap";
 import "./phone-game-preview.scss";
 
 const PhoneGamePreview: React.FC = () => {
-  const phoneImageUrl: string = require("../../assets/screenshot-1.jpg");
   const googlePlayButtonUrl: string = require("../../assets/google-play-button.png");
   const title: string = "Math Helper Games";
   const slogan: string = "Математика просто и весело";
   const about: string =
     "Автоматически применяй преобразования к выражениям в типовых учебных задачах";
-
-  const [counter, setCounter] = useState<number>(0);
 
   const gameScreenshotsUrls: Array<string> = [
     require("../../assets/screenshot-1.jpg"),
@@ -18,63 +15,26 @@ const PhoneGamePreview: React.FC = () => {
     require("../../assets/screenshot-3.jpg"),
   ];
 
-  const screenShots: Array<React.RefObject<HTMLImageElement>> = [
-    React.createRef(),
-    React.createRef(),
-    React.createRef(),
-  ];
-
-  const slide: React.RefObject<HTMLInputElement> = React.createRef();
-
-  useEffect(() => {
-    setInterval(() => {
-      if (slide.current !== null) {
-        if (counter === 0) {
-          // @ts-ignore
-          slide.current.style.transition = "none";
-          // setCounter(1);
-        } else {
-          // @ts-ignore
-          slide.current.style.transition = "transform 0.4s ease-in-out";
-        }
-        // @ts-ignore
-        const size: number = screenShots[0].current.clientWidth;
-        // @ts-ignore
-        slide.current.style.transform = `translateX(${-size * counter}px)`;
-        if (counter === screenShots.length) {
-          // slide.current.style.transition = "none";
-          setCounter(0);
-        } else {
-          setCounter(counter + 1);
-        }
-      }
-    }, 2000);
-  }, [slide]);
-
   return (
     <div className={`phone-game-preview`}>
       <div className={`phone-game-preview__phone-image`}>
-        <div className="phone-game-preview__screenshots-container">
-          <div className="phone-game-preview__screenshot" ref={slide}>
-            {gameScreenshotsUrls.map((screen: string, i: number) => (
+        <Carousel
+          className="phone-game-preview__carousel"
+          indicators={false}
+          controls={false}
+          interval={3000}
+        >
+          {gameScreenshotsUrls.map((screen: string, i: number) => (
+            <Carousel.Item>
               <img
-                key={i}
-                src={screen}
-                ref={screenShots[i]}
+                src={gameScreenshotsUrls[i]}
                 width="100%"
                 height="auto"
-                alt="game screenshot"
+                alt={`game screenshot ${i}`}
               />
-            ))}
-            <img
-              src={gameScreenshotsUrls[0]}
-              ref={screenShots[0]}
-              width="100%"
-              height="auto"
-              alt="game screenshot"
-            />
-          </div>
-        </div>
+            </Carousel.Item>
+          ))}
+        </Carousel>
       </div>
       <div className="phone-game-preview__text-box">
         <h1 className="phone-game-preview__title">{title}</h1>

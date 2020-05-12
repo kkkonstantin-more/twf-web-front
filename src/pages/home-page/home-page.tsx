@@ -3,6 +3,8 @@ import React from "react";
 import HeroSection from "./sections/hero-section/hero-section";
 import AboutGamesSection from "./sections/about-games-section/about-games-section";
 import RatingsSection from "./sections/ratings-section/ratings-section";
+import ForPlayersSection from "./sections/for-players-section/for-players-section";
+import ForTutorsSection from "./sections/for-tutors-section/for-tutors-section";
 
 import "./home-page.scss";
 
@@ -10,7 +12,9 @@ const HomePage: React.FC = () => {
   return (
     <div className="home-page">
       <HeroSection />
-      <AboutGamesSection />
+      <ForPlayersSection />
+      <ForTutorsSection />
+      {/*<AboutGamesSection />*/}
       <RatingsSection />
     </div>
   );

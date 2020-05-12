@@ -1,0 +1,52 @@
+@import "../../../../styles/abstracts/variables";
+
+.for-players-section {
+  background-color: $color-grey;
+  &__container {
+    display: flex;
+  }
+  &__title {
+    text-align: center;
+    font-size: $lg-font-size;
+    font-weight: 700;
+    padding: 4rem 0;
+  }
+  &__left-block {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 4rem;
+    & > img {
+      width: 85%;
+    }
+    & > p {
+      margin-top: 4rem;
+      font-size: $bg-font-size;
+    }
+  }
+  &__instruction {
+    width: 50%;
+    display: flex;
+    flex-direction: column;
+    padding: 2rem;
+  }
+  &__instruction-block {
+    background-color: rgba($color-primary-dark, 1);
+    //font-size: $bg-font-size;
+    color: $color-primary-light;
+    border-radius: 5px;
+    padding: 2rem;
+    display: flex;
+    justify-content: center;
+    font-size: $bg-font-size;
+    align-items: center;
+    width: 35rem;
+    max-width: 49%;
+    text-align: center;
+    &.inverted {
+      margin-left: auto;
+      margin-top: -2rem;
+    }
+  }
+}

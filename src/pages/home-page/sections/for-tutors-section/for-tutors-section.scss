@@ -1,0 +1,51 @@
+@import "../../../../styles/abstracts/variables";
+
+.for-tutors-section {
+  background-color: $color-grey-light;
+  &__title {
+    font-size: $lg-font-size;
+    font-weight: 700;
+    text-align: center;
+    padding: 5rem 0;
+  }
+  &__container {
+    display: flex;
+    align-items: center;
+  }
+  &__svg-and-text {
+    width: 50%;
+    padding: 3rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    & > img {
+      width: 85%;
+    }
+    & > p {
+      margin-top: 3rem;
+      font-size: $bg-font-size;
+    }
+  }
+  &__carousel {
+    width: 50%;
+    order: -1;
+    border-radius: 5px;
+    background-color: transparent;
+  }
+  &__carousel-slide {
+    border-radius: 5px;
+    background-color: $color-grey-light;
+    padding: 0;
+    & > img {
+      border-radius: 5px;
+    }
+  }
+  &__carousel-caption {
+    background-color: rgba($color-primary-light, 0.9);
+    padding: 2rem;
+    border-radius: 5px;
+    color: black !important;
+    font-size: $bg-font-size;
+    margin-bottom: 2rem;
+  }
+}
