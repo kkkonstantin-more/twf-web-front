@@ -5,7 +5,7 @@ import { Tabs, Tab } from "react-bootstrap";
 
 import RatingsTablePreview from "../../copmonents/ratings-table/ratings-table";
 
-import { demoRatingsTop5Users, demoUserRating } from "../../data/demo-data";
+import { demoUserRating } from "../../data/demo-data";
 
 import { UserRatingTabProps } from "../../copmonents/user-rating-tab/user-rating-tab";
 

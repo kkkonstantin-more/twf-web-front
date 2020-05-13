@@ -1,46 +1,19 @@
 @import "../../styles/abstracts/variables";
 
 .phone-game-preview {
-  display: flex;
-  align-items: center;
   &__phone-image {
     height: 45rem;
     width: 28rem;
-    background-image: url("../../assets/game-on-phone.png");
+    background-image: url("../../assets/phone-game-preview/phone-preview.png");
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
     display: flex;
     justify-content: center;
-    //align-items: center;
-    order: 2;
   }
-  &__carousel {
+  &__screenshots-carousel {
     margin-top: 6rem;
     height: 100%;
     width: 69%;
-  }
-  &__text-box {
-    display: flex;
-    flex-direction: column;
-    background-color: rgba($color-primary-light, 0.8);
-    border-radius: 5px;
-    padding: 2rem;
-    width: 60rem;
-  }
-  &__title {
-    font-size: $bg-font-size;
-    text-transform: uppercase;
-    letter-spacing: 0.5rem;
-    border-bottom: 1px solid black;
-    padding-bottom: 0.5rem;
-    font-weight: 700;
-  }
-  &__button {
-    display: block;
-    width: 15rem;
-    background-color: transparent;
-    border: none;
-    //margin: 0 auto;
   }
 }

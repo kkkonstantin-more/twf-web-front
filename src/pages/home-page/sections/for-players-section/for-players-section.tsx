@@ -1,5 +1,5 @@
 import React from "react";
-import translate from "../../../../i18n/translate";
+import translate from "../../../../translations/translate";
 
 import "./for-players-section.scss";
 
@@ -20,9 +20,11 @@ const ForPlayersSection: React.FC = () => {
 
   return (
     <div className="for-players-section">
-      <h1 className="for-players-section__title">{translate(titleId)}</h1>
+      <h1 id="forPlayersSection" className="for-players-section__title">
+        {translate(titleId)}
+      </h1>
       <div className="for-players-section__container">
-        <div className="for-players-section__left-block">
+        <div className="for-players-section__svg-and-selling-phrase">
           <img src={svgUrl} alt="girl with a phone is sitting on the grass" />
           <p>{translate(sellingPhraseId)}</p>
         </div>

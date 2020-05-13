@@ -1,15 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 // ROUTER
 import { Switch, Route } from "react-router-dom";
 // TRANSLATION CONFIG
-import { TranslationProvider } from "./i18n";
-import { LOCALES } from "./i18n";
-import translate from "./i18n/translate";
+import { TranslationProvider } from "./translations";
+import { LOCALES } from "./translations";
 // PAGES
 import HomePage from "./pages/home-page/home-page";
 import RatingsPage from "./pages/ratings-page/ratings-page.component";
 // LAYOUT
-import NavigationBar from "./layout/navigation-bar/navigation-bar.jsx";
+import NavigationBar from "./layouts/navigation-bar/navigation-bar.jsx";
 
 import "./styles/App.scss";
 
@@ -19,9 +18,9 @@ import "./styles/App.scss";
 
 // ===== FOR DEMO PURPOSES ===== //
 // fetch avatar from google
-const responseGoogle = (response: any) => {
-  alert("Ссылка на аватар пользователя: " + response.profileObj.imageUrl);
-};
+// const responseGoogle = (response: any) => {
+//   alert("Ссылка на аватар пользователя: " + response.profileObj.imageUrl);
+// };
 
 const App: React.FC = () => {
   const [locale, setLocale] = useState<string>(LOCALES.RUSSIAN);

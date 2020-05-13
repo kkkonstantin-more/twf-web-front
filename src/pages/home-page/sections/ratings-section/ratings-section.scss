@@ -3,35 +3,29 @@
 
 .ratings-section {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   align-items: center;
   flex-wrap: wrap;
   padding: 2rem 0;
-
   @include respond(tab-port) {
     flex-direction: column;
   }
-
   &__wrapper {
     background-color: $color-primary-dark;
   }
-
   &__description {
-    max-width: 50rem;
     width: 50%;
     text-align: center;
     color: $color-primary-light;
-
     & > h1 {
-      font-size: $bg-font-size;
-      margin-bottom: 3rem;
+      font-size: $lg-font-size;
+      margin-top: 3rem;
     }
-
     @include respond(tab-port) {
       width: 100%;
+      margin-bottom: 5rem;
     }
   }
-
   &__table-header {
     text-align: center;
     font-size: $bg-font-size;
@@ -40,26 +34,22 @@
     letter-spacing: 0.5rem;
     color: $color-primary-light;
   }
-
   &__table {
     width: 50%;
     max-width: 60rem;
-
     @include respond(tab-port) {
       width: 100%;
     }
   }
-
   &__table-link {
     font-weight: 700;
     float: right;
     margin-right: 2rem;
     color: $color-primary-light;
-
     @include click-scaling;
-
     &:hover {
       text-decoration: none;
+      color: white;
     }
   }
 }

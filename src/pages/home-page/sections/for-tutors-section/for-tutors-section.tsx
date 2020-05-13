@@ -1,5 +1,5 @@
 import React from "react";
-import translate from "../../../../i18n/translate";
+import translate from "../../../../translations/translate";
 
 import { Carousel } from "react-bootstrap";
 // import Carousel from "react-responsive-carousel";
@@ -19,38 +19,25 @@ const ForTutorsSection: React.FC = () => {
   }
   const carouselSlides: Array<CarouselSlide> = [
     {
-      imgUrl: require("../../../../assets/for-tutors/carousel/carousel-slide-1.jpg"),
+      imgUrl: require("../../../../assets/for-tutors-section/carousel/carousel-slide-1.jpg"),
       captionTextId: translationPrefix + ".carouselCaption1",
     },
     {
-      imgUrl: require("../../../../assets/for-tutors/carousel/carousel-slide-2.jpg"),
+      imgUrl: require("../../../../assets/for-tutors-section/carousel/carousel-slide-2.jpg"),
       captionTextId: translationPrefix + ".carouselCaption2",
     },
     {
-      imgUrl: require("../../../../assets/for-tutors/carousel/carousel-slide-3.jpg"),
+      imgUrl: require("../../../../assets/for-tutors-section/carousel/carousel-slide-3.jpg"),
       captionTextId: translationPrefix + ".carouselCaption3",
     },
   ];
 
   return (
     <div className="for-tutors-section">
-      <h1 className="for-tutors-section__title">{translate(titleId)}</h1>
+      <h1 id="forTutorsSection" className="for-tutors-section__title">
+        {translate(titleId)}
+      </h1>
       <div className="for-tutors-section__container">
-        {/*<Carousel>*/}
-        {/*  <div>*/}
-        {/*    <img src="assets/1.jpeg" />*/}
-        {/*    <p className="legend">Legend 1</p>*/}
-        {/*  </div>*/}
-        {/*  <div>*/}
-        {/*    <img src="assets/2.jpeg" />*/}
-        {/*    <p className="legend">Legend 2</p>*/}
-        {/*  </div>*/}
-        {/*  <div>*/}
-        {/*    <img src="assets/3.jpeg" />*/}
-        {/*    <p className="legend">Legend 3</p>*/}
-        {/*  </div>*/}
-        {/*</Carousel>*/}
-        {/*</Carousel>*/}
         <Carousel className="for-tutors-section__carousel">
           {carouselSlides.map((slide: CarouselSlide, i: number) => (
             <Carousel.Item
