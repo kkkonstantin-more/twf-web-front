@@ -31,9 +31,9 @@ const NavigationBar: React.FC<NavigationBarProps> = ({
   return (
     <div className="navigation-bar__wrapper">
       <div className="navigation-bar u-container">
-        <Link to="/" className="navigation-bar__logo">
+        <a href="#top" className="navigation-bar__logo">
           <img src={logoUrl} alt="logo" width="100%" />
-        </Link>
+        </a>
         <div className="navigation-bar__language-switchers">
           <span
             className={`navigation-bar__language-switcher ${

@@ -4,6 +4,7 @@ import HeroSection from "./sections/hero-section/hero-section";
 import RatingsSection from "./sections/ratings-section/ratings-section";
 import ForPlayersSection from "./sections/for-players-section/for-players-section";
 import ForTutorsSection from "./sections/for-tutors-section/for-tutors-section";
+import AboutUsSection from "./sections/about-us-section/about-us-section";
 
 import "./home-page.scss";
 
@@ -14,6 +15,7 @@ const HomePage: React.FC = () => {
       <ForPlayersSection />
       <ForTutorsSection />
       <RatingsSection />
+      <AboutUsSection />
     </div>
   );
 };

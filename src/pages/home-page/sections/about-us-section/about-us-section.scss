@@ -1,0 +1,11 @@
+.about-us-section {
+  & > h1 {
+    text-align: center;
+  }
+  &__graph {
+    width: 100%;
+  }
+  &__text {
+    width: 50%;
+  }
+}

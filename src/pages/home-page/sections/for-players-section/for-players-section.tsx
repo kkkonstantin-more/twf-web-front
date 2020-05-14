@@ -1,5 +1,7 @@
-import React from "react";
+import React, { useEffect } from "react";
 import translate from "../../../../translations/translate";
+
+// import { DataInterfaceNodes, DataSetEdges, Network } from "vis-network";
 
 import "./for-players-section.scss";
 
@@ -28,15 +30,14 @@ const ForPlayersSection: React.FC = () => {
           <img src={svgUrl} alt="girl with a phone is sitting on the grass" />
           <p>{translate(sellingPhraseId)}</p>
         </div>
-        <div className="for-players-section__instruction">
-          {instructionBlockIds.map((instructionId: string, i: number) => (
+        <div className="timeline">
+          {instructionBlockIds.map((instruction: string, i: number) => (
             <div
-              key={i}
-              className={`for-players-section__instruction-block ${
-                i % 2 !== 0 ? "inverted" : ""
+              className={`timeline__container ${
+                i % 2 !== 0 ? "right" : "left"
               }`}
             >
-              {i + 1}. {translate(instructionId)}
+              <div className="content">{translate(instruction)}</div>
             </div>
           ))}
         </div>
