@@ -37,7 +37,16 @@ const edges = [
   { from: 6, to: 5 },
 ];
 // this config is applied to all edges
-const edgesSharedConfig = {};
+const edgesSharedConfig = {
+  width: 5,
+  color: "#607D8B",
+  // dashes: true,
+  arrows: {
+    to: { enabled: false },
+    // middle: { enabled: true },
+  },
+  shadow: true,
+};
 // adding colors to nodes
 nodes.forEach((node, i) => {
   if (i % 2 === 0) {

@@ -11,10 +11,11 @@ import {
 } from "./work-field-graph-data";
 
 const WorkFieldsGraph: React.FC<{ intl: any }> = ({ intl }) => {
-  const translationPrefix: string = "graph";
+  // this reactive variable changes when language switches
   const { locale } = useIntl();
 
   const translateNodes = (nodes: Array<any>) => {
+    const translationPrefix: string = "graph";
     nodes.forEach((node, i) => {
       nodes[i] = {
         ...node,
@@ -29,13 +30,10 @@ const WorkFieldsGraph: React.FC<{ intl: any }> = ({ intl }) => {
 
   const [reactiveNodes, setReactiveNodes] = useState(translateNodes(nodes));
 
-  const updateReactiveNodes = () => {
+  useEffect(() => {
+    // rerender graph when language switches
     const nodesCopy = nodes.slice();
     setReactiveNodes(translateNodes(nodesCopy));
-  };
-
-  useEffect(() => {
-    updateReactiveNodes();
   }, [locale]);
 
   return (

@@ -16,7 +16,7 @@ const navigationLinks: Array<LinkInterface> = [
   },
   {
     linkNameId: translationPrefix + ".aboutUs",
-    path: "/#about-us-section",
+    path: "/#work-fields-section",
   },
   {
     linkNameId: translationPrefix + ".constructor",

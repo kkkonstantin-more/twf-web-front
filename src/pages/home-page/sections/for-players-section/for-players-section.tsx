@@ -1,8 +1,6 @@
 import React from "react";
 import translate from "../../../../translations/translate";
 
-// import { DataInterfaceNodes, DataSetEdges, Network } from "vis-network";
-
 import "./for-players-section.scss";
 
 const ForPlayersSection: React.FC = () => {
@@ -33,6 +31,7 @@ const ForPlayersSection: React.FC = () => {
         <div className="timeline">
           {instructionBlockIds.map((instruction: string, i: number) => (
             <div
+              key={i}
               className={`timeline__container ${
                 i % 2 !== 0 ? "right" : "left"
               }`}

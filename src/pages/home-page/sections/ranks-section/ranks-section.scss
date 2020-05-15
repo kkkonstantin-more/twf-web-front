@@ -1,0 +1,54 @@
+@import "../../../../styles/abstracts/variables";
+@import "../../../../styles/abstracts/mixins";
+
+.ranks-section {
+  display: flex;
+  flex-wrap: wrap;
+  background-color: $color-primary;
+  & > h1 {
+    flex-basis: 100%;
+  }
+  &__image-and-text {
+    width: 50%;
+    @include respond(phone) {
+      width: 100%;
+    }
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 5rem;
+    & > img {
+      width: 70%;
+    }
+    & > p {
+      margin-top: 2rem;
+      font-size: $bg-font-size;
+      color: $color-primary-light;
+      font-weight: 700;
+    }
+  }
+  &__ranks {
+    width: 50%;
+    @include respond(phone) {
+      width: 100%;
+    }
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    padding-left: 2rem;
+  }
+  &__rank-block {
+    background-color: $color-primary-dark;
+    padding: 2rem;
+    border: 2px solid $color-primary-light;
+    &:not(:last-child) {
+      border-bottom: none;
+    }
+    font-size: $bg-font-size;
+    color: $color-primary-light;
+  }
+  &__svg-brain {
+    width: 15rem;
+    margin-right: 2rem;
+  }
+}
