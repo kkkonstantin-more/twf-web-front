@@ -34,7 +34,6 @@ const UserRatingTab: React.FC<UserRatingTabProps> = ({
   };
   const iconPath: string =
     [1, 2, 3].indexOf(place) === -1 ? mdiStar : mdiTrophy;
-
   return (
     <div
       className={`user-rating-tab ${

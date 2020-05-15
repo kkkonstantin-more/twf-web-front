@@ -5,6 +5,7 @@ import { forTutorsSectionRu } from "./home-page/sections/for-tutors-section";
 import { heroSectionRu } from "./home-page/sections/hero-section";
 import { navigationBarRu } from "./layouts/navigation-bar";
 import { ratingsSectionRu } from "./home-page/sections/ratings-section";
+import { workFieldsGraphRu } from "./components/work-fields-graph";
 
 export default {
   [LOCALES.RUSSIAN]: {
@@ -15,5 +16,6 @@ export default {
     ...heroSectionRu,
     ...navigationBarRu,
     ...ratingsSectionRu,
+    ...workFieldsGraphRu,
   },
 };
