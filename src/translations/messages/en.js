@@ -8,12 +8,14 @@ import { ratingsSectionEn } from "./home-page/sections/ratings-section";
 import { workFieldsGraphEn } from "./components/work-fields-graph";
 import { workFieldsSectionEn } from "./home-page/sections/work-fields-section";
 import { ranksSectionEn } from "./home-page/sections/ranks-section";
+import { aboutUsSectionEn } from "./home-page/sections/about-us-section";
+import { registerFormEn } from "./forms/register-form";
+import { loginFormEn } from "./forms/login-form";
+import { loginRegisterModalEn } from "./modals/login-register-modal";
 
 export default {
   [LOCALES.ENGLISH]: {
     ...workFieldsGraphEn,
-    "demo.languageSwitcher": "Language switch demo",
-    "demo.fetchAvatar": "Fetch user's avatar",
     ...forPlayersSectionEn,
     ...forTutorsSectionEn,
     ...heroSectionEn,
@@ -21,5 +23,9 @@ export default {
     ...ratingsSectionEn,
     ...workFieldsSectionEn,
     ...ranksSectionEn,
+    ...aboutUsSectionEn,
+    ...registerFormEn,
+    ...loginFormEn,
+    ...loginRegisterModalEn,
   },
 };

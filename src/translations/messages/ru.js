@@ -8,11 +8,13 @@ import { ratingsSectionRu } from "./home-page/sections/ratings-section";
 import { workFieldsGraphRu } from "./components/work-fields-graph";
 import { workFieldsSectionRu } from "./home-page/sections/work-fields-section";
 import { ranksSectionRu } from "./home-page/sections/ranks-section";
+import { aboutUsSectionRu } from "./home-page/sections/about-us-section";
+import { registerFormRu } from "./forms/register-form";
+import { loginFormRu } from "./forms/login-form";
+import { loginRegisterModalRu } from "./modals/login-register-modal";
 
 export default {
   [LOCALES.RUSSIAN]: {
-    "demo.languageSwitcher": "Демо смены языка",
-    "demo.fetchAvatar": "Демо получения aватара пользователя",
     ...forPlayersSectionRu,
     ...forTutorsSectionRu,
     ...heroSectionRu,
@@ -21,5 +23,9 @@ export default {
     ...workFieldsGraphRu,
     ...workFieldsSectionRu,
     ...ranksSectionRu,
+    ...aboutUsSectionRu,
+    ...registerFormRu,
+    ...loginFormRu,
+    ...loginRegisterModalRu,
   },
 };

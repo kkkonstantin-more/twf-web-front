@@ -1,0 +1,19 @@
+@import "../../styles/abstracts/variables";
+
+.login-form {
+  & > .form-group > input {
+    font-size: $md-font-size;
+  }
+  &__buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 2rem;
+    & > button {
+      font-size: $md-font-size;
+    }
+
+    &:nth-child(2) {
+      margin-left: auto;
+    }
+  }
+}

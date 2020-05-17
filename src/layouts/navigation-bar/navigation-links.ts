@@ -16,7 +16,7 @@ const navigationLinks: Array<LinkInterface> = [
   },
   {
     linkNameId: translationPrefix + ".aboutUs",
-    path: "/#work-fields-section",
+    path: "/#aboutUsSection",
   },
   {
     linkNameId: translationPrefix + ".constructor",
@@ -24,7 +24,7 @@ const navigationLinks: Array<LinkInterface> = [
   },
   {
     linkNameId: translationPrefix + ".login",
-    path: "/login",
+    path: "/",
   },
 ];
 

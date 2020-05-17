@@ -1,0 +1,17 @@
+@import "../../styles/abstracts/variables";
+
+.register-form {
+  & > .form-group > input {
+    font-size: $md-font-size;
+  }
+  &__buttons {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    margin-top: 2rem;
+    & > button {
+      font-size: $md-font-size;
+    }
+  }
+}

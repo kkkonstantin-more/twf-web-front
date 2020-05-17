@@ -8,7 +8,7 @@ import { LOCALES } from "./translations";
 import HomePage from "./pages/home-page/home-page";
 import RatingsPage from "./pages/ratings-page/ratings-page.component";
 // LAYOUT
-import NavigationBar from "./layouts/navigation-bar/navigation-bar.jsx";
+import NavigationBar from "./layouts/navigation-bar/navigation-bar";
 // ROOT STYLES
 import "./styles/App.scss";
 
