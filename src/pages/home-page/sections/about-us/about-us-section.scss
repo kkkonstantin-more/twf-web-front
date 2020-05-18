@@ -28,7 +28,7 @@
   }
   &__photos-grid {
     width: 50vw;
-    height: 37.5vw;
+    height: 33.3vw;
     @include respond(phone) {
       width: 100vw;
       height: 75vw;
@@ -38,19 +38,58 @@
     padding: 0 2rem;
     display: grid;
     gap: 1rem;
-    grid-template-columns: repeat(4, 1fr);
-    grid-template-rows: repeat(3, 1fr);
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(4, 1fr);
     justify-content: center;
     & > div {
-      border: 1px solid black;
+      border: 1px solid $color-primary-dark;
+    }
+  }
+  &__photo-3d-container {
+    // horizontal 2x1 images
+    perspective: 30rem;
+    &:nth-child(1) {
+      grid-area: 1 / 3 / 1 / 5;
+    }
+    &:nth-child(2) {
+      grid-area: 4 / 1 / 4 / 3;
+    }
+    &:nth-child(3) {
+      grid-area: 4 / 5 / 4 / 7;
+    }
+    // vertical 1x2 images
+    &:nth-child(4) {
+      grid-area: 1 / 1 / 3 / 1;
+    }
+    &:nth-child(5) {
+      grid-area: 2 / 5 / 4 / 5;
+    }
+    &:nth-child(6) {
+      grid-area: 3 / 3 / 5 / 3;
+    }
+  }
+
+  &__photo-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transition: transform 1s;
+    transform-style: preserve-3d;
+    &--is-flipped {
+      transform: rotateY(180deg);
     }
   }
   &__photo {
+    position: absolute;
+    width: 100%;
+    height: 100%;
     background-size: cover;
     background-repeat: no-repeat;
-    position: center;
-    &--big {
-      grid-area: 1 / 1 / 3 / 3;
+    backface-visibility: hidden;
+    &--front {
+    }
+    &--back {
+      transform: rotateY(180deg);
     }
   }
 }

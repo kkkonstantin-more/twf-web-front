@@ -6,6 +6,8 @@ const navigationBarRu = {
   [prefix + ".link.aboutUs"]: "О нас",
   [prefix + ".link.constructor"]: "Конструктор",
   [prefix + ".link.login"]: "Войти",
+  [prefix + ".link.rating"]: "Рейтинг",
+  [prefix + ".link.ranks"]: "Ранги",
 };
 
 const navigationBarEn = {
@@ -14,6 +16,8 @@ const navigationBarEn = {
   [prefix + ".link.aboutUs"]: "About us",
   [prefix + ".link.constructor"]: "Constructor",
   [prefix + ".link.login"]: "Login",
+  [prefix + ".link.rating"]: "Ratings",
+  [prefix + ".link.ranks"]: "Ranks",
 };
 
 export { navigationBarEn, navigationBarRu };

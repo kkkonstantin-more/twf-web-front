@@ -15,13 +15,21 @@ const navigationLinks: Array<LinkInterface> = [
     path: "/#forTutorsSection",
   },
   {
+    linkNameId: translationPrefix + ".rating",
+    path: "/#ratingsSection",
+  },
+  {
+    linkNameId: translationPrefix + ".ranks",
+    path: "/#ranksSection",
+  },
+  {
     linkNameId: translationPrefix + ".aboutUs",
     path: "/#aboutUsSection",
   },
-  {
-    linkNameId: translationPrefix + ".constructor",
-    path: "/constructor",
-  },
+  // {
+  //   linkNameId: translationPrefix + ".constructor",
+  //   path: "/constructor",
+  // },
   {
     linkNameId: translationPrefix + ".login",
     path: "/",
