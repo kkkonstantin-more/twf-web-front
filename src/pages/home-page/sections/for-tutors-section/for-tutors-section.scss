@@ -3,16 +3,12 @@
 
 .for-tutors-section {
   background-color: $color-grey-light;
-  &__title {
-    font-size: $lg-font-size;
-    font-weight: 700;
-    text-align: center;
-    padding: 5rem 0;
-  }
-  &__container {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  & > h1 {
+    flex-basis: 100%;
+    order: -3;
   }
   &__svg-and-text {
     width: 50%;
@@ -29,6 +25,7 @@
     }
     @include respond(tab-port) {
       width: 100%;
+      order: -2;
     }
   }
   &__carousel {
@@ -38,7 +35,7 @@
     background-color: transparent;
     @include respond(tab-port) {
       width: 100%;
-      margin: 0 1rem;
+      margin: 0 1rem 2rem 1rem;
     }
   }
   &__carousel-slide {

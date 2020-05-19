@@ -15,11 +15,11 @@ const RanksSection: React.FC = () => {
     translationPrefix + ".expert",
   ];
   // other
-  const brainSvgUrl: string = require("../../../../assets/strong-brain.svg");
-  const stairWaySvgUrl: string = require("../../../../assets/stairway.svg");
+  const brainSvgUrl: string = require("../../../../assets/home-page-ranks-section/strong-brain.svg");
+  const stairWaySvgUrl: string = require("../../../../assets/home-page-ranks-section/stairway.svg");
 
   return (
-    <div className="ranks-section">
+    <div className="ranks-section" id="ranksSection">
       <h1 className="section-title">{translate(titleId)}</h1>
       <div className="ranks-section__ranks">
         <img

@@ -16,7 +16,7 @@ const ForPlayersSection: React.FC = () => {
   const titleId: string = translationPrefix + ".title";
   const sellingPhraseId: string = translationPrefix + ".sellingPhrase";
   // other vars
-  const svgUrl: string = require("../../../../assets/girl-with-phone.svg");
+  const svgUrl: string = require("../../../../assets/home-page-for-players/girl-with-phone.svg");
 
   return (
     <div className="for-players-section">
@@ -37,6 +37,7 @@ const ForPlayersSection: React.FC = () => {
               }`}
             >
               <div className="content">{translate(instruction)}</div>
+              <div className="timeline__container__number">{++i}</div>
             </div>
           ))}
         </div>

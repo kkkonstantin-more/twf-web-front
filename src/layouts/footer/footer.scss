@@ -1,0 +1,58 @@
+@import "../../styles/abstracts/variables";
+@import "../../styles/abstracts/mixins";
+
+// app prefix used to avoid conflict with bootstrap classes
+.app-footer {
+  background-color: $color-black-light;
+  color: $color-primary-light;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  padding: 3rem 1rem;
+  align-items: flex-start;
+  &__title {
+    text-align: center;
+    margin-bottom: 1rem;
+    font-weight: 700;
+  }
+  &__contacts {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    flex-wrap: wrap;
+    & > h1 {
+      flex-basis: 100%;
+    }
+  }
+  &__contact-icon {
+    width: 3rem;
+  }
+  &__web-site-link {
+    flex-basis: 100%;
+    text-align: center;
+    margin-top: 1rem;
+    font-weight: 700;
+    color: $color-primary-light;
+    &:hover {
+      color: white;
+    }
+    @include click-scaling;
+  }
+  &__landing-navigation {
+    display: flex;
+    flex-wrap: wrap;
+    //justify-content: space-around;
+    max-width: 30rem;
+    //flex-direction: column;
+    & > h1 {
+      flex-basis: 100%;
+    }
+  }
+  &__landing-navigation-link {
+    color: $color-primary-light;
+    width: 50%;
+    &:hover {
+      color: white;
+    }
+  }
+}

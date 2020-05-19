@@ -4,9 +4,9 @@ import "./phone-game-preview.scss";
 
 const PhoneGamePreview: React.FC = () => {
   const gameScreenshotsUrls: Array<string> = [
-    require("../../assets/phone-game-preview/screenshots/screenshot-1.jpg"),
-    require("../../assets/phone-game-preview/screenshots/screenshot-2.jpg"),
-    require("../../assets/phone-game-preview/screenshots/screenshot-3.jpg"),
+    require("../../assets/component-phone-game-preview/screenshots/screenshot-1.jpg"),
+    require("../../assets/component-phone-game-preview/screenshots/screenshot-2.jpg"),
+    require("../../assets/component-phone-game-preview/screenshots/screenshot-3.jpg"),
   ];
 
   return (

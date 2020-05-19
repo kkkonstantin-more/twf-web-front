@@ -4,26 +4,30 @@
 .ranks-section {
   display: flex;
   flex-wrap: wrap;
-  background-color: $color-primary;
+  background-color: $color-grey-light;
   & > h1 {
     flex-basis: 100%;
+    order: -2;
   }
   &__image-and-text {
     width: 50%;
+    align-self: center;
     @include respond(phone) {
       width: 100%;
+      padding: 2rem;
+      order: -1;
     }
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 5rem;
+    //padding: 5rem;
     & > img {
       width: 70%;
     }
     & > p {
       margin-top: 2rem;
       font-size: $bg-font-size;
-      color: $color-primary-light;
+      color: $color-primary-dark;
       font-weight: 700;
     }
   }

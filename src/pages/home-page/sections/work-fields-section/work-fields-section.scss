@@ -1,11 +1,23 @@
-.about-us-section {
-  & > h1 {
-    text-align: center;
-  }
+@import "../../../../styles/abstracts/variables";
+@import "../../../../styles/abstracts/mixins";
+
+.work-fields-section {
+  position: relative;
+  background-color: $color-grey;
   &__graph {
     width: 100%;
   }
-  &__text {
-    width: 50%;
+  &__link {
+    position: absolute;
+    top: 85%;
+    left: 15%;
+    color: $color-primary-dark;
+    font-weight: 700;
+    @include click-scaling;
+    &:hover {
+      text-decoration: none;
+      color: $color-primary;
+    }
+    //font-size: $bg-font-size;
   }
 }

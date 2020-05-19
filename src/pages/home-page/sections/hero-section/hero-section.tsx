@@ -17,7 +17,7 @@ const HeroSection: React.FC = () => {
     translationPrefix + ".quickGameProcessDescription";
   const ourSolutionsId: string = translationPrefix + ".ourSolutions";
 
-  const googlePlayButtonUrl: string = require("../../../../assets/hero-section/google-play-button.png");
+  const googlePlayButtonUrl: string = require("../../../../assets/home-page-hero-section/google-play-button.png");
 
   return (
     <div className="hero-section__wrapper">

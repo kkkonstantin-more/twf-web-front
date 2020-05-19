@@ -12,6 +12,7 @@ import { aboutUsSectionEn } from "./home-page/sections/about-us-section";
 import { registerFormEn } from "./forms/register-form";
 import { loginFormEn } from "./forms/login-form";
 import { loginRegisterModalEn } from "./modals/login-register-modal";
+import { footerEn } from "./layouts/footer";
 
 export default {
   [LOCALES.ENGLISH]: {
@@ -27,5 +28,6 @@ export default {
     ...registerFormEn,
     ...loginFormEn,
     ...loginRegisterModalEn,
+    ...footerEn,
   },
 };

@@ -12,6 +12,7 @@ import { aboutUsSectionRu } from "./home-page/sections/about-us-section";
 import { registerFormRu } from "./forms/register-form";
 import { loginFormRu } from "./forms/login-form";
 import { loginRegisterModalRu } from "./modals/login-register-modal";
+import { footerRu } from "./layouts/footer";
 
 export default {
   [LOCALES.RUSSIAN]: {
@@ -27,5 +28,6 @@ export default {
     ...registerFormRu,
     ...loginFormRu,
     ...loginRegisterModalRu,
+    ...footerRu,
   },
 };

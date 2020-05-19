@@ -1,7 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-
-import "./ratings-section.scss";
+import translate from "../../../../translations/translate";
 
 import RatingsTable from "../../../../copmonents/ratings-table/ratings-table";
 
@@ -10,7 +9,7 @@ import {
   demoUserRating,
 } from "../../../../data/demo-data";
 
-import translate from "../../../../translations/translate";
+import "./ratings-section.scss";
 
 const RatingsSection: React.FC = () => {
   // translation vars
@@ -19,10 +18,11 @@ const RatingsSection: React.FC = () => {
   const linkId: string = translationPrefix + ".link";
   const sloganId: string = translationPrefix + ".slogan";
 
-  const svg = require("../../../../assets/winner-cup.svg");
+  const svg = require("../../../../assets/home-page-rating-section/winner-cup.svg");
   return (
-    <div className="ratings-section__wrapper">
+    <div className="ratings-section__wrapper" id="ratingsSection">
       <div className="ratings-section">
+        <h1 className="section-title">{translate(titleId)}</h1>
         <div className="ratings-section__description">
           <img
             src={svg}
@@ -33,9 +33,6 @@ const RatingsSection: React.FC = () => {
           <h1>{translate(sloganId)}</h1>
         </div>
         <div className="ratings-section__table">
-          <h1 className="ratings-section__table-header">
-            {translate(titleId)}
-          </h1>
           <RatingsTable
             data={demoRatingsTop5Users}
             currentUserData={demoUserRating}

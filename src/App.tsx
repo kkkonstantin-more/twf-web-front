@@ -9,6 +9,7 @@ import HomePage from "./pages/home-page/home-page";
 import RatingsPage from "./pages/ratings-page/ratings-page.component";
 // LAYOUT
 import NavigationBar from "./layouts/navigation-bar/navigation-bar";
+import Footer from "./layouts/footer/footer";
 // ROOT STYLES
 import "./styles/App.scss";
 
@@ -24,6 +25,7 @@ const App: React.FC = () => {
         <Route exact path={"/"} component={HomePage} />
         <Route exact path={"/ratings"} component={RatingsPage} />
       </Switch>
+      <Footer />
     </TranslationProvider>
   );
 };
