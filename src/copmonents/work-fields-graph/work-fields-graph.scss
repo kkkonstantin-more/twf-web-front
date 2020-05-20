@@ -1,0 +1,11 @@
+.work-fields-graph {
+  position: relative;
+  // making div that overlay the canvas and making able to scroll the page on mobile devices
+  &__scroll-fix {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    opacity: 0;
+  }
+}

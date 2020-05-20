@@ -10,6 +10,8 @@ import {
   edgesSharedConfig,
 } from "./work-field-graph-data";
 
+import "./work-fields-graph.scss";
+
 const WorkFieldsGraph: React.FC<{ intl: any }> = ({ intl }) => {
   // this reactive variable changes when language switches
   const { locale } = useIntl();
@@ -37,7 +39,7 @@ const WorkFieldsGraph: React.FC<{ intl: any }> = ({ intl }) => {
   }, [locale]);
 
   return (
-    <>
+    <div className="work-fields-graph">
       <Graph
         graph={{ nodes: reactiveNodes, edges }}
         options={{
@@ -52,7 +54,12 @@ const WorkFieldsGraph: React.FC<{ intl: any }> = ({ intl }) => {
         }}
         style={{ height: "50rem", width: "100%" }}
       />
-    </>
+      {/*making div that overlay the canvas and making able to scroll the page on mobile devices*/}
+      <div
+        className="work-fields-graph__scroll-fix"
+        style={{ height: "50rem", width: "100%" }}
+      />
+    </div>
   );
 };
 

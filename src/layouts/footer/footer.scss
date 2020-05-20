@@ -41,9 +41,7 @@
   &__landing-navigation {
     display: flex;
     flex-wrap: wrap;
-    //justify-content: space-around;
-    max-width: 30rem;
-    //flex-direction: column;
+    max-width: 35rem;
     & > h1 {
       flex-basis: 100%;
     }
