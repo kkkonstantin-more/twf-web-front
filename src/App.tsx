@@ -7,6 +7,7 @@ import { LOCALES } from "./translations";
 // PAGES
 import HomePage from "./pages/home-page/home-page";
 import RatingsPage from "./pages/ratings-page/ratings-page.component";
+import GameInfoPage from "./pages/game-info-page/game-info-page";
 // LAYOUT
 import NavigationBar from "./layouts/navigation-bar/navigation-bar";
 import Footer from "./layouts/footer/footer";
@@ -21,10 +22,13 @@ const App: React.FC = () => {
       {/*passing App's state translation vars to navigation for being able to switch language from navigation across all
        Application*/}
       <NavigationBar currentLanguage={locale} setLanguage={setLocale} />
-      <Switch>
-        <Route exact path={"/"} component={HomePage} />
-        <Route exact path={"/ratings"} component={RatingsPage} />
-      </Switch>
+      <div className="app-content-container">
+        <Switch>
+          <Route exact path={"/"} component={HomePage} />
+          <Route exact path={"/ratings"} component={RatingsPage} />
+          <Route exact path={"/game-info/:gameName"} component={GameInfoPage} />
+        </Switch>
+      </div>
       <Footer />
     </TranslationProvider>
   );

@@ -25,24 +25,38 @@ const AboutUsSection: React.FC = () => {
   // other
   const linksIcons: string[] = [mdiFacebook, mdiVk, mdiTelegram, mdiGmail];
   const allImagesUrls: string[] = [
-    ...horizontalPhotosUrls,
-    ...verticalPhotosUrls,
-    ...standardPhotosUrls,
+    ...horizontalPhotosUrls.slice(0, 3),
+    ...verticalPhotosUrls.slice(0, 3),
+    ...standardPhotosUrls.slice(0, 12),
   ];
+  const [currentImagesUrls, setCurrentImagesUrls] = useState<string[]>([
+    ...horizontalPhotosUrls.slice(0, 3),
+    ...verticalPhotosUrls.slice(0, 3),
+    ...standardPhotosUrls.slice(0, 13),
+  ]);
   const [photosSides, setPhotosSides] = useState<boolean[]>(
-    createArrayWithOneValue(true, Math.floor(allImagesUrls.length / 2))
+    createArrayWithOneValue(true, Math.floor(allImagesUrls.length))
   );
+
+  // const changeRandomImage = () => {
+  //
+  // }
 
   useEffect(() => {
     setInterval(() => {
       const randomIdx = Math.floor(
         Math.random() * Math.floor(photosSides.length)
       );
-      setPhotosSides([
-        ...photosSides.slice(0, randomIdx),
-        !photosSides[randomIdx],
-        ...photosSides.slice(randomIdx),
-      ]);
+      setPhotosSides((prevState) => {
+        const newSides: boolean[] = [...prevState];
+        prevState[randomIdx] = !prevState[randomIdx];
+        return newSides;
+      });
+      // setCurrentImagesUrls((prevState) => {
+      //   const newSides: string[] = [...prevState];
+      //   prevState[randomIdx] = standardPhotosUrls[randomIdx];
+      //   return newSides;
+      // });
     }, 2000);
   }, []);
 
@@ -60,32 +74,30 @@ const AboutUsSection: React.FC = () => {
         </div>
       </div>
       <div className="about-us-section__photos-grid">
-        {allImagesUrls.map((photoUrl: string, i: number, arr: string[]) => {
-          if (i % 2 === 1 && i < arr.length) {
-            return (
-              <div className="about-us-section__photo-3d-container">
-                <div
-                  className={`about-us-section__photo-container
+        {photosSides.map((side: boolean, i: number) => {
+          return (
+            <div key={i} className="about-us-section__photo-3d-container">
+              <div
+                className={`about-us-section__photo-container
                   ${
-                    photosSides[Math.floor(i / 2)]
-                      ? "about-us-section__photo-container--is-flipped"
-                      : ""
+                    photosSides[i]
+                      ? ""
+                      : "about-us-section__photo-container--is-flipped"
                   }`}
-                >
-                  <div
-                    style={{ backgroundImage: `url(${arr[i]})` }}
-                    className="about-us-section__photo about-us-section__photo--front"
-                  />
-                  <div
-                    style={{
-                      backgroundImage: `url(${arr[i - 1]})`,
-                    }}
-                    className="about-us-section__photo about-us-section__photo--back"
-                  />
-                </div>
+              >
+                <div
+                  style={{ backgroundImage: `url(${currentImagesUrls[i]})` }}
+                  className="about-us-section__photo about-us-section__photo--front"
+                />
+                <div
+                  style={{
+                    backgroundImage: `url(${currentImagesUrls[i]})`,
+                  }}
+                  className="about-us-section__photo about-us-section__photo--back"
+                />
               </div>
-            );
-          }
+            </div>
+          );
         })}
       </div>
     </div>

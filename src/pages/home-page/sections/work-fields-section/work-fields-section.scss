@@ -4,8 +4,11 @@
 .work-fields-section {
   position: relative;
   background-color: $color-grey;
-  &__graph {
-    width: 100%;
+  & > h1 {
+    // fixing big margin between title and graph on small screens
+    @include respond(phone) {
+      margin-bottom: -8rem;
+    }
   }
   &__link {
     position: absolute;
@@ -13,6 +16,7 @@
     left: 15%;
     color: $color-primary-dark;
     font-weight: 700;
+    z-index: 3;
     @include click-scaling;
     &:hover {
       text-decoration: none;

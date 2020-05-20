@@ -86,9 +86,11 @@
     background-repeat: no-repeat;
     backface-visibility: hidden;
     &--front {
+      //transition: background-image 1s;
     }
     &--back {
       transform: rotateY(180deg);
+      //transition: background-image 1s;
     }
   }
 }

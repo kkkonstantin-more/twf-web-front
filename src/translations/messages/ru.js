@@ -13,6 +13,8 @@ import { registerFormRu } from "./forms/register-form";
 import { loginFormRu } from "./forms/login-form";
 import { loginRegisterModalRu } from "./modals/login-register-modal";
 import { footerRu } from "./layouts/footer";
+import { gameInfoPageRu } from "./game-info-page/game-info-page";
+import { playedGameUsersListRu } from "./game-info-page/components/played-game-users-list";
 
 export default {
   [LOCALES.RUSSIAN]: {
@@ -29,5 +31,7 @@ export default {
     ...loginFormRu,
     ...loginRegisterModalRu,
     ...footerRu,
+    ...gameInfoPageRu,
+    ...playedGameUsersListRu,
   },
 };

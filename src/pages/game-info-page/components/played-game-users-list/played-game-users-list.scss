@@ -1,0 +1,22 @@
+@import "../../../../styles/abstracts/variables";
+
+.played-game-users-list {
+  width: 50rem;
+  padding: 2rem;
+  border: 1px dashed black;
+  border-radius: 5px;
+  margin: 2rem 0;
+  & > h1 {
+    text-align: center;
+  }
+  &__actions {
+    display: flex;
+    justify-content: space-between;
+    margin: 2rem 0;
+  }
+  &__rows {
+    display: flex;
+    justify-content: space-between;
+    font-weight: bold;
+  }
+}

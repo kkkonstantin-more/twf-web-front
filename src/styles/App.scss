@@ -8,14 +8,16 @@
 @import "base/animations";
 @import "base/typography";
 
-.screenshots-container {
-  width: 25rem;
-  margin: auto;
-  overflow: hidden;
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  & > div:nth-child(2) {
+    flex: 1 0 auto;
+  }
+  & > div:nth-child(3) {
+    flex-shrink: 0;
+  }
 }
 
-.screenshots-slide {
-  display: flex;
-  width: 100%;
-  //height: 200px;
-}
+// making proper positioning of navigation and footer

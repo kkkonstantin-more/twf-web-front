@@ -13,6 +13,8 @@ import { registerFormEn } from "./forms/register-form";
 import { loginFormEn } from "./forms/login-form";
 import { loginRegisterModalEn } from "./modals/login-register-modal";
 import { footerEn } from "./layouts/footer";
+import { gameInfoPageEn } from "./game-info-page/game-info-page";
+import { playedGameUsersListEn } from "./game-info-page/components/played-game-users-list";
 
 export default {
   [LOCALES.ENGLISH]: {
@@ -29,5 +31,7 @@ export default {
     ...loginFormEn,
     ...loginRegisterModalEn,
     ...footerEn,
+    ...gameInfoPageEn,
+    ...playedGameUsersListEn,
   },
 };

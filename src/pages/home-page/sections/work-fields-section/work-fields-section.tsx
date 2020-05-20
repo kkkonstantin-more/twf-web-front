@@ -1,7 +1,7 @@
 import React from "react";
 import translate from "../../../../translations/translate";
 
-import WorkFieldsGraph from "../../../../copmonents/work-fields-graph/work-fields-graph";
+import WorkFieldsGraph from "./work-fields-graph/work-fields-graph";
 
 import "./work-fields-section.scss";
 

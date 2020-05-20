@@ -1,0 +1,10 @@
+@import "../../styles/abstracts/variables";
+
+.game-info-page {
+  margin-top: $navigation-bar-height !important;
+  & > h1 {
+    margin-top: 8rem;
+    font-size: $bg-font-size;
+    font-weight: 700;
+  }
+}

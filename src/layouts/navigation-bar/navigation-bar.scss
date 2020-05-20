@@ -6,6 +6,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  height: $navigation-bar-height;
   &__wrapper {
     background-color: rgba($color-primary-light, 0.8);
     position: fixed;

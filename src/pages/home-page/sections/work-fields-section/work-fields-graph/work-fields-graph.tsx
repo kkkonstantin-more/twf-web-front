@@ -52,6 +52,7 @@ const WorkFieldsGraph: React.FC<{ intl: any }> = ({ intl }) => {
             dragView: false,
           },
         }}
+        className="work-fields-graph__canvas"
         style={{ height: "50rem", width: "100%" }}
       />
       {/*making div that overlay the canvas and making able to scroll the page on mobile devices*/}

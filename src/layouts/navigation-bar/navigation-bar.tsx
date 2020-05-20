@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useLocation } from "react-router-dom";
 import translate from "../../translations/translate";
 import { LOCALES } from "../../translations";
 // using hash-link package to use anchor links
@@ -32,10 +33,15 @@ const NavigationBar: React.FC<NavigationBarProps> = ({
     false
   );
 
+  const { pathname } = useLocation();
+
   return (
     <div className="navigation-bar__wrapper">
       <div className="navigation-bar u-container">
-        <a href="#top" className="navigation-bar__logo">
+        <a
+          href={pathname === "/" ? "#top" : "/"}
+          className="navigation-bar__logo"
+        >
           <img src={logoUrl} alt="logo" width="100%" />
         </a>
         <div className="navigation-bar__language-switchers">
