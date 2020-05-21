@@ -1,6 +1,8 @@
 .game-tabs-list {
-  margin: 2rem 0;
-  & > *:not(:last-child) {
-    margin-bottom: 2rem;
+  &__list {
+    margin: 2rem 0;
+    & > *:not(:last-child) {
+      margin-bottom: 2rem;
+    }
   }
 }
