@@ -11,13 +11,13 @@ const GameInfoPage: React.FC = () => {
   const translationPrefix: string = "gameInfoPage";
   const gameNameTitleId: string = translationPrefix + ".gameNameTitle";
   // other
-  const { gameName } = useParams();
+  const { id } = useParams();
   // DEMO PlayedGameUserTab GENERATION
 
   return (
     <div className="game-info-page u-container">
       <h1>
-        {translate(gameNameTitleId)} {gameName}
+        {translate(gameNameTitleId)} {id}
       </h1>
       <PlayedGameUsersList />
     </div>

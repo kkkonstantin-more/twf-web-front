@@ -1,3 +1,5 @@
+import { PlayedGameUserTabProps } from "./pages/game-info-page/components/played-game-user-tab/played-game-user-tab";
+
 const createArrayWithOneValue = (value: any, length: number): any[] => {
   const arr = [];
   for (let i: number = 0; i < length; i++) arr.push(value);
@@ -12,4 +14,14 @@ const shuffleArray = (arr: any[]): any[] => {
   return arr;
 };
 
-export { createArrayWithOneValue, shuffleArray };
+const sortArrayOfObjectsByProperty = (
+  arr: any[],
+  property: string,
+  descending: boolean = true
+): any[] => {
+  return descending
+    ? arr.sort((a, b) => (a[property] > b[property] ? -1 : 1))
+    : arr.sort((a, b) => (a[property] > b[property] ? 1 : -1));
+};
+
+export { createArrayWithOneValue, shuffleArray, sortArrayOfObjectsByProperty };

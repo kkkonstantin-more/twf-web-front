@@ -8,6 +8,9 @@ import { LOCALES } from "./translations";
 import HomePage from "./pages/home-page/home-page";
 import RatingsPage from "./pages/ratings-page/ratings-page.component";
 import GameInfoPage from "./pages/game-info-page/game-info-page";
+import GamesPage from "./pages/games-page/games-page";
+import PlayerInfoPage from "./pages/player-info-page/player-info-page";
+import PlayersPage from "./pages/players-page/players-page";
 // LAYOUT
 import NavigationBar from "./layouts/navigation-bar/navigation-bar";
 import Footer from "./layouts/footer/footer";
@@ -26,7 +29,10 @@ const App: React.FC = () => {
         <Switch>
           <Route exact path={"/"} component={HomePage} />
           <Route exact path={"/ratings"} component={RatingsPage} />
-          <Route exact path={"/game-info/:gameName"} component={GameInfoPage} />
+          <Route exact path={"/game-info/:id"} component={GameInfoPage} />
+          <Route exact path={"/games"} component={GamesPage} />
+          <Route exact path={"/player-info/:id"} component={PlayerInfoPage} />
+          <Route exact path={"/players"} component={PlayersPage} />
         </Switch>
       </div>
       <Footer />
