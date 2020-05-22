@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import translate from "../../translations/translate";
 
 import "./level-tab.scss";
@@ -22,9 +23,10 @@ const LevelTab: React.FC<LevelTabProps> = ({
   const difficultyId: string = translationPrefix + ".difficulty";
   const completesAmountId: string = translationPrefix + ".completesAmount";
   // other
+  const levelInfoPageUrl: string = `/level-info/${name}`;
 
   return (
-    <div className="level-tab">
+    <Link to={levelInfoPageUrl} target="_blank" className="level-tab">
       <div className="level-tab__name">{name}</div>
       <div className="level-tab__code">
         <b>{translate(codeId)}: </b>
@@ -38,7 +40,7 @@ const LevelTab: React.FC<LevelTabProps> = ({
         <b>{translate(completesAmountId)}: </b>
         {completesAmount}
       </div>
-    </div>
+    </Link>
   );
 };
 
