@@ -1,6 +1,6 @@
-@import "../../../../styles/abstracts/variables";
+@import "../../styles/abstracts/variables";
 
-.game-tab {
+.level-tab {
   display: flex;
   align-items: center;
   padding: 1rem;
@@ -8,14 +8,20 @@
   color: $color-primary-dark;
   border-radius: 5px;
   box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.5);
-  &:hover {
-    color: $color-primary-dark;
-  }
   & > div:not(:last-child) {
-    flex-basis: 25%;
     margin-right: 2rem;
   }
   &__name {
     font-weight: 700;
+    flex-basis: 20%;
+  }
+  &__code {
+    flex-basis: 20%;
+  }
+  &__difficulty {
+    flex-basis: 20%;
+  }
+  &__completes-amount {
+    flex-basis: 40%;
   }
 }

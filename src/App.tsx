@@ -11,6 +11,7 @@ import GameInfoPage from "./pages/game-info-page/game-info-page";
 import GamesPage from "./pages/games-page/games-page";
 import PlayerInfoPage from "./pages/player-info-page/player-info-page";
 import PlayersPage from "./pages/players-page/players-page";
+import LevelInfoPage from "./pages/level-info-page/level-info-page";
 // LAYOUT
 import NavigationBar from "./layouts/navigation-bar/navigation-bar";
 import Footer from "./layouts/footer/footer";
@@ -33,6 +34,7 @@ const App: React.FC = () => {
           <Route exact path={"/games"} component={GamesPage} />
           <Route exact path={"/player-info/:id"} component={PlayerInfoPage} />
           <Route exact path={"/players"} component={PlayersPage} />
+          <Route exact path={"/level-info/:id"} component={LevelInfoPage} />
         </Switch>
       </div>
       <Footer />

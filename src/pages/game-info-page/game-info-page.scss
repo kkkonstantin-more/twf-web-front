@@ -2,9 +2,10 @@
 
 .game-info-page {
   margin-top: $navigation-bar-height !important;
+  margin-bottom: 2rem !important;
   & > h1 {
     margin-top: 8rem;
+    margin-bottom: 2rem;
     font-size: $bg-font-size;
-    font-weight: 700;
   }
 }

@@ -1,9 +1,9 @@
-import { PlayerTabProps } from "../player-tab/player-tab";
+import { PlayerTabProps } from "../players-page/components/player-tab/player-tab";
 
-const demoPlayerTabsData: PlayerTabProps[] = [
+const demoPlayedGamePlayersData: PlayerTabProps[] = [
   {
     name: "Иван Петров",
-    avatarUrl: require("../../../../assets/home-page-about-us-section/photo-grid/standard-photos/standard-1.jpg"),
+    avatarUrl: require("../../assets/home-page-about-us-section/photo-grid/standard-photos/standard-1.jpg"),
     levelsCompleted: 0,
     additionalInfo:
       "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad alias blanditiis consectetur" +
@@ -12,7 +12,7 @@ const demoPlayerTabsData: PlayerTabProps[] = [
   },
   {
     name: "Александр Павлов",
-    avatarUrl: require("../../../../assets/home-page-about-us-section/photo-grid/standard-photos/standard-2.jpg"),
+    avatarUrl: require("../../assets/home-page-about-us-section/photo-grid/standard-photos/standard-2.jpg"),
     levelsCompleted: 0,
     additionalInfo:
       "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad alias blanditiis consectetur" +
@@ -21,7 +21,7 @@ const demoPlayerTabsData: PlayerTabProps[] = [
   },
   {
     name: "Иван Петров",
-    avatarUrl: require("../../../../assets/home-page-about-us-section/photo-grid/standard-photos/standard-3.jpg"),
+    avatarUrl: require("../../assets/home-page-about-us-section/photo-grid/standard-photos/standard-3.jpg"),
     levelsCompleted: 0,
     additionalInfo:
       "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad alias blanditiis consectetur" +
@@ -30,7 +30,7 @@ const demoPlayerTabsData: PlayerTabProps[] = [
   },
   {
     name: "Иван Петров",
-    avatarUrl: require("../../../../assets/home-page-about-us-section/photo-grid/standard-photos/standard-4.jpg"),
+    avatarUrl: require("../../assets/home-page-about-us-section/photo-grid/standard-photos/standard-4.jpg"),
     levelsCompleted: 0,
     additionalInfo:
       "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad alias blanditiis consectetur" +
@@ -39,7 +39,7 @@ const demoPlayerTabsData: PlayerTabProps[] = [
   },
   {
     name: "Иван Петров",
-    avatarUrl: require("../../../../assets/home-page-about-us-section/photo-grid/standard-photos/standard-5.jpg"),
+    avatarUrl: require("../../assets/home-page-about-us-section/photo-grid/standard-photos/standard-5.jpg"),
     levelsCompleted: 0,
     additionalInfo:
       "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad alias blanditiis consectetur" +
@@ -48,7 +48,7 @@ const demoPlayerTabsData: PlayerTabProps[] = [
   },
   {
     name: "Иван Петров",
-    avatarUrl: require("../../../../assets/home-page-about-us-section/photo-grid/standard-photos/standard-6.jpg"),
+    avatarUrl: require("../../assets/home-page-about-us-section/photo-grid/standard-photos/standard-6.jpg"),
     levelsCompleted: 0,
     additionalInfo:
       "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad alias blanditiis consectetur" +
@@ -57,7 +57,7 @@ const demoPlayerTabsData: PlayerTabProps[] = [
   },
   {
     name: "Иван Петров",
-    avatarUrl: require("../../../../assets/home-page-about-us-section/photo-grid/standard-photos/standard-7.jpg"),
+    avatarUrl: require("../../assets/home-page-about-us-section/photo-grid/standard-photos/standard-7.jpg"),
     levelsCompleted: 0,
     additionalInfo:
       "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad alias blanditiis consectetur" +
@@ -66,8 +66,8 @@ const demoPlayerTabsData: PlayerTabProps[] = [
   },
 ];
 
-demoPlayerTabsData.forEach((tab: PlayerTabProps) => {
-  tab.levelsCompleted = Math.floor(Math.random() * 1000);
+demoPlayedGamePlayersData.forEach((tab: PlayerTabProps) => {
+  tab.levelsCompleted = Math.floor(Math.random() * 10);
 });
 
-export default demoPlayerTabsData;
+export default demoPlayedGamePlayersData;

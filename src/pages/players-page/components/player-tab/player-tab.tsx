@@ -25,22 +25,12 @@ const PlayerTab: React.FC<PlayerTabProps> = ({
   const redirectToUserInfoPageUrl: string = `/player-info/${name}`;
 
   return (
-    <div className="player-tab">
-      <div className="player-tab__avatar-and-name">
-        <Link
-          to={redirectToUserInfoPageUrl}
-          target="_blank"
-          className="player-tab__avatar"
-          style={{ backgroundImage: `url(${avatarUrl})` }}
-        />
-        <Link
-          to={redirectToUserInfoPageUrl}
-          target="_blank"
-          className="player-tab__name"
-        >
-          {name}
-        </Link>
-      </div>
+    <Link to={redirectToUserInfoPageUrl} target="_blank" className="player-tab">
+      <div
+        className="player-tab__avatar"
+        style={{ backgroundImage: `url(${avatarUrl})` }}
+      />
+      <div className="player-tab__name">{name}</div>
       <div className="player-tab__levels-completed">
         <b>{translate(levelsCompletedId)}: </b>
         {levelsCompleted}
@@ -49,7 +39,7 @@ const PlayerTab: React.FC<PlayerTabProps> = ({
         <b>{translate(additionalInfoId)}: </b>
         {additionalInfo}
       </div>
-    </div>
+    </Link>
   );
 };
 

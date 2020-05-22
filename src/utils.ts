@@ -1,5 +1,3 @@
-import { PlayedGameUserTabProps } from "./pages/game-info-page/components/played-game-user-tab/played-game-user-tab";
-
 const createArrayWithOneValue = (value: any, length: number): any[] => {
   const arr = [];
   for (let i: number = 0; i < length; i++) arr.push(value);

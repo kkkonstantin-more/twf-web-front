@@ -50,3 +50,15 @@ breakpoint argument choices:
     transform: scale(.9);
   }
 }
+
+@mixin click-scaling-small() {
+  transition: transform .2s;
+
+  &:hover {
+    transform: scale(1.1);
+  }
+
+  &:active {
+    transform: scale(.9);
+  }
+}

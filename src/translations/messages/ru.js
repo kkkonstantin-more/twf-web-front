@@ -19,6 +19,10 @@ import { gamesPageRu } from "./pages/games-page/games-page";
 import { gameTabRu } from "./pages/games-page/components/game-tab";
 import { playersPageRu } from "./pages/players-page/players-page";
 import { playerTabRu } from "./pages/players-page/components/player-tab";
+import { sorterRu } from "./components/sorter";
+import { levelTabRu } from "./components/level-tab";
+import { playerInfoPageRu } from "./pages/player-info-page";
+import { levelInfoPageRu } from "./pages/level-info-page";
 
 export default {
   [LOCALES.RUSSIAN]: {
@@ -41,5 +45,9 @@ export default {
     ...gameTabRu,
     ...playersPageRu,
     ...playerTabRu,
+    ...sorterRu,
+    ...levelTabRu,
+    ...playerInfoPageRu,
+    ...levelInfoPageRu,
   },
 };
