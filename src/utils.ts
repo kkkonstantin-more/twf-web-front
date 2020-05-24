@@ -15,11 +15,11 @@ const shuffleArray = (arr: any[]): any[] => {
 const sortArrayOfObjectsByProperty = (
   arr: any[],
   property: string,
-  descending: boolean = true
+  descending: boolean
 ): any[] => {
   return descending
-    ? arr.sort((a, b) => (a[property] > b[property] ? -1 : 1))
-    : arr.sort((a, b) => (a[property] > b[property] ? 1 : -1));
+    ? arr.sort((a, b) => (a[property].value > b[property].value ? -1 : 1))
+    : arr.sort((a, b) => (a[property].value > b[property].value ? 1 : -1));
 };
 
 export { createArrayWithOneValue, shuffleArray, sortArrayOfObjectsByProperty };

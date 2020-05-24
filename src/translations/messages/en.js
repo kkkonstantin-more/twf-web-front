@@ -23,6 +23,7 @@ import { sorterEn } from "./components/sorter";
 import { levelTabEn } from "./components/level-tab";
 import { playerInfoPageEn } from "./pages/player-info-page";
 import { levelInfoPageEn } from "./pages/level-info-page";
+import { filterEn } from "./components/filter";
 
 export default {
   [LOCALES.ENGLISH]: {
@@ -49,5 +50,6 @@ export default {
     ...levelTabEn,
     ...playerInfoPageEn,
     ...levelInfoPageEn,
+    ...filterEn,
   },
 };

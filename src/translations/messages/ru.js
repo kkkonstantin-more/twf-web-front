@@ -23,6 +23,7 @@ import { sorterRu } from "./components/sorter";
 import { levelTabRu } from "./components/level-tab";
 import { playerInfoPageRu } from "./pages/player-info-page";
 import { levelInfoPageRu } from "./pages/level-info-page";
+import { filterRu } from "./components/filter";
 
 export default {
   [LOCALES.RUSSIAN]: {
@@ -49,5 +50,6 @@ export default {
     ...levelTabRu,
     ...playerInfoPageRu,
     ...levelInfoPageRu,
+    ...filterRu,
   },
 };

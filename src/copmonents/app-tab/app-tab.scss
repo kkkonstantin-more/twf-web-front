@@ -1,0 +1,20 @@
+@import "../../styles/abstracts/variables";
+
+.app-tab {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  background-color: $color-primary-light;
+  color: $color-primary-dark;
+  border-radius: 5px;
+  box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.5);
+  &:hover {
+    color: $color-primary-dark;
+  }
+  &__item {
+    word-wrap: break-word;
+    &:not(:last-child) {
+      margin-right: 2rem;
+    }
+  }
+}
