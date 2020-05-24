@@ -13,7 +13,11 @@ export interface AppTabProps {
 }
 
 const AppTab: React.FC<AppTabProps> = (tab) => {
-  const itemWidth: string = 100 / (Object.keys(tab).length - 1) + "%";
+  let visibleObjects: number = 0;
+  for (let key in tab) {
+    if (!tab[key].hidden && key !== "link") visibleObjects++;
+  }
+  const itemWidth: string = 100 / visibleObjects + "%";
   const { link } = tab;
 
   return (
