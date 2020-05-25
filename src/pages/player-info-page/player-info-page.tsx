@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
 import "./player-info-page.scss";
@@ -8,9 +8,12 @@ import SortersList, {
 } from "../../copmonents/sorters-list/sorters-list";
 import LevelTabsList from "../../copmonents/level-tabs-list/level-tabs-list";
 
-import { LevelTabProps } from "../../copmonents/level-tab/level-tab";
-
-import demoGameLevels from "../game-info-page/demo-game-levels";
+import fetchLevels, { FetchedLevel } from "../../fetch-requests/fetch-levels";
+import { AppTabProps } from "../../copmonents/app-tab/app-tab";
+import AppTabsList from "../../copmonents/app-tabs-list/app-tabs-list";
+import FiltersList, {
+  FiltersListItemProps,
+} from "../../copmonents/filters-list/filters-list";
 
 const PlayerInfoPage: React.FC = () => {
   // translation vars
@@ -18,29 +21,92 @@ const PlayerInfoPage: React.FC = () => {
   const titleId: string = translationPrefix + ".title";
   const completedLevelsId: string = translationPrefix + ".completedLevels";
   // other
-  const [levels, setLevels] = useState<LevelTabProps[]>(demoGameLevels);
-  const { id } = useParams();
+  const [levels, setLevels] = useState<AppTabProps[]>([]);
+  const { playerCode } = useParams();
   const levelsSorters: SortersListItemInterface[] = [
     {
       textId: "name",
       propertyName: "name",
-      initialDescending: false,
+      initialDescending: true,
     },
     {
-      textId: "completesAmount",
-      propertyName: "completesAmount",
+      textId: "code",
+      propertyName: "code",
       initialDescending: true,
     },
     {
       textId: "difficulty",
       propertyName: "difficulty",
-      initialDescending: true,
+      initialDescending: false,
+    },
+    {
+      textId: "playersPlayedAmount",
+      propertyName: "playersPlayedAmount",
+      initialDescending: false,
+    },
+    {
+      textId: "gameName",
+      propertyName: "gameName",
+      initialDescending: false,
     },
   ];
+  const levelsFilters: FiltersListItemProps[] = [
+    {
+      propertyName: "code",
+      translationTextId: "code",
+    },
+    {
+      propertyName: "difficulty",
+      translationTextId: "difficulty",
+    },
+    {
+      propertyName: "playersPlayedAmount",
+      translationTextId: "playersCount",
+    },
+    {
+      propertyName: "gameName",
+      translationTextId: "gameName",
+    },
+  ];
+  useEffect(() => {
+    const createTabsWithFetchedLevels = async () => {
+      const levels: FetchedLevel[] = await fetchLevels();
+      const levelsForAppTabs: AppTabProps[] = [];
+      const translationPrefix: string = "appTab.";
+      levels.forEach((level: FetchedLevel) => {
+        levelsForAppTabs.push({
+          link: {
+            value: "/level-info/" + level.code,
+          },
+          name: {
+            value: level.name,
+          },
+          code: {
+            value: level.code,
+            prefixTranslationId: translationPrefix + "code",
+          },
+          gameName: {
+            value: level.gameName,
+            prefixTranslationId: translationPrefix + "gameName",
+          },
+          difficulty: {
+            value: level.difficulty.toString(),
+            prefixTranslationId: translationPrefix + "difficulty",
+          },
+          playersPlayedAmount: {
+            value: level.players.length.toString(),
+            prefixTranslationId: translationPrefix + "playersPlayedAmount",
+          },
+        });
+      });
+      setLevels(levelsForAppTabs);
+    };
+    createTabsWithFetchedLevels();
+  }, []);
   return (
     <div className="player-info-page u-container">
       <h1>
-        {translate(titleId)}: {id}
+        {translate(titleId)}: {playerCode}
       </h1>
       <h1>{translate(completedLevelsId)}</h1>
       <SortersList
@@ -48,7 +114,13 @@ const PlayerInfoPage: React.FC = () => {
         items={levelsSorters}
         className="u-mt-sm u-mb-sm"
       />
-      <LevelTabsList levelTabs={levels} />
+      <FiltersList
+        array={levels}
+        stateSetter={setLevels}
+        items={levelsFilters}
+        className="u-mb-sm"
+      />
+      <AppTabsList tabs={levels} />
     </div>
   );
 };

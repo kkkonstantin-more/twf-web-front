@@ -5,7 +5,7 @@ const heroSectionEn = {
   [prefix + ".slogan"]: "Math simply and fun",
   [prefix +
   ".quickGameProcessDescription"]: "Automatically transform expressions in typical training tasks",
-  [prefix + ".ourSolutions"]: "Our solutions",
+  [prefix + ".gamesLink"]: "Our games",
 };
 
 const heroSectionRu = {
@@ -13,7 +13,7 @@ const heroSectionRu = {
   [prefix + ".slogan"]: "Математика просто и весело",
   [prefix +
   ".quickGameProcessDescription"]: "Автоматически применяй преобразования к выражениям в типовых учебных задачах",
-  [prefix + ".ourSolutions"]: "Наши решения",
+  [prefix + ".gamesLink"]: "Наши игры",
 };
 
 export { heroSectionRu, heroSectionEn };

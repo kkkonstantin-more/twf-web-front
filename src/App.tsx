@@ -30,11 +30,19 @@ const App: React.FC = () => {
         <Switch>
           <Route exact path={"/"} component={HomePage} />
           <Route exact path={"/ratings"} component={RatingsPage} />
-          <Route exact path={"/game-info/:id"} component={GameInfoPage} />
+          <Route exact path={"/game-info/:gameCode"} component={GameInfoPage} />
           <Route exact path={"/games"} component={GamesPage} />
-          <Route exact path={"/player-info/:id"} component={PlayerInfoPage} />
+          <Route
+            exact
+            path={"/player-info/:playerCode"}
+            component={PlayerInfoPage}
+          />
           <Route exact path={"/players"} component={PlayersPage} />
-          <Route exact path={"/level-info/:id"} component={LevelInfoPage} />
+          <Route
+            exact
+            path={"/level-info/:levelCode"}
+            component={LevelInfoPage}
+          />
         </Switch>
       </div>
       <Footer />

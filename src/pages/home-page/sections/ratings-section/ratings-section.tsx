@@ -37,7 +37,11 @@ const RatingsSection: React.FC = () => {
             data={demoRatingsTop5Users}
             currentUserData={demoUserRating}
           />
-          <Link to="/ratings" className="ratings-section__table-link">
+          <Link
+            to="/players"
+            target="_blank"
+            className="ratings-section__table-link"
+          >
             {translate(linkId)}
           </Link>
         </div>

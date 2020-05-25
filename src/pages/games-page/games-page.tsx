@@ -2,21 +2,15 @@ import React, { useEffect, useState } from "react";
 import translate from "../../translations/translate";
 import axios from "axios";
 
-import GameTabsList from "./components/game-tabs-list/game-tabs-list";
 import SortersList from "../../copmonents/sorters-list/sorters-list";
+import AppTabsList from "../../copmonents/app-tabs-list/app-tabs-list";
+import FiltersList from "../../copmonents/filters-list/filters-list";
 
-import { GameTabProps } from "./components/game-tab/game-tab";
 import { SortersListItemInterface } from "../../copmonents/sorters-list/sorters-list";
-
+import { FiltersListItemProps } from "../../copmonents/filters-list/filters-list";
 import { AppTabProps } from "../../copmonents/app-tab/app-tab";
 
 import "./games-page.scss";
-
-import demoGameTabsData from "./demo-game-tabs-data";
-
-import AppTabsList from "../../copmonents/app-tabs-list/app-tabs-list";
-
-import Filter from "../../filter/filter";
 
 const GamesPage: React.FC = () => {
   // translation vars
@@ -40,7 +34,22 @@ const GamesPage: React.FC = () => {
       initialDescending: true,
     },
   ];
-  const [gameTabs, setGameTabs] = useState<AppTabProps[]>(demoGameTabsData);
+  const filters: FiltersListItemProps[] = [
+    {
+      propertyName: "code",
+      translationTextId: "code",
+    },
+    {
+      propertyName: "levelsCount",
+      translationTextId: "levelsCount",
+    },
+    {
+      propertyName: "playersCount",
+      translationTextId: "playersCount",
+    },
+  ];
+
+  const [gameTabs, setGameTabs] = useState<AppTabProps[]>([]);
 
   interface Game {
     name: string;
@@ -53,14 +62,9 @@ const GamesPage: React.FC = () => {
     axios({
       method: "GET",
       url: "https://mathhelper.space:8443/api/activity_log/win_log_all",
-      headers: {
-        Authorization:
-          "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiI4NDNjZDJmOC0xYmVkLTQwYWItYjg4ZS1hYTkyOTExZDBmMDQiLCJpYXQiOjE1OTAzMjUwMDQsImV4cCI6MjEwODcyNTAwNH0.xUjastIkrWKQpgb4Z2YfBakuL9r9O33gl6fItK7fsFww0kOESzNecGGlpP3cMnFglE2KbUTtYEhloNy8eNRn1g",
-      },
     }).then((res) => {
       let games: Game[] = [];
       const data = res.data;
-      console.log(data);
       data.forEach((log: any) => {
         const gameIndex: number = games.findIndex(
           (game) => game.name === log.game_name
@@ -89,7 +93,7 @@ const GamesPage: React.FC = () => {
       games.forEach((game) => {
         filteredGames.push({
           link: {
-            value: "/game-info/" + game.name,
+            value: "/game-info/" + game.code,
           },
           name: {
             value: game.name,
@@ -120,23 +124,11 @@ const GamesPage: React.FC = () => {
         items={sorters}
         className="u-mb-sm u-mt-sm"
       />
-      <Filter
+      <FiltersList
         array={gameTabs}
         stateSetter={setGameTabs}
-        propertyName="code"
-        translationTextId="code"
-      />
-      <Filter
-        array={gameTabs}
-        stateSetter={setGameTabs}
-        propertyName="levelsCount"
-        translationTextId="levelsCount"
-      />
-      <Filter
-        array={gameTabs}
-        stateSetter={setGameTabs}
-        propertyName="playersCount"
-        translationTextId="playersCount"
+        items={filters}
+        className="u-mb-sm"
       />
       <AppTabsList tabs={gameTabs} />
     </div>

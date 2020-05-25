@@ -1,8 +1,0 @@
-.played-game-user-tab {
-  display: flex;
-  justify-content: space-between;
-  padding: 0.5rem 0;
-  &:not(:last-child) {
-    border-bottom: 1px dashed black;
-  }
-}

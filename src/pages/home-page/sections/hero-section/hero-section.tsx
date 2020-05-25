@@ -1,8 +1,6 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import translate from "../../../../translations/translate";
-// icons for our solutions
-import Icon from "@mdi/react";
-import { mdiMathSin, mdiMathLog, mdiMathIntegral } from "@mdi/js";
 
 import PhoneGamePreview from "../../../../copmonents/phone-game-preview/phone-game-preview";
 
@@ -15,7 +13,7 @@ const HeroSection: React.FC = () => {
   const sloganId: string = translationPrefix + ".slogan";
   const quickGameProcessDescriptionId: string =
     translationPrefix + ".quickGameProcessDescription";
-  const ourSolutionsId: string = translationPrefix + ".ourSolutions";
+  const gamesLink: string = translationPrefix + ".gamesLink";
 
   const googlePlayButtonUrl: string = require("../../../../assets/home-page-hero-section/google-play-button.png");
 
@@ -38,23 +36,9 @@ const HeroSection: React.FC = () => {
           </div>
           <PhoneGamePreview />
         </div>
-        <div className="hero-section__our-solutions">
-          <h1>{translate(ourSolutionsId)}</h1>
-          <div className="hero-section__our-solutions__icons-list">
-            <Icon
-              className="hero-section__our-solutions__icon"
-              path={mdiMathSin}
-            />
-            <Icon
-              className="hero-section__our-solutions__icon"
-              path={mdiMathLog}
-            />
-            <Icon
-              className="hero-section__our-solutions__icon"
-              path={mdiMathIntegral}
-            />
-          </div>
-        </div>
+        <Link className="hero-section__our-games" to="/games" target="_blank">
+          {translate(gamesLink)}
+        </Link>
       </div>
     </div>
   );

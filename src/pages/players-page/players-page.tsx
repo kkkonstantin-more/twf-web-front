@@ -1,13 +1,17 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import translate from "../../translations/translate";
 
-import PlayersTabsList from "./components/player-tabs-list/player-tabs-list";
-import SortersList from "../../copmonents/sorters-list/sorters-list";
+import SortersList, {
+  SortersListItemInterface,
+} from "../../copmonents/sorters-list/sorters-list";
 
-import { PlayerTabProps } from "./components/player-tab/player-tab";
-import { SortersListItemInterface } from "../../copmonents/sorters-list/sorters-list";
+import AppTabsList from "../../copmonents/app-tabs-list/app-tabs-list";
 
-import demoPlayerTabsData from "./demo-player-tabs-data";
+import fetchUsers, { FetchedUser } from "../../fetch-requests/fetch-users";
+import { AppTabProps } from "../../copmonents/app-tab/app-tab";
+import FiltersList, {
+  FiltersListItemProps,
+} from "../../copmonents/filters-list/filters-list";
 
 import "./players-page.scss";
 
@@ -16,31 +20,112 @@ const PlayersPage: React.FC = () => {
   const translationPrefix: string = "playersPage";
   const titleId: string = translationPrefix + ".title";
   // other
-  const [playerTabs, setPlayerTabs] = useState<PlayerTabProps[]>(
-    demoPlayerTabsData
-  );
-  const sortersListItems: SortersListItemInterface[] = [
+  const [players, setPlayers] = useState<AppTabProps[]>([]);
+  const playersSorters: SortersListItemInterface[] = [
+    {
+      textId: "login",
+      propertyName: "login",
+      initialDescending: true,
+    },
+    {
+      textId: "code",
+      propertyName: "code",
+      initialDescending: true,
+    },
     {
       textId: "name",
       propertyName: "name",
-      initialDescending: false,
-    },
-    {
-      textId: "levelsAmount",
-      propertyName: "levelsCompleted",
       initialDescending: true,
     },
+    {
+      textId: "surname",
+      propertyName: "surname",
+      initialDescending: true,
+    },
+    {
+      textId: "completedLevelsCount",
+      propertyName: "completedLevelsCount",
+      initialDescending: false,
+    },
   ];
+  const playerFilters: FiltersListItemProps[] = [
+    {
+      propertyName: "code",
+      translationTextId: "code",
+    },
+    {
+      propertyName: "name",
+      translationTextId: "name",
+    },
+    {
+      propertyName: "surname",
+      translationTextId: "surname",
+    },
+    {
+      propertyName: "completedLevelsCount",
+      translationTextId: "completedLevelsCount",
+    },
+    {
+      propertyName: "additionalInfo",
+      translationTextId: "additionalInfo",
+    },
+  ];
+
+  useEffect(() => {
+    const createTabsWithFetchedUsers = async () => {
+      const users: FetchedUser[] = await fetchUsers();
+      const usersForAppTabs: AppTabProps[] = [];
+      const translationPrefix: string = "appTab.";
+      users.forEach((user: FetchedUser) => {
+        usersForAppTabs.push({
+          link: {
+            value: "/user-info/" + user.code,
+          },
+          login: {
+            value: user.login,
+          },
+          code: {
+            value: user.code,
+            prefixTranslationId: translationPrefix + "code",
+          },
+          name: {
+            value: user.name,
+            prefixTranslationId: translationPrefix + "name",
+          },
+          surname: {
+            value: user.surname,
+            prefixTranslationId: translationPrefix + "surname",
+          },
+          completedLevelsCount: {
+            value: user.completedLevels.length.toString(),
+            prefixTranslationId: translationPrefix + "levelsCompleted",
+          },
+          additionalInfo: {
+            value: user.additionalInfo,
+            prefixTranslationId: translationPrefix + "additionalInfo",
+          },
+        });
+      });
+      setPlayers(usersForAppTabs);
+    };
+    createTabsWithFetchedUsers();
+  }, []);
 
   return (
     <div className="players-page u-container">
       <h1>{translate(titleId)}</h1>
       <SortersList
-        state={{ array: playerTabs, stateSetter: setPlayerTabs }}
-        items={sortersListItems}
+        state={{ array: players, stateSetter: setPlayers }}
+        items={playersSorters}
         className="u-mt-sm u-mb-sm"
       />
-      <PlayersTabsList playerTabs={playerTabs} />
+      <FiltersList
+        array={players}
+        stateSetter={setPlayers}
+        items={playerFilters}
+        className="u-mb-sm"
+      />
+      <AppTabsList tabs={players} />
     </div>
   );
 };

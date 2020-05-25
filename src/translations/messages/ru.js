@@ -20,7 +20,7 @@ import { gameTabRu } from "./pages/games-page/components/game-tab";
 import { playersPageRu } from "./pages/players-page/players-page";
 import { playerTabRu } from "./pages/players-page/components/player-tab";
 import { sorterRu } from "./components/sorter";
-import { levelTabRu } from "./components/level-tab";
+import { appTabRu } from "./components/app-tab";
 import { playerInfoPageRu } from "./pages/player-info-page";
 import { levelInfoPageRu } from "./pages/level-info-page";
 import { filterRu } from "./components/filter";
@@ -47,7 +47,7 @@ export default {
     ...playersPageRu,
     ...playerTabRu,
     ...sorterRu,
-    ...levelTabRu,
+    ...appTabRu,
     ...playerInfoPageRu,
     ...levelInfoPageRu,
     ...filterRu,

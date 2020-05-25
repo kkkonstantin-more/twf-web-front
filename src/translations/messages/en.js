@@ -20,7 +20,7 @@ import { gameTabEn } from "./pages/games-page/components/game-tab";
 import { playersPageEn } from "./pages/players-page/players-page";
 import { playerTabEn } from "./pages/players-page/components/player-tab";
 import { sorterEn } from "./components/sorter";
-import { levelTabEn } from "./components/level-tab";
+import { appTabEn } from "./components/app-tab";
 import { playerInfoPageEn } from "./pages/player-info-page";
 import { levelInfoPageEn } from "./pages/level-info-page";
 import { filterEn } from "./components/filter";
@@ -47,7 +47,7 @@ export default {
     ...playersPageEn,
     ...playerTabEn,
     ...sorterEn,
-    ...levelTabEn,
+    ...appTabEn,
     ...playerInfoPageEn,
     ...levelInfoPageEn,
     ...filterEn,

@@ -54,21 +54,17 @@
       border: none;
     }
   }
-  &__our-solutions {
+  &__our-games {
     background-color: rgba($color-primary-light, 0.8);
     border-radius: 5px;
     padding: 2rem;
     text-align: center;
-    &__icons-list {
-      display: flex;
-      justify-content: space-between;
-    }
-    &__icon {
-      height: 5rem;
+    font-size: $bg-font-size;
+    color: black;
+    font-weight: 700;
+    &:hover {
       color: black;
     }
-    @include respond(phone) {
-      margin-bottom: 2rem;
-    }
+    @include click-scaling;
   }
 }
