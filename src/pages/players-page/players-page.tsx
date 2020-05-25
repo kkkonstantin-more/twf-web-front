@@ -79,7 +79,7 @@ const PlayersPage: React.FC = () => {
       users.forEach((user: FetchedUser) => {
         usersForAppTabs.push({
           link: {
-            value: "/user-info/" + user.code,
+            value: "/player-info/" + user.code,
           },
           login: {
             value: user.login,
