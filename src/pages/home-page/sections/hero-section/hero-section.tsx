@@ -40,7 +40,7 @@ const HeroSection: React.FC = () => {
           </div>
           <PhoneGamePreview />
         </div>
-        <Link className="hero-section__our-games" to="/games" target="_blank">
+        <Link className="hero-section__our-games" to="/matifygames" target="_blank">
           {translate(gamesLink)}
         </Link>
       </div>
