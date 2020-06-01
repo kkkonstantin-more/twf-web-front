@@ -8,7 +8,7 @@ const sorterRu = {
   [prefix + ".completesAmount"]: "По количеству прохождений",
   [prefix + ".login"]: "По логину",
   [prefix + ".code"]: "По коду",
-  [prefix + ".surname"]: "По фамилии",
+  [prefix + ".fullName"]: "По  полному имени",
   [prefix + ".completedLevelsCount"]: "По пройденным уровням",
   [prefix + ".playersPlayedAmount"]: "По количеству игроков",
   [prefix + ".gameName"]: "По имени игры",
@@ -22,7 +22,7 @@ const sorterEn = {
   [prefix + ".completesAmount"]: "By completes amount",
   [prefix + ".login"]: "By login",
   [prefix + ".code"]: "By code",
-  [prefix + ".surname"]: "By surname",
+  [prefix + ".fullName"]: "By full name",
   [prefix + ".playersPlayedAmount"]: "By players amount",
   [prefix + ".gameName"]: "By game name",
 };

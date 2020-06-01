@@ -57,7 +57,7 @@ const AboutUsSection: React.FC = () => {
       //   prevState[randomIdx] = standardPhotosUrls[randomIdx];
       //   return newSides;
       // });
-    }, 2000);
+    }, 1000);
   }, []);
 
   return (
@@ -91,7 +91,7 @@ const AboutUsSection: React.FC = () => {
                 />
                 <div
                   style={{
-                    backgroundImage: `url(${currentImagesUrls[i]})`,
+                    backgroundImage: `url(${currentImagesUrls[(i+1) % photosSides.length]})`,
                   }}
                   className="about-us-section__photo about-us-section__photo--back"
                 />

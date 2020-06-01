@@ -46,12 +46,14 @@
     & > h2 {
       margin: 0.5rem 0;
     }
-    & > button {
-      margin-top: 1rem;
-      display: block;
-      width: 15rem;
-      background-color: transparent;
-      border: none;
+    & > a {
+      & > button {
+        margin-top: 1rem;
+        display: block;
+        width: 15rem;
+        background-color: transparent;
+        border: none;
+      }
     }
   }
   &__our-games {

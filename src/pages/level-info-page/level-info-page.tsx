@@ -42,8 +42,8 @@ const LevelInfoPage: React.FC = () => {
       initialDescending: true,
     },
     {
-      textId: "surname",
-      propertyName: "surname",
+      textId: "fullName",
+      propertyName: "fullName",
       initialDescending: true,
     },
     {
@@ -62,8 +62,8 @@ const LevelInfoPage: React.FC = () => {
       translationTextId: "name",
     },
     {
-      propertyName: "surname",
-      translationTextId: "surname",
+      propertyName: "fullName",
+      translationTextId: "fullName",
     },
     {
       propertyName: "completedLevelsCount",
@@ -83,7 +83,7 @@ const LevelInfoPage: React.FC = () => {
       users.forEach((user: FetchedUser) => {
         usersForAppTabs.push({
           link: {
-            value: "/player-info/" + user.code,
+            value: "/player-info/" + user.code + "?login=" + user.login,
           },
           login: {
             value: user.login,
@@ -96,9 +96,9 @@ const LevelInfoPage: React.FC = () => {
             value: user.name,
             prefixTranslationId: translationPrefix + "name",
           },
-          surname: {
-            value: user.surname,
-            prefixTranslationId: translationPrefix + "surname",
+          fullName: {
+            value: user.fullName,
+            prefixTranslationId: translationPrefix + "fullName",
           },
           completedLevelsCount: {
             value: user.completedLevels.length.toString(),

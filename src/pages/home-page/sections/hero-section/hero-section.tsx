@@ -14,6 +14,7 @@ const HeroSection: React.FC = () => {
   const quickGameProcessDescriptionId: string =
     translationPrefix + ".quickGameProcessDescription";
   const gamesLink: string = translationPrefix + ".gamesLink";
+  const googlePlayAppURL: string = "https://play.google.com/store/apps/details?id=mathhelper.games.matify";
 
   const googlePlayButtonUrl: string = require("../../../../assets/home-page-hero-section/google-play-button.png");
 
@@ -25,14 +26,17 @@ const HeroSection: React.FC = () => {
             <h1>{translate(brandNameId)}</h1>
             <h2>{translate(sloganId)}</h2>
             <h2>{translate(quickGameProcessDescriptionId)}</h2>
-            <button>
-              <img
-                src={googlePlayButtonUrl}
-                alt="google play button"
-                width="100%"
-                height="auto"
-              />
-            </button>
+            <h2> </h2>
+            <a href={googlePlayAppURL}>
+              <button>
+                <img
+                    src={googlePlayButtonUrl}
+                    alt="google play button"
+                    width="100%"
+                    height="auto"
+                />
+              </button>
+            </a>
           </div>
           <PhoneGamePreview />
         </div>

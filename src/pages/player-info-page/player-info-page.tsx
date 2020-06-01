@@ -14,6 +14,7 @@ import AppTabsList from "../../copmonents/app-tabs-list/app-tabs-list";
 import FiltersList, {
   FiltersListItemProps,
 } from "../../copmonents/filters-list/filters-list";
+import fetchUsers, {FetchedUser} from "../../fetch-requests/fetch-users";
 
 const PlayerInfoPage: React.FC = () => {
   // translation vars
@@ -71,33 +72,37 @@ const PlayerInfoPage: React.FC = () => {
   useEffect(() => {
     const createTabsWithFetchedLevels = async () => {
       const levels: FetchedLevel[] = await fetchLevels();
+      const users: FetchedUser[] = await fetchUsers();
+      const currentUser = users.find((user) => user.code === playerCode);
       const levelsForAppTabs: AppTabProps[] = [];
       const translationPrefix: string = "appTab.";
       levels.forEach((level: FetchedLevel) => {
-        levelsForAppTabs.push({
-          link: {
-            value: "/level-info/" + level.code,
-          },
-          name: {
-            value: level.name,
-          },
-          code: {
-            value: level.code,
-            prefixTranslationId: translationPrefix + "code",
-          },
-          gameName: {
-            value: level.gameName,
-            prefixTranslationId: translationPrefix + "gameName",
-          },
-          difficulty: {
-            value: level.difficulty.toString(),
-            prefixTranslationId: translationPrefix + "difficulty",
-          },
-          playersPlayedAmount: {
-            value: level.players.length.toString(),
-            prefixTranslationId: translationPrefix + "playersPlayedAmount",
-          },
-        });
+        if (level.players.find((player) => player === playerCode)) {
+          levelsForAppTabs.push({
+            link: {
+              value: "/level-info/" + level.code,
+            },
+            name: {
+              value: level.name,
+            },
+            code: {
+              value: level.code,
+              prefixTranslationId: translationPrefix + "code",
+            },
+            gameName: {
+              value: level.gameName,
+              prefixTranslationId: translationPrefix + "gameName",
+            },
+            difficulty: {
+              value: level.difficulty.toString(),
+              prefixTranslationId: translationPrefix + "difficulty",
+            },
+            playersPlayedAmount: {
+              value: level.players.length.toString(),
+              prefixTranslationId: translationPrefix + "playersPlayedAmount",
+            },
+          });
+        }
       });
       setLevels(levelsForAppTabs);
     };

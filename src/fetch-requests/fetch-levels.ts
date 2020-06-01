@@ -22,11 +22,15 @@ const fetchLevels = async (postData?: any): Promise<FetchedLevel[]> => {
       (level) => level.code === log.level_code
     );
     if (levelIndex === -1) {
+      var curDifficulty = log.difficulty;
+      if (curDifficulty == null){
+        curDifficulty = 0
+      }
       fetchedLevels.push({
         name: log.level_name,
         code: log.level_code,
         gameName: log.game_name,
-        difficulty: log.difficulty,
+        difficulty: curDifficulty,
         players: [log.user_code],
       });
     } else {

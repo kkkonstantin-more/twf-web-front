@@ -38,8 +38,8 @@ const PlayersPage: React.FC = () => {
       initialDescending: true,
     },
     {
-      textId: "surname",
-      propertyName: "surname",
+      textId: "fullName",
+      propertyName: "fullName",
       initialDescending: true,
     },
     {
@@ -58,8 +58,8 @@ const PlayersPage: React.FC = () => {
       translationTextId: "name",
     },
     {
-      propertyName: "surname",
-      translationTextId: "surname",
+      propertyName: "fullName",
+      translationTextId: "fullName",
     },
     {
       propertyName: "completedLevelsCount",
@@ -92,9 +92,9 @@ const PlayersPage: React.FC = () => {
             value: user.name,
             prefixTranslationId: translationPrefix + "name",
           },
-          surname: {
-            value: user.surname,
-            prefixTranslationId: translationPrefix + "surname",
+          fullName: {
+            value: user.fullName,
+            prefixTranslationId: translationPrefix + "fullName",
           },
           completedLevelsCount: {
             value: user.completedLevels.length.toString(),

@@ -48,8 +48,8 @@ const GameInfoPage: React.FC<{ intl: any }> = ({ intl }) => {
       initialDescending: true,
     },
     {
-      textId: "surname",
-      propertyName: "surname",
+      textId: "fullName",
+      propertyName: "fullName",
       initialDescending: true,
     },
     {
@@ -68,8 +68,8 @@ const GameInfoPage: React.FC<{ intl: any }> = ({ intl }) => {
       translationTextId: "name",
     },
     {
-      propertyName: "surname",
-      translationTextId: "surname",
+      propertyName: "fullName",
+      translationTextId: "fullName",
     },
     {
       propertyName: "completedLevelsCount",
@@ -147,9 +147,9 @@ const GameInfoPage: React.FC<{ intl: any }> = ({ intl }) => {
             value: user.name,
             prefixTranslationId: translationPrefix + "name",
           },
-          surname: {
-            value: user.surname,
-            prefixTranslationId: translationPrefix + "surname",
+          fullName: {
+            value: user.fullName,
+            prefixTranslationId: translationPrefix + "fullName",
           },
           completedLevelsCount: {
             value: user.completedLevels.length.toString(),

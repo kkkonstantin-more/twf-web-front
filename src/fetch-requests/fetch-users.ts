@@ -4,7 +4,7 @@ export interface FetchedUser {
   login: string;
   code: string;
   name: string;
-  surname: string;
+  fullName: string;
   completedLevels: string[];
   additionalInfo: string;
 }
@@ -20,16 +20,16 @@ const fetchUsers = async (postData?: any): Promise<FetchedUser[]> => {
   const fetchedUsers: FetchedUser[] = [];
   data.forEach((log: any) => {
     const userIndex = fetchedUsers.findIndex(
-      (user) => user.login === log.user_login
+      (user) => user.code === log.user_code
     );
     if (userIndex === -1) {
       fetchedUsers.push({
         login: log.user_login,
         code: log.user_code,
         name: log.user_name,
-        surname: log.user_username,
+        fullName: log.user_full_name,
         completedLevels: [log.level_name],
-        additionalInfo: log.user_add_info,
+        additionalInfo: log.user_additional,
       });
     } else {
       const user = fetchedUsers[userIndex];
