@@ -23,6 +23,7 @@ const Footer: React.FC = () => {
 
   // other
   const iconsUrls: string[] = [mdiFacebook, mdiVk, mdiTelegram, mdiGmail];
+  const linksURLs: string[] = ["https://vk.com/club195826752", "https://vk.com/club195826752", "https://vk.com/club195826752", "https://vk.com/club195826752"];
   const TWFWebSiteUrl: string =
     "https://www.mathhelper.space/twf/prototype/demo.html";
 
@@ -32,7 +33,9 @@ const Footer: React.FC = () => {
       <div className="app-footer__contacts">
         <h1 className="app-footer__title">{translate(contactsTitleId)}:</h1>
         {iconsUrls.map((iconUrl: string, i: number) => (
-          <Icon key={i} path={iconUrl} className="app-footer__contact-icon" />
+            <a href={linksURLs[i]}>
+              <Icon key={i} path={iconUrl} className="app-footer__contact-icon" />
+            </a>
         ))}
       </div>
       <div className="app-footer__landing-navigation">

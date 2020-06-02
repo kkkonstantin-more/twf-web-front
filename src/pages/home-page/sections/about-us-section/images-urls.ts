@@ -31,7 +31,7 @@ const standardPhotosUrls = [
   require("../../../../assets/home-page-about-us-section/photo-grid/standard-photos/OlegPavlovsky-0.jpg"),
   require("../../../../assets/home-page-about-us-section/photo-grid/standard-photos/VladMosin-s-0.jpg"),
   require("../../../../assets/home-page-about-us-section/photo-grid/standard-photos/VladMilshin-s-1.jpg"),
-  require("../../../../assets/home-page-about-us-section/photo-grid/standard-photos/KonstantinMorozov-f-1.jpg"),
+  require("../../../../assets/home-page-about-us-section/photo-grid/standard-photos/KonstantinMorozov-f-0.jpg"),
 ];
 
 export { verticalPhotosUrls, horizontalPhotosUrls, standardPhotosUrls };

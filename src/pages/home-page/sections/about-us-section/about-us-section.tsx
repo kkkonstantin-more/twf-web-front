@@ -24,6 +24,7 @@ const AboutUsSection: React.FC = () => {
   ];
   // other
   const linksIcons: string[] = [mdiFacebook, mdiVk, mdiTelegram, mdiGmail];
+  const linksURLs: string[] = ["https://vk.com/club195826752", "https://vk.com/club195826752", "https://vk.com/club195826752", "https://vk.com/club195826752"];
   const allImagesUrls: string[] = [
     ...horizontalPhotosUrls.slice(0, 3),
     ...verticalPhotosUrls.slice(0, 3),
@@ -69,7 +70,9 @@ const AboutUsSection: React.FC = () => {
         ))}
         <div className="about-us-section__links">
           {linksIcons.map((iconUrl: string, i: number) => (
-            <Icon path={iconUrl} key={i} className={`about-us-section__link`} />
+              <a href={linksURLs[i]}>
+                <Icon path={iconUrl} key={i} className={`about-us-section__link`} />
+              </a>
           ))}
         </div>
       </div>
