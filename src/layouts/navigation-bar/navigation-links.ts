@@ -30,10 +30,10 @@ const navigationLinks: Array<LinkInterface> = [
   //   linkNameId: translationPrefix + ".constructor",
   //   path: "/constructor",
   // },
-  {
-    linkNameId: translationPrefix + ".login",
-    path: "/",
-  },
+  // {
+  //   linkNameId: translationPrefix + ".login",
+  //   path: "/",
+  // },
 ];
 
 export default navigationLinks;
