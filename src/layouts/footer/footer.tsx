@@ -47,9 +47,10 @@ const Footer: React.FC = () => {
         <h1 className="app-footer__title">
           {translate(landingNavigationTitleId)}:
         </h1>
-        {navigationLinks.map((link: LinkInterface, i: number) => {
+        {navigationLinks
           // excluding links that are not connected to landing
-          if (link.linkNameId !== "navigationBar.link.login") {
+          .filter((link) => link.linkNameId !== "navigationBar.link.login")
+          .map((link: LinkInterface, i: number) => {
             return (
               <Link
                 key={i}
@@ -59,8 +60,7 @@ const Footer: React.FC = () => {
                 -{translate(link.linkNameId)}
               </Link>
             );
-          }
-        })}
+          })}
       </div>
       <a
         href={TWFWebSiteUrl}

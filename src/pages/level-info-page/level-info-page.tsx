@@ -2,10 +2,8 @@ import React, { useEffect, useState } from "react";
 
 import "./level-info-page.scss";
 import { useParams } from "react-router-dom";
-import PlayerTabsList from "../players-page/components/player-tabs-list/player-tabs-list";
 
 import translate from "../../translations/translate";
-import { PlayerTabProps } from "../players-page/components/player-tab/player-tab";
 import SortersList, {
   SortersListItemInterface,
 } from "../../copmonents/sorters-list/sorters-list";
@@ -113,7 +111,7 @@ const LevelInfoPage: React.FC = () => {
       setPlayers(usersForAppTabs);
     };
     createTabsWithFetchedUsers();
-  }, []);
+  }, [levelCode]);
 
   return (
     <div className="level-info-page u-container">

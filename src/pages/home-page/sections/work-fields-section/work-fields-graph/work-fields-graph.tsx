@@ -16,27 +16,25 @@ const WorkFieldsGraph: React.FC<{ intl: any }> = ({ intl }) => {
   // this reactive variable changes when language switches
   const { locale } = useIntl();
 
-  const translateNodes = (nodes: Array<any>) => {
-    const translationPrefix: string = "graph";
-    nodes.forEach((node, i) => {
-      nodes[i] = {
-        ...node,
-        // @ts-ignore (adding not existing before property)
-        label: intl.formatMessage({
-          id: translationPrefix + "." + node.id,
-        }),
-      };
-    });
-    return nodes;
-  };
-
-  const [reactiveNodes, setReactiveNodes] = useState(translateNodes(nodes));
+  const [reactiveNodes, setReactiveNodes] = useState(nodes);
 
   useEffect(() => {
+    const translateNodes = (nodes: Array<any>) => {
+      const translationPrefix: string = "graph";
+      nodes.forEach((node, i) => {
+        nodes[i] = {
+          ...node,
+          label: intl.formatMessage({
+            id: translationPrefix + "." + node.id,
+          }),
+        };
+      });
+      return nodes;
+    };
     // rerender graph when language switches
     const nodesCopy = nodes.slice();
     setReactiveNodes(translateNodes(nodesCopy));
-  }, [locale]);
+  }, [locale, intl]);
 
   return (
     <div className="work-fields-graph">

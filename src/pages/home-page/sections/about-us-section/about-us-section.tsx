@@ -35,18 +35,14 @@ const AboutUsSection: React.FC = () => {
     ...verticalPhotosUrls.slice(0, 3),
     ...standardPhotosUrls.slice(0, 12),
   ];
-  const [currentImagesUrls, setCurrentImagesUrls] = useState<string[]>([
+  const currentImagesUrls = [
     ...horizontalPhotosUrls.slice(0, 3),
     ...verticalPhotosUrls.slice(0, 3),
     ...standardPhotosUrls.slice(0, 13),
-  ]);
+  ];
   const [photosSides, setPhotosSides] = useState<boolean[]>(
     createArrayWithOneValue(true, Math.floor(allImagesUrls.length))
   );
-
-  // const changeRandomImage = () => {
-  //
-  // }
 
   useEffect(() => {
     setTimeout(() => {

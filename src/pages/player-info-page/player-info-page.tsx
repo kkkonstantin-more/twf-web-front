@@ -6,7 +6,6 @@ import translate from "../../translations/translate";
 import SortersList, {
   SortersListItemInterface,
 } from "../../copmonents/sorters-list/sorters-list";
-import LevelTabsList from "../../copmonents/level-tabs-list/level-tabs-list";
 
 import fetchLevels, { FetchedLevel } from "../../fetch-requests/fetch-levels";
 import { AppTabProps } from "../../copmonents/app-tab/app-tab";
@@ -14,7 +13,6 @@ import AppTabsList from "../../copmonents/app-tabs-list/app-tabs-list";
 import FiltersList, {
   FiltersListItemProps,
 } from "../../copmonents/filters-list/filters-list";
-import fetchUsers, {FetchedUser} from "../../fetch-requests/fetch-users";
 
 const PlayerInfoPage: React.FC = () => {
   // translation vars
@@ -72,8 +70,6 @@ const PlayerInfoPage: React.FC = () => {
   useEffect(() => {
     const createTabsWithFetchedLevels = async () => {
       const levels: FetchedLevel[] = await fetchLevels();
-      const users: FetchedUser[] = await fetchUsers();
-      const currentUser = users.find((user) => user.code === playerCode);
       const levelsForAppTabs: AppTabProps[] = [];
       const translationPrefix: string = "appTab.";
       levels.forEach((level: FetchedLevel) => {
@@ -107,7 +103,7 @@ const PlayerInfoPage: React.FC = () => {
       setLevels(levelsForAppTabs);
     };
     createTabsWithFetchedLevels();
-  }, []);
+  }, [playerCode]);
   return (
     <div className="player-info-page u-container">
       <h1>

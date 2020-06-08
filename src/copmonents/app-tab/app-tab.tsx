@@ -22,14 +22,15 @@ const AppTab: React.FC<AppTabProps> = (tab) => {
 
   return (
     <Link to={link.value} target="_blank" className="app-tab">
-      {Object.keys(tab).map((key: string, i: number) => {
-        const { value, prefixTranslationId, hidden } = tab[key];
-        if (key !== "link" && !hidden) {
+      {Object.keys(tab)
+        .filter((key: string) => key !== "link" && !tab[key].hidden)
+        .map((key: string, i: number) => {
+          const { value, prefixTranslationId } = tab[key];
           return (
             <div
+              key={i}
               className="app-tab__item"
               style={{ width: itemWidth, maxWidth: itemWidth }}
-              key={i}
             >
               {prefixTranslationId ? (
                 <b>{translate(prefixTranslationId)}: </b>
@@ -43,8 +44,7 @@ const AppTab: React.FC<AppTabProps> = (tab) => {
               }
             </div>
           );
-        }
-      })}
+        })}
     </Link>
   );
 };

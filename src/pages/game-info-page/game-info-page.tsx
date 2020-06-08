@@ -164,7 +164,7 @@ const GameInfoPage: React.FC<{ intl: any }> = ({ intl }) => {
       setPlayers(usersForAppTabs);
     };
     createTabsWithFetchedUsers();
-  }, []);
+  }, [gameCode]);
 
   useEffect(() => {
     const createTabsWithFetchedLevels = async () => {
@@ -200,7 +200,7 @@ const GameInfoPage: React.FC<{ intl: any }> = ({ intl }) => {
       setLevels(levelsForAppTabs);
     };
     createTabsWithFetchedLevels();
-  }, []);
+  }, [gameCode]);
 
   return (
     <div className="game-info-page u-container">

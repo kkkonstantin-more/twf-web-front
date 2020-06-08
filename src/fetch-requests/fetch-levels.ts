@@ -23,8 +23,8 @@ const fetchLevels = async (postData?: any): Promise<FetchedLevel[]> => {
     );
     if (levelIndex === -1) {
       var curDifficulty = log.difficulty;
-      if (curDifficulty == null){
-        curDifficulty = 0
+      if (curDifficulty == null) {
+        curDifficulty = 0;
       }
       fetchedLevels.push({
         name: log.level_name,
