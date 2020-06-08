@@ -24,7 +24,12 @@ const AboutUsSection: React.FC = () => {
   ];
   // other
   const linksIcons: string[] = [mdiFacebook, mdiVk, mdiTelegram, mdiGmail];
-  const linksURLs: string[] = ["https://vk.com/club195826752", "https://vk.com/club195826752", "https://vk.com/club195826752", "https://vk.com/club195826752"];
+  const linksURLs: string[] = [
+    "https://vk.com/club195826752",
+    "https://vk.com/club195826752",
+    "https://vk.com/club195826752",
+    "https://vk.com/club195826752",
+  ];
   const allImagesUrls: string[] = [
     ...horizontalPhotosUrls.slice(0, 3),
     ...verticalPhotosUrls.slice(0, 3),
@@ -44,7 +49,7 @@ const AboutUsSection: React.FC = () => {
   // }
 
   useEffect(() => {
-    setInterval(() => {
+    setTimeout(() => {
       const randomIdx = Math.floor(
         Math.random() * Math.floor(photosSides.length)
       );
@@ -59,7 +64,7 @@ const AboutUsSection: React.FC = () => {
       //   return newSides;
       // });
     }, 1000);
-  }, []);
+  }, [photosSides]);
 
   return (
     <div className="about-us-section" id="aboutUsSection">
@@ -70,14 +75,14 @@ const AboutUsSection: React.FC = () => {
         ))}
         <div className="about-us-section__links">
           {linksIcons.map((iconUrl: string, i: number) => (
-              <a href={linksURLs[i]}>
-                <Icon path={iconUrl} key={i} className={`about-us-section__link`} />
-              </a>
+            <a key={iconUrl} href={linksURLs[i]}>
+              <Icon path={iconUrl} className="about-us-section__link" />
+            </a>
           ))}
         </div>
       </div>
       <div className="about-us-section__photos-grid">
-        {photosSides.map((side: boolean, i: number) => {
+        {photosSides.map((_: boolean, i: number) => {
           return (
             <div key={i} className="about-us-section__photo-3d-container">
               <div
@@ -94,7 +99,9 @@ const AboutUsSection: React.FC = () => {
                 />
                 <div
                   style={{
-                    backgroundImage: `url(${currentImagesUrls[(i+1) % photosSides.length]})`,
+                    backgroundImage: `url(${
+                      currentImagesUrls[(i + 1) % photosSides.length]
+                    })`,
                   }}
                   className="about-us-section__photo about-us-section__photo--back"
                 />
