@@ -3,6 +3,9 @@ import { useParams } from "react-router-dom";
 import translate from "../../translations/translate";
 import { injectIntl } from "react-intl";
 
+// @ts-ignore
+import InfiniteScroll from "react-infinite-scroller";
+
 import { Tabs, Tab } from "react-bootstrap";
 
 import AppTabsList from "../../copmonents/app-tabs-list/app-tabs-list";
@@ -30,6 +33,8 @@ const GameInfoPage: React.FC<{ intl: any }> = ({ intl }) => {
   const { gameCode } = useParams();
   const [players, setPlayers] = useState<AppTabProps[]>([]);
   const [levels, setLevels] = useState<AppTabProps[]>([]);
+
+  const [currentLevels, setCurrentLevels] = useState<AppTabProps[]>([]);
 
   const playersSorters: SortersListItemInterface[] = [
     {
@@ -198,9 +203,21 @@ const GameInfoPage: React.FC<{ intl: any }> = ({ intl }) => {
         });
       });
       setLevels(levelsForAppTabs);
+      setCurrentLevels(levelsForAppTabs.slice(0, 5));
     };
     createTabsWithFetchedLevels();
   }, [gameCode]);
+
+  const nextPage = () => {
+    const items: number = currentLevels.length + 5;
+    if (items < levels.length) {
+      setTimeout(() => {
+        setCurrentLevels(levels.slice(0, items));
+      }, 1000);
+    }
+  };
+
+  const scrollParentRef: React.RefObject<any> = React.createRef();
 
   return (
     <div className="game-info-page u-container">
@@ -228,7 +245,7 @@ const GameInfoPage: React.FC<{ intl: any }> = ({ intl }) => {
           </div>
         </Tab>
         <Tab eventKey="levels" title={intl.formatMessage({ id: levelsTabId })}>
-          <div className="game-info-page__levels">
+          <div className="game-info-page__levels" ref={scrollParentRef}>
             <SortersList
               state={{ array: levels, stateSetter: setLevels }}
               items={levelsSorters}
@@ -240,7 +257,17 @@ const GameInfoPage: React.FC<{ intl: any }> = ({ intl }) => {
               items={levelsFilters}
               className="u-mb-sm"
             />
-            <AppTabsList tabs={levels} />
+            <InfiniteScroll
+              pageStart={0}
+              loadMore={() => {
+                nextPage();
+              }}
+              hasMore={true}
+              loader={<p>loading...</p>}
+              getScrollParent={() => scrollParentRef}
+            >
+              <AppTabsList tabs={currentLevels} />
+            </InfiniteScroll>
           </div>
         </Tab>
       </Tabs>

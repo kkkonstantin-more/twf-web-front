@@ -8,7 +8,7 @@ import FiltersList from "../../copmonents/filters-list/filters-list";
 
 import { SortersListItemInterface } from "../../copmonents/sorters-list/sorters-list";
 import { FiltersListItemProps } from "../../copmonents/filters-list/filters-list";
-import { AppTabProps } from "../../copmonents/app-tab/app-tab";
+import AppTab, { AppTabProps } from "../../copmonents/app-tab/app-tab";
 
 import "./games-page.scss";
 
