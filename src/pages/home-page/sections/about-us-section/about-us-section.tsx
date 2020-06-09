@@ -51,7 +51,7 @@ const AboutUsSection: React.FC = () => {
       );
       setPhotosSides((prevState) => {
         const newSides: boolean[] = [...prevState];
-        prevState[randomIdx] = !prevState[randomIdx];
+        newSides[randomIdx] = !prevState[randomIdx];
         return newSides;
       });
       // setCurrentImagesUrls((prevState) => {
