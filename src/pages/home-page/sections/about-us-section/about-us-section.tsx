@@ -54,11 +54,6 @@ const AboutUsSection: React.FC = () => {
         prevState[randomIdx] = !prevState[randomIdx];
         return newSides;
       });
-      // setCurrentImagesUrls((prevState) => {
-      //   const newSides: string[] = [...prevState];
-      //   prevState[randomIdx] = standardPhotosUrls[randomIdx];
-      //   return newSides;
-      // });
     }, 1000);
   }, [photosSides]);
 

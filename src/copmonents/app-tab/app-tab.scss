@@ -12,6 +12,15 @@
   &:hover {
     color: $color-primary-dark;
   }
+  &--header {
+    background-color: $color-primary-dark;
+    color: $color-primary-light;
+    text-align: center;
+    border-right: 1px solid $color-primary-light;
+    &:hover {
+      color: $color-primary-light;
+    }
+  }
   &__item {
     word-wrap: break-word;
     &:not(:last-child) {

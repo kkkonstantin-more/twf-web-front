@@ -19,11 +19,19 @@ const AppTab: React.FC<AppTabProps> = (tab) => {
   }
   const itemWidth: string = 100 / visibleObjects + "%";
   const { link } = tab;
+  const header: boolean = tab.hasOwnProperty("header");
 
   return (
-    <Link to={link.value} target="_blank" className="app-tab">
+    <Link
+      to={link.value}
+      target="_blank"
+      className={`app-tab ${header ? "app-tab--header" : ""}`}
+    >
       {Object.keys(tab)
-        .filter((key: string) => key !== "link" && !tab[key].hidden)
+        .filter(
+          (key: string) =>
+            key !== "link" && key !== "header" && !tab[key].hidden
+        )
         .map((key: string, i: number) => {
           const { value, prefixTranslationId } = tab[key];
           return (
@@ -32,11 +40,11 @@ const AppTab: React.FC<AppTabProps> = (tab) => {
               className="app-tab__item"
               style={{ width: itemWidth, maxWidth: itemWidth }}
             >
-              {prefixTranslationId ? (
-                <b>{translate(prefixTranslationId)}: </b>
-              ) : (
-                ""
-              )}{" "}
+              {/*{prefixTranslationId ? (*/}
+              {/*  <b>{translate(prefixTranslationId)}: </b>*/}
+              {/*) : (*/}
+              {/*  ""*/}
+              {/*)}{" "}*/}
               {
                 <span style={{ fontWeight: prefixTranslationId ? 400 : 700 }}>
                   {value ? value : "-"}
