@@ -34,6 +34,7 @@
     max-width: 98vw;
     @include respond(phone) {
       margin-top: 10rem;
+      margin-bottom: 5rem;
     }
     & > h1 {
       font-size: $bg-font-size;
