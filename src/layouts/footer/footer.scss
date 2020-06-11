@@ -31,6 +31,10 @@
   }
   &__contact-icon {
     width: 3rem;
+    color: $color-primary-light;
+    &:hover {
+      color: white;
+    }
   }
   &__web-site-link {
     flex-basis: 100%;

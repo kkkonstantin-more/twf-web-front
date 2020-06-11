@@ -54,7 +54,7 @@ const AboutUsSection: React.FC = () => {
         newSides[randomIdx] = !prevState[randomIdx];
         return newSides;
       });
-    }, 1000);
+    }, 3000);
   }, [photosSides]);
 
   return (
