@@ -6,7 +6,7 @@
   align-items: center;
   background-color: transparent;
   border: none;
-  color: $color-primary-dark;
+  color: $color-primary-light;
   @include click-scaling-small;
   &__icon {
     width: $md-font-size;

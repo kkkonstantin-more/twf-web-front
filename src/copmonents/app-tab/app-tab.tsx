@@ -1,55 +1,40 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import translate from "../../translations/translate";
 
 import "./app-tab.scss";
 
-export interface AppTabProps {
-  [key: string]: {
-    value: string;
-    prefixTranslationId?: string;
-    hidden?: boolean;
-  };
+export interface AppTabField {
+  name: string;
+  value: string | number;
+  hidden?: boolean;
 }
 
-const AppTab: React.FC<AppTabProps> = (tab) => {
-  let visibleObjects: number = 0;
-  for (let key in tab) {
-    if (!tab[key].hidden && key !== "link") visibleObjects++;
-  }
-  const itemWidth: string = 100 / visibleObjects + "%";
-  const { link } = tab;
-  const header: boolean = tab.hasOwnProperty("header");
+export interface AppTabProps {
+  link?: string;
+  fields: AppTabField[];
+}
+
+const AppTab: React.FC<AppTabProps> = ({ link, fields }) => {
+  const fieldWidthPercent: string =
+    100 / fields.filter((field: AppTabField) => !field.hidden).length + "%";
 
   return (
     <Link
-      to={link.value}
-      target="_blank"
-      className={`app-tab ${header ? "app-tab--header" : ""}`}
+      to={link ? link : "#"}
+      target={link ? "_blank" : ""}
+      className="app-tab"
     >
-      {Object.keys(tab)
-        .filter(
-          (key: string) =>
-            key !== "link" && key !== "header" && !tab[key].hidden
-        )
-        .map((key: string, i: number) => {
-          const { value, prefixTranslationId } = tab[key];
+      {fields
+        .filter((field: AppTabField) => field.hidden !== true)
+        .map((field: AppTabField, i: number) => {
+          const { value } = field;
           return (
             <div
               key={i}
               className="app-tab__item"
-              style={{ width: itemWidth, maxWidth: itemWidth }}
+              style={{ width: fieldWidthPercent }}
             >
-              {/*{prefixTranslationId ? (*/}
-              {/*  <b>{translate(prefixTranslationId)}: </b>*/}
-              {/*) : (*/}
-              {/*  ""*/}
-              {/*)}{" "}*/}
-              {
-                <span style={{ fontWeight: prefixTranslationId ? 400 : 700 }}>
-                  {value ? value : "-"}
-                </span>
-              }
+              {value}
             </div>
           );
         })}

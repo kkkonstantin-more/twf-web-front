@@ -9,17 +9,9 @@
   border-radius: 5px;
   box-shadow: 0px 0px 4px 0px rgba(0, 0, 0, 0.5);
   font-size: $sm-font-size;
+  font-weight: 700;
   &:hover {
     color: $color-primary-dark;
-  }
-  &--header {
-    background-color: $color-primary-dark;
-    color: $color-primary-light;
-    text-align: center;
-    border-right: 1px solid $color-primary-light;
-    &:hover {
-      color: $color-primary-light;
-    }
   }
   &__item {
     word-wrap: break-word;

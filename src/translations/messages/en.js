@@ -24,6 +24,7 @@ import { appTabEn } from "./components/app-tab";
 import { playerInfoPageEn } from "./pages/player-info-page";
 import { levelInfoPageEn } from "./pages/level-info-page";
 import { filterEn } from "./components/filter";
+import { appTabHeaderEn } from "./components/app-tab-header";
 
 export default {
   [LOCALES.ENGLISH]: {
@@ -51,5 +52,6 @@ export default {
     ...playerInfoPageEn,
     ...levelInfoPageEn,
     ...filterEn,
+    ...appTabHeaderEn,
   },
 };

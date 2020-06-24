@@ -2,7 +2,7 @@ import React from "react";
 
 import "./filters-list.scss";
 
-import Filter from "../../filter/filter";
+import Filter from "../filter/filter";
 
 export interface FiltersListItemProps {
   propertyName: string;
@@ -24,11 +24,11 @@ const FiltersList: React.FC<FiltersListProps> = ({
 }) => {
   return (
     <div className={`filters-list ${className}`}>
-      {items.map((item, i) => {
-        return (
-          <Filter key={i} array={array} stateSetter={stateSetter} {...item} />
-        );
-      })}
+      {/*{items.map((item, i) => {*/}
+      {/*  return (*/}
+      {/*    <Filter key={i} array={array} stateSetter={stateSetter} {...item} />*/}
+      {/*  );*/}
+      {/*})}*/}
     </div>
   );
 };

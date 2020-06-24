@@ -6,7 +6,6 @@ import { TranslationProvider } from "./translations";
 import { LOCALES } from "./translations";
 // PAGES
 import HomePage from "./pages/home-page/home-page";
-import RatingsPage from "./pages/ratings-page/ratings-page.component";
 import GameInfoPage from "./pages/game-info-page/game-info-page";
 import GamesPage from "./pages/games-page/games-page";
 import PlayerInfoPage from "./pages/player-info-page/player-info-page";
@@ -29,9 +28,12 @@ const App: React.FC = () => {
       <div className="app-content-container">
         <Switch>
           <Route exact path={"/"} component={HomePage} />
-          <Route exact path={"/ratings"} component={RatingsPage} />
-          <Route exact path={"/game-info/:gameCode"} component={GameInfoPage} />
           <Route exact path={"/matifygames"} component={GamesPage} />
+          <Route
+            exact
+            path={"/matifygames/:gameCode"}
+            component={GameInfoPage}
+          />
           <Route
             exact
             path={"/player-info/:playerCode"}

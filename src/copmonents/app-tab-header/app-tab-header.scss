@@ -1,0 +1,14 @@
+@import "../../styles/abstracts/variables";
+
+.app-tab-header {
+  background-color: $color-primary-dark;
+  color: $color-primary-light;
+  margin-bottom: 2rem;
+  &:hover {
+    background-color: $color-primary-dark;
+    color: $color-primary-light;
+  }
+  &__item {
+    display: flex;
+  }
+}

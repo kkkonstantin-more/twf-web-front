@@ -24,18 +24,18 @@ const SortersList: React.FC<SortersListProps> = ({
 }) => {
   return (
     <div className={`sorters-list ${className}`}>
-      {items.map((item, i: number) => {
-        const props: SorterProps = {
-          array: state.array,
-          stateSetter: state.stateSetter,
-          ...item,
-        };
-        return (
-          <Sorter key={i} {...props}>
-            {item.textId}
-          </Sorter>
-        );
-      })}
+      {/*{items.map((item, i: number) => {*/}
+      {/*  const props: SorterProps = {*/}
+      {/*    array: state.array,*/}
+      {/*    stateSetter: state.stateSetter,*/}
+      {/*    ...item,*/}
+      {/*  };*/}
+      {/*  return (*/}
+      {/*    <Sorter key={i} {...props}>*/}
+      {/*      {item.textId}*/}
+      {/*    </Sorter>*/}
+      {/*  );*/}
+      {/*})}*/}
     </div>
   );
 };

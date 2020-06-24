@@ -24,6 +24,7 @@ import { appTabRu } from "./components/app-tab";
 import { playerInfoPageRu } from "./pages/player-info-page";
 import { levelInfoPageRu } from "./pages/level-info-page";
 import { filterRu } from "./components/filter";
+import { appTabHeaderRu } from "./components/app-tab-header";
 
 export default {
   [LOCALES.RUSSIAN]: {
@@ -51,5 +52,6 @@ export default {
     ...playerInfoPageRu,
     ...levelInfoPageRu,
     ...filterRu,
+    ...appTabHeaderRu,
   },
 };

@@ -1,44 +1,34 @@
 import React, { useState } from "react";
-import translate from "../../translations/translate";
-
-import { sortArrayOfObjectsByProperty } from "../../utils";
-
+// svg icons from mdi library
 import Icon from "@mdi/react";
 import { mdiArrowDownThick } from "@mdi/js";
 
 import "./sorter.scss";
 
 export interface SorterProps {
-  array: any[];
-  stateSetter: React.Dispatch<any[]>;
-  propertyName: string;
+  sortAndUpdateState: (descending: boolean) => void;
   initialDescending: boolean;
-  children?: any;
 }
 
 const Sorter: React.FC<SorterProps> = ({
-  array,
-  stateSetter,
-  propertyName,
-  initialDescending = true,
-  children,
+  sortAndUpdateState,
+  initialDescending,
 }) => {
-  const [descending, setDescending] = useState<boolean>(initialDescending);
+  const [isDescending, setIsDescending] = useState<boolean>(initialDescending);
 
   return (
     <button
-      onClick={() => {
-        stateSetter([
-          ...sortArrayOfObjectsByProperty(array, propertyName, descending),
-        ]);
-        setDescending(!descending);
-      }}
       className="sorter"
+      onClick={() => {
+        sortAndUpdateState(isDescending);
+        setIsDescending(!isDescending);
+      }}
     >
-      {translate(`sorter.${children}`)}{" "}
       <Icon
         path={mdiArrowDownThick}
-        className={`sorter__icon ${descending ? "" : "sorter__icon--rotated"}`}
+        className={`sorter__icon ${
+          isDescending ? "" : "sorter__icon--rotated"
+        }`}
       />
     </button>
   );

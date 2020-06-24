@@ -135,35 +135,35 @@ const GameInfoPage: React.FC<{ intl: any }> = ({ intl }) => {
     const createTabsWithFetchedUsers = async () => {
       const users: FetchedUser[] = await fetchUsers({ gameCode });
       const usersForAppTabs: AppTabProps[] = [];
-      const translationPrefix: string = "appTab.";
       users.forEach((user: FetchedUser) => {
         usersForAppTabs.push({
-          link: {
-            value: "/player-info/" + user.code,
-          },
-          login: {
-            value: user.login,
-          },
-          code: {
-            value: user.code,
-            prefixTranslationId: translationPrefix + "code",
-          },
-          name: {
-            value: user.name,
-            prefixTranslationId: translationPrefix + "name",
-          },
-          fullName: {
-            value: user.fullName,
-            prefixTranslationId: translationPrefix + "fullName",
-          },
-          completedLevelsCount: {
-            value: user.completedLevels.length.toString(),
-            prefixTranslationId: translationPrefix + "levelsCompleted",
-          },
-          additionalInfo: {
-            value: user.additionalInfo,
-            prefixTranslationId: translationPrefix + "additionalInfo",
-          },
+          link: "/player-info/" + user.code,
+          fields: [
+            {
+              name: "playerLogin",
+              value: user.login,
+            },
+            {
+              name: "playerCode",
+              value: user.code,
+            },
+            {
+              name: "playerName",
+              value: user.name,
+            },
+            {
+              name: "playerFullName",
+              value: user.fullName,
+            },
+            {
+              name: "completedLevelsCount",
+              value: user.completedLevels.length,
+            },
+            {
+              name: "additionalInfo",
+              value: user.additionalInfo,
+            },
+          ],
         });
       });
       setPlayers(usersForAppTabs);
@@ -175,31 +175,31 @@ const GameInfoPage: React.FC<{ intl: any }> = ({ intl }) => {
     const createTabsWithFetchedLevels = async () => {
       const levels: FetchedLevel[] = await fetchLevels({ gameCode });
       const levelsForAppTabs: AppTabProps[] = [];
-      const translationPrefix: string = "appTab.";
       levels.forEach((level: FetchedLevel) => {
         levelsForAppTabs.push({
-          link: {
-            value: "/level-info/" + level.code,
-          },
-          name: {
-            value: level.name,
-          },
-          code: {
-            value: level.code,
-            prefixTranslationId: translationPrefix + "code",
-          },
-          gameName: {
-            value: level.gameName,
-            prefixTranslationId: translationPrefix + "gameName",
-          },
-          difficulty: {
-            value: level.difficulty.toString(),
-            prefixTranslationId: translationPrefix + "difficulty",
-          },
-          playersPlayedAmount: {
-            value: level.players.length.toString(),
-            prefixTranslationId: translationPrefix + "playersPlayedAmount",
-          },
+          link: "/level-info/" + level.code,
+          fields: [
+            {
+              name: "levelName",
+              value: level.name,
+            },
+            {
+              name: "levelCode",
+              value: level.code,
+            },
+            {
+              name: "gameName",
+              value: level.gameName,
+            },
+            {
+              name: "difficulty",
+              value: level.difficulty,
+            },
+            {
+              name: "playersPlayedCount",
+              value: level.players.length,
+            },
+          ],
         });
       });
       setLevels(levelsForAppTabs);

@@ -1,3 +1,5 @@
+import { AppTabProps } from "./copmonents/app-tab/app-tab";
+
 const createArrayWithOneValue = (value: any, length: number): any[] => {
   const arr = [];
   for (let i: number = 0; i < length; i++) arr.push(value);
@@ -13,13 +15,29 @@ const shuffleArray = (arr: any[]): any[] => {
 };
 
 const sortArrayOfObjectsByProperty = (
-  arr: any[],
+  arr: AppTabProps[],
   property: string,
   descending: boolean
 ): any[] => {
   return descending
-    ? arr.sort((a, b) => (a[property].value > b[property].value ? -1 : 1))
-    : arr.sort((a, b) => (a[property].value > b[property].value ? 1 : -1));
+    ? arr.sort((a: AppTabProps, b: AppTabProps) => {
+        const aValue: string | number = a.fields.filter(
+          (field) => field.name === property
+        )[0].value;
+        const bValue: string | number = b.fields.filter(
+          (field) => field.name === property
+        )[0].value;
+        return aValue > bValue ? -1 : 1;
+      })
+    : arr.sort((a: AppTabProps, b: AppTabProps) => {
+        const aValue: string | number = a.fields.filter(
+          (field) => field.name === property
+        )[0].value;
+        const bValue: string | number = b.fields.filter(
+          (field) => field.name === property
+        )[0].value;
+        return aValue > bValue ? 1 : -1;
+      });
 };
 
 export { createArrayWithOneValue, shuffleArray, sortArrayOfObjectsByProperty };
