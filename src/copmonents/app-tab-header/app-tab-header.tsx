@@ -1,4 +1,5 @@
 import React from "react";
+import { connect } from "react-redux";
 
 import Sorter from "../sorter/sorter";
 
@@ -8,29 +9,38 @@ import Filter, { FilterProps } from "../filter/filter";
 import "../app-tab/app-tab.scss";
 import "./app-tab-header.scss";
 import translate from "../../translations/translate";
+import { AppTabFieldName, AppTabType } from "../../types/app-tabs/AppTab";
+import { RootState } from "../../redux/root-reducer";
+import { selectHiddenFieldsOfTabs } from "../../redux/hidden-fields/hidden-fields.selectors";
 
-export interface AppTabHeaderFieldWithSorterProps {
-  fieldName: string;
-  fieldTextId: string;
-  sorterProps?: SorterProps;
-  withFilter?: boolean;
+export interface AppTabHeaderField {
+  name: AppTabFieldName;
+  textId: string;
+  withFilter: boolean;
   hidden?: boolean;
+  // sorterProps?: SorterProps;
 }
 
 export interface AppTabHeaderProps {
-  fieldsWithSorters: AppTabHeaderFieldWithSorterProps[];
+  tabType: AppTabType;
+  fields: AppTabHeaderField[];
+  hiddenFieldsOfTabs?: any;
 }
 
-const hideAppTabHeaderField = (fieldName: string): void => {};
-
-const AppTabHeader: React.FC<AppTabHeaderProps> = ({ fieldsWithSorters }) => {
-  const fieldWidthPercent: string = 100 / fieldsWithSorters.length + "%";
+const AppTabHeader: React.FC<AppTabHeaderProps> = ({
+  tabType,
+  fields,
+  hiddenFieldsOfTabs,
+}) => {
+  const fieldWidthPercent: string = 100 / fields.length + "%";
+  const hiddenFields = hiddenFieldsOfTabs[tabType];
 
   return (
     <div className="app-tab app-tab-header">
-      {fieldsWithSorters.map(
-        (field: AppTabHeaderFieldWithSorterProps, i: number) => {
-          const { fieldTextId, sorterProps, withFilter, hidden } = field;
+      {fields
+        .filter((field: AppTabHeaderField) => hiddenFields[field.name] !== true)
+        .map((field: AppTabHeaderField, i: number) => {
+          const { name, textId, withFilter, hidden } = field;
           return (
             !hidden && (
               <div
@@ -38,16 +48,19 @@ const AppTabHeader: React.FC<AppTabHeaderProps> = ({ fieldsWithSorters }) => {
                 style={{ width: fieldWidthPercent }}
                 className="app-tab-header__item"
               >
-                {translate(fieldTextId)}
-                {sorterProps && <Sorter {...sorterProps} />}
-                {/*{withFilter && <Filter fieldName="fieldName" />}*/}
+                {translate(textId)}
+                {/*{sorterProps && <Sorter {...sorterProps} />}*/}
+                {withFilter && <Filter fieldName={name} tabType={tabType} />}
               </div>
             )
           );
-        }
-      )}
+        })}
     </div>
   );
 };
 
-export default AppTabHeader;
+const mapStateToProps = (state: RootState) => ({
+  hiddenFieldsOfTabs: selectHiddenFieldsOfTabs(state),
+});
+
+export default connect(mapStateToProps)(AppTabHeader);

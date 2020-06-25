@@ -1,28 +1,33 @@
 import React, { useState } from "react";
+// redux
+import { connect } from "react-redux";
+import { selectHiddenFieldsOfTabs } from "../../redux/hidden-fields/hidden-fields.selectors";
+import { toggleFieldHidden } from "../../redux/hidden-fields/hidden-fields.actions";
+// types
+import { RootState } from "../../redux/root-reducer";
+import { AppTabType } from "../../types/app-tabs/AppTab";
+import { GameAppTabFieldName } from "../../types/app-tabs/GameAppTab";
+import { LevelAppTabFieldName } from "../../types/app-tabs/LevelAppTab";
+import { UserAppTabFieldName } from "../../types/app-tabs/UserAppTab";
 
 import "./filter.scss";
-import { AppTabProps } from "../app-tab/app-tab";
-import {
-  AppTabHeaderFieldWithSorterProps,
-  AppTabHeaderProps,
-} from "../app-tab-header/app-tab-header";
 
 export interface FilterProps {
-  fieldName: string;
-  tabs: AppTabProps[];
-  // headerTabs: AppTabHeaderFieldWithSorterProps[];
-  tabsStateSetter: React.Dispatch<AppTabProps[]>;
-  // headerTabsStateSetter: React.Dispatch<AppTabHeaderFieldWithSorterProps[]>;
+  tabType: AppTabType;
+  fieldName: GameAppTabFieldName | LevelAppTabFieldName | UserAppTabFieldName;
+  hiddenFieldsOfTabs: any;
+  toggleFieldHidden: any;
 }
 
 const Filter: React.FC<FilterProps> = ({
+  tabType,
   fieldName,
-  tabs,
-  tabsStateSetter,
-  // headerTabs,
-  // headerTabsStateSetter,
+  hiddenFieldsOfTabs,
+  toggleFieldHidden,
 }) => {
-  const [checked, setChecked] = useState<boolean>(true);
+  const [checked, setChecked] = useState<boolean>(
+    hiddenFieldsOfTabs[tabType][fieldName]
+  );
 
   return (
     <div className="filter">
@@ -31,27 +36,21 @@ const Filter: React.FC<FilterProps> = ({
         id={fieldName}
         checked={checked}
         onChange={() => {
-          // console.log(array);
           setChecked(!checked);
-          const newTabsState = [...tabs];
-          newTabsState.forEach((item: AppTabProps) => {
-            item.fields.forEach((field: any) => {
-              if (field.name === fieldName) field.hidden = !field.hidden;
-            });
-            // item[fieldName] = { ...item[fieldName], hidden: checked };
-          });
-          tabsStateSetter(newTabsState);
-          // const newHeaderTabsState = [...headerTabs];
-          // newHeaderTabsState.forEach(
-          //   (item: AppTabHeaderFieldWithSorterProps) => {
-          //     if (item.fieldName === fieldName) item.hidden = !item.hidden;
-          //   }
-          // );
-          // tabsStateSetter(newTabsState);
+          toggleFieldHidden({ tabType, fieldName });
         }}
       />
     </div>
   );
 };
 
-export default Filter;
+const mapStateToProps = (state: RootState) => ({
+  hiddenFieldsOfTabs: selectHiddenFieldsOfTabs(state),
+});
+
+const mapDispatchToProps = (dispatch: any) => ({
+  toggleFieldHidden: (tabTypeAndFieldName: any) =>
+    dispatch(toggleFieldHidden(tabTypeAndFieldName)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Filter);

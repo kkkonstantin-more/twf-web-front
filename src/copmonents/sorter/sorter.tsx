@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-// svg icons from mdi library
+
 import Icon from "@mdi/react";
 import { mdiArrowDownThick } from "@mdi/js";
 

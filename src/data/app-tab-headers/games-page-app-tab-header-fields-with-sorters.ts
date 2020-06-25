@@ -1,26 +1,27 @@
 import React from "react";
-import { GamesSortingProperty } from "../../interfaces/fetched-data/FetchedGames";
-import { AppTabHeaderFieldWithSorterProps } from "../../copmonents/app-tab-header/app-tab-header";
+import { GamesSortingProperty } from "../../types/fetched-data/FetchedGames";
+import { AppTabHeaderField } from "../../copmonents/app-tab-header/app-tab-header";
 
 import fetchFilterSortGamesAndUpdateState from "../../utils/fetching-data/fetchFilterSortGamesAndUpdateState";
+import { GameAppTabFieldName } from "../../types/app-tabs/GameAppTab";
 
 const gamesPageAppTabHeaderFieldsWithSorters = (
   stateSetter: React.Dispatch<any>
-): AppTabHeaderFieldWithSorterProps[] => [
+): AppTabHeaderField[] => [
   {
-    fieldName: "gameName",
-    fieldTextId: "appTabHeader.gameName",
-    sorterProps: {
-      sortAndUpdateState: (descending: boolean) =>
-        fetchFilterSortGamesAndUpdateState(
-          stateSetter,
-          null,
-          null,
-          GamesSortingProperty.BY_GAME_NAME,
-          descending
-        ),
-      initialDescending: false,
-    },
+    name: GameAppTabFieldName.gameName,
+    textId: "appTabHeader.gameName",
+    // sorterProps: {
+    //   sortAndUpdateState: (descending: boolean) =>
+    //     fetchFilterSortGamesAndUpdateState(
+    //       stateSetter,
+    //       null,
+    //       null,
+    //       GamesSortingProperty.BY_GAME_NAME,
+    //       descending
+    //     ),
+    //   initialDescending: false,
+    // },
   },
   {
     fieldName: "gameCode",

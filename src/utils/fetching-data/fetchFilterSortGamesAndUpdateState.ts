@@ -3,8 +3,10 @@ import axios from "axios";
 
 import FetchedGames, {
   GamesSortingProperty,
-} from "../../interfaces/fetched-data/FetchedGames";
+} from "../../types/fetched-data/FetchedGames";
 import { AppTabProps } from "../../copmonents/app-tab/app-tab";
+import { AppTabType } from "../../types/app-tabs/AppTab";
+import { GameAppTabFieldName } from "../../types/app-tabs/GameAppTab";
 
 const fetchFilterSortGamesAndUpdateState = (
   stateSetter: React.Dispatch<AppTabProps[]>,
@@ -33,21 +35,22 @@ const fetchFilterSortGamesAndUpdateState = (
     games.forEach((game: FetchedGames) => {
       gamesAppTabProps.push({
         link: "/matifygames/" + game.gameCode,
+        type: AppTabType.GAME,
         fields: [
           {
-            name: "gameName",
+            name: GameAppTabFieldName.gameName,
             value: game.gameName,
           },
           {
-            name: "gameCode",
+            name: GameAppTabFieldName.gameCode,
             value: game.gameCode,
           },
           {
-            name: "levelsCount",
+            name: GameAppTabFieldName.levelsCount,
             value: game.levelsCount,
           },
           {
-            name: "playersCount",
+            name: GameAppTabFieldName.usersCount,
             value: game.usersCount,
           },
         ],
