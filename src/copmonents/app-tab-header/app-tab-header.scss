@@ -8,7 +8,11 @@
     background-color: $color-primary-dark;
     color: $color-primary-light;
   }
-  &__item {
+  &__items {
     display: flex;
+    align-items: center;
+  }
+  &__filter {
+    margin-right: 0.5rem;
   }
 }

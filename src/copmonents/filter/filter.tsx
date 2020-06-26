@@ -26,7 +26,7 @@ const Filter: React.FC<FilterProps> = ({
   toggleFieldHidden,
 }) => {
   const [checked, setChecked] = useState<boolean>(
-    hiddenFieldsOfTabs[tabType][fieldName]
+    !hiddenFieldsOfTabs[tabType][fieldName]
   );
 
   return (

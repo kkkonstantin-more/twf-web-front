@@ -1,18 +1,31 @@
 import React, { useState } from "react";
+import { connect } from "react-redux";
 
 import Icon from "@mdi/react";
 import { mdiArrowDownThick } from "@mdi/js";
 
 import "./sorter.scss";
+import {
+  FetchGamesRequestData,
+  GamesSortingProperty,
+} from "../../redux/game-tabs/game-tabs.types";
+import { MapDispatchToProps } from "react-redux";
+import { fetchGameTabsStartAsync } from "../../redux/game-tabs/game-tabs.actions";
+import { AppTabType } from "../../types/app-tabs/AppTab";
 
 export interface SorterProps {
-  sortAndUpdateState: (descending: boolean) => void;
+  tabType: AppTabType;
+  sortBy: GamesSortingProperty;
   initialDescending: boolean;
+  // redux props
+  fetchGameTabsStartAsync?: any;
 }
 
 const Sorter: React.FC<SorterProps> = ({
-  sortAndUpdateState,
+  tabType,
+  sortBy,
   initialDescending,
+  fetchGameTabsStartAsync,
 }) => {
   const [isDescending, setIsDescending] = useState<boolean>(initialDescending);
 
@@ -20,7 +33,14 @@ const Sorter: React.FC<SorterProps> = ({
     <button
       className="sorter"
       onClick={() => {
-        sortAndUpdateState(isDescending);
+        fetchGameTabsStartAsync({
+          gameCode: null,
+          userCode: null,
+          sortedBy: sortBy,
+          descending: isDescending,
+          offset: 0,
+          limit: 10000,
+        });
         setIsDescending(!isDescending);
       }}
     >
@@ -34,4 +54,9 @@ const Sorter: React.FC<SorterProps> = ({
   );
 };
 
-export default Sorter;
+const mapDispatchToProps: MapDispatchToProps<any, any> = (dispatch: any) => ({
+  fetchGameTabsStartAsync: (data: FetchGamesRequestData) =>
+    dispatch(fetchGameTabsStartAsync(data)),
+});
+
+export default connect(null, mapDispatchToProps)(Sorter);

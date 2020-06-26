@@ -14,7 +14,6 @@
     color: $color-primary-dark;
   }
   &__item {
-    word-wrap: break-word;
     &:not(:last-child) {
       margin-right: 2rem;
     }

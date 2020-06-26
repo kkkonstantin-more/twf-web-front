@@ -1,59 +1,78 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import translate from "../../translations/translate";
 
 import { connect, MapDispatchToProps } from "react-redux";
+import { createStructuredSelector } from "reselect";
+import { fetchGameTabsStartAsync } from "../../redux/game-tabs/game-tabs.actions";
+import {
+  selectGameTabsList,
+  selectIsGameTabsFetching,
+} from "../../redux/game-tabs/game-tabs.selectors";
 
 import AppTabsList from "../../copmonents/app-tabs-list/app-tabs-list";
-import AppTabHeader from "../../copmonents/app-tab-header/app-tab-header";
 
 import { AppTabProps } from "../../copmonents/app-tab/app-tab";
 
-import fetchFilterSortGamesAndUpdateState from "../../utils/fetching-data/fetchFilterSortGamesAndUpdateState";
-
-import gamesPageAppTabHeaderFieldsWithSorters from "../../data/app-tab-headers/games-page-app-tab-header-fields-with-sorters";
-
-import "./games-page.scss";
-import { toggleFieldHidden } from "../../redux/hidden-fields/hidden-fields.actions";
 import { AppTabType } from "../../types/app-tabs/AppTab";
 import Filter from "../../copmonents/filter/filter";
 import { GameAppTabFieldName } from "../../types/app-tabs/GameAppTab";
 
-const GamesPage: React.FC<{ hiddenFields?: any; toggleFieldHidden?: any }> = ({
-  hiddenFields,
-  toggleFieldHidden,
+import "./games-page.scss";
+import {
+  FetchGamesRequestData,
+  GamesSortingProperty,
+} from "../../redux/game-tabs/game-tabs.types";
+import Sorter from "../../copmonents/sorter/sorter";
+import AppTabHeader from "../../copmonents/app-tab-header/app-tab-header";
+import HEADER_TABS_STATE from "../../redux/header-tabs/header-tabs.state";
+
+export interface GamesPageProps {
+  // redux props
+  fetchGameTabsStartAsync?: any;
+  isGameTabsFetching?: boolean;
+  gameTabs?: AppTabProps[] | null;
+}
+
+const GamesPage: React.FC<GamesPageProps> = ({
+  fetchGameTabsStartAsync,
+  isGameTabsFetching,
+  gameTabs,
 }) => {
   // translation vars
   const translationPrefix: string = "gamesPage";
   const titleId: string = translationPrefix + ".title";
-  // other
-  const [gameTabs, setGameTabs] = useState<AppTabProps[]>([]);
 
   useEffect(() => {
-    fetchFilterSortGamesAndUpdateState(setGameTabs);
+    fetchGameTabsStartAsync({
+      gameCode: null,
+      userCode: null,
+      sortedBy: GamesSortingProperty.BY_LEVELS_COUNT,
+      descending: true,
+      offset: 0,
+      limit: 10000,
+    });
   }, []);
 
   return (
     <div className="games-page u-container">
       <h1 className="u-mb-sm">{translate(titleId)}</h1>
       <AppTabHeader
-        fieldsWithSorters={gamesPageAppTabHeaderFieldsWithSorters(setGameTabs)}
+        type={AppTabType.GAME}
+        fields={HEADER_TABS_STATE[AppTabType.GAME]}
       />
-      <AppTabsList tabs={gameTabs} />
-      <Filter
-        tabType={AppTabType.GAME}
-        fieldName={GameAppTabFieldName.gameCode}
-      />
+      {gameTabs && <AppTabsList tabs={gameTabs} />}
     </div>
   );
 };
 
 const mapDispatchToProps: MapDispatchToProps<any, any> = (dispatch: any) => ({
-  toggleFieldHidden: (tabTypeAndFieldName: any) =>
-    dispatch(toggleFieldHidden(tabTypeAndFieldName)),
+  fetchGameTabsStartAsync: (data: FetchGamesRequestData) =>
+    dispatch(fetchGameTabsStartAsync(data)),
 });
 
-// const mapStateToProps = (state: RootState) => ({
-//   hiddenFields: selectHiddenFieldsOfTab(state, AppTab.GAME),
-// });
+const mapStateToProps = createStructuredSelector<any, any>({
+  isGameTabsFetching: selectIsGameTabsFetching,
+  gameTabs: selectGameTabsList,
+});
 
-export default connect(null, mapDispatchToProps)(GamesPage);
+export default connect(mapStateToProps, mapDispatchToProps)(GamesPage);

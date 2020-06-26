@@ -1,9 +1,8 @@
 import React from "react";
 import axios from "axios";
 
-import FetchedGames, {
-  GamesSortingProperty,
-} from "../../types/fetched-data/FetchedGames";
+import FetchedGames from "../../types/fetched-data/FetchedGames";
+import { GamesSortingProperty } from "../../redux/game-tabs/game-tabs.types";
 import { AppTabProps } from "../../copmonents/app-tab/app-tab";
 import { AppTabType } from "../../types/app-tabs/AppTab";
 import { GameAppTabFieldName } from "../../types/app-tabs/GameAppTab";
