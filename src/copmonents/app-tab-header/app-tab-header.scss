@@ -1,9 +1,13 @@
 @import "../../styles/abstracts/variables";
+@import "../../styles/abstracts/mixins";
 
 .app-tab-header {
   background-color: $color-primary-dark;
   color: $color-primary-light;
   margin-bottom: 2rem;
+  @include respond(phone) {
+    font-size: 1rem;
+  }
   &:hover {
     background-color: $color-primary-dark;
     color: $color-primary-light;
@@ -14,5 +18,22 @@
   }
   &__filter {
     margin-right: 0.5rem;
+  }
+  &__hidden-fields-dropdown {
+    // overriding bootstrap styles
+    & button {
+      background-color: inherit !important;
+      border-color: $color-primary-light !important;
+      font-size: 1rem;
+      &:hover,
+      &:active,
+      &:visited,
+      &:focus {
+        background-color: $color-primary-dark !important;
+        border-color: $color-primary-dark !important;
+        color: $color-primary-light !important;
+        box-shadow: 0 0 0 0.2rem rgba($color-primary-light, 0.5) !important;
+      }
+    }
   }
 }

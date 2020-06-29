@@ -3,6 +3,7 @@ import { GameAppTabFieldName } from "../../types/app-tabs/GameAppTab";
 import { UserAppTabFieldName } from "../../types/app-tabs/UserAppTab";
 import { LevelAppTabFieldName } from "../../types/app-tabs/LevelAppTab";
 import { GamesSortingProperty } from "../game-tabs/game-tabs.types";
+import { LevelsSortingProperty } from "../level-tabs/level-tabs.types";
 
 export interface HeaderTabsState {
   [AppTabType.GAME]: {
@@ -15,11 +16,13 @@ export interface HeaderTabsState {
     name: LevelAppTabFieldName;
     textId: string;
     withFilter: boolean;
+    withSorter: LevelsSortingProperty | null;
   }[];
   [AppTabType.USER]: {
     name: UserAppTabFieldName;
     textId: string;
     withFilter: boolean;
+    // withSorter: UsersS | null;
   }[];
 }
 
@@ -87,21 +90,25 @@ const HEADER_TABS_STATE: HeaderTabsState = {
       name: LevelAppTabFieldName.levelCode,
       textId: "appTabHeader.levelCode",
       withFilter: false,
+      withSorter: null,
     },
     {
       name: LevelAppTabFieldName.gameName,
       textId: "appTabHeader.gameName",
       withFilter: true,
+      withSorter: LevelsSortingProperty.BY_GAME_NAME,
     },
     {
       name: LevelAppTabFieldName.difficulty,
       textId: "appTabHeader.difficulty",
       withFilter: true,
+      withSorter: LevelsSortingProperty.BY_DIFFICULTY,
     },
     {
       name: LevelAppTabFieldName.usersCount,
       textId: "appTabHeader.usersCount",
       withFilter: true,
+      withSorter: LevelsSortingProperty.BY_USERS_COUNT,
     },
   ],
 };

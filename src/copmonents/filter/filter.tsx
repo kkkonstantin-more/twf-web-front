@@ -25,18 +25,13 @@ const Filter: React.FC<FilterProps> = ({
   hiddenFieldsOfTabs,
   toggleFieldHidden,
 }) => {
-  const [checked, setChecked] = useState<boolean>(
-    !hiddenFieldsOfTabs[tabType][fieldName]
-  );
-
   return (
     <div className="filter">
       <input
         type="checkbox"
         id={fieldName}
-        checked={checked}
+        checked={true}
         onChange={() => {
-          setChecked(!checked);
           toggleFieldHidden({ tabType, fieldName });
         }}
       />

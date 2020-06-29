@@ -1,29 +1,48 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import translate from "../../translations/translate";
-import { injectIntl } from "react-intl";
-
 // @ts-ignore
-import InfiniteScroll from "react-infinite-scroller";
-
-import { Tabs, Tab } from "react-bootstrap";
 
 import AppTabsList from "../../copmonents/app-tabs-list/app-tabs-list";
-import FiltersList from "../../copmonents/filters-list/filters-list";
-import SortersList from "../../copmonents/sorters-list/sorters-list";
 
 import { AppTabProps } from "../../copmonents/app-tab/app-tab";
-import { SortersListItemInterface } from "../../copmonents/sorters-list/sorters-list";
-import { FiltersListItemProps } from "../../copmonents/filters-list/filters-list";
-import { FetchedUser } from "../../fetch-requests/fetch-users";
-import { FetchedLevel } from "../../fetch-requests/fetch-levels";
-
-import fetchUsers from "../../fetch-requests/fetch-users";
-import fetchLevels from "../../fetch-requests/fetch-levels";
 
 import "./game-info-page.scss";
+import { connect, MapDispatchToProps } from "react-redux";
+import { FetchGamesRequestData } from "../../redux/game-tabs/game-tabs.types";
+import { fetchGameTabsStartAsync } from "../../redux/game-tabs/game-tabs.actions";
+import { createStructuredSelector } from "reselect";
+import {
+  selectIsLevelTabsFetching,
+  selectLevelTabsList,
+} from "../../redux/level-tabs/level-tabs-selectors";
+import { fetchLevelTabsStartAsync } from "../../redux/level-tabs/level-tabs.actions";
+import {
+  FetchLevelsRequestData,
+  LevelsSortingProperty,
+} from "../../redux/level-tabs/level-tabs.types";
 
-const GameInfoPage: React.FC<{ intl: any }> = ({ intl }) => {
+import { Tabs, Tab } from "react-bootstrap";
+import { injectIntl } from "react-intl";
+import { AppTabType } from "../../types/app-tabs/AppTab";
+import HEADER_TABS_STATE from "../../redux/header-tabs/header-tabs.state";
+import AppTabHeader from "../../copmonents/app-tab-header/app-tab-header";
+
+interface GameInfoPageProps {
+  // using intl obj to insert translation into the tab title attribute
+  intl: any;
+  // redux props
+  isLevelTabsFetching: any;
+  levelTabs: any;
+  fetchLevelTabsStartAsync: any;
+}
+
+const GameInfoPage: React.FC<GameInfoPageProps> = ({
+  intl,
+  isLevelTabsFetching,
+  levelTabs,
+  fetchLevelTabsStartAsync,
+}) => {
   // translation vars
   const translationPrefix: string = "gameInfoPage";
   const gameNameTitleId: string = translationPrefix + ".gameNameTitle";
@@ -36,176 +55,15 @@ const GameInfoPage: React.FC<{ intl: any }> = ({ intl }) => {
 
   const [currentLevels, setCurrentLevels] = useState<AppTabProps[]>([]);
 
-  const playersSorters: SortersListItemInterface[] = [
-    {
-      textId: "login",
-      propertyName: "login",
-      initialDescending: true,
-    },
-    {
-      textId: "code",
-      propertyName: "code",
-      initialDescending: true,
-    },
-    {
-      textId: "name",
-      propertyName: "name",
-      initialDescending: true,
-    },
-    {
-      textId: "fullName",
-      propertyName: "fullName",
-      initialDescending: true,
-    },
-    {
-      textId: "completedLevelsCount",
-      propertyName: "completedLevelsCount",
-      initialDescending: false,
-    },
-  ];
-  const playerFilters: FiltersListItemProps[] = [
-    {
-      propertyName: "code",
-      translationTextId: "code",
-    },
-    {
-      propertyName: "name",
-      translationTextId: "name",
-    },
-    {
-      propertyName: "fullName",
-      translationTextId: "fullName",
-    },
-    {
-      propertyName: "completedLevelsCount",
-      translationTextId: "completedLevelsCount",
-    },
-    {
-      propertyName: "additionalInfo",
-      translationTextId: "additionalInfo",
-    },
-  ];
-  const levelsSorters: SortersListItemInterface[] = [
-    {
-      textId: "name",
-      propertyName: "name",
-      initialDescending: true,
-    },
-    {
-      textId: "code",
-      propertyName: "code",
-      initialDescending: true,
-    },
-    {
-      textId: "difficulty",
-      propertyName: "difficulty",
-      initialDescending: false,
-    },
-    {
-      textId: "playersPlayedAmount",
-      propertyName: "playersPlayedAmount",
-      initialDescending: false,
-    },
-    {
-      textId: "gameName",
-      propertyName: "gameName",
-      initialDescending: false,
-    },
-  ];
-  const levelsFilters: FiltersListItemProps[] = [
-    {
-      propertyName: "code",
-      translationTextId: "code",
-    },
-    {
-      propertyName: "difficulty",
-      translationTextId: "difficulty",
-    },
-    {
-      propertyName: "playersPlayedAmount",
-      translationTextId: "playersCount",
-    },
-    {
-      propertyName: "gameName",
-      translationTextId: "gameName",
-    },
-  ];
-
   useEffect(() => {
-    // const createTabsWithFetchedUsers = async () => {
-    //   const users: FetchedUser[] = await fetchUsers({ gameCode });
-    //   const usersForAppTabs: AppTabProps[] = [];
-    //   users.forEach((user: FetchedUser) => {
-    //     usersForAppTabs.push({
-    //       link: "/player-info/" + user.code,
-    //       fields: [
-    //         {
-    //           name: "playerLogin",
-    //           value: user.login,
-    //         },
-    //         {
-    //           name: "playerCode",
-    //           value: user.code,
-    //         },
-    //         {
-    //           name: "playerName",
-    //           value: user.name,
-    //         },
-    //         {
-    //           name: "playerFullName",
-    //           value: user.fullName,
-    //         },
-    //         {
-    //           name: "completedLevelsCount",
-    //           value: user.completedLevels.length,
-    //         },
-    //         {
-    //           name: "additionalInfo",
-    //           value: user.additionalInfo,
-    //         },
-    //       ],
-    //     });
-    //   });
-    //   setPlayers(usersForAppTabs);
-    // };
-    // createTabsWithFetchedUsers();
-  }, [gameCode]);
-
-  useEffect(() => {
-    // const createTabsWithFetchedLevels = async () => {
-    //   const levels: FetchedLevel[] = await fetchLevels({ gameCode });
-    //   const levelsForAppTabs: AppTabProps[] = [];
-    //   levels.forEach((level: FetchedLevel) => {
-    //     levelsForAppTabs.push({
-    //       link: "/level-info/" + level.code,
-    //       fields: [
-    //         {
-    //           name: "levelName",
-    //           value: level.name,
-    //         },
-    //         {
-    //           name: "levelCode",
-    //           value: level.code,
-    //         },
-    //         {
-    //           name: "gameName",
-    //           value: level.gameName,
-    //         },
-    //         {
-    //           name: "difficulty",
-    //           value: level.difficulty,
-    //         },
-    //         {
-    //           name: "playersPlayedCount",
-    //           value: level.players.length,
-    //         },
-    //       ],
-    //     });
-    //   });
-    //   setLevels(levelsForAppTabs);
-    //   setCurrentLevels(levelsForAppTabs.slice(0, 5));
-    // };
-    // createTabsWithFetchedLevels();
+    fetchLevelTabsStartAsync({
+      userCode: null,
+      gameCode,
+      sortedBy: LevelsSortingProperty.BY_USERS_COUNT,
+      descending: true,
+      offset: 0,
+      limit: 10000,
+    });
   }, [gameCode]);
 
   const nextPage = () => {
@@ -221,58 +79,69 @@ const GameInfoPage: React.FC<{ intl: any }> = ({ intl }) => {
 
   return (
     <div className="game-info-page u-container">
-      {/*<h1>*/}
-      {/*  {translate(gameNameTitleId)} {gameCode}*/}
-      {/*</h1>*/}
-      {/*<Tabs defaultActiveKey="players" id="tabs">*/}
-      {/*  <Tab*/}
-      {/*    eventKey="players"*/}
-      {/*    title={intl.formatMessage({ id: playersTabId })}*/}
-      {/*  >*/}
-      {/*    <div className="game-info-page__played-game-players">*/}
-      {/*      <SortersList*/}
-      {/*        state={{ array: players, stateSetter: setPlayers }}*/}
-      {/*        items={playersSorters}*/}
-      {/*        className="u-mt-sm u-mb-sm"*/}
-      {/*      />*/}
-      {/*      <FiltersList*/}
-      {/*        array={players}*/}
-      {/*        stateSetter={setPlayers}*/}
-      {/*        items={playerFilters}*/}
-      {/*        className="u-mb-sm"*/}
-      {/*      />*/}
-      {/*      <AppTabsList tabs={players} />*/}
-      {/*    </div>*/}
-      {/*  </Tab>*/}
-      {/*  <Tab eventKey="levels" title={intl.formatMessage({ id: levelsTabId })}>*/}
-      {/*    <div className="game-info-page__levels" ref={scrollParentRef}>*/}
-      {/*      <SortersList*/}
-      {/*        state={{ array: levels, stateSetter: setLevels }}*/}
-      {/*        items={levelsSorters}*/}
-      {/*        className="u-mt-sm u-mb-sm"*/}
-      {/*      />*/}
-      {/*      <FiltersList*/}
-      {/*        array={levels}*/}
-      {/*        stateSetter={setLevels}*/}
-      {/*        items={levelsFilters}*/}
-      {/*        className="u-mb-sm"*/}
-      {/*      />*/}
-      {/*      <InfiniteScroll*/}
-      {/*        pageStart={0}*/}
-      {/*        loadMore={() => {*/}
-      {/*          nextPage();*/}
-      {/*        }}*/}
-      {/*        hasMore={true}*/}
-      {/*        loader={<p>loading...</p>}*/}
-      {/*        getScrollParent={() => scrollParentRef}*/}
-      {/*      >*/}
-      {/*        <AppTabsList tabs={currentLevels} />*/}
-      {/*      </InfiniteScroll>*/}
-      {/*    </div>*/}
-      {/*  </Tab>*/}
-      {/*</Tabs>*/}
+      <h1>
+        {translate(gameNameTitleId)} {gameCode}
+      </h1>
+
+      <Tabs defaultActiveKey="players" id="tabs">
+        <Tab
+          eventKey="players"
+          title={intl.formatMessage({ id: playersTabId })}
+        >
+          <div className="game-info-page__played-game-players">
+            users
+            {/*<AppTabsList tabs={players} />*/}
+          </div>
+        </Tab>
+        <Tab eventKey="levels" title={intl.formatMessage({ id: levelsTabId })}>
+          <AppTabHeader
+            type={AppTabType.LEVEL}
+            fields={HEADER_TABS_STATE[AppTabType.LEVEL]}
+          />
+          {levelTabs && <AppTabsList tabs={levelTabs} />}
+          {/*<div className="game-info-page__levels" ref={scrollParentRef}>*/}
+          {/*  <SortersList*/}
+          {/*    state={{ array: levels, stateSetter: setLevels }}*/}
+          {/*    items={levelsSorters}*/}
+          {/*    className="u-mt-sm u-mb-sm"*/}
+          {/*  />*/}
+          {/*  <FiltersList*/}
+          {/*    array={levels}*/}
+          {/*    stateSetter={setLevels}*/}
+          {/*    items={levelsFilters}*/}
+          {/*    className="u-mb-sm"*/}
+          {/*  />*/}
+          {/*  <InfiniteScroll*/}
+          {/*    pageStart={0}*/}
+          {/*    loadMore={() => {*/}
+          {/*      nextPage();*/}
+          {/*    }}*/}
+          {/*    hasMore={true}*/}
+          {/*    loader={<p>loading...</p>}*/}
+          {/*    getScrollParent={() => scrollParentRef}*/}
+          {/*  >*/}
+          {/*    <AppTabsList tabs={currentLevels} />*/}
+          {/*  </InfiniteScroll>*/}
+          {/*</div>*/}
+        </Tab>
+      </Tabs>
     </div>
   );
 };
 
-export default injectIntl(GameInfoPage);
+const mapDispatchToProps: MapDispatchToProps<any, any> = (dispatch: any) => ({
+  fetchLevelTabsStartAsync: (data: FetchLevelsRequestData) =>
+    dispatch(fetchLevelTabsStartAsync(data)),
+});
+
+const mapStateToProps = createStructuredSelector<any, any>({
+  isLevelTabsFetching: selectIsLevelTabsFetching,
+  levelTabs: selectLevelTabsList,
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(injectIntl(GameInfoPage));
+
+// export default injectIntl(GameInfoPage);

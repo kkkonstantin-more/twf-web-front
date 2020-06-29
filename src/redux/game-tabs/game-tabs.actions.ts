@@ -5,8 +5,6 @@ import {
   GameTabsActionTypes,
   FetchGamesRequestData,
 } from "./game-tabs.types";
-// import { GamesSortingProperty } from "../../types/fetched-data/FetchedGames";
-import { GamesSortingProperty } from "./game-tabs.types";
 
 export const fetchGameTabsStart = () => ({
   type: GameTabsActionTypes.FETCH_GAME_TABS_START,

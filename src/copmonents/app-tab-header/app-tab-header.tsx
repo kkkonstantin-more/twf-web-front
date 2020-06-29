@@ -1,26 +1,27 @@
 import React from "react";
+import translate from "../../translations/translate";
+// redux
 import { connect } from "react-redux";
+import { selectHiddenFieldsOfTabs } from "../../redux/hidden-fields/hidden-fields.selectors";
+import { toggleFieldHidden } from "../../redux/hidden-fields/hidden-fields.actions";
 
 import Sorter from "../sorter/sorter";
-import Filter from "../filter/filter";
 
-import translate from "../../translations/translate";
+import { Dropdown } from "react-bootstrap";
+// types
 import { AppTabFieldName, AppTabType } from "../../types/app-tabs/AppTab";
 import { RootState } from "../../redux/root-reducer";
-import { selectHiddenFieldsOfTabs } from "../../redux/hidden-fields/hidden-fields.selectors";
-import { AppTabField } from "../app-tab/app-tab";
-
-import HEADER_TABS_STATE from "../../redux/header-tabs/header-tabs.state";
 import { GamesSortingProperty } from "../../redux/game-tabs/game-tabs.types";
-
+// using app-tab styles combined with custom styles
 import "../app-tab/app-tab.scss";
 import "./app-tab-header.scss";
+import { LevelsSortingProperty } from "../../redux/level-tabs/level-tabs.types";
 
 export interface AppTabHeaderField {
   name: AppTabFieldName;
   textId: string;
   withFilter?: boolean;
-  withSorter?: GamesSortingProperty | null;
+  withSorter?: GamesSortingProperty | LevelsSortingProperty | null;
 }
 
 export interface AppTabHeaderProps {
@@ -28,22 +29,27 @@ export interface AppTabHeaderProps {
   fields: AppTabHeaderField[];
   // redux props
   hiddenFieldsOfTabs?: any;
+  toggleFieldHidden?: any;
 }
 
 const AppTabHeader: React.FC<AppTabHeaderProps> = ({
   type,
   fields,
+  // redux props
   hiddenFieldsOfTabs,
+  toggleFieldHidden,
 }) => {
   // getting hidden fields status of this specific tab
   const hiddenFieldsOfTab: { [fieldName: string]: boolean } =
     hiddenFieldsOfTabs[type];
-  // creating arr of currently visible fields
-  const visibleFields: AppTabHeaderField[] = fields.filter(
-    (field: AppTabHeaderField) => {
-      return !hiddenFieldsOfTab[field.name];
-    }
-  );
+  // separating visible and invisible fields
+  const invisibleFields: AppTabHeaderField[] = [];
+  const visibleFields: AppTabHeaderField[] = [];
+  fields.forEach((field: AppTabHeaderField) => {
+    hiddenFieldsOfTab[field.name]
+      ? invisibleFields.push(field)
+      : visibleFields.push(field);
+  });
   // calculating even width for visible fields
   const fieldWidthPercent: string = 100 / visibleFields.length + "%";
 
@@ -58,7 +64,16 @@ const AppTabHeader: React.FC<AppTabHeaderProps> = ({
             className="app-tab-header__items"
           >
             <span className="app-tab-header__filter">
-              {withFilter && <Filter tabType={type} fieldName={name} />}
+              {withFilter && (
+                <input
+                  type="checkbox"
+                  id={name}
+                  checked={true}
+                  onClick={() => {
+                    toggleFieldHidden({ tabType: type, fieldName: name });
+                  }}
+                />
+              )}
             </span>
             <span className="app-tab-header__field-name">
               {translate(textId)}
@@ -75,6 +90,28 @@ const AppTabHeader: React.FC<AppTabHeaderProps> = ({
           </div>
         );
       })}
+      {/*hidden fields dropdown*/}
+      {invisibleFields.length !== 0 && (
+        <div className="app-tab-header__hidden-fields-dropdown">
+          <Dropdown>
+            <Dropdown.Toggle id="dropdown" />
+            <Dropdown.Menu>
+              {invisibleFields.map((field: AppTabHeaderField) => {
+                const { textId, name } = field;
+                return (
+                  <Dropdown.Item
+                    onClick={() =>
+                      toggleFieldHidden({ tabType: type, fieldName: name })
+                    }
+                  >
+                    {translate(textId)}
+                  </Dropdown.Item>
+                );
+              })}
+            </Dropdown.Menu>
+          </Dropdown>
+        </div>
+      )}
     </div>
   );
 };
@@ -83,4 +120,9 @@ const mapStateToProps = (state: RootState) => ({
   hiddenFieldsOfTabs: selectHiddenFieldsOfTabs(state),
 });
 
-export default connect(mapStateToProps)(AppTabHeader);
+const mapDispatchToProps = (dispatch: any) => ({
+  toggleFieldHidden: (tabTypeAndFieldName: any) =>
+    dispatch(toggleFieldHidden(tabTypeAndFieldName)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(AppTabHeader);

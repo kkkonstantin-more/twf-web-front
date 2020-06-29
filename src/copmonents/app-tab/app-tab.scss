@@ -16,6 +16,7 @@
   &__item {
     &:not(:last-child) {
       margin-right: 2rem;
+      word-wrap: break-word;
     }
   }
 }

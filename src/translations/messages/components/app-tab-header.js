@@ -2,6 +2,7 @@ const prefix = "appTabHeader";
 
 const appTabHeaderRu = {
   [prefix + ".gameCode"]: "Код игры",
+  [prefix + ".levelCode"]: "Код уровня",
   [prefix + ".difficulty"]: "Сложность",
   [prefix + ".completesAmount"]: "Количество прохождений",
   [prefix + ".name"]: "Имя",
@@ -18,6 +19,7 @@ const appTabHeaderRu = {
 
 const appTabHeaderEn = {
   [prefix + ".gameCode"]: "Game code",
+  [prefix + ".levelCode"]: "Level code",
   [prefix + ".difficulty"]: "Difficulty",
   [prefix + ".completesAmount"]: "Completes amount",
   [prefix + ".name"]: "Name",
