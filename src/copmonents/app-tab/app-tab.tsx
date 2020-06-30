@@ -55,7 +55,7 @@ const AppTab: React.FC<AppTabProps> = ({
               className="app-tab__item"
               style={{ width: fieldWidthPercent }}
             >
-              {value}
+              {value ? value : "-"}
             </div>
           );
         })}

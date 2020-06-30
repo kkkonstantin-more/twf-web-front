@@ -17,14 +17,24 @@ import {
   LevelsSortingProperty,
 } from "../../redux/level-tabs/level-tabs.types";
 import { fetchLevelTabsStartAsync } from "../../redux/level-tabs/level-tabs.actions";
+import {
+  FetchUsersRequestData,
+  UsersSortingProperty,
+} from "../../redux/user-tabs/user-tabs.types";
+import { fetchUserTabsStartAsync } from "../../redux/user-tabs/user-tabs.actions";
 
 export interface SorterProps {
   tabType: AppTabType;
-  sortBy: GamesSortingProperty | LevelsSortingProperty;
+  sortBy:
+    | GamesSortingProperty
+    | LevelsSortingProperty
+    | UsersSortingProperty
+    | null;
   initialDescending: boolean;
   // redux props
   fetchGameTabsStartAsync?: any;
   fetchLevelTabsStartAsync?: any;
+  fetchUserTabsStartAsync?: any;
 }
 
 const Sorter: React.FC<SorterProps> = ({
@@ -34,6 +44,7 @@ const Sorter: React.FC<SorterProps> = ({
   // redux
   fetchGameTabsStartAsync,
   fetchLevelTabsStartAsync,
+  fetchUserTabsStartAsync,
 }) => {
   const [isDescending, setIsDescending] = useState<boolean>(initialDescending);
 
@@ -51,6 +62,7 @@ const Sorter: React.FC<SorterProps> = ({
               offset: 0,
               limit: 10000,
             });
+            break;
           case AppTabType.LEVEL:
             fetchLevelTabsStartAsync({
               userCode: null,
@@ -60,6 +72,17 @@ const Sorter: React.FC<SorterProps> = ({
               offset: 0,
               limit: 10000,
             });
+            break;
+          case AppTabType.USER:
+            fetchUserTabsStartAsync({
+              userCode: null,
+              gameCode: null,
+              sortedBy: sortBy,
+              descending: isDescending,
+              offset: 0,
+              limit: 10000,
+            });
+            break;
         }
         setIsDescending(!isDescending);
       }}
@@ -79,6 +102,8 @@ const mapDispatchToProps: MapDispatchToProps<any, any> = (dispatch: any) => ({
     dispatch(fetchGameTabsStartAsync(data)),
   fetchLevelTabsStartAsync: (data: FetchLevelsRequestData) =>
     dispatch(fetchLevelTabsStartAsync(data)),
+  fetchUserTabsStartAsync: (data: FetchUsersRequestData) =>
+    dispatch(fetchUserTabsStartAsync(data)),
 });
 
 export default connect(null, mapDispatchToProps)(Sorter);

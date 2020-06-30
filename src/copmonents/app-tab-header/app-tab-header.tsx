@@ -12,16 +12,21 @@ import { Dropdown } from "react-bootstrap";
 import { AppTabFieldName, AppTabType } from "../../types/app-tabs/AppTab";
 import { RootState } from "../../redux/root-reducer";
 import { GamesSortingProperty } from "../../redux/game-tabs/game-tabs.types";
+import { LevelsSortingProperty } from "../../redux/level-tabs/level-tabs.types";
+import { UsersSortingProperty } from "../../redux/user-tabs/user-tabs.types";
 // using app-tab styles combined with custom styles
 import "../app-tab/app-tab.scss";
 import "./app-tab-header.scss";
-import { LevelsSortingProperty } from "../../redux/level-tabs/level-tabs.types";
 
 export interface AppTabHeaderField {
   name: AppTabFieldName;
   textId: string;
   withFilter?: boolean;
-  withSorter?: GamesSortingProperty | LevelsSortingProperty | null;
+  withSorter?:
+    | GamesSortingProperty
+    | LevelsSortingProperty
+    | UsersSortingProperty
+    | null;
 }
 
 export interface AppTabHeaderProps {

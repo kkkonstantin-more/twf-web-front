@@ -9,7 +9,7 @@ import HomePage from "./pages/home-page/home-page";
 import GameInfoPage from "./pages/game-info-page/game-info-page";
 import GamesPage from "./pages/games-page/games-page";
 import PlayerInfoPage from "./pages/player-info-page/player-info-page";
-import PlayersPage from "./pages/players-page/players-page";
+import UsersPage from "./pages/users-page/users-page";
 import LevelInfoPage from "./pages/level-info-page/level-info-page";
 // LAYOUT
 import NavigationBar from "./layouts/navigation-bar/navigation-bar";
@@ -36,10 +36,10 @@ const App: React.FC = () => {
           />
           <Route
             exact
-            path={"/player-info/:playerCode"}
+            path={"/matifyplayers/:playerCode"}
             component={PlayerInfoPage}
           />
-          <Route exact path={"/players"} component={PlayersPage} />
+          <Route exact path={"/matifyplayers"} component={UsersPage} />
           <Route
             exact
             path={"/level-info/:levelCode"}

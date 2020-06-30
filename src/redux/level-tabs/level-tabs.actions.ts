@@ -29,8 +29,8 @@ export const fetchLevelTabsStartAsync = (data: FetchLevelsRequestData) => {
       data,
     })
       .then((res) => {
-        const fetchedGamesData: FetchedLevelsData = res.data;
-        dispatch(fetchGameTabsSuccess(fetchedGamesData));
+        const fetchedLevelsData: FetchedLevelsData = res.data;
+        dispatch(fetchGameTabsSuccess(fetchedLevelsData));
       })
       .catch(() => dispatch(fetchGameTabsFailure("error message")));
   };

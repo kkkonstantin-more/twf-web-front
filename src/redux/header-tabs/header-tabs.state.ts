@@ -4,6 +4,7 @@ import { UserAppTabFieldName } from "../../types/app-tabs/UserAppTab";
 import { LevelAppTabFieldName } from "../../types/app-tabs/LevelAppTab";
 import { GamesSortingProperty } from "../game-tabs/game-tabs.types";
 import { LevelsSortingProperty } from "../level-tabs/level-tabs.types";
+import { UsersSortingProperty } from "../user-tabs/user-tabs.types";
 
 export interface HeaderTabsState {
   [AppTabType.GAME]: {
@@ -22,7 +23,7 @@ export interface HeaderTabsState {
     name: UserAppTabFieldName;
     textId: string;
     withFilter: boolean;
-    // withSorter: UsersS | null;
+    withSorter: UsersSortingProperty | null;
   }[];
 }
 
@@ -58,31 +59,37 @@ const HEADER_TABS_STATE: HeaderTabsState = {
       name: UserAppTabFieldName.userCode,
       textId: "appTabHeader.userCode",
       withFilter: true,
+      withSorter: null,
     },
     {
       name: UserAppTabFieldName.userLogin,
       textId: "appTabHeader.userLogin",
       withFilter: false,
+      withSorter: UsersSortingProperty.BY_USER_LOGIN,
     },
     {
       name: UserAppTabFieldName.userName,
       textId: "appTabHeader.userName",
       withFilter: true,
+      withSorter: UsersSortingProperty.BY_USER_NAME,
     },
     {
       name: UserAppTabFieldName.userFullName,
       textId: "appTabHeader.usersFullName",
       withFilter: true,
+      withSorter: UsersSortingProperty.BY_USER_FULL_NAME,
     },
     {
       name: UserAppTabFieldName.levelsCompleted,
       textId: "appTabHeader.levelsCompleted",
       withFilter: true,
+      withSorter: UsersSortingProperty.BY_LEVELS_COUNT,
     },
     {
       name: UserAppTabFieldName.additionalInfo,
       textId: "appTabHeader.additionalInfo",
       withFilter: true,
+      withSorter: null,
     },
   ],
   [AppTabType.LEVEL]: [

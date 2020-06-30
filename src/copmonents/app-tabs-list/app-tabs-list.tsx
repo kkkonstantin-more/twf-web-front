@@ -1,7 +1,6 @@
 import React from "react";
 
 import AppTab from "../app-tab/app-tab";
-import AppTabHeader from "../app-tab-header/app-tab-header";
 
 import { AppTabProps } from "../app-tab/app-tab";
 

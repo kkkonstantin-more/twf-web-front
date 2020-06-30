@@ -1,16 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import translate from "../../translations/translate";
-// @ts-ignore
-
 import AppTabsList from "../../copmonents/app-tabs-list/app-tabs-list";
 
 import { AppTabProps } from "../../copmonents/app-tab/app-tab";
 
 import "./game-info-page.scss";
 import { connect, MapDispatchToProps } from "react-redux";
-import { FetchGamesRequestData } from "../../redux/game-tabs/game-tabs.types";
-import { fetchGameTabsStartAsync } from "../../redux/game-tabs/game-tabs.actions";
 import { createStructuredSelector } from "reselect";
 import {
   selectIsLevelTabsFetching,
@@ -22,11 +18,19 @@ import {
   LevelsSortingProperty,
 } from "../../redux/level-tabs/level-tabs.types";
 
-import { Tabs, Tab } from "react-bootstrap";
+import { Tab, Tabs } from "react-bootstrap";
 import { injectIntl } from "react-intl";
 import { AppTabType } from "../../types/app-tabs/AppTab";
 import HEADER_TABS_STATE from "../../redux/header-tabs/header-tabs.state";
 import AppTabHeader from "../../copmonents/app-tab-header/app-tab-header";
+import { selectUserTabsList } from "../../redux/user-tabs/user-tabs.selectors";
+import {
+  FetchUsersRequestData,
+  UsersSortingProperty,
+} from "../../redux/user-tabs/user-tabs.types";
+import { fetchUserTabsStartAsync } from "../../redux/user-tabs/user-tabs.actions";
+
+// @ts-ignore
 
 interface GameInfoPageProps {
   // using intl obj to insert translation into the tab title attribute
@@ -34,14 +38,18 @@ interface GameInfoPageProps {
   // redux props
   isLevelTabsFetching: any;
   levelTabs: any;
-  fetchLevelTabsStartAsync: any;
+  userTabs: any;
+  fetchLevelTabsStartAsync: (data: FetchLevelsRequestData) => void;
+  fetchUserTabsStartAsync: (data: FetchUsersRequestData) => void;
 }
 
 const GameInfoPage: React.FC<GameInfoPageProps> = ({
   intl,
   isLevelTabsFetching,
   levelTabs,
+  userTabs,
   fetchLevelTabsStartAsync,
+  fetchUserTabsStartAsync,
 }) => {
   // translation vars
   const translationPrefix: string = "gameInfoPage";
@@ -60,6 +68,14 @@ const GameInfoPage: React.FC<GameInfoPageProps> = ({
       userCode: null,
       gameCode,
       sortedBy: LevelsSortingProperty.BY_USERS_COUNT,
+      descending: true,
+      offset: 0,
+      limit: 10000,
+    });
+    fetchUserTabsStartAsync({
+      levelCode: null,
+      gameCode,
+      sortedBy: UsersSortingProperty.BY_LEVELS_COUNT,
       descending: true,
       offset: 0,
       limit: 10000,
@@ -89,8 +105,11 @@ const GameInfoPage: React.FC<GameInfoPageProps> = ({
           title={intl.formatMessage({ id: playersTabId })}
         >
           <div className="game-info-page__played-game-players">
-            users
-            {/*<AppTabsList tabs={players} />*/}
+            <AppTabHeader
+              type={AppTabType.USER}
+              fields={HEADER_TABS_STATE[AppTabType.USER]}
+            />
+            {userTabs && <AppTabsList tabs={userTabs} />}
           </div>
         </Tab>
         <Tab eventKey="levels" title={intl.formatMessage({ id: levelsTabId })}>
@@ -132,16 +151,17 @@ const GameInfoPage: React.FC<GameInfoPageProps> = ({
 const mapDispatchToProps: MapDispatchToProps<any, any> = (dispatch: any) => ({
   fetchLevelTabsStartAsync: (data: FetchLevelsRequestData) =>
     dispatch(fetchLevelTabsStartAsync(data)),
+  fetchUserTabsStartAsync: (data: FetchUsersRequestData) =>
+    dispatch(fetchUserTabsStartAsync(data)),
 });
 
 const mapStateToProps = createStructuredSelector<any, any>({
   isLevelTabsFetching: selectIsLevelTabsFetching,
   levelTabs: selectLevelTabsList,
+  userTabs: selectUserTabsList,
 });
 
 export default connect(
   mapStateToProps,
   mapDispatchToProps
 )(injectIntl(GameInfoPage));
-
-// export default injectIntl(GameInfoPage);
