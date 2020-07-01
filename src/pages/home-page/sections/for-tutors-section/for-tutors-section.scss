@@ -12,23 +12,23 @@
   }
   &__svg-and-text {
     width: 50%;
-    padding: 3rem;
     display: flex;
     flex-direction: column;
     align-items: center;
     & > img {
-      width: 85%;
+      width: 50rem;
     }
     & > p {
       margin-top: 3rem;
       font-size: $bg-font-size;
+      text-align: center;
     }
     @include respond(tab-port) {
       width: 100%;
       order: -2;
     }
   }
-  &__carousel {
+  &__texts-with-svg {
     width: 50%;
     order: -1;
     border-radius: 5px;
@@ -38,23 +38,27 @@
       margin: 0 1rem 2rem 1rem;
     }
   }
-  &__carousel-slide {
-    border-radius: 5px;
-    background-color: $color-grey-light;
-    padding: 0;
-    & > img {
-      border-radius: 5px;
+  &__text-with-svg {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    &:not(last-child) {
+      margin-bottom: 2rem;
     }
-  }
-  &__carousel-caption {
-    background-color: rgba($color-primary-light, 0.9);
-    padding: 2rem;
-    border-radius: 5px;
-    color: black !important;
-    font-size: $bg-font-size;
-    margin-bottom: 2rem;
-    @include respond(tab-land) {
-      font-size: $md-font-size;
+    & > svg {
+      width: 10%;
+      &:nth-child(1) {
+        color: $color-primary-dark;
+      }
+      &:nth-child(2) {
+        color: $color-primary-light;
+      }
+    }
+    & > p {
+      width: 70%;
+      border-radius: 5px;
+      padding: 2rem;
+      text-align: justify;
     }
   }
 }

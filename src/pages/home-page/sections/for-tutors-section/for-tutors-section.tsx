@@ -4,7 +4,19 @@ import translate from "../../../../translations/translate";
 import { Carousel } from "react-bootstrap";
 // import Carousel from "react-responsive-carousel";
 
+import Icon from "@mdi/react";
+import { mdiNintendoGameBoy } from "@mdi/js";
+import { mdiHeadLightbulb } from "@mdi/js";
+import { mdiRobot } from "@mdi/js";
+
 import "./for-tutors-section.scss";
+
+interface TextWithSvgBlock {
+  svgUrl: string;
+  captionTextId: string;
+  backgroundColor: string;
+  fontColor: string;
+}
 
 const ForTutorsSection: React.FC = () => {
   // translation vars
@@ -13,22 +25,25 @@ const ForTutorsSection: React.FC = () => {
   const mainTextId: string = translationPrefix + ".mainText";
   // other
   const svgUrl: string = require("../../../../assets/home-page-for-tutors-section/teacher-and-desk.svg");
-  interface CarouselSlide {
-    imgUrl: string;
-    captionTextId: string;
-  }
-  const carouselSlides: Array<CarouselSlide> = [
+
+  const textWithSvgBlock: TextWithSvgBlock[] = [
     {
-      imgUrl: require("../../../../assets/home-page-for-tutors-section/carousel/carousel-slide-1.jpg"),
+      svgUrl: mdiNintendoGameBoy,
       captionTextId: translationPrefix + ".carouselCaption1",
+      backgroundColor: "#3F3D56",
+      fontColor: "#cfd8dc",
     },
     {
-      imgUrl: require("../../../../assets/home-page-for-tutors-section/carousel/carousel-slide-2.jpg"),
+      svgUrl: mdiRobot,
       captionTextId: translationPrefix + ".carouselCaption2",
+      backgroundColor: "#455a64",
+      fontColor: "#cfd8dc",
     },
     {
-      imgUrl: require("../../../../assets/home-page-for-tutors-section/carousel/carousel-slide-3.jpg"),
+      svgUrl: mdiHeadLightbulb,
       captionTextId: translationPrefix + ".carouselCaption3",
+      backgroundColor: "#607D8B",
+      fontColor: "#cfd8dc",
     },
   ];
 
@@ -37,21 +52,39 @@ const ForTutorsSection: React.FC = () => {
       <h1 id="forTutorsSection" className="section-title">
         {translate(titleId)}
       </h1>
-      <Carousel className="for-tutors-section__carousel">
-        {carouselSlides.map((slide: CarouselSlide, i: number) => (
-          <Carousel.Item key={i} className="for-tutors-section__carousel-slide">
-            <img
-              src={slide.imgUrl}
-              width="100%"
-              height="auto"
-              alt={`carousel slide ${i}`}
-            />
-            <Carousel.Caption className="for-tutors-section__carousel-caption">
-              {translate(slide.captionTextId)}
-            </Carousel.Caption>
-          </Carousel.Item>
-        ))}
-      </Carousel>
+      <div className="for-tutors-section__texts-with-svg">
+        {textWithSvgBlock.map((block: TextWithSvgBlock) => {
+          return (
+            <div className="for-tutors-section__text-with-svg">
+              <Icon
+                path={block.svgUrl}
+                style={{ color: block.backgroundColor }}
+              />
+              <p
+                style={{
+                  backgroundColor: block.backgroundColor,
+                  color: block.fontColor,
+                }}
+              >
+                {translate(block.captionTextId)}
+              </p>
+            </div>
+          );
+        })}
+        {/*{carouselSlides.map((slide: CarouselSlide, i: number) => (*/}
+        {/*  <Carousel.Item key={i} className="for-tutors-section__carousel-slide">*/}
+        {/*    <img*/}
+        {/*      src={slide.imgUrl}*/}
+        {/*      width="100%"*/}
+        {/*      height="auto"*/}
+        {/*      alt={`carousel slide ${i}`}*/}
+        {/*    />*/}
+        {/*    <Carousel.Caption className="for-tutors-section__carousel-caption">*/}
+        {/*      {translate(slide.captionTextId)}*/}
+        {/*    </Carousel.Caption>*/}
+        {/*  </Carousel.Item>*/}
+        {/*))}*/}
+      </div>
       <div className="for-tutors-section__svg-and-text">
         <img
           src={svgUrl}
