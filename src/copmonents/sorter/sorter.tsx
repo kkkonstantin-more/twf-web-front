@@ -34,7 +34,7 @@ export interface SorterProps {
   additionalRequestData?: {
     gameCode?: string;
     levelCode?: string;
-    userCode?: string
+    userCode?: string;
   };
   // redux props
   fetchGameTabsStartAsync?: any;
@@ -69,7 +69,7 @@ const Sorter: React.FC<SorterProps> = ({
                 offset: 0,
                 limit: 10000,
               },
-              ...additionalRequestData
+              ...additionalRequestData,
             });
             break;
           case AppTabType.LEVEL:
@@ -82,7 +82,7 @@ const Sorter: React.FC<SorterProps> = ({
                 offset: 0,
                 limit: 10000,
               },
-              ...additionalRequestData
+              ...additionalRequestData,
             });
             break;
           case AppTabType.USER:
@@ -95,7 +95,7 @@ const Sorter: React.FC<SorterProps> = ({
                 offset: 0,
                 limit: 10000,
               },
-              ...additionalRequestData
+              ...additionalRequestData,
             });
             break;
         }

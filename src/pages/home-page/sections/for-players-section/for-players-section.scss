@@ -21,15 +21,20 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 4rem;
 
     & > img {
       width: 85%;
     }
 
     & > p {
-      margin-top: 4rem;
+      margin-top: 2rem;
       font-size: $bg-font-size;
+      text-align: center;
+      //border: 1px dashed black;
+      //border-right: none;
+      //border-left: none;
+      //border-radius: 5px;
+      //padding: 1rem 0;
     }
 
     @include respond(tab-port) {

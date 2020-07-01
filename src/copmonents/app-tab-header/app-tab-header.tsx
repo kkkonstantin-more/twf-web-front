@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import translate from "../../translations/translate";
 // redux
 import { connect } from "react-redux";
@@ -14,6 +14,9 @@ import { RootState } from "../../redux/root-reducer";
 import { GamesSortingProperty } from "../../redux/game-tabs/game-tabs.types";
 import { LevelsSortingProperty } from "../../redux/level-tabs/level-tabs.types";
 import { UsersSortingProperty } from "../../redux/user-tabs/user-tabs.types";
+// eye icon
+import Icon from "@mdi/react";
+import { mdiEyeCircle } from "@mdi/js";
 // using app-tab styles combined with custom styles
 import "../app-tab/app-tab.scss";
 import "./app-tab-header.scss";
@@ -63,9 +66,23 @@ const AppTabHeader: React.FC<AppTabHeaderProps> = ({
   });
   // calculating even width for visible fields
   const fieldWidthPercent: string = 100 / visibleFields.length + "%";
+  // making tab fixed onscroll
+  const [scrolled, setScrolled] = useState<boolean>(false);
+  const handleScroll = () => {
+    return window.scrollY > 50 ? setScrolled(true) : setScrolled(false);
+  };
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll, true);
+    // when component unmount
+    return () => window.removeEventListener("scroll", handleScroll, true);
+  }, []);
 
   return (
-    <div className="app-tab app-tab-header">
+    <div
+      className={`app-tab app-tab-header ${
+        scrolled && "app-tab-header--scrolled u-container"
+      }`}
+    >
       {visibleFields.map((field: AppTabHeaderField, i: number) => {
         const { name, textId, withFilter, withSorter } = field;
         return (
@@ -74,18 +91,17 @@ const AppTabHeader: React.FC<AppTabHeaderProps> = ({
             style={{ width: fieldWidthPercent }}
             className="app-tab-header__items"
           >
-            <span className="app-tab-header__filter">
-              {withFilter && (
-                <input
-                  type="checkbox"
-                  id={name}
-                  defaultChecked={true}
-                  onClick={() => {
-                    toggleFieldHidden({ tabType: type, fieldName: name });
-                  }}
-                />
-              )}
-            </span>
+            {withFilter && (
+              <span
+                className="app-tab-header__filter"
+                onClick={() => {
+                  toggleFieldHidden({ tabType: type, fieldName: name });
+                }}
+              >
+                <Icon path={mdiEyeCircle} size={1.2} />
+              </span>
+            )}
+
             <span className="app-tab-header__field-name">
               {translate(textId)}
             </span>
