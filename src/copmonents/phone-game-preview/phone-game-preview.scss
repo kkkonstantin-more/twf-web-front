@@ -4,7 +4,7 @@
 $border-radius: 13px;
 
 .phone-game-preview {
-  height: 40rem;
+  height: 45rem;
   width: 25rem;
   background-image: url("../../assets/component-phone-game-preview/phone-preview.png");
   background-size: contain;
@@ -14,8 +14,8 @@ $border-radius: 13px;
   justify-content: center;
   &__screenshots-carousel {
     margin-top: 2rem;
-    width: 18rem;
-    height: 36.5rem;
+    width: 20rem;
+    height: 41.5rem;
     background-color: #1f1f1f;
     border-radius: $border-radius;
     // fix not rounded images during animation

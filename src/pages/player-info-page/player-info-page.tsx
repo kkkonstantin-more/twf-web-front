@@ -53,7 +53,6 @@ const PlayerInfoPage: React.FC<PlayerInfoPageProps> = ({
   // translation vars
   const translationPrefix: string = "playerInfoPage";
   const titleId: string = translationPrefix + ".title";
-  const completedLevelsId: string = translationPrefix + ".completedLevels";
   // other
   const { playerCode } = useParams();
   useEffect(() => {
@@ -90,6 +89,7 @@ const PlayerInfoPage: React.FC<PlayerInfoPageProps> = ({
             <AppTabHeader
               type={AppTabType.GAME}
               fields={HEADER_TABS_STATE[AppTabType.GAME]}
+              refersTo={{ userCode: playerCode }}
             />
             {gameTabs && <AppTabsList tabs={gameTabs} />}
           </div>
@@ -102,6 +102,7 @@ const PlayerInfoPage: React.FC<PlayerInfoPageProps> = ({
           <AppTabHeader
             type={AppTabType.LEVEL}
             fields={HEADER_TABS_STATE[AppTabType.LEVEL]}
+            refersTo={{ userCode: playerCode }}
           />
           {levelTabs && <AppTabsList tabs={levelTabs} />}
         </Tab>

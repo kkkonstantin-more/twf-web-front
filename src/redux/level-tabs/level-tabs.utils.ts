@@ -7,6 +7,7 @@ export const filterFetchedLevelsData = (
   fetchedGamesData: FetchedLevelsData[]
 ): AppTabProps[] => {
   return fetchedGamesData.map((item: FetchedLevelsData) => ({
+    link: "/matify-levels/" + item.levelCode,
     type: AppTabType.LEVEL,
     fields: [
       {

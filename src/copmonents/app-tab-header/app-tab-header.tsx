@@ -32,6 +32,11 @@ export interface AppTabHeaderField {
 export interface AppTabHeaderProps {
   type: AppTabType;
   fields: AppTabHeaderField[];
+  refersTo?: {
+    gameCode?: string;
+    levelCode?: string;
+    userCode?: string;
+  };
   // redux props
   hiddenFieldsOfTabs?: any;
   toggleFieldHidden?: any;
@@ -40,6 +45,7 @@ export interface AppTabHeaderProps {
 const AppTabHeader: React.FC<AppTabHeaderProps> = ({
   type,
   fields,
+  refersTo,
   // redux props
   hiddenFieldsOfTabs,
   toggleFieldHidden,
@@ -73,7 +79,7 @@ const AppTabHeader: React.FC<AppTabHeaderProps> = ({
                 <input
                   type="checkbox"
                   id={name}
-                  checked={true}
+                  defaultChecked={true}
                   onClick={() => {
                     toggleFieldHidden({ tabType: type, fieldName: name });
                   }}
@@ -89,6 +95,7 @@ const AppTabHeader: React.FC<AppTabHeaderProps> = ({
                   tabType={type}
                   initialDescending={true}
                   sortBy={withSorter}
+                  additionalRequestData={refersTo}
                 />
               )}
             </span>
@@ -101,10 +108,11 @@ const AppTabHeader: React.FC<AppTabHeaderProps> = ({
           <Dropdown>
             <Dropdown.Toggle id="dropdown" />
             <Dropdown.Menu>
-              {invisibleFields.map((field: AppTabHeaderField) => {
+              {invisibleFields.map((field: AppTabHeaderField, i: number) => {
                 const { textId, name } = field;
                 return (
                   <Dropdown.Item
+                    key={i}
                     onClick={() =>
                       toggleFieldHidden({ tabType: type, fieldName: name })
                     }

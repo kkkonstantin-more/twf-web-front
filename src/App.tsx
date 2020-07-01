@@ -28,21 +28,21 @@ const App: React.FC = () => {
       <div className="app-content-container">
         <Switch>
           <Route exact path={"/"} component={HomePage} />
-          <Route exact path={"/matifygames"} component={GamesPage} />
+          <Route exact path={"/matify-games"} component={GamesPage} />
           <Route
             exact
-            path={"/matifygames/:gameCode"}
+            path={"/matify-games/:gameCode"}
             component={GameInfoPage}
           />
           <Route
             exact
-            path={"/matifyplayers/:playerCode"}
+            path={"/matify-players/:playerCode"}
             component={PlayerInfoPage}
           />
-          <Route exact path={"/matifyplayers"} component={UsersPage} />
+          <Route exact path={"/matify-players"} component={UsersPage} />
           <Route
             exact
-            path={"/level-info/:levelCode"}
+            path={"/matify-levels/:levelCode"}
             component={LevelInfoPage}
           />
         </Switch>

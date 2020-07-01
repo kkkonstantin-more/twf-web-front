@@ -38,7 +38,7 @@ const RatingsSection: React.FC = () => {
             currentUserData={demoUserRating}
           />
           <Link
-            to="/matifyplayers"
+            to="/matify-players"
             target="_blank"
             className="ratings-section__table-link"
           >

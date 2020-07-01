@@ -1,138 +1,84 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
+import { useParams } from "react-router-dom";
+//
+import translate from "../../translations/translate";
+import AppTabHeader from "../../copmonents/app-tab-header/app-tab-header";
+import { AppTabType } from "../../types/app-tabs/AppTab";
+import HEADER_TABS_STATE from "../../redux/header-tabs/header-tabs.state";
+import AppTabsList from "../../copmonents/app-tabs-list/app-tabs-list";
+import { connect, MapDispatchToProps } from "react-redux";
+import { FetchLevelsRequestData } from "../../redux/level-tabs/level-tabs.types";
+import { fetchLevelTabsStartAsync } from "../../redux/level-tabs/level-tabs.actions";
+import { createStructuredSelector } from "reselect";
+import {
+  selectIsUserTabsFetching,
+  selectUserTabsList,
+} from "../../redux/user-tabs/user-tabs.selectors";
+import { AppTabProps } from "../../copmonents/app-tab/app-tab";
+import {
+  FetchUsersRequestData,
+  UsersSortingProperty,
+} from "../../redux/user-tabs/user-tabs.types";
+import { fetchUserTabsStartAsync } from "../../redux/user-tabs/user-tabs.actions";
 
-// import "./level-info-page.scss";
-// import { useParams } from "react-router-dom";
-//
-// import translate from "../../translations/translate";
-// import SortersList, {
-//   SortersListItemInterface,
-// } from "../../copmonents/sorters-list/sorters-list";
-// import FiltersList, {
-//   FiltersListItemProps,
-// } from "../../copmonents/filters-list/filters-list";
-// import fetchUsers, { FetchedUser } from "../../fetch-requests/fetch-users";
-// import { AppTabProps } from "../../copmonents/app-tab/app-tab";
-// import AppTabsList from "../../copmonents/app-tabs-list/app-tabs-list";
-//
-const LevelInfoPage: React.FC = () => {
-  //   // translation vars
-  //   const translationPrefix: string = "levelInfoPage";
-  //   const titleId: string = translationPrefix + ".title";
-  //   const completedLevelPlayersId: string =
-  //     translationPrefix + ".completedLevelPlayers";
-  //   // other
-  //   const { levelCode } = useParams();
-  //   const [players, setPlayers] = useState<AppTabProps[]>([]);
-  //   const playersSorters: SortersListItemInterface[] = [
-  //     {
-  //       textId: "login",
-  //       propertyName: "login",
-  //       initialDescending: true,
-  //     },
-  //     {
-  //       textId: "code",
-  //       propertyName: "code",
-  //       initialDescending: true,
-  //     },
-  //     {
-  //       textId: "name",
-  //       propertyName: "name",
-  //       initialDescending: true,
-  //     },
-  //     {
-  //       textId: "fullName",
-  //       propertyName: "fullName",
-  //       initialDescending: true,
-  //     },
-  //     {
-  //       textId: "completedLevelsCount",
-  //       propertyName: "completedLevelsCount",
-  //       initialDescending: false,
-  //     },
-  //   ];
-  //   const playerFilters: FiltersListItemProps[] = [
-  //     {
-  //       propertyName: "code",
-  //       translationTextId: "code",
-  //     },
-  //     {
-  //       propertyName: "name",
-  //       translationTextId: "name",
-  //     },
-  //     {
-  //       propertyName: "fullName",
-  //       translationTextId: "fullName",
-  //     },
-  //     {
-  //       propertyName: "completedLevelsCount",
-  //       translationTextId: "completedLevelsCount",
-  //     },
-  //     {
-  //       propertyName: "additionalInfo",
-  //       translationTextId: "additionalInfo",
-  //     },
-  //   ];
-  //
-  //   useEffect(() => {
-  //     const createTabsWithFetchedUsers = async () => {
-  //       const users: FetchedUser[] = await fetchUsers({ levelCode });
-  //       const usersForAppTabs: AppTabProps[] = [];
-  //       const translationPrefix: string = "appTab.";
-  //       users.forEach((user: FetchedUser) => {
-  //         usersForAppTabs.push({
-  //           link: {
-  //             value: "/player-info/" + user.code + "?login=" + user.login,
-  //           },
-  //           login: {
-  //             value: user.login,
-  //           },
-  //           code: {
-  //             value: user.code,
-  //             prefixTranslationId: translationPrefix + "code",
-  //           },
-  //           name: {
-  //             value: user.name,
-  //             prefixTranslationId: translationPrefix + "name",
-  //           },
-  //           fullName: {
-  //             value: user.fullName,
-  //             prefixTranslationId: translationPrefix + "fullName",
-  //           },
-  //           completedLevelsCount: {
-  //             value: user.completedLevels.length.toString(),
-  //             prefixTranslationId: translationPrefix + "levelsCompleted",
-  //           },
-  //           additionalInfo: {
-  //             value: user.additionalInfo,
-  //             prefixTranslationId: translationPrefix + "additionalInfo",
-  //           },
-  //         });
-  //       });
-  //       setPlayers(usersForAppTabs);
-  //     };
-  //     createTabsWithFetchedUsers();
-  //   }, [levelCode]);
+import "./level-info-page.scss";
+
+interface LevelInfoPageProps {
+  // redux props
+  isUserTabsFetching: boolean;
+  userTabs: AppTabProps[] | null;
+  fetchUserTabsStartAsync: (data: FetchUsersRequestData) => void;
+}
+const LevelInfoPage: React.FC<LevelInfoPageProps> = ({
+  isUserTabsFetching,
+  userTabs,
+  fetchUserTabsStartAsync,
+}) => {
+  // translation vars
+  const translationPrefix: string = "levelInfoPage";
+  const titleId: string = translationPrefix + ".title";
+  const completedLevelPlayersId: string =
+    translationPrefix + ".completedLevelPlayers";
+  // other
+  const { levelCode } = useParams();
+
+  useEffect(() => {
+    fetchUserTabsStartAsync({
+      levelCode,
+      gameCode: null,
+      sortedBy: UsersSortingProperty.BY_LEVELS_COUNT,
+      descending: true,
+      offset: 0,
+      limit: 10000,
+    });
+  }, [levelCode]);
 
   return (
     <div className="level-info-page u-container">
-      {/*<h1>*/}
-      {/*  {translate(titleId)}: {levelCode}*/}
-      {/*</h1>*/}
-      {/*<h1>{translate(completedLevelPlayersId)}</h1>*/}
-      {/*<SortersList*/}
-      {/*  state={{ array: players, stateSetter: setPlayers }}*/}
-      {/*  items={playersSorters}*/}
-      {/*  className="u-mt-sm u-mb-sm"*/}
-      {/*/>*/}
-      {/*<FiltersList*/}
-      {/*  array={players}*/}
-      {/*  stateSetter={setPlayers}*/}
-      {/*  items={playerFilters}*/}
-      {/*  className="u-mb-sm"*/}
-      {/*/>*/}
-      {/*<AppTabsList tabs={players} />*/}
+      <h1>
+        {translate(titleId)}: {levelCode}
+      </h1>
+      <h1>{translate(completedLevelPlayersId)}:</h1>
+      <AppTabHeader
+        type={AppTabType.USER}
+        fields={HEADER_TABS_STATE[AppTabType.USER]}
+        refersTo={{ levelCode }}
+      />
+      {userTabs && <AppTabsList tabs={userTabs} />}
     </div>
   );
 };
 
-export default LevelInfoPage;
+const mapDispatchToProps: MapDispatchToProps<any, any> = (dispatch: any) => ({
+  fetchLevelTabsStartAsync: (data: FetchLevelsRequestData) =>
+    dispatch(fetchLevelTabsStartAsync(data)),
+  fetchUserTabsStartAsync: (data: FetchUsersRequestData) =>
+    dispatch(fetchUserTabsStartAsync(data)),
+});
+
+const mapStateToProps = createStructuredSelector<any, any>({
+  isUserTabsFetching: selectIsUserTabsFetching,
+  userTabs: selectUserTabsList,
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(LevelInfoPage);

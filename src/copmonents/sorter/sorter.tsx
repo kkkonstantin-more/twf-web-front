@@ -31,6 +31,11 @@ export interface SorterProps {
     | UsersSortingProperty
     | null;
   initialDescending: boolean;
+  additionalRequestData?: {
+    gameCode?: string;
+    levelCode?: string;
+    userCode?: string
+  };
   // redux props
   fetchGameTabsStartAsync?: any;
   fetchLevelTabsStartAsync?: any;
@@ -45,6 +50,7 @@ const Sorter: React.FC<SorterProps> = ({
   fetchGameTabsStartAsync,
   fetchLevelTabsStartAsync,
   fetchUserTabsStartAsync,
+  additionalRequestData,
 }) => {
   const [isDescending, setIsDescending] = useState<boolean>(initialDescending);
 
@@ -55,32 +61,41 @@ const Sorter: React.FC<SorterProps> = ({
         switch (tabType) {
           case AppTabType.GAME:
             fetchGameTabsStartAsync({
-              gameCode: null,
-              userCode: null,
-              sortedBy: sortBy,
-              descending: isDescending,
-              offset: 0,
-              limit: 10000,
+              ...{
+                gameCode: null,
+                userCode: null,
+                sortedBy: sortBy,
+                descending: isDescending,
+                offset: 0,
+                limit: 10000,
+              },
+              ...additionalRequestData
             });
             break;
           case AppTabType.LEVEL:
             fetchLevelTabsStartAsync({
-              userCode: null,
-              gameCode: null,
-              sortedBy: sortBy,
-              descending: isDescending,
-              offset: 0,
-              limit: 10000,
+              ...{
+                userCode: null,
+                gameCode: null,
+                sortedBy: sortBy,
+                descending: isDescending,
+                offset: 0,
+                limit: 10000,
+              },
+              ...additionalRequestData
             });
             break;
           case AppTabType.USER:
             fetchUserTabsStartAsync({
-              userCode: null,
-              gameCode: null,
-              sortedBy: sortBy,
-              descending: isDescending,
-              offset: 0,
-              limit: 10000,
+              ...{
+                userCode: null,
+                gameCode: null,
+                sortedBy: sortBy,
+                descending: isDescending,
+                offset: 0,
+                limit: 10000,
+              },
+              ...additionalRequestData
             });
             break;
         }

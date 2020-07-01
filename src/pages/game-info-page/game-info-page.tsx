@@ -108,6 +108,7 @@ const GameInfoPage: React.FC<GameInfoPageProps> = ({
             <AppTabHeader
               type={AppTabType.USER}
               fields={HEADER_TABS_STATE[AppTabType.USER]}
+              refersTo={{ gameCode }}
             />
             {userTabs && <AppTabsList tabs={userTabs} />}
           </div>
@@ -116,6 +117,7 @@ const GameInfoPage: React.FC<GameInfoPageProps> = ({
           <AppTabHeader
             type={AppTabType.LEVEL}
             fields={HEADER_TABS_STATE[AppTabType.LEVEL]}
+            refersTo={{ gameCode }}
           />
           {levelTabs && <AppTabsList tabs={levelTabs} />}
           {/*<div className="game-info-page__levels" ref={scrollParentRef}>*/}
