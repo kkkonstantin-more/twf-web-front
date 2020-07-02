@@ -9,6 +9,7 @@ export enum LevelTabsActionTypes {
 export interface LevelTabsState {
   tabs: AppTabProps[] | null;
   isFetching: boolean;
+  isAllFetched: boolean;
   errorMessage: string | null;
 }
 

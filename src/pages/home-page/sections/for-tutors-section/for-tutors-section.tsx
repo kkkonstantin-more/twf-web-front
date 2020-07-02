@@ -6,7 +6,7 @@ import { Carousel } from "react-bootstrap";
 
 import Icon from "@mdi/react";
 import { mdiNintendoGameBoy } from "@mdi/js";
-import { mdiHeadLightbulb } from "@mdi/js";
+import { mdiTimer } from "@mdi/js";
 import { mdiRobot } from "@mdi/js";
 
 import "./for-tutors-section.scss";
@@ -40,7 +40,7 @@ const ForTutorsSection: React.FC = () => {
       fontColor: "#cfd8dc",
     },
     {
-      svgUrl: mdiHeadLightbulb,
+      svgUrl: mdiTimer,
       captionTextId: translationPrefix + ".carouselCaption3",
       backgroundColor: "#607D8B",
       fontColor: "#cfd8dc",

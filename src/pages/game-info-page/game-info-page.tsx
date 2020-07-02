@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import translate from "../../translations/translate";
 import AppTabsList from "../../copmonents/app-tabs-list/app-tabs-list";
@@ -30,6 +30,8 @@ import {
 } from "../../redux/user-tabs/user-tabs.types";
 import { fetchUserTabsStartAsync } from "../../redux/user-tabs/user-tabs.actions";
 
+import InfiniteScroll from "react-infinite-scroller";
+
 // @ts-ignore
 
 interface GameInfoPageProps {
@@ -58,10 +60,6 @@ const GameInfoPage: React.FC<GameInfoPageProps> = ({
   const levelsTabId: string = translationPrefix + ".levelsTab";
   // other
   const { gameCode } = useParams();
-  const [players, setPlayers] = useState<AppTabProps[]>([]);
-  const [levels, setLevels] = useState<AppTabProps[]>([]);
-
-  const [currentLevels, setCurrentLevels] = useState<AppTabProps[]>([]);
 
   useEffect(() => {
     fetchLevelTabsStartAsync({
@@ -70,7 +68,7 @@ const GameInfoPage: React.FC<GameInfoPageProps> = ({
       sortedBy: LevelsSortingProperty.BY_USERS_COUNT,
       descending: true,
       offset: 0,
-      limit: 10000,
+      limit: 5,
     });
     fetchUserTabsStartAsync({
       levelCode: null,
@@ -82,16 +80,21 @@ const GameInfoPage: React.FC<GameInfoPageProps> = ({
     });
   }, [gameCode]);
 
+  const [page, setPage] = useState<number>(1);
+
   const nextPage = () => {
-    const items: number = currentLevels.length + 5;
-    if (items < levels.length) {
-      setTimeout(() => {
-        setCurrentLevels(levels.slice(0, items));
-      }, 1000);
-    }
+    fetchLevelTabsStartAsync({
+      userCode: null,
+      gameCode,
+      sortedBy: LevelsSortingProperty.BY_USERS_COUNT,
+      descending: true,
+      offset: page * 5,
+      limit: 5,
+    });
+    setPage((prevState) => prevState++);
   };
 
-  const scrollParentRef: React.RefObject<any> = React.createRef();
+  const scrollParentRef = useRef<HTMLElement>(null);
 
   return (
     <div className="game-info-page u-container">
@@ -119,7 +122,19 @@ const GameInfoPage: React.FC<GameInfoPageProps> = ({
             fields={HEADER_TABS_STATE[AppTabType.LEVEL]}
             refersTo={{ gameCode }}
           />
-          {levelTabs && <AppTabsList tabs={levelTabs} />}
+          {levelTabs && (
+            <InfiniteScroll
+              loadMore={() => {
+                nextPage();
+              }}
+              hasMore={true}
+              loader={<p>loading...</p>}
+              // @ts-ignore
+              getScrollParent={() => scrollParentRef}
+            >
+              <AppTabsList tabs={levelTabs} />
+            </InfiniteScroll>
+          )}
           {/*<div className="game-info-page__levels" ref={scrollParentRef}>*/}
           {/*  <SortersList*/}
           {/*    state={{ array: levels, stateSetter: setLevels }}*/}

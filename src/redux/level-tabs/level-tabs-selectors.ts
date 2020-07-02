@@ -9,6 +9,11 @@ export const selectIsLevelTabsFetching = createSelector(
   (levelTabs: LevelTabsState) => levelTabs.isFetching
 );
 
+export const selectIsAllLevelTabsFetched = createSelector(
+  [selectLevelTabs],
+  (levelTabs: LevelTabsState) => levelTabs.isAllFetched
+);
+
 export const selectLevelTabsList = createSelector(
   [selectLevelTabs],
   (levelTabs: LevelTabsState) => levelTabs.tabs
