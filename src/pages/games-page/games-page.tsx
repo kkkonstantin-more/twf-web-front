@@ -1,41 +1,34 @@
 import React, { useEffect } from "react";
 import translate from "../../translations/translate";
-
+// redux
 import { connect, MapDispatchToProps } from "react-redux";
-import { createStructuredSelector } from "reselect";
 import { fetchGameTabsStartAsync } from "../../redux/game-tabs/game-tabs.actions";
-import {
-  selectGameTabsList,
-  selectIsGameTabsFetching,
-} from "../../redux/game-tabs/game-tabs.selectors";
-
+import { createStructuredSelector } from "reselect";
+import { selectGameTabsList } from "../../redux/game-tabs/game-tabs.selectors";
+// components
+import AppTabHeader from "../../copmonents/app-tab-header/app-tab-header";
 import AppTabsList from "../../copmonents/app-tabs-list/app-tabs-list";
-
+import AppSpinner from "../../copmonents/app-spinner/app-spinner";
+// types
 import { AppTabProps } from "../../copmonents/app-tab/app-tab";
-
 import { AppTabType } from "../../types/app-tabs/AppTab";
-import Filter from "../../copmonents/filter/filter";
-import { GameAppTabFieldName } from "../../types/app-tabs/GameAppTab";
-
-import "./games-page.scss";
 import {
   FetchGamesRequestData,
   GamesSortingProperty,
 } from "../../redux/game-tabs/game-tabs.types";
-import Sorter from "../../copmonents/sorter/sorter";
-import AppTabHeader from "../../copmonents/app-tab-header/app-tab-header";
+// data
 import HEADER_TABS_STATE from "../../redux/header-tabs/header-tabs.state";
+// styles
+import "./games-page.scss";
 
 export interface GamesPageProps {
   // redux props
-  fetchGameTabsStartAsync?: any;
-  isGameTabsFetching?: boolean;
-  gameTabs?: AppTabProps[] | null;
+  fetchGameTabsStartAsync: (data: FetchGamesRequestData) => void;
+  gameTabs: AppTabProps[] | null;
 }
 
 const GamesPage: React.FC<GamesPageProps> = ({
   fetchGameTabsStartAsync,
-  isGameTabsFetching,
   gameTabs,
 }) => {
   // translation vars
@@ -60,7 +53,11 @@ const GamesPage: React.FC<GamesPageProps> = ({
         type={AppTabType.GAME}
         fields={HEADER_TABS_STATE[AppTabType.GAME]}
       />
-      {gameTabs && <AppTabsList tabs={gameTabs} />}
+      {gameTabs ? (
+        <AppTabsList tabs={gameTabs} />
+      ) : (
+        <AppSpinner loading={true} />
+      )}
     </div>
   );
 };
@@ -71,7 +68,6 @@ const mapDispatchToProps: MapDispatchToProps<any, any> = (dispatch: any) => ({
 });
 
 const mapStateToProps = createStructuredSelector<any, any>({
-  isGameTabsFetching: selectIsGameTabsFetching,
   gameTabs: selectGameTabsList,
 });
 

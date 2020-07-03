@@ -18,3 +18,23 @@ export const selectLevelTabsList = createSelector(
   [selectLevelTabs],
   (levelTabs: LevelTabsState) => levelTabs.tabs
 );
+
+export const selectLevelTabsSortedBy = createSelector(
+  [selectLevelTabs],
+  (levelTabs: LevelTabsState) => levelTabs.sortedBy
+);
+
+export const selectLevelTabsSortedDescending = createSelector(
+  [selectLevelTabs],
+  (levelTabs: LevelTabsState) => levelTabs.sortedDescending
+);
+
+export const selectLevelTabsPageSize = createSelector(
+  [selectLevelTabs],
+  (levelTabs: LevelTabsState) => levelTabs.pageSize
+);
+
+export const selectLevelTabsCurrentPage = createSelector(
+  [selectLevelTabs],
+  (levelTabs: LevelTabsState) => levelTabs.currentPage
+);

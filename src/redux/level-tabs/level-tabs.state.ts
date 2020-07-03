@@ -5,6 +5,10 @@ const LEVEL_TABS_INITIAL_STATE: LevelTabsState = {
   isFetching: false,
   isAllFetched: false,
   errorMessage: null,
+  sortedBy: null,
+  sortedDescending: true,
+  pageSize: 10,
+  currentPage: 0,
 };
 
 export default LEVEL_TABS_INITIAL_STATE;

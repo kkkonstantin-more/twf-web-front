@@ -4,7 +4,7 @@ import ClipLoader from "react-spinners/ClipLoader";
 
 const override = `
   display: block;
-  margin: 0 auto;
+  margin: 2rem auto;
 `;
 
 const AppSpinner: React.FC<{ loading: boolean }> = ({ loading }) => {

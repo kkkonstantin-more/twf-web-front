@@ -9,7 +9,12 @@ export enum UserTabsActionTypes {
 export interface UserTabsState {
   tabs: AppTabProps[] | null;
   isFetching: boolean;
+  isAllFetched: boolean;
   errorMessage: string | null;
+  sortedBy: UsersSortingProperty | null;
+  sortedDescending: boolean;
+  pageSize: number;
+  currentPage: number;
 }
 
 export enum UsersSortingProperty {

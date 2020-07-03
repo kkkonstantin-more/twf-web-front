@@ -4,25 +4,34 @@ import {
   FetchedLevelsData,
   LevelTabsActionTypes,
   FetchLevelsRequestData,
+  LevelsSortingProperty,
 } from "./level-tabs.types";
 
-export const fetchGameTabsStart = () => ({
+export const fetchLevelTabsStart = () => ({
   type: LevelTabsActionTypes.FETCH_LEVEL_TABS_START,
 });
 
-export const fetchGameTabsSuccess = (tabs: FetchedLevelsData) => ({
+export const fetchLevelTabsSuccess = (
+  tabs: FetchedLevelsData,
+  sortedBy: LevelsSortingProperty,
+  sortedDescending: boolean
+) => ({
   type: LevelTabsActionTypes.FETCH_LEVEL_TABS_SUCCESS,
-  payload: tabs,
+  payload: {
+    tabs,
+    sortedBy,
+    sortedDescending,
+  },
 });
 
-export const fetchGameTabsFailure = (errorMessage: string) => ({
+export const fetchLevelTabsFailure = (errorMessage: string) => ({
   type: LevelTabsActionTypes.FETCH_LEVEL_TABS_FAILURE,
   payload: errorMessage,
 });
 
 export const fetchLevelTabsStartAsync = (data: FetchLevelsRequestData) => {
   return (dispatch: any) => {
-    dispatch(fetchGameTabsStart());
+    dispatch(fetchLevelTabsStart());
     axios({
       method: "post",
       url: `${process.env.REACT_APP_SERVER_API}/activity_log/find_win_log_levels`,
@@ -30,8 +39,14 @@ export const fetchLevelTabsStartAsync = (data: FetchLevelsRequestData) => {
     })
       .then((res) => {
         const fetchedLevelsData: FetchedLevelsData = res.data;
-        dispatch(fetchGameTabsSuccess(fetchedLevelsData));
+        dispatch(
+          fetchLevelTabsSuccess(
+            fetchedLevelsData,
+            data.sortedBy,
+            data.descending
+          )
+        );
       })
-      .catch(() => dispatch(fetchGameTabsFailure("error message")));
+      .catch(() => dispatch(fetchLevelTabsFailure("error message")));
   };
 };

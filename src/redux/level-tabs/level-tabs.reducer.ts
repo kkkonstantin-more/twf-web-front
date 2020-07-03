@@ -19,14 +19,33 @@ const levelTabsReducer = (
         errorMessage: null,
       };
     case LevelTabsActionTypes.FETCH_LEVEL_TABS_SUCCESS:
-      const levelTabs: AppTabProps[] = filterFetchedLevelsData(action.payload);
-      return {
-        ...state,
-        tabs: state.tabs ? state.tabs.concat(levelTabs) : levelTabs,
-        isFetching: false,
-        errorMessage: null,
-        isAllFetched: levelTabs.length === 0,
-      };
+      let levelTabs: AppTabProps[] = filterFetchedLevelsData(
+        action.payload.tabs
+      );
+      if (
+        state.sortedBy === action.payload.sortedBy &&
+        state.sortedDescending === action.payload.sortedDescending
+      ) {
+        return {
+          ...state,
+          tabs: state.tabs ? state.tabs.concat(levelTabs) : levelTabs,
+          isFetching: false,
+          errorMessage: null,
+          isAllFetched: levelTabs.length !== state.pageSize,
+          currentPage: ++state.currentPage,
+        };
+      } else {
+        return {
+          ...state,
+          tabs: levelTabs,
+          isFetching: false,
+          errorMessage: null,
+          isAllFetched: levelTabs.length !== state.pageSize,
+          sortedBy: action.payload.sortedBy,
+          sortedDescending: action.payload.sortedDescending,
+          currentPage: 1,
+        };
+      }
     case LevelTabsActionTypes.FETCH_LEVEL_TABS_FAILURE:
       return {
         ...state,

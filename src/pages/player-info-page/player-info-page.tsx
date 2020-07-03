@@ -1,6 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import ClipLoader from "react-spinners/ClipLoader";
 
 import "./player-info-page.scss";
 import translate from "../../translations/translate";
@@ -19,7 +18,11 @@ import { createStructuredSelector } from "reselect";
 import {
   selectIsAllLevelTabsFetched,
   selectIsLevelTabsFetching,
+  selectLevelTabsCurrentPage,
   selectLevelTabsList,
+  selectLevelTabsPageSize,
+  selectLevelTabsSortedBy,
+  selectLevelTabsSortedDescending,
 } from "../../redux/level-tabs/level-tabs-selectors";
 import { injectIntl } from "react-intl";
 import {
@@ -45,6 +48,10 @@ interface PlayerInfoPageProps {
   isGameTabsFetching: boolean;
   levelTabs: AppTabProps[];
   gameTabs: AppTabProps[];
+  levelsTabsSortedBy: LevelsSortingProperty;
+  levelsSortedByDescending: boolean;
+  levelTabsPageSize: number;
+  levelTabsCurrentPage: number;
 }
 
 const PlayerInfoPage: React.FC<PlayerInfoPageProps> = ({
@@ -55,6 +62,10 @@ const PlayerInfoPage: React.FC<PlayerInfoPageProps> = ({
   isAllLevelTabsFetched,
   levelTabs,
   gameTabs,
+  levelsTabsSortedBy,
+  levelsSortedByDescending,
+  levelTabsPageSize,
+  levelTabsCurrentPage,
 }) => {
   // translation vars
   const translationPrefix: string = "playerInfoPage";
@@ -74,34 +85,31 @@ const PlayerInfoPage: React.FC<PlayerInfoPageProps> = ({
     fetchLevelTabsStartAsync({
       userCode: playerCode,
       gameCode: null,
-      sortedBy: LevelsSortingProperty.BY_DIFFICULTY,
+      sortedBy: LevelsSortingProperty.BY_USERS_COUNT,
       descending: true,
       offset: 0,
       limit: 10,
     });
   }, [playerCode]);
 
-  const [page, setPage] = useState<number>(1);
-
-  const nextPage = () => {
+  const nextPage = (sortedBy: LevelsSortingProperty) => {
     if (!isLevelTabsFetching) {
       fetchLevelTabsStartAsync({
         userCode: playerCode,
         gameCode: null,
-        sortedBy: LevelsSortingProperty.BY_USERS_COUNT,
-        descending: true,
-        offset: page * 10,
-        limit: 10,
+        sortedBy,
+        descending: levelsSortedByDescending,
+        offset: levelTabsCurrentPage * levelTabsPageSize,
+        limit: levelTabsPageSize,
       });
-      setPage((prevState) => ++prevState);
     }
   };
+
   return (
     <div className="player-info-page u-container">
       <h1>
         {translate(titleId)}: {playerCode}
       </h1>
-      <AppSpinner loading={true} />
       <Tabs defaultActiveKey="games" id="tabs">
         <Tab
           eventKey="games"
@@ -115,7 +123,11 @@ const PlayerInfoPage: React.FC<PlayerInfoPageProps> = ({
               fields={HEADER_TABS_STATE[AppTabType.GAME]}
               refersTo={{ userCode: playerCode }}
             />
-            {gameTabs && <AppTabsList tabs={gameTabs} />}
+            {gameTabs ? (
+              <AppTabsList tabs={gameTabs} />
+            ) : (
+              <AppSpinner loading={true} />
+            )}
           </div>
         </Tab>
         <Tab
@@ -128,10 +140,12 @@ const PlayerInfoPage: React.FC<PlayerInfoPageProps> = ({
             fields={HEADER_TABS_STATE[AppTabType.LEVEL]}
             refersTo={{ userCode: playerCode }}
           />
+          {/*{levelTabs && <AppTabsList tabs={levelTabs} />}*/}
+
           {levelTabs ? (
             <InfiniteScroll
               loadMore={() => {
-                nextPage();
+                nextPage(levelsTabsSortedBy);
               }}
               hasMore={!isAllLevelTabsFetched}
               loader={<AppSpinner loading={true} />}
@@ -160,6 +174,10 @@ const mapStateToProps = createStructuredSelector<any, any>({
   levelTabs: selectLevelTabsList,
   isGameTabsFetching: selectIsGameTabsFetching,
   gameTabs: selectGameTabsList,
+  levelsTabsSortedBy: selectLevelTabsSortedBy,
+  levelsSortedByDescending: selectLevelTabsSortedDescending,
+  levelTabsPageSize: selectLevelTabsPageSize,
+  levelTabsCurrentPage: selectLevelTabsCurrentPage,
 });
 
 export default connect(

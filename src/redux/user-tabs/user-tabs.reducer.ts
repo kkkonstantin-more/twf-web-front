@@ -1,6 +1,7 @@
 import USER_TABS_INITIAL_STATE from "./user-tabs.state";
 
 import { UserTabsActionTypes, UserTabsState } from "./user-tabs.types";
+import { AppTabProps } from "../../copmonents/app-tab/app-tab";
 import { filterFetchedUsersData } from "./user-tabs.utils";
 
 const userTabsReducer = (
@@ -18,12 +19,31 @@ const userTabsReducer = (
         errorMessage: null,
       };
     case UserTabsActionTypes.FETCH_USER_TABS_SUCCESS:
-      return {
-        ...state,
-        tabs: filterFetchedUsersData(action.payload),
-        isFetching: false,
-        errorMessage: null,
-      };
+      let userTabs: AppTabProps[] = filterFetchedUsersData(action.payload.tabs);
+      if (
+        state.sortedBy === action.payload.sortedBy &&
+        state.sortedDescending === action.payload.sortedDescending
+      ) {
+        return {
+          ...state,
+          tabs: state.tabs ? state.tabs.concat(userTabs) : userTabs,
+          isFetching: false,
+          errorMessage: null,
+          isAllFetched: userTabs.length !== state.pageSize,
+          currentPage: ++state.currentPage,
+        };
+      } else {
+        return {
+          ...state,
+          tabs: userTabs,
+          isFetching: false,
+          errorMessage: null,
+          isAllFetched: userTabs.length !== state.pageSize,
+          sortedBy: action.payload.sortedBy,
+          sortedDescending: action.payload.sortedDescending,
+          currentPage: 1,
+        };
+      }
     case UserTabsActionTypes.FETCH_USER_TABS_FAILURE:
       return {
         ...state,

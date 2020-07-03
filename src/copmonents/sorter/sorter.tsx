@@ -67,7 +67,7 @@ const Sorter: React.FC<SorterProps> = ({
                 sortedBy: sortBy,
                 descending: isDescending,
                 offset: 0,
-                limit: 10000,
+                limit: 100000,
               },
               ...additionalRequestData,
             });
@@ -80,7 +80,7 @@ const Sorter: React.FC<SorterProps> = ({
                 sortedBy: sortBy,
                 descending: isDescending,
                 offset: 0,
-                limit: 10000,
+                limit: 10,
               },
               ...additionalRequestData,
             });
@@ -93,7 +93,7 @@ const Sorter: React.FC<SorterProps> = ({
                 sortedBy: sortBy,
                 descending: isDescending,
                 offset: 0,
-                limit: 10000,
+                limit: 10,
               },
               ...additionalRequestData,
             });

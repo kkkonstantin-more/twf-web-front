@@ -11,6 +11,10 @@ export interface LevelTabsState {
   isFetching: boolean;
   isAllFetched: boolean;
   errorMessage: string | null;
+  sortedBy: LevelsSortingProperty | null;
+  sortedDescending: boolean;
+  pageSize: number;
+  currentPage: number;
 }
 
 export interface FetchedLevelsData {
