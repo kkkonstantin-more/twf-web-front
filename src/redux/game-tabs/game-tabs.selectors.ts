@@ -13,3 +13,8 @@ export const selectGameTabsList = createSelector(
   [selectGameTabs],
   (gameTabs: GameTabsState) => gameTabs.tabs
 );
+
+export const selectGameTabsError = createSelector(
+  [selectGameTabs],
+  (gameTabs: GameTabsState) => gameTabs.errorMessage
+);

@@ -25,6 +25,7 @@ import { playerInfoPageEn } from "./pages/player-info-page";
 import { levelInfoPageEn } from "./pages/level-info-page";
 import { filterEn } from "./components/filter";
 import { appTabHeaderEn } from "./components/app-tab-header";
+import { fetchErrorMessageEn } from "./components/fetch-error-message";
 
 export default {
   [LOCALES.ENGLISH]: {
@@ -53,5 +54,6 @@ export default {
     ...levelInfoPageEn,
     ...filterEn,
     ...appTabHeaderEn,
+    ...fetchErrorMessageEn,
   },
 };

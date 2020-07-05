@@ -10,12 +10,14 @@ import {
   selectIsAllLevelTabsFetched,
   selectIsLevelTabsFetching,
   selectLevelTabsCurrentPage,
+  selectLevelTabsError,
   selectLevelTabsList,
   selectLevelTabsPageSize,
   selectLevelTabsSortedBy,
   selectLevelTabsSortedDescending,
 } from "../../redux/level-tabs/level-tabs-selectors";
 import {
+  selectGameTabsError,
   selectGameTabsList,
   selectIsGameTabsFetching,
 } from "../../redux/game-tabs/game-tabs.selectors";
@@ -42,6 +44,7 @@ import {
 import HEADER_TABS_STATE from "../../redux/header-tabs/header-tabs.state";
 // styles
 import "./player-info-page.scss";
+import FetchErrorMessage from "../../copmonents/fetch-error-message/fetch-error-message";
 
 interface PlayerInfoPageProps {
   intl: any;
@@ -54,10 +57,12 @@ interface PlayerInfoPageProps {
   levelTabsPageSize: number;
   levelTabsCurrentPage: number;
   levelsSortedByDescending: boolean;
+  levelTabsError: any;
   fetchLevelTabsStartAsync: (data: FetchLevelsRequestData) => void;
   // games
   gameTabs: AppTabProps[];
   isGameTabsFetching: boolean;
+  gameTabsError: any;
   fetchGameTabsStartAsync: (data: FetchGamesRequestData) => void;
 }
 
@@ -72,8 +77,10 @@ const PlayerInfoPage: React.FC<PlayerInfoPageProps> = ({
   levelsSortedByDescending,
   levelTabsPageSize,
   levelTabsCurrentPage,
+  levelTabsError,
   fetchLevelTabsStartAsync,
   // games
+  gameTabsError,
   gameTabs,
   fetchGameTabsStartAsync,
 }) => {
@@ -132,6 +139,8 @@ const PlayerInfoPage: React.FC<PlayerInfoPageProps> = ({
             />
             {gameTabs ? (
               <AppTabsList tabs={gameTabs} />
+            ) : gameTabsError ? (
+              <FetchErrorMessage serverError={gameTabsError} />
             ) : (
               <AppSpinner loading={true} />
             )}
@@ -156,6 +165,8 @@ const PlayerInfoPage: React.FC<PlayerInfoPageProps> = ({
             >
               <AppTabsList tabs={levelTabs} />
             </InfiniteScroll>
+          ) : levelTabsError ? (
+            <FetchErrorMessage serverError={levelTabsError} />
           ) : (
             <AppSpinner loading={true} />
           )}
@@ -166,15 +177,19 @@ const PlayerInfoPage: React.FC<PlayerInfoPageProps> = ({
 };
 
 const mapStateToProps = createStructuredSelector<any, any>({
+  // games
+  gameTabs: selectGameTabsList,
+  isGameTabsFetching: selectIsGameTabsFetching,
+  gameTabsError: selectGameTabsError,
+  // levels
   isLevelTabsFetching: selectIsLevelTabsFetching,
   isAllLevelTabsFetched: selectIsAllLevelTabsFetched,
   levelTabs: selectLevelTabsList,
-  isGameTabsFetching: selectIsGameTabsFetching,
-  gameTabs: selectGameTabsList,
   levelsTabsSortedBy: selectLevelTabsSortedBy,
   levelsSortedByDescending: selectLevelTabsSortedDescending,
   levelTabsPageSize: selectLevelTabsPageSize,
   levelTabsCurrentPage: selectLevelTabsCurrentPage,
+  levelTabsError: selectLevelTabsError,
 });
 
 const mapDispatchToProps = (dispatch: any) => ({

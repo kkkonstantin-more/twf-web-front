@@ -4,7 +4,10 @@ import translate from "../../translations/translate";
 import { connect, MapDispatchToProps } from "react-redux";
 import { fetchGameTabsStartAsync } from "../../redux/game-tabs/game-tabs.actions";
 import { createStructuredSelector } from "reselect";
-import { selectGameTabsList } from "../../redux/game-tabs/game-tabs.selectors";
+import {
+  selectGameTabsError,
+  selectGameTabsList,
+} from "../../redux/game-tabs/game-tabs.selectors";
 // components
 import AppTabHeader from "../../copmonents/app-tab-header/app-tab-header";
 import AppTabsList from "../../copmonents/app-tabs-list/app-tabs-list";
@@ -20,17 +23,20 @@ import {
 import HEADER_TABS_STATE from "../../redux/header-tabs/header-tabs.state";
 // styles
 import "./games-page.scss";
+import FetchErrorMessage from "../../copmonents/fetch-error-message/fetch-error-message";
 
 export interface GamesPageProps {
   // redux props
   fetchGameTabsStartAsync: (data: FetchGamesRequestData) => void;
   gameTabs: AppTabProps[] | null;
+  gameTabsError: any;
 }
 
 const GamesPage: React.FC<GamesPageProps> = ({
   // redux props
   fetchGameTabsStartAsync,
   gameTabs,
+  gameTabsError,
 }) => {
   // translation vars
   const translationPrefix: string = "gamesPage";
@@ -56,6 +62,8 @@ const GamesPage: React.FC<GamesPageProps> = ({
       />
       {gameTabs ? (
         <AppTabsList tabs={gameTabs} />
+      ) : gameTabsError ? (
+        <FetchErrorMessage serverError={gameTabsError} />
       ) : (
         <AppSpinner loading={true} />
       )}
@@ -70,6 +78,7 @@ const mapDispatchToProps: MapDispatchToProps<any, any> = (dispatch: any) => ({
 
 const mapStateToProps = createStructuredSelector<any, any>({
   gameTabs: selectGameTabsList,
+  gameTabsError: selectGameTabsError,
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(GamesPage);

@@ -1,7 +1,0 @@
-.filters-list {
-  display: flex;
-  flex-wrap: wrap;
-  & > *:not(:last-child) {
-    margin-right: 2rem;
-  }
-}

@@ -38,3 +38,8 @@ export const selectLevelTabsCurrentPage = createSelector(
   [selectLevelTabs],
   (levelTabs: LevelTabsState) => levelTabs.currentPage
 );
+
+export const selectLevelTabsError = createSelector(
+  [selectLevelTabs],
+  (levelTabs: LevelTabsState) => levelTabs.errorMessage
+);

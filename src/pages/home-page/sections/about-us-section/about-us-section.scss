@@ -12,7 +12,7 @@
     order: -2;
   }
   &__text {
-    width: 50%;
+    width: 50vw;
     padding: 0 2rem;
     @include respond(phone) {
       width: 100%;

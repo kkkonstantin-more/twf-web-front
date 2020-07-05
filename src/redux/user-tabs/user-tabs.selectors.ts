@@ -38,3 +38,8 @@ export const selectIsAllUserTabsFetched = createSelector(
   [selectUserTabs],
   (userTabs: UserTabsState) => userTabs.isAllFetched
 );
+
+export const selectUserTabsError = createSelector(
+  [selectUserTabs],
+  (userTabs: UserTabsState) => userTabs.errorMessage
+);

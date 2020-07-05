@@ -1,0 +1,8 @@
+.fetch-error-message {
+  border: 1px solid red;
+  border-radius: 5px;
+  padding: 1rem;
+  & > h1 {
+    color: red;
+  }
+}

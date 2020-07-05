@@ -24,9 +24,9 @@ export const fetchLevelTabsSuccess = (
   },
 });
 
-export const fetchLevelTabsFailure = (errorMessage: string) => ({
+export const fetchLevelTabsFailure = (e: any) => ({
   type: LevelTabsActionTypes.FETCH_LEVEL_TABS_FAILURE,
-  payload: errorMessage,
+  payload: e,
 });
 
 export const fetchLevelTabsStartAsync = (data: FetchLevelsRequestData) => {
@@ -47,6 +47,6 @@ export const fetchLevelTabsStartAsync = (data: FetchLevelsRequestData) => {
           )
         );
       })
-      .catch(() => dispatch(fetchLevelTabsFailure("error message")));
+      .catch((e) => dispatch(fetchLevelTabsFailure(e)));
   };
 };

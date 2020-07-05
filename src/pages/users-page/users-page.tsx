@@ -7,6 +7,7 @@ import {
   selectIsAllUserTabsFetched,
   selectIsUserTabsFetching,
   selectUserTabsCurrentPage,
+  selectUserTabsError,
   selectUserTabsList,
   selectUserTabsPageSize,
   selectUserTabsSortedBy,
@@ -29,6 +30,7 @@ import {
 import HEADER_TABS_STATE from "../../redux/header-tabs/header-tabs.state";
 // styles
 import "./users-page.scss";
+import FetchErrorMessage from "../../copmonents/fetch-error-message/fetch-error-message";
 
 interface UsersPageProps {
   // redux props
@@ -40,6 +42,7 @@ interface UsersPageProps {
   userTabsPageSize: number;
   userTabsCurrentPage: number;
   isAllUserTabsFetched: boolean;
+  userTabsError: any;
 }
 
 const UsersPage: React.FC<UsersPageProps> = ({
@@ -51,6 +54,7 @@ const UsersPage: React.FC<UsersPageProps> = ({
   userTabsPageSize,
   userTabsCurrentPage,
   isAllUserTabsFetched,
+  userTabsError,
 }) => {
   // translation vars
   const translationPrefix: string = "playersPage";
@@ -97,6 +101,8 @@ const UsersPage: React.FC<UsersPageProps> = ({
         >
           <AppTabsList tabs={userTabs} />
         </InfiniteScroll>
+      ) : userTabsError ? (
+        <FetchErrorMessage serverError={userTabsError} />
       ) : (
         <AppSpinner loading={true} />
       )}
@@ -112,6 +118,7 @@ const mapStateToProps = createStructuredSelector<any, any>({
   userTabsPageSize: selectUserTabsPageSize,
   userTabsCurrentPage: selectUserTabsCurrentPage,
   isAllUserTabsFetched: selectIsAllUserTabsFetched,
+  userTabsError: selectUserTabsError,
 });
 
 const mapDispatchToProps: MapDispatchToProps<any, any> = (dispatch: any) => ({

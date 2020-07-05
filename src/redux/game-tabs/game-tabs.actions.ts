@@ -15,9 +15,9 @@ export const fetchGameTabsSuccess = (tabs: FetchedGamesData) => ({
   payload: tabs,
 });
 
-export const fetchGameTabsFailure = (errorMessage: string) => ({
+export const fetchGameTabsFailure = (e: any) => ({
   type: GameTabsActionTypes.FETCH_GAME_TABS_FAILURE,
-  payload: errorMessage,
+  payload: e,
 });
 
 export const fetchGameTabsStartAsync = (data: FetchGamesRequestData) => {
@@ -32,6 +32,6 @@ export const fetchGameTabsStartAsync = (data: FetchGamesRequestData) => {
         const fetchedGamesData: FetchedGamesData = res.data;
         dispatch(fetchGameTabsSuccess(fetchedGamesData));
       })
-      .catch(() => dispatch(fetchGameTabsFailure("error message")));
+      .catch((e) => dispatch(fetchGameTabsFailure(e)));
   };
 };

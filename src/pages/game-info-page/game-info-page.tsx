@@ -16,6 +16,7 @@ import {
   selectIsAllLevelTabsFetched,
   selectIsLevelTabsFetching,
   selectLevelTabsCurrentPage,
+  selectLevelTabsError,
   selectLevelTabsList,
   selectLevelTabsPageSize,
   selectLevelTabsSortedBy,
@@ -25,6 +26,7 @@ import {
   selectIsAllUserTabsFetched,
   selectIsUserTabsFetching,
   selectUserTabsCurrentPage,
+  selectUserTabsError,
   selectUserTabsList,
   selectUserTabsPageSize,
   selectUserTabsSortedBy,
@@ -47,6 +49,7 @@ import { AppTabProps } from "../../copmonents/app-tab/app-tab";
 import HEADER_TABS_STATE from "../../redux/header-tabs/header-tabs.state";
 // styles
 import "./game-info-page.scss";
+import FetchErrorMessage from "../../copmonents/fetch-error-message/fetch-error-message";
 
 interface GameInfoPageProps {
   // using intl obj to insert translation into the tab title attribute
@@ -61,6 +64,7 @@ interface GameInfoPageProps {
   isAllUserTabsFetched: boolean;
   usersSortedByDescending: boolean;
   fetchUserTabsStartAsync: (data: FetchUsersRequestData) => void;
+  userTabsError: any;
   // levels
   levelTabs: AppTabProps[];
   isLevelTabsFetching: boolean;
@@ -70,6 +74,7 @@ interface GameInfoPageProps {
   isAllLevelTabsFetched: boolean;
   levelsSortedByDescending: boolean;
   fetchLevelTabsStartAsync: (data: FetchLevelsRequestData) => void;
+  levelTabsError: any;
 }
 
 const GameInfoPage: React.FC<GameInfoPageProps> = ({
@@ -84,6 +89,7 @@ const GameInfoPage: React.FC<GameInfoPageProps> = ({
   isAllUserTabsFetched,
   usersSortedByDescending,
   fetchUserTabsStartAsync,
+  userTabsError,
   // levels
   levelTabs,
   isLevelTabsFetching,
@@ -93,6 +99,7 @@ const GameInfoPage: React.FC<GameInfoPageProps> = ({
   isAllLevelTabsFetched,
   levelsSortedByDescending,
   fetchLevelTabsStartAsync,
+  levelTabsError,
 }) => {
   // translation vars
   const translationPrefix: string = "gameInfoPage";
@@ -170,6 +177,8 @@ const GameInfoPage: React.FC<GameInfoPageProps> = ({
             >
               <AppTabsList tabs={userTabs} />
             </InfiniteScroll>
+          ) : userTabsError ? (
+            <FetchErrorMessage serverError={userTabsError} />
           ) : (
             <AppSpinner loading={true} />
           )}
@@ -180,7 +189,7 @@ const GameInfoPage: React.FC<GameInfoPageProps> = ({
             fields={HEADER_TABS_STATE[AppTabType.LEVEL]}
             refersTo={{ gameCode }}
           />
-          {userTabs ? (
+          {levelTabs ? (
             <InfiniteScroll
               loadMore={() => {
                 nextLevelsPage();
@@ -190,6 +199,8 @@ const GameInfoPage: React.FC<GameInfoPageProps> = ({
             >
               <AppTabsList tabs={levelTabs} />
             </InfiniteScroll>
+          ) : levelTabsError ? (
+            <FetchErrorMessage serverError={levelTabsError} />
           ) : (
             <AppSpinner loading={true} />
           )}
@@ -208,6 +219,7 @@ const mapStateToProps = createStructuredSelector<any, any>({
   userTabsPageSize: selectUserTabsPageSize,
   userTabsCurrentPage: selectUserTabsCurrentPage,
   isAllUserTabsFetched: selectIsAllUserTabsFetched,
+  userTabsError: selectUserTabsError,
   // level tabs
   levelTabs: selectLevelTabsList,
   isLevelTabsFetching: selectIsLevelTabsFetching,
@@ -216,6 +228,7 @@ const mapStateToProps = createStructuredSelector<any, any>({
   levelTabsPageSize: selectLevelTabsPageSize,
   levelTabsCurrentPage: selectLevelTabsCurrentPage,
   isAllLevelTabsFetched: selectIsAllLevelTabsFetched,
+  levelTabsError: selectLevelTabsError,
 });
 
 const mapDispatchToProps = (dispatch: any) => ({

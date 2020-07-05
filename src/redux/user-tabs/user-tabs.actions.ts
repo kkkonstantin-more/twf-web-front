@@ -6,7 +6,6 @@ import {
   FetchUsersRequestData,
   UsersSortingProperty,
 } from "./user-tabs.types";
-import { LevelsSortingProperty } from "../level-tabs/level-tabs.types";
 
 export const fetchUserTabsStart = () => ({
   type: UserTabsActionTypes.FETCH_USER_TABS_START,
@@ -25,9 +24,9 @@ export const fetchUserTabsSuccess = (
   },
 });
 
-export const fetchUserTabsFailure = (errorMessage: string) => ({
+export const fetchUserTabsFailure = (e: any) => ({
   type: UserTabsActionTypes.FETCH_USER_TABS_FAILURE,
-  payload: errorMessage,
+  payload: e,
 });
 
 export const fetchUserTabsStartAsync = (data: FetchUsersRequestData) => {
@@ -44,6 +43,6 @@ export const fetchUserTabsStartAsync = (data: FetchUsersRequestData) => {
           fetchUserTabsSuccess(fetchedUsersData, data.sortedBy, data.descending)
         );
       })
-      .catch(() => dispatch(fetchUserTabsFailure("error message")));
+      .catch((e) => dispatch(fetchUserTabsFailure(e)));
   };
 };

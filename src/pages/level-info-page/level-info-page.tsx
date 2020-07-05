@@ -1,37 +1,61 @@
 import React, { useEffect } from "react";
-import { useParams } from "react-router-dom";
-//
 import translate from "../../translations/translate";
-import AppTabHeader from "../../copmonents/app-tab-header/app-tab-header";
-import { AppTabType } from "../../types/app-tabs/AppTab";
-import HEADER_TABS_STATE from "../../redux/header-tabs/header-tabs.state";
-import AppTabsList from "../../copmonents/app-tabs-list/app-tabs-list";
-import { connect, MapDispatchToProps } from "react-redux";
-import { FetchLevelsRequestData } from "../../redux/level-tabs/level-tabs.types";
-import { fetchLevelTabsStartAsync } from "../../redux/level-tabs/level-tabs.actions";
+import { useParams } from "react-router-dom";
+// redux
+import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
 import {
+  selectIsAllUserTabsFetched,
   selectIsUserTabsFetching,
+  selectUserTabsCurrentPage,
+  selectUserTabsError,
   selectUserTabsList,
+  selectUserTabsPageSize,
+  selectUserTabsSortedBy,
+  selectUserTabsSortedDescending,
 } from "../../redux/user-tabs/user-tabs.selectors";
+import { fetchLevelTabsStartAsync } from "../../redux/level-tabs/level-tabs.actions";
+import { fetchUserTabsStartAsync } from "../../redux/user-tabs/user-tabs.actions";
+// components
+import AppTabHeader from "../../copmonents/app-tab-header/app-tab-header";
+import AppTabsList from "../../copmonents/app-tabs-list/app-tabs-list";
+import InfiniteScroll from "react-infinite-scroller";
+import AppSpinner from "../../copmonents/app-spinner/app-spinner";
+import FetchErrorMessage from "../../copmonents/fetch-error-message/fetch-error-message";
+// types
+import { AppTabType } from "../../types/app-tabs/AppTab";
+import { FetchLevelsRequestData } from "../../redux/level-tabs/level-tabs.types";
 import { AppTabProps } from "../../copmonents/app-tab/app-tab";
 import {
   FetchUsersRequestData,
   UsersSortingProperty,
 } from "../../redux/user-tabs/user-tabs.types";
-import { fetchUserTabsStartAsync } from "../../redux/user-tabs/user-tabs.actions";
-
+// data
+import HEADER_TABS_STATE from "../../redux/header-tabs/header-tabs.state";
+// styles
 import "./level-info-page.scss";
 
 interface LevelInfoPageProps {
   // redux props
-  isUserTabsFetching: boolean;
   userTabs: AppTabProps[] | null;
+  isUserTabsFetching: boolean;
+  isAllUserTabsFetched: boolean;
+  userTabsSortedBy: UsersSortingProperty;
+  usersSortedByDescending: boolean;
+  userTabsPageSize: number;
+  userTabsCurrentPage: number;
+  userTabsError: any;
   fetchUserTabsStartAsync: (data: FetchUsersRequestData) => void;
 }
 const LevelInfoPage: React.FC<LevelInfoPageProps> = ({
-  isUserTabsFetching,
   userTabs,
+  isUserTabsFetching,
+  isAllUserTabsFetched,
+  userTabsSortedBy,
+  usersSortedByDescending,
+  userTabsPageSize,
+  userTabsCurrentPage,
+  userTabsError,
   fetchUserTabsStartAsync,
 }) => {
   // translation vars
@@ -49,9 +73,21 @@ const LevelInfoPage: React.FC<LevelInfoPageProps> = ({
       sortedBy: UsersSortingProperty.BY_LEVELS_COUNT,
       descending: true,
       offset: 0,
-      limit: 10000,
+      limit: userTabsPageSize,
     });
   }, [levelCode]);
+
+  const nextUsersPage = () => {
+    if (!isUserTabsFetching)
+      fetchUserTabsStartAsync({
+        levelCode,
+        gameCode: null,
+        sortedBy: userTabsSortedBy,
+        descending: usersSortedByDescending,
+        offset: userTabsCurrentPage * userTabsPageSize,
+        limit: userTabsPageSize,
+      });
+  };
 
   return (
     <div className="level-info-page u-container">
@@ -64,12 +100,26 @@ const LevelInfoPage: React.FC<LevelInfoPageProps> = ({
         fields={HEADER_TABS_STATE[AppTabType.USER]}
         refersTo={{ levelCode }}
       />
-      {userTabs && <AppTabsList tabs={userTabs} />}
+      {userTabs ? (
+        <InfiniteScroll
+          loadMore={() => {
+            nextUsersPage();
+          }}
+          hasMore={!isAllUserTabsFetched}
+          loader={<AppSpinner key={0} loading={true} />}
+        >
+          <AppTabsList tabs={userTabs} />
+        </InfiniteScroll>
+      ) : userTabsError ? (
+        <FetchErrorMessage serverError={userTabsError} />
+      ) : (
+        <AppSpinner loading={true} />
+      )}
     </div>
   );
 };
 
-const mapDispatchToProps: MapDispatchToProps<any, any> = (dispatch: any) => ({
+const mapDispatchToProps = (dispatch: any) => ({
   fetchLevelTabsStartAsync: (data: FetchLevelsRequestData) =>
     dispatch(fetchLevelTabsStartAsync(data)),
   fetchUserTabsStartAsync: (data: FetchUsersRequestData) =>
@@ -77,8 +127,14 @@ const mapDispatchToProps: MapDispatchToProps<any, any> = (dispatch: any) => ({
 });
 
 const mapStateToProps = createStructuredSelector<any, any>({
-  isUserTabsFetching: selectIsUserTabsFetching,
   userTabs: selectUserTabsList,
+  isUserTabsFetching: selectIsUserTabsFetching,
+  isAllUserTabsFetched: selectIsAllUserTabsFetched,
+  userTabsError: selectUserTabsError,
+  userTabsSortedBy: selectUserTabsSortedBy,
+  usersSortedByDescending: selectUserTabsSortedDescending,
+  userTabsPageSize: selectUserTabsPageSize,
+  userTabsCurrentPage: selectUserTabsCurrentPage,
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(LevelInfoPage);
