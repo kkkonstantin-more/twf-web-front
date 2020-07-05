@@ -7,7 +7,7 @@ const USER_TABS_INITIAL_STATE: UserTabsState = {
   errorMessage: null,
   sortedBy: null,
   sortedDescending: true,
-  pageSize: 10,
+  pageSize: 100,
   currentPage: 0,
 };
 

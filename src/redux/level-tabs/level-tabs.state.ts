@@ -7,7 +7,7 @@ const LEVEL_TABS_INITIAL_STATE: LevelTabsState = {
   errorMessage: null,
   sortedBy: null,
   sortedDescending: true,
-  pageSize: 10,
+  pageSize: 100,
   currentPage: 0,
 };
 

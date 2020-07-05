@@ -16,6 +16,8 @@ import { fetchUserTabsStartAsync } from "../../redux/user-tabs/user-tabs.actions
 // components
 import AppTabHeader from "../../copmonents/app-tab-header/app-tab-header";
 import AppTabsList from "../../copmonents/app-tabs-list/app-tabs-list";
+import InfiniteScroll from "react-infinite-scroller";
+import AppSpinner from "../../copmonents/app-spinner/app-spinner";
 // types
 import { AppTabProps } from "../../copmonents/app-tab/app-tab";
 import { AppTabType } from "../../types/app-tabs/AppTab";
@@ -23,13 +25,10 @@ import {
   FetchUsersRequestData,
   UsersSortingProperty,
 } from "../../redux/user-tabs/user-tabs.types";
-
+// data
 import HEADER_TABS_STATE from "../../redux/header-tabs/header-tabs.state";
-
+// styles
 import "./users-page.scss";
-import InfiniteScroll from "react-infinite-scroller";
-import AppSpinner from "../../copmonents/app-spinner/app-spinner";
-import { LevelsSortingProperty } from "../../redux/level-tabs/level-tabs.types";
 
 interface UsersPageProps {
   // redux props
@@ -64,16 +63,16 @@ const UsersPage: React.FC<UsersPageProps> = ({
       sortedBy: UsersSortingProperty.BY_LEVELS_COUNT,
       descending: true,
       offset: 0,
-      limit: 10,
+      limit: userTabsPageSize,
     });
   }, []);
 
-  const nextPage = (sortedBy: UsersSortingProperty) => {
+  const nextPage = () => {
     if (!isUserTabsFetching) {
       fetchUserTabsStartAsync({
         levelCode: null,
         gameCode: null,
-        sortedBy,
+        sortedBy: usersTabsSortedBy,
         descending: usersSortedByDescending,
         offset: userTabsCurrentPage * userTabsPageSize,
         limit: userTabsPageSize,
@@ -91,7 +90,7 @@ const UsersPage: React.FC<UsersPageProps> = ({
       {userTabs ? (
         <InfiniteScroll
           loadMore={() => {
-            nextPage(usersTabsSortedBy);
+            nextPage();
           }}
           hasMore={!isAllUserTabsFetched}
           loader={<AppSpinner loading={true} />}
@@ -105,11 +104,6 @@ const UsersPage: React.FC<UsersPageProps> = ({
   );
 };
 
-const mapDispatchToProps: MapDispatchToProps<any, any> = (dispatch: any) => ({
-  fetchUserTabsStartAsync: (data: FetchUsersRequestData) =>
-    dispatch(fetchUserTabsStartAsync(data)),
-});
-
 const mapStateToProps = createStructuredSelector<any, any>({
   isUserTabsFetching: selectIsUserTabsFetching,
   userTabs: selectUserTabsList,
@@ -118,6 +112,11 @@ const mapStateToProps = createStructuredSelector<any, any>({
   userTabsPageSize: selectUserTabsPageSize,
   userTabsCurrentPage: selectUserTabsCurrentPage,
   isAllUserTabsFetched: selectIsAllUserTabsFetched,
+});
+
+const mapDispatchToProps: MapDispatchToProps<any, any> = (dispatch: any) => ({
+  fetchUserTabsStartAsync: (data: FetchUsersRequestData) =>
+    dispatch(fetchUserTabsStartAsync(data)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(UsersPage);

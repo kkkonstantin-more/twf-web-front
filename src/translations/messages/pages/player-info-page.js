@@ -2,12 +2,14 @@ const prefix = "playerInfoPage";
 
 const playerInfoPageRu = {
   [prefix + ".title"]: "Игрок",
-  [prefix + ".completedLevels"]: "Пройденные уровни",
+  [prefix + ".gamesPlayed"]: "Сыграл/сыграла в игры",
+  [prefix + ".levelsCompleted"]: "Пройденные уровни",
 };
 
 const playerInfoPageEn = {
   [prefix + ".title"]: "Player",
-  [prefix + ".completedLevels"]: "Completed levels",
+  [prefix + ".gamesPlayed"]: "Played games",
+  [prefix + ".levelsCompleted"]: "Completed levels",
 };
 
 export { playerInfoPageEn, playerInfoPageRu };

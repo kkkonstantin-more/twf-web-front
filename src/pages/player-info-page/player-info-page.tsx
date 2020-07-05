@@ -1,19 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useParams } from "react-router-dom";
-
-import "./player-info-page.scss";
+// intl
 import translate from "../../translations/translate";
-import { AppTabProps } from "../../copmonents/app-tab/app-tab";
-import { Tab, Tabs } from "react-bootstrap";
-import AppTabHeader from "../../copmonents/app-tab-header/app-tab-header";
-import { AppTabType } from "../../types/app-tabs/AppTab";
-import HEADER_TABS_STATE from "../../redux/header-tabs/header-tabs.state";
-import { connect, MapDispatchToProps } from "react-redux";
-import {
-  FetchLevelsRequestData,
-  LevelsSortingProperty,
-} from "../../redux/level-tabs/level-tabs.types";
-import { fetchLevelTabsStartAsync } from "../../redux/level-tabs/level-tabs.actions";
+import { injectIntl } from "react-intl";
+// redux
+import { connect } from "react-redux";
 import { createStructuredSelector } from "reselect";
 import {
   selectIsAllLevelTabsFetched,
@@ -24,53 +15,74 @@ import {
   selectLevelTabsSortedBy,
   selectLevelTabsSortedDescending,
 } from "../../redux/level-tabs/level-tabs-selectors";
-import { injectIntl } from "react-intl";
 import {
   selectGameTabsList,
   selectIsGameTabsFetching,
 } from "../../redux/game-tabs/game-tabs.selectors";
+import { fetchGameTabsStartAsync } from "../../redux/game-tabs/game-tabs.actions";
+import { fetchLevelTabsStartAsync } from "../../redux/level-tabs/level-tabs.actions";
+// components
+import AppTabHeader from "../../copmonents/app-tab-header/app-tab-header";
+import AppTabsList from "../../copmonents/app-tabs-list/app-tabs-list";
+import AppSpinner from "../../copmonents/app-spinner/app-spinner";
+import InfiniteScroll from "react-infinite-scroller";
+import { Tab, Tabs } from "react-bootstrap";
+// styles
+import { AppTabProps } from "../../copmonents/app-tab/app-tab";
+import { AppTabType } from "../../types/app-tabs/AppTab";
+import {
+  FetchLevelsRequestData,
+  LevelsSortingProperty,
+} from "../../redux/level-tabs/level-tabs.types";
 import {
   FetchGamesRequestData,
   GamesSortingProperty,
 } from "../../redux/game-tabs/game-tabs.types";
-import { fetchGameTabsStartAsync } from "../../redux/game-tabs/game-tabs.actions";
-import AppTabsList from "../../copmonents/app-tabs-list/app-tabs-list";
-import InfiniteScroll from "react-infinite-scroller";
-import AppSpinner from "../../copmonents/app-spinner/app-spinner";
+// data
+import HEADER_TABS_STATE from "../../redux/header-tabs/header-tabs.state";
+// styles
+import "./player-info-page.scss";
 
 interface PlayerInfoPageProps {
   intl: any;
-  // redux props
-  fetchLevelTabsStartAsync: (data: FetchLevelsRequestData) => void;
-  isLevelTabsFetching: boolean;
-  fetchGameTabsStartAsync: (data: FetchGamesRequestData) => void;
-  isAllLevelTabsFetched: boolean;
-  isGameTabsFetching: boolean;
+  // REDUX PROPS
+  // levels
   levelTabs: AppTabProps[];
-  gameTabs: AppTabProps[];
+  isLevelTabsFetching: boolean;
+  isAllLevelTabsFetched: boolean;
   levelsTabsSortedBy: LevelsSortingProperty;
-  levelsSortedByDescending: boolean;
   levelTabsPageSize: number;
   levelTabsCurrentPage: number;
+  levelsSortedByDescending: boolean;
+  fetchLevelTabsStartAsync: (data: FetchLevelsRequestData) => void;
+  // games
+  gameTabs: AppTabProps[];
+  isGameTabsFetching: boolean;
+  fetchGameTabsStartAsync: (data: FetchGamesRequestData) => void;
 }
 
 const PlayerInfoPage: React.FC<PlayerInfoPageProps> = ({
-  fetchLevelTabsStartAsync,
-  fetchGameTabsStartAsync,
-  isLevelTabsFetching,
-  isGameTabsFetching,
-  isAllLevelTabsFetched,
+  intl,
+  // REDUX PROPS
+  // levels
   levelTabs,
-  gameTabs,
+  isLevelTabsFetching,
+  isAllLevelTabsFetched,
   levelsTabsSortedBy,
   levelsSortedByDescending,
   levelTabsPageSize,
   levelTabsCurrentPage,
+  fetchLevelTabsStartAsync,
+  // games
+  gameTabs,
+  fetchGameTabsStartAsync,
 }) => {
   // translation vars
   const translationPrefix: string = "playerInfoPage";
   const titleId: string = translationPrefix + ".title";
-  // other
+  const gamesPlayedId: string = translationPrefix + ".gamesPlayed";
+  const levelsCompletedId: string = translationPrefix + ".levelsCompleted";
+
   const { playerCode } = useParams();
 
   useEffect(() => {
@@ -88,16 +100,16 @@ const PlayerInfoPage: React.FC<PlayerInfoPageProps> = ({
       sortedBy: LevelsSortingProperty.BY_USERS_COUNT,
       descending: true,
       offset: 0,
-      limit: 10,
+      limit: levelTabsPageSize,
     });
   }, [playerCode]);
 
-  const nextPage = (sortedBy: LevelsSortingProperty) => {
+  const nextPage = () => {
     if (!isLevelTabsFetching) {
       fetchLevelTabsStartAsync({
         userCode: playerCode,
         gameCode: null,
-        sortedBy,
+        sortedBy: levelsTabsSortedBy,
         descending: levelsSortedByDescending,
         offset: levelTabsCurrentPage * levelTabsPageSize,
         limit: levelTabsPageSize,
@@ -111,12 +123,7 @@ const PlayerInfoPage: React.FC<PlayerInfoPageProps> = ({
         {translate(titleId)}: {playerCode}
       </h1>
       <Tabs defaultActiveKey="games" id="tabs">
-        <Tab
-          eventKey="games"
-          title={"Сыграл в игры"}
-
-          // title={intl.formatMessage({ id: playersTabId })}
-        >
+        <Tab eventKey="games" title={intl.formatMessage({ id: gamesPlayedId })}>
           <div className="game-info-page__played-game-players">
             <AppTabHeader
               type={AppTabType.GAME}
@@ -132,20 +139,17 @@ const PlayerInfoPage: React.FC<PlayerInfoPageProps> = ({
         </Tab>
         <Tab
           eventKey="levels"
-          title="Пройденные уровни"
-          // title={intl.formatMessage({ id: levelsTabId })}
+          title={intl.formatMessage({ id: levelsCompletedId })}
         >
           <AppTabHeader
             type={AppTabType.LEVEL}
             fields={HEADER_TABS_STATE[AppTabType.LEVEL]}
             refersTo={{ userCode: playerCode }}
           />
-          {/*{levelTabs && <AppTabsList tabs={levelTabs} />}*/}
-
           {levelTabs ? (
             <InfiniteScroll
               loadMore={() => {
-                nextPage(levelsTabsSortedBy);
+                nextPage();
               }}
               hasMore={!isAllLevelTabsFetched}
               loader={<AppSpinner loading={true} />}
@@ -161,13 +165,6 @@ const PlayerInfoPage: React.FC<PlayerInfoPageProps> = ({
   );
 };
 
-const mapDispatchToProps: MapDispatchToProps<any, any> = (dispatch: any) => ({
-  fetchLevelTabsStartAsync: (data: FetchLevelsRequestData) =>
-    dispatch(fetchLevelTabsStartAsync(data)),
-  fetchGameTabsStartAsync: (data: FetchGamesRequestData) =>
-    dispatch(fetchGameTabsStartAsync(data)),
-});
-
 const mapStateToProps = createStructuredSelector<any, any>({
   isLevelTabsFetching: selectIsLevelTabsFetching,
   isAllLevelTabsFetched: selectIsAllLevelTabsFetched,
@@ -178,6 +175,13 @@ const mapStateToProps = createStructuredSelector<any, any>({
   levelsSortedByDescending: selectLevelTabsSortedDescending,
   levelTabsPageSize: selectLevelTabsPageSize,
   levelTabsCurrentPage: selectLevelTabsCurrentPage,
+});
+
+const mapDispatchToProps = (dispatch: any) => ({
+  fetchLevelTabsStartAsync: (data: FetchLevelsRequestData) =>
+    dispatch(fetchLevelTabsStartAsync(data)),
+  fetchGameTabsStartAsync: (data: FetchGamesRequestData) =>
+    dispatch(fetchGameTabsStartAsync(data)),
 });
 
 export default connect(

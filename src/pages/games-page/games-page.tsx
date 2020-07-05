@@ -28,6 +28,7 @@ export interface GamesPageProps {
 }
 
 const GamesPage: React.FC<GamesPageProps> = ({
+  // redux props
   fetchGameTabsStartAsync,
   gameTabs,
 }) => {

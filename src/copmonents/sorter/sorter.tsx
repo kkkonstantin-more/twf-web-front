@@ -1,27 +1,31 @@
 import React, { useState } from "react";
+// redux
 import { connect } from "react-redux";
-
-import Icon from "@mdi/react";
-import { mdiArrowDownThick } from "@mdi/js";
-
-import "./sorter.scss";
+import { createStructuredSelector } from "reselect";
+import { fetchLevelTabsStartAsync } from "../../redux/level-tabs/level-tabs.actions";
+import { selectLevelTabsPageSize } from "../../redux/level-tabs/level-tabs-selectors";
+import { fetchUserTabsStartAsync } from "../../redux/user-tabs/user-tabs.actions";
+import { selectUserTabsPageSize } from "../../redux/user-tabs/user-tabs.selectors";
+import { fetchGameTabsStartAsync } from "../../redux/game-tabs/game-tabs.actions";
+// types
 import {
   FetchGamesRequestData,
   GamesSortingProperty,
 } from "../../redux/game-tabs/game-tabs.types";
-import { MapDispatchToProps } from "react-redux";
-import { fetchGameTabsStartAsync } from "../../redux/game-tabs/game-tabs.actions";
-import { AppTabType } from "../../types/app-tabs/AppTab";
-import {
-  FetchLevelsRequestData,
-  LevelsSortingProperty,
-} from "../../redux/level-tabs/level-tabs.types";
-import { fetchLevelTabsStartAsync } from "../../redux/level-tabs/level-tabs.actions";
 import {
   FetchUsersRequestData,
   UsersSortingProperty,
 } from "../../redux/user-tabs/user-tabs.types";
-import { fetchUserTabsStartAsync } from "../../redux/user-tabs/user-tabs.actions";
+import {
+  FetchLevelsRequestData,
+  LevelsSortingProperty,
+} from "../../redux/level-tabs/level-tabs.types";
+import { AppTabType } from "../../types/app-tabs/AppTab";
+// icons
+import Icon from "@mdi/react";
+import { mdiArrowDownThick } from "@mdi/js";
+// styles
+import "./sorter.scss";
 
 export interface SorterProps {
   tabType: AppTabType;
@@ -40,6 +44,8 @@ export interface SorterProps {
   fetchGameTabsStartAsync?: any;
   fetchLevelTabsStartAsync?: any;
   fetchUserTabsStartAsync?: any;
+  userTabsPageSize?: number;
+  levelTabsPageSize?: number;
 }
 
 const Sorter: React.FC<SorterProps> = ({
@@ -51,6 +57,8 @@ const Sorter: React.FC<SorterProps> = ({
   fetchLevelTabsStartAsync,
   fetchUserTabsStartAsync,
   additionalRequestData,
+  userTabsPageSize,
+  levelTabsPageSize,
 }) => {
   const [isDescending, setIsDescending] = useState<boolean>(initialDescending);
 
@@ -67,7 +75,7 @@ const Sorter: React.FC<SorterProps> = ({
                 sortedBy: sortBy,
                 descending: isDescending,
                 offset: 0,
-                limit: 100000,
+                limit: 10000,
               },
               ...additionalRequestData,
             });
@@ -76,14 +84,16 @@ const Sorter: React.FC<SorterProps> = ({
             fetchLevelTabsStartAsync({
               ...{
                 userCode: null,
-                gameCode: null,
+                gameCode: additionalRequestData?.gameCode || null,
                 sortedBy: sortBy,
                 descending: isDescending,
                 offset: 0,
-                limit: 10,
+                limit: levelTabsPageSize,
               },
               ...additionalRequestData,
             });
+            console.log(additionalRequestData?.gameCode);
+            console.log(typeof additionalRequestData);
             break;
           case AppTabType.USER:
             fetchUserTabsStartAsync({
@@ -93,7 +103,7 @@ const Sorter: React.FC<SorterProps> = ({
                 sortedBy: sortBy,
                 descending: isDescending,
                 offset: 0,
-                limit: 10,
+                limit: userTabsPageSize,
               },
               ...additionalRequestData,
             });
@@ -112,7 +122,7 @@ const Sorter: React.FC<SorterProps> = ({
   );
 };
 
-const mapDispatchToProps: MapDispatchToProps<any, any> = (dispatch: any) => ({
+const mapDispatchToProps = (dispatch: any) => ({
   fetchGameTabsStartAsync: (data: FetchGamesRequestData) =>
     dispatch(fetchGameTabsStartAsync(data)),
   fetchLevelTabsStartAsync: (data: FetchLevelsRequestData) =>
@@ -121,4 +131,9 @@ const mapDispatchToProps: MapDispatchToProps<any, any> = (dispatch: any) => ({
     dispatch(fetchUserTabsStartAsync(data)),
 });
 
-export default connect(null, mapDispatchToProps)(Sorter);
+const mapStateToProps = createStructuredSelector<any, any>({
+  userTabsPageSize: selectUserTabsPageSize,
+  levelTabsPageSize: selectLevelTabsPageSize,
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Sorter);
