@@ -7,7 +7,7 @@ export const filterFetchedUsersData = (
   fetchedGamesData: FetchedUsersData[]
 ): AppTabProps[] => {
   return fetchedGamesData.map((item: FetchedUsersData) => ({
-    link: "/matify-players/" + item.userCode,
+    link: `/matify-players/${item.userCode}?login=${item.userLogin}&name=${item.userName}`,
     type: AppTabType.USER,
     fields: [
       {

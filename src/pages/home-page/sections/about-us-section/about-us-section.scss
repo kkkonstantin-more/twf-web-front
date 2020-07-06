@@ -4,6 +4,7 @@
 .about-us-section {
   display: flex;
   flex-wrap: wrap;
+  justify-content: space-between;
   background-color: $color-primary;
   color: $color-primary-light;
   padding-bottom: 2rem;
@@ -12,8 +13,9 @@
     order: -2;
   }
   &__text {
-    width: 50vw;
+    width: 47vw;
     padding: 0 2rem;
+    text-align: justify;
     @include respond(phone) {
       width: 100%;
     }

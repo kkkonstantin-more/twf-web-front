@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 // intl
 import translate from "../../translations/translate";
 import { injectIntl } from "react-intl";
@@ -91,6 +91,16 @@ const PlayerInfoPage: React.FC<PlayerInfoPageProps> = ({
   const levelsCompletedId: string = translationPrefix + ".levelsCompleted";
 
   const { playerCode } = useParams();
+  // using browser api and react router to get query params
+  const query: URLSearchParams = new URLSearchParams(useLocation().search);
+  const login: string = query.get("login") || "";
+  const name: string = query.get("name") || "";
+  // filtering what to show on user's page
+  const userShowLogin = name
+    ? login.startsWith("guest") || login.startsWith("user")
+      ? name
+      : login
+    : login;
 
   useEffect(() => {
     fetchGameTabsStartAsync({
@@ -127,7 +137,7 @@ const PlayerInfoPage: React.FC<PlayerInfoPageProps> = ({
   return (
     <div className="player-info-page u-container">
       <h1>
-        {translate(titleId)}: {playerCode}
+        {translate(titleId)}: {userShowLogin}
       </h1>
       <Tabs defaultActiveKey="games" id="tabs">
         <Tab eventKey="games" title={intl.formatMessage({ id: gamesPlayedId })}>
