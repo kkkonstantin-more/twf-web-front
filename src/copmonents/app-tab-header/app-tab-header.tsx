@@ -4,9 +4,8 @@ import translate from "../../translations/translate";
 import { connect } from "react-redux";
 import { selectHiddenFieldsOfTabs } from "../../redux/hidden-fields/hidden-fields.selectors";
 import { toggleFieldHidden } from "../../redux/hidden-fields/hidden-fields.actions";
-
+// components
 import Sorter from "../sorter/sorter";
-
 import { Dropdown } from "react-bootstrap";
 // types
 import { AppTabFieldName, AppTabType } from "../../types/app-tabs/AppTab";
@@ -40,6 +39,10 @@ export interface AppTabHeaderProps {
     levelCode?: string;
     userCode?: string;
   };
+  customFieldIds?: {
+    name: AppTabFieldName;
+    translationId: string;
+  }[];
   // redux props
   hiddenFieldsOfTabs?: any;
   toggleFieldHidden?: any;
@@ -49,10 +52,21 @@ const AppTabHeader: React.FC<AppTabHeaderProps> = ({
   type,
   fields,
   refersTo,
+  customFieldIds,
   // redux props
   hiddenFieldsOfTabs,
   toggleFieldHidden,
 }) => {
+  // adding custom translations
+  if (customFieldIds) {
+    customFieldIds.forEach((customField) => {
+      fields.forEach((field: AppTabHeaderField) => {
+        if (field.name === customField.name) {
+          field.textId = customField.translationId;
+        }
+      });
+    });
+  }
   // getting hidden fields status of this specific tab
   const hiddenFieldsOfTab: { [fieldName: string]: boolean } =
     hiddenFieldsOfTabs[type];

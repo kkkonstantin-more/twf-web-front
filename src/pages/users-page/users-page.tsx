@@ -64,7 +64,7 @@ const UsersPage: React.FC<UsersPageProps> = ({
     fetchUserTabsStartAsync({
       gameCode: null,
       levelCode: null,
-      sortedBy: UsersSortingProperty.BY_LEVELS_COUNT,
+      sortedBy: UsersSortingProperty.BY_RATING,
       descending: true,
       offset: 0,
       limit: userTabsPageSize,

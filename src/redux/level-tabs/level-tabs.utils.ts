@@ -26,6 +26,10 @@ export const filterFetchedLevelsData = (
         name: LevelAppTabFieldName.usersCount,
         value: item.usersCount,
       },
+      {
+        name: LevelAppTabFieldName.steps,
+        value: item.steps,
+      },
     ],
   }));
 };

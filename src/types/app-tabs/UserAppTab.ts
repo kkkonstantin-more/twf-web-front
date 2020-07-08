@@ -5,6 +5,7 @@ enum UserAppTabFieldName {
   userFullName = "userFullName",
   levelsCompleted = "levelsCompleted",
   additionalInfo = "additionalInfo",
+  rating = "rating",
 }
 
 export { UserAppTabFieldName };

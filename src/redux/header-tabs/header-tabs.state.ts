@@ -68,6 +68,12 @@ const HEADER_TABS_STATE: HeaderTabsState = {
       withSorter: UsersSortingProperty.BY_USER_LOGIN,
     },
     {
+      name: UserAppTabFieldName.rating,
+      textId: "appTabHeader.rating",
+      withFilter: true,
+      withSorter: UsersSortingProperty.BY_RATING,
+    },
+    {
       name: UserAppTabFieldName.userName,
       textId: "appTabHeader.userName",
       withFilter: true,
@@ -97,7 +103,7 @@ const HEADER_TABS_STATE: HeaderTabsState = {
       name: LevelAppTabFieldName.levelCode,
       textId: "appTabHeader.levelCode",
       withFilter: false,
-      withSorter: null,
+      withSorter: LevelsSortingProperty.BY_LEVEL_CODE,
     },
     {
       name: LevelAppTabFieldName.gameName,
@@ -116,6 +122,12 @@ const HEADER_TABS_STATE: HeaderTabsState = {
       textId: "appTabHeader.usersCount",
       withFilter: true,
       withSorter: LevelsSortingProperty.BY_USERS_COUNT,
+    },
+    {
+      name: LevelAppTabFieldName.steps,
+      textId: "appTabHeader.steps",
+      withFilter: true,
+      withSorter: LevelsSortingProperty.BY_STEPS,
     },
   ],
 };

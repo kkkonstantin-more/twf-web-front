@@ -22,6 +22,7 @@ export enum UsersSortingProperty {
   BY_USER_NAME = "BY_USER_NAME",
   BY_USER_FULL_NAME = "BY_USER_FULL_NAME",
   BY_LEVELS_COUNT = "BY_LEVELS_COUNT",
+  BY_RATING = "BY_RATING",
   NONE = "NONE",
 }
 
@@ -41,4 +42,5 @@ export interface FetchedUsersData {
   userFullName: string;
   additionalInfo: string;
   levelsCount: number;
+  rating: number;
 }

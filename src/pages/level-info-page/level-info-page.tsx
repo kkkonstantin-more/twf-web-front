@@ -70,7 +70,7 @@ const LevelInfoPage: React.FC<LevelInfoPageProps> = ({
     fetchUserTabsStartAsync({
       levelCode,
       gameCode: null,
-      sortedBy: UsersSortingProperty.BY_LEVELS_COUNT,
+      sortedBy: UsersSortingProperty.BY_RATING,
       descending: true,
       offset: 0,
       limit: userTabsPageSize,

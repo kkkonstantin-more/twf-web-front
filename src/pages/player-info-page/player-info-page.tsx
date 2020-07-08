@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useParams, useLocation } from "react-router-dom";
+import { useLocation, useParams } from "react-router-dom";
 // intl
 import translate from "../../translations/translate";
 import { injectIntl } from "react-intl";
@@ -45,6 +45,7 @@ import HEADER_TABS_STATE from "../../redux/header-tabs/header-tabs.state";
 // styles
 import "./player-info-page.scss";
 import FetchErrorMessage from "../../copmonents/fetch-error-message/fetch-error-message";
+import { GameAppTabFieldName } from "../../types/app-tabs/GameAppTab";
 
 interface PlayerInfoPageProps {
   intl: any;
@@ -146,6 +147,12 @@ const PlayerInfoPage: React.FC<PlayerInfoPageProps> = ({
               type={AppTabType.GAME}
               fields={HEADER_TABS_STATE[AppTabType.GAME]}
               refersTo={{ userCode: playerCode }}
+              customFieldIds={[
+                {
+                  name: GameAppTabFieldName.levelsCount,
+                  translationId: "appTabHeader.levelsCompletedByPlayer",
+                },
+              ]}
             />
             {gameTabs ? (
               <AppTabsList tabs={gameTabs} />

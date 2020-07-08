@@ -19,6 +19,10 @@ export const filterFetchedUsersData = (
         value: item.userLogin,
       },
       {
+        name: UserAppTabFieldName.rating,
+        value: Math.round(item.rating),
+      },
+      {
         name: UserAppTabFieldName.userName,
         value: item.userName,
       },

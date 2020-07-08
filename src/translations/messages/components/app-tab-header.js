@@ -16,6 +16,10 @@ const appTabHeaderRu = {
   [prefix + ".levelsCount"]: "Количество уровней",
   [prefix + ".usersCount"]: "Количество игроков",
   [prefix + ".completedLevelsCount"]: "Количетсво пройденных уровней",
+  [prefix + ".steps"]: "Количетсво шагов",
+  [prefix + ".averageSteps"]: "Шагов в среднем",
+  [prefix + ".levelsCompletedByPlayer"]: "Пройдено уровней игроком",
+  [prefix + ".rating"]: "Рейтинг",
 };
 
 const appTabHeaderEn = {
@@ -34,6 +38,10 @@ const appTabHeaderEn = {
   [prefix + ".levelsCount"]: "Levels count",
   [prefix + ".usersCount"]: "Players count",
   [prefix + ".completedLevelsCount"]: "Completed levels count",
+  [prefix + ".steps"]: "Steps number",
+  [prefix + ".averageSteps"]: "Average steps",
+  [prefix + ".levelsCompletedByPlayer"]: "Levels completed by player",
+  [prefix + ".rating"]: "Rating",
 };
 
 export { appTabHeaderEn, appTabHeaderRu };

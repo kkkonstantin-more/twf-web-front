@@ -50,6 +50,7 @@ import HEADER_TABS_STATE from "../../redux/header-tabs/header-tabs.state";
 // styles
 import "./game-info-page.scss";
 import FetchErrorMessage from "../../copmonents/fetch-error-message/fetch-error-message";
+import { LevelAppTabFieldName } from "../../types/app-tabs/LevelAppTab";
 
 interface GameInfoPageProps {
   // using intl obj to insert translation into the tab title attribute
@@ -121,7 +122,7 @@ const GameInfoPage: React.FC<GameInfoPageProps> = ({
     fetchUserTabsStartAsync({
       levelCode: null,
       gameCode,
-      sortedBy: UsersSortingProperty.BY_LEVELS_COUNT,
+      sortedBy: UsersSortingProperty.BY_RATING,
       descending: true,
       offset: 0,
       limit: userTabsPageSize,
@@ -187,6 +188,12 @@ const GameInfoPage: React.FC<GameInfoPageProps> = ({
           <AppTabHeader
             type={AppTabType.LEVEL}
             fields={HEADER_TABS_STATE[AppTabType.LEVEL]}
+            customFieldIds={[
+              {
+                name: LevelAppTabFieldName.steps,
+                translationId: "appTabHeader.averageSteps",
+              },
+            ]}
             refersTo={{ gameCode }}
           />
           {levelTabs ? (
