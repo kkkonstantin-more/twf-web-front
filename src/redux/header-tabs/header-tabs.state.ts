@@ -1,10 +1,10 @@
-import {AppTabType} from "../../types/app-tabs/AppTab";
-import {GameAppTabFieldName} from "../../types/app-tabs/GameAppTab";
-import {UserAppTabFieldName} from "../../types/app-tabs/UserAppTab";
-import {LevelAppTabFieldName} from "../../types/app-tabs/LevelAppTab";
-import {GamesSortingProperty} from "../game-tabs/game-tabs.types";
-import {LevelsSortingProperty} from "../level-tabs/level-tabs.types";
-import {UsersSortingProperty} from "../user-tabs/user-tabs.types";
+import { AppTabType } from "../../types/app-tabs/AppTab";
+import { GameAppTabFieldName } from "../../types/app-tabs/GameAppTab";
+import { UserAppTabFieldName } from "../../types/app-tabs/UserAppTab";
+import { LevelAppTabFieldName } from "../../types/app-tabs/LevelAppTab";
+import { GamesSortingProperty } from "../game-tabs/game-tabs.types";
+import { LevelsSortingProperty } from "../level-tabs/level-tabs.types";
+import { UsersSortingProperty } from "../user-tabs/user-tabs.types";
 
 export interface HeaderTabsState {
   [AppTabType.GAME]: {

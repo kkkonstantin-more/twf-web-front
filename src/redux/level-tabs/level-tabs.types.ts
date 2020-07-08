@@ -31,7 +31,6 @@ export enum LevelsSortingProperty {
   BY_GAME_NAME = "BY_GAME_NAME",
   BY_DIFFICULTY = "BY_DIFFICULTY",
   BY_USERS_COUNT = "BY_USERS_COUNT",
-  BY_LEVEL_CODE = "BY_LEVEL_CODE",
   BY_STEPS = "BY_STEPS",
   NONE = "NONE",
 }
