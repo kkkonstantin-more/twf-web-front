@@ -4,6 +4,7 @@ import Icon from "@mdi/react";
 import { mdiStar, mdiTrophy } from "@mdi/js";
 
 import "./user-rating-tab.scss";
+import {UserData} from "../../pages/home-page/sections/ratings-section/ratings-section";
 
 export interface UserRatingTabProps {
   avatarUrl: string;
@@ -13,12 +14,12 @@ export interface UserRatingTabProps {
   currentUser?: boolean;
 }
 
-const UserRatingTab: React.FC<UserRatingTabProps> = ({
-  avatarUrl,
+const UserRatingTab: React.FC<UserData> = ({
+//  avatarUrl,
   name,
   place,
   points,
-  currentUser,
+//  currentUser,
 }) => {
   const color = () => {
     switch (place) {
@@ -36,15 +37,16 @@ const UserRatingTab: React.FC<UserRatingTabProps> = ({
     [1, 2, 3].indexOf(place) === -1 ? mdiStar : mdiTrophy;
   return (
     <div
-      className={`user-rating-tab ${
-        currentUser ? "user-rating-tab--current-user" : ""
-      }`}
+      // className={`user-rating-tab ${
+      //   currentUser ? "user-rating-tab--current-user" : ""
+      // }`}
+      className="user-rating-tab"
     >
       <div className="user-rating-tab__place">#{place}</div>
-      <div
-        className="user-rating-tab__avatar"
-        style={{ backgroundImage: `url(${avatarUrl})` }}
-      />
+      {/*<div*/}
+        {/*className="user-rating-tab__avatar"*/}
+        {/*style={{ backgroundImage: `url(${avatarUrl})` }}*/}
+      {/*/>*/}
       <div className="user-rating-tab__name">{name}</div>
       <div className="user-rating-tab__points">
         <span>{points}</span>
