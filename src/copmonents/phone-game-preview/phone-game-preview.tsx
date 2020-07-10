@@ -6,7 +6,7 @@ import "./phone-game-preview.scss";
 const PhoneGamePreview: React.FC = () => {
   const gameScreenshotsUrls: string[] = [];
   // filling array with urls
-  for (let i = 1; i < 12; i++) {
+  for (let i = 1; i < 10; i++) {
     gameScreenshotsUrls.push(
       require(`../../assets/component-phone-game-preview/screenshots/screenshot-${i}.jpg`)
     );

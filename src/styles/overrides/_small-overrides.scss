@@ -1,0 +1,15 @@
+@import "../abstracts/variables";
+
+// override google button
+.login-form__buttons > button:nth-child(2), .register-form__buttons > button:nth-child(2) {
+  background-color: white !important;
+  font-size: $sm-font-size !important;
+  box-shadow: none !important;
+  border-radius: 5px !important;
+  border: 1px solid $color-primary-dark !important;
+  color: $color-primary-dark !important;
+  & > div {
+    border-radius: 5px !important;
+    width: 3rem;
+  }
+}

@@ -4,14 +4,14 @@ const registerFormRu = {
   [prefix + ".emailLabel"]: "Email",
   [prefix + ".passwordLabel"]: "Пароль",
   [prefix + ".registerButtonText"]: "Зарегистрироваться",
-  [prefix + ".googleButtonText"]: "Зарегистрироваться через Google",
+  [prefix + ".googleButtonText"]: "Через Google",
 };
 
 const registerFormEn = {
   [prefix + ".emailLabel"]: "Email",
   [prefix + ".passwordLabel"]: "Password",
   [prefix + ".registerButtonText"]: "Register",
-  [prefix + ".googleButtonText"]: "Register with Google",
+  [prefix + ".googleButtonText"]: "With Google",
 };
 
 export { registerFormEn, registerFormRu };

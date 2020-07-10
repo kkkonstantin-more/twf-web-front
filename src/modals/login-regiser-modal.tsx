@@ -1,11 +1,12 @@
 import React from "react";
 import { injectIntl } from "react-intl";
 
+import { Modal, Tab, Tabs } from "react-bootstrap";
+
 import LoginForm from "../forms/login-form/login-form";
 import RegisterForm from "../forms/regiser-form/register-form";
 
 import "./login-register-modal.scss";
-import { Modal, Tab, Tabs } from "react-bootstrap";
 
 interface LoginRegisterModalProps {
   showModal: boolean;

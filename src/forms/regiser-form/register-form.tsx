@@ -37,7 +37,7 @@ const RegisterForm: React.FC<{ intl: any }> = ({ intl }) => {
         </button>
         <GoogleLogin
           // this is demo client id
-          clientId="739547301958-dgfpc93t5q1t3tqd4oe7cscfh491876o.apps.googleusercontent.com"
+          clientId="977771799310-42c14i973bbuo8nnquld6houe6mfa2t1.apps.googleusercontent.com"
           buttonText={intl.formatMessage({ id: googleButtonTextId })}
           onSuccess={responseGoogle}
           onFailure={responseGoogle}

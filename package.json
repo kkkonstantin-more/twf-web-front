@@ -8,7 +8,6 @@
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
-    "@types/d3": "^5.7.2",
     "@types/jest": "^24.9.1",
     "@types/node": "^12.12.37",
     "@types/react": "^16.9.34",
@@ -29,6 +28,7 @@
     "react-dom": "^16.13.1",
     "react-google-login": "^5.1.10",
     "react-graph-vis": "^1.0.5",
+    "react-hook-form": "^6.0.3",
     "react-infinite-scroller": "^1.2.4",
     "react-intl": "^4.5.1",
     "react-redux": "^7.2.0",
@@ -40,8 +40,7 @@
     "redux-logger": "^3.0.6",
     "redux-thunk": "^2.3.0",
     "reselect": "^4.0.0",
-    "typescript": "^3.7.5",
-    "vis-network": "^7.6.4"
+    "typescript": "^3.7.5"
   },
   "scripts": {
     "start": "react-scripts start",

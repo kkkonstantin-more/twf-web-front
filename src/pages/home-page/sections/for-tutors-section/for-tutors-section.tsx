@@ -1,9 +1,6 @@
 import React from "react";
 import translate from "../../../../translations/translate";
-
-import { Carousel } from "react-bootstrap";
-// import Carousel from "react-responsive-carousel";
-
+// icons
 import Icon from "@mdi/react";
 import { mdiNintendoGameBoy } from "@mdi/js";
 import { mdiTimer } from "@mdi/js";
@@ -24,7 +21,7 @@ const ForTutorsSection: React.FC = () => {
   const titleId: string = translationPrefix + ".title";
   const mainTextId: string = translationPrefix + ".mainText";
   // other
-  const svgUrl: string = require("../../../../assets/home-page-for-tutors-section/teacher-and-desk.svg");
+  const bigSvgUrl: string = require("../../../../assets/home-page-for-tutors-section/teacher-and-desk.svg");
 
   const textWithSvgBlock: TextWithSvgBlock[] = [
     {
@@ -71,23 +68,10 @@ const ForTutorsSection: React.FC = () => {
             </div>
           );
         })}
-        {/*{carouselSlides.map((slide: CarouselSlide, i: number) => (*/}
-        {/*  <Carousel.Item key={i} className="for-tutors-section__carousel-slide">*/}
-        {/*    <img*/}
-        {/*      src={slide.imgUrl}*/}
-        {/*      width="100%"*/}
-        {/*      height="auto"*/}
-        {/*      alt={`carousel slide ${i}`}*/}
-        {/*    />*/}
-        {/*    <Carousel.Caption className="for-tutors-section__carousel-caption">*/}
-        {/*      {translate(slide.captionTextId)}*/}
-        {/*    </Carousel.Caption>*/}
-        {/*  </Carousel.Item>*/}
-        {/*))}*/}
       </div>
       <div className="for-tutors-section__svg-and-text">
         <img
-          src={svgUrl}
+          src={bigSvgUrl}
           alt="man in front of a desk"
           className="for-tutors-section__svg"
         />

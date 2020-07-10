@@ -6,7 +6,7 @@ import { LOCALES } from "../../translations";
 import { HashLink as Link } from "react-router-hash-link";
 // icons for mobile navigation
 import Icon from "@mdi/react";
-import { mdiMenu, mdiCloseCircleOutline } from "@mdi/js";
+import { mdiMenu, mdiCloseCircleOutline, mdiLoginVariant } from "@mdi/js";
 
 import LoginRegisterModal from "../../modals/login-regiser-modal";
 
@@ -28,7 +28,6 @@ const NavigationBar: React.FC<NavigationBarProps> = ({
   const [showMobileNavigation, setShowMobileNavigation] = useState<boolean>(
     false
   );
-
   const [showLoginRegisterModal, setShowLoginRegisterModal] = useState<boolean>(
     false
   );
@@ -94,6 +93,13 @@ const NavigationBar: React.FC<NavigationBarProps> = ({
               {translate(link.linkNameId)}
             </Link>
           ))}
+          <div
+            className="navigation-bar__link navigation-bar__link--signin"
+            onClick={() => setShowLoginRegisterModal(true)}
+          >
+            <Icon path={mdiLoginVariant} size={1} />
+            <span>{translate("navigationBar.link.login")}</span>
+          </div>
         </div>
         <div onClick={() => setShowMobileNavigation(true)}>
           <Icon

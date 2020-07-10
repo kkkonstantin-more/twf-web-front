@@ -1,4 +1,7 @@
 @import "~bootstrap/scss/bootstrap";
+@import "overrides/bootstrap-override";
+
+@import "overrides/small-overrides";
 
 @import "abstracts/variables";
 @import "abstracts/mixins";

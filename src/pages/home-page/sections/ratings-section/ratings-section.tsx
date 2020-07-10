@@ -1,21 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import translate from "../../../../translations/translate";
+import { Link } from "react-router-dom";
+import axios from "axios";
 
 import RatingsTable from "../../../../copmonents/ratings-table/ratings-table";
-
-// import {
-//   demoRatingsTop5Users,
-//   demoUserRating,
-// } from "../../../../data/demo-data";
-
-import "./ratings-section.scss";
-
-import axios from "axios";
+// types
 import {
   FetchedUsersData,
   UsersSortingProperty,
 } from "../../../../redux/user-tabs/user-tabs.types";
+
+import "./ratings-section.scss";
 
 export interface UserData {
   name: string;
@@ -41,12 +36,8 @@ const RatingsSection: React.FC = () => {
         .filter((item: FetchedUsersData) => {
           const name = item.userFullName || item.userName || item.userLogin;
           return (
-            !(
-              item.additionalInfo.includes("SPBPU") ||
-              item.additionalInfo.includes("СПБПУ") ||
-              item.additionalInfo.includes("LETI") ||
-              item.additionalInfo.includes("ЛЭТИ") ||
-              item.additionalInfo.includes("363010")
+            !["SPBPU", "СПБПУ", "LETI", "ЛЭТИ", "363010"].some((pattern) =>
+              item.additionalInfo.includes(pattern)
             ) &&
             name !== "" &&
             !name.startsWith("guest")
@@ -71,6 +62,7 @@ const RatingsSection: React.FC = () => {
   const sloganId: string = translationPrefix + ".slogan";
 
   const svg = require("../../../../assets/home-page-rating-section/winner-cup.svg");
+
   return (
     <div className="ratings-section__wrapper" id="ratingsSection">
       <div className="ratings-section">
@@ -85,10 +77,7 @@ const RatingsSection: React.FC = () => {
           <h1>{translate(sloganId)}</h1>
         </div>
         <div className="ratings-section__table">
-          <RatingsTable
-            data={topUsersByRating}
-            //            currentUserData={demoUserRating}
-          />
+          <RatingsTable data={topUsersByRating} />
           <Link
             to="/matify-players"
             target="_blank"

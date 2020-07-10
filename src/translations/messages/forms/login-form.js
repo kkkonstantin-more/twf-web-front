@@ -4,14 +4,14 @@ const loginFormRu = {
   [prefix + ".emailLabel"]: "Email",
   [prefix + ".passwordLabel"]: "Пароль",
   [prefix + ".loginButtonText"]: "Войти",
-  [prefix + ".googleButtonText"]: "Войти через Google",
+  [prefix + ".googleButtonText"]: "Через Google",
 };
 
 const loginFormEn = {
   [prefix + ".emailLabel"]: "Email",
   [prefix + ".passwordLabel"]: "Password",
   [prefix + ".loginButtonText"]: "Log in",
-  [prefix + ".googleButtonText"]: "Log in with Google",
+  [prefix + ".googleButtonText"]: "With Google",
 };
 
 export { loginFormEn, loginFormRu };
