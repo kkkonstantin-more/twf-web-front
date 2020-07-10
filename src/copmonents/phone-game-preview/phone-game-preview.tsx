@@ -4,7 +4,7 @@ import { Carousel } from "react-bootstrap";
 import "./phone-game-preview.scss";
 
 const PhoneGamePreview: React.FC = () => {
-  const gameScreenshotsUrls: Array<string> = [];
+  const gameScreenshotsUrls: string[] = [];
   // filling array with urls
   for (let i = 1; i < 12; i++) {
     gameScreenshotsUrls.push(

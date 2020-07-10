@@ -4,7 +4,7 @@ import Icon from "@mdi/react";
 import { mdiStar, mdiTrophy } from "@mdi/js";
 
 import "./user-rating-tab.scss";
-import {UserData} from "../../pages/home-page/sections/ratings-section/ratings-section";
+import { UserData } from "../../pages/home-page/sections/ratings-section/ratings-section";
 
 export interface UserRatingTabProps {
   avatarUrl: string;
@@ -15,11 +15,11 @@ export interface UserRatingTabProps {
 }
 
 const UserRatingTab: React.FC<UserData> = ({
-//  avatarUrl,
+  //  avatarUrl,
   name,
   place,
   points,
-//  currentUser,
+  //  currentUser,
 }) => {
   const color = () => {
     switch (place) {
@@ -44,8 +44,8 @@ const UserRatingTab: React.FC<UserData> = ({
     >
       <div className="user-rating-tab__place">#{place}</div>
       {/*<div*/}
-        {/*className="user-rating-tab__avatar"*/}
-        {/*style={{ backgroundImage: `url(${avatarUrl})` }}*/}
+      {/*className="user-rating-tab__avatar"*/}
+      {/*style={{ backgroundImage: `url(${avatarUrl})` }}*/}
       {/*/>*/}
       <div className="user-rating-tab__name">{name}</div>
       <div className="user-rating-tab__points">
