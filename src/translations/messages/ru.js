@@ -9,8 +9,6 @@ import { workFieldsGraphRu } from "./components/work-fields-graph";
 import { workFieldsSectionRu } from "./pages/home-page/sections/work-fields-section";
 import { ranksSectionRu } from "./pages/home-page/sections/ranks-section";
 import { aboutUsSectionRu } from "./pages/home-page/sections/about-us-section";
-import { registerFormRu } from "./forms/register-form";
-import { loginFormRu } from "./forms/login-form";
 import { loginRegisterModalRu } from "./modals/login-register-modal";
 import { footerRu } from "./layouts/footer";
 import { gameInfoPageRu } from "./pages/game-info-page/game-info-page";
@@ -26,6 +24,7 @@ import { levelInfoPageRu } from "./pages/level-info-page";
 import { filterRu } from "./components/filter";
 import { appTabHeaderRu } from "./components/app-tab-header";
 import { fetchErrorMessageRu } from "./components/fetch-error-message";
+import { formsRu } from "./forms/forms";
 
 export default {
   [LOCALES.RUSSIAN]: {
@@ -38,8 +37,6 @@ export default {
     ...workFieldsSectionRu,
     ...ranksSectionRu,
     ...aboutUsSectionRu,
-    ...registerFormRu,
-    ...loginFormRu,
     ...loginRegisterModalRu,
     ...footerRu,
     ...gameInfoPageRu,
@@ -55,5 +52,6 @@ export default {
     ...filterRu,
     ...appTabHeaderRu,
     ...fetchErrorMessageRu,
+    ...formsRu,
   },
 };

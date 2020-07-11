@@ -1,46 +1,27 @@
-const translationPrefix: string = "loginForm";
+import { FormInput } from "../types";
 
-export interface LoginFormInput {
-  labelTranslationId: string;
-  inputType: "text" | "email" | "password";
-  required: boolean;
-}
+const translationPrefix: string = "forms";
 
-const loginFormInputs: LoginFormInput[] = [
+const loginFormInputs: FormInput[] = [
   {
-    labelTranslationId: translationPrefix + ".loginLabel",
+    name: "login",
+    labelTranslationId: translationPrefix + ".loginOrEmailLabel",
     inputType: "text",
-    required: true,
+    validation: {
+      required: true,
+      minLength: 3,
+      maxLength: 64,
+    },
   },
   {
-    labelTranslationId: translationPrefix + ".emailLabel",
-    inputType: "email",
-    required: true,
-  },
-  {
+    name: "password",
     labelTranslationId: translationPrefix + ".passwordLabel",
     inputType: "password",
-    required: true,
-  },
-  {
-    labelTranslationId: translationPrefix + ".name",
-    inputType: "text",
-    required: false,
-  },
-  {
-    labelTranslationId: translationPrefix + ".emailLabel",
-    inputType: "email",
-    required: true,
-  },
-  {
-    labelTranslationId: translationPrefix + ".loginLabel",
-    inputType: "text",
-    required: true,
-  },
-  {
-    labelTranslationId: translationPrefix + ".emailLabel",
-    inputType: "email",
-    required: true,
+    validation: {
+      required: true,
+      minLength: 6,
+      maxLength: 64,
+    },
   },
 ];
 

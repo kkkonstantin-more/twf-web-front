@@ -9,8 +9,6 @@ import { workFieldsGraphEn } from "./components/work-fields-graph";
 import { workFieldsSectionEn } from "./pages/home-page/sections/work-fields-section";
 import { ranksSectionEn } from "./pages/home-page/sections/ranks-section";
 import { aboutUsSectionEn } from "./pages/home-page/sections/about-us-section";
-import { registerFormEn } from "./forms/register-form";
-import { loginFormEn } from "./forms/login-form";
 import { loginRegisterModalEn } from "./modals/login-register-modal";
 import { footerEn } from "./layouts/footer";
 import { gameInfoPageEn } from "./pages/game-info-page/game-info-page";
@@ -26,6 +24,7 @@ import { levelInfoPageEn } from "./pages/level-info-page";
 import { filterEn } from "./components/filter";
 import { appTabHeaderEn } from "./components/app-tab-header";
 import { fetchErrorMessageEn } from "./components/fetch-error-message";
+import { formsEn } from "./forms/forms";
 
 export default {
   [LOCALES.ENGLISH]: {
@@ -38,8 +37,6 @@ export default {
     ...workFieldsSectionEn,
     ...ranksSectionEn,
     ...aboutUsSectionEn,
-    ...registerFormEn,
-    ...loginFormEn,
     ...loginRegisterModalEn,
     ...footerEn,
     ...gameInfoPageEn,
@@ -55,5 +52,6 @@ export default {
     ...filterEn,
     ...appTabHeaderEn,
     ...fetchErrorMessageEn,
+    ...formsEn,
   },
 };
