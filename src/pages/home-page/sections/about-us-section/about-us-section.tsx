@@ -35,7 +35,7 @@ const AboutUsSection: React.FC = () => {
   const [currentImagesUrls, setCurrentImagesUrls] = useState([
     ...shuffleArray(horizontalPhotosUrls).slice(0, 3),
     ...shuffleArray(verticalPhotosUrls).slice(0, 3),
-    ...shuffleArray(standardPhotosUrls).slice(0, 13),
+    ...shuffleArray(standardPhotosUrls).slice(0, 12),
   ]);
 
   const [photosSides, setPhotosSides] = useState<boolean[]>(
@@ -48,9 +48,6 @@ const AboutUsSection: React.FC = () => {
       setPhotosSides((prevState) => {
         return prevState.map((side, i) => (i === randomIdx ? !side : side));
       });
-      // setCurrentImagesUrls((prevState => {
-      //   return prevState.map((url, i) => (i === randomIdx ? ))
-      // }))
     }, 3000);
   }, [photosSides]);
 
