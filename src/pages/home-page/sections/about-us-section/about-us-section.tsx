@@ -1,20 +1,21 @@
 import React, { useEffect, useState } from "react";
 import translate from "../../../../translations/translate";
-
+// our contacts icons
 import Icon from "@mdi/react";
 import { mdiVk, mdiGmail, mdiFacebook, mdiTelegram } from "@mdi/js";
 
-import "./about-us-section.scss";
+import { createArrayWithOneValue, shuffleArray } from "../../../../utils";
 
-import { createArrayWithOneValue } from "../../../../utils";
 import {
   horizontalPhotosUrls,
   verticalPhotosUrls,
   standardPhotosUrls,
 } from "./images-urls";
 
+import "./about-us-section.scss";
+
 const AboutUsSection: React.FC = () => {
-  // translate vars
+  // translation vars
   const translationPrefix: string = "aboutUsSection";
   const titleId: string = translationPrefix + ".title";
   const paragraphIds: string[] = [
@@ -30,30 +31,26 @@ const AboutUsSection: React.FC = () => {
     "https://vk.com/club195826752",
     "https://vk.com/club195826752",
   ];
-  const allImagesUrls: string[] = [
-    ...horizontalPhotosUrls.slice(0, 3),
-    ...verticalPhotosUrls.slice(0, 3),
-    ...standardPhotosUrls.slice(0, 12),
-  ];
-  const currentImagesUrls = [
-    ...horizontalPhotosUrls.slice(0, 3),
-    ...verticalPhotosUrls.slice(0, 3),
-    ...standardPhotosUrls.slice(0, 13),
-  ];
+
+  const [currentImagesUrls, setCurrentImagesUrls] = useState([
+    ...shuffleArray(horizontalPhotosUrls).slice(0, 3),
+    ...shuffleArray(verticalPhotosUrls).slice(0, 3),
+    ...shuffleArray(standardPhotosUrls).slice(0, 13),
+  ]);
+
   const [photosSides, setPhotosSides] = useState<boolean[]>(
-    createArrayWithOneValue(true, Math.floor(allImagesUrls.length))
+    createArrayWithOneValue(true, currentImagesUrls.length)
   );
 
   useEffect(() => {
     setTimeout(() => {
-      const randomIdx = Math.floor(
-        Math.random() * Math.floor(photosSides.length)
-      );
+      const randomIdx = Math.floor(Math.random() * photosSides.length);
       setPhotosSides((prevState) => {
-        const newSides: boolean[] = [...prevState];
-        newSides[randomIdx] = !prevState[randomIdx];
-        return newSides;
+        return prevState.map((side, i) => (i === randomIdx ? !side : side));
       });
+      // setCurrentImagesUrls((prevState => {
+      //   return prevState.map((url, i) => (i === randomIdx ? ))
+      // }))
     }, 3000);
   }, [photosSides]);
 
