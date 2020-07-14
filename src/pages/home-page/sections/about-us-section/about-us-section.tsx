@@ -84,9 +84,7 @@ const AboutUsSection: React.FC = () => {
                 />
                 <div
                   style={{
-                    backgroundImage: `url(${
-                      currentImagesUrls[(i + 1) % photosSides.length]
-                    })`,
+                    backgroundImage: `url(${currentImagesUrls[i]})`,
                   }}
                   className="about-us-section__photo about-us-section__photo--back"
                 />
