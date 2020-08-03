@@ -52,6 +52,7 @@
     "redux-logger": "^3.0.6",
     "redux-thunk": "^2.3.0",
     "reselect": "^4.0.0",
+    "spectre.css": "^0.5.9",
     "typescript": "^3.7.5"
   },
   "scripts": {
