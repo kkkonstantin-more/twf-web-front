@@ -8,14 +8,17 @@ import MathQuill from "../../copmonents/math-quill/math-quill";
 
 import "./create-game-page.scss";
 import MathQuillEditor from "../../copmonents/math-quill-editor/math-quill-editor";
+import CustomForms from "../../copmonents/custom-forms/custom-forms";
 
 const CreateGamePage = () => {
+  const game = games[0];
   return (
     <div className="create-game-page">
+      <CustomForms />
       {/*<div className="u-container">*/}
       {/*  <MathQuillEditor enableOutput={true} />*/}
       {/*</div>*/}
-      <JSONEditorForm />
+      {/*<JSONEditorForm />*/}
       {/*<MathQuill />*/}
       {/*<CodeMirror initialJSON={game} />*/}
       {/*<JSONEditorComponent initialJSON={game} />*/}

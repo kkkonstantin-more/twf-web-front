@@ -35,6 +35,7 @@ const CodeMirrorEditor: React.FC<{ initialJSON: object }> = ({
   initialJSON,
 }) => {
   const [editor, setEditor] = useState<any>(null);
+  const [inputValue, setInputValue] = useState<string>("");
 
   const entryPoint: React.Ref<any> = useRef();
 
@@ -85,22 +86,68 @@ const CodeMirrorEditor: React.FC<{ initialJSON: object }> = ({
       <div id="myError" />
       <div className="code-mirror__actions">
         <h1>actions</h1>
-        <button className="btn" onClick={() => editor.undo()}>
-          undo (cmd + z)
+        {/*<button className="btn" onClick={() => editor.undo()}>*/}
+        {/*  undo (cmd + z)*/}
+        {/*</button>*/}
+        {/*<button className="btn" onClick={() => editor.redo()}>*/}
+        {/*  redo (cmd + shift+ z)*/}
+        {/*</button>*/}
+        {/*<button*/}
+        {/*  className="btn"*/}
+        {/*  onClick={() => editor.execCommand("autocomplete")}*/}
+        {/*>*/}
+        {/*  autocomplete*/}
+        {/*</button>*/}
+        {/*<button className="btn" onClick={() => editor.execCommand("find")}>*/}
+        {/*  find*/}
+        {/*</button>*/}
+        <button onClick={() => editor.setValue(JSON.stringify(initialJSON))}>
+          update text
         </button>
-        <button className="btn" onClick={() => editor.redo()}>
-          redo (cmd + shift+ z)
+        <button onClick={() => console.log(editor.doc.getHistory())}>
+          log history
         </button>
         <button
-          className="btn"
-          onClick={() => editor.execCommand("autocomplete")}
+          onClick={() => {
+            editor.replaceRange("lalal", { line: 1, ch: 5 });
+          }}
         >
-          autocomplete
+          change line
         </button>
-        <button className="btn" onClick={() => editor.execCommand("find")}>
-          find
+        <button
+          onClick={() => {
+            console.log(editor.getLineTokens(1)[4].start);
+          }}
+        >
+          tokens
+        </button>
+        <button
+          onClick={() => {
+            console.log(editor.getSearchCursor("game").replace("12"));
+          }}
+        >
+          find gameSpace
         </button>
         <hr />
+        <input
+          type="text"
+          value={inputValue}
+          onChange={(e) => {
+            setInputValue(e.target.value);
+            const { start, end } = editor.getLineTokens(1)[4];
+            editor.replaceRange(
+              `"${e.target.value}"`,
+              {
+                line: 1,
+                ch: start,
+              },
+              {
+                line: 1,
+                ch: end,
+              }
+            );
+          }}
+        />
       </div>
     </div>
   );

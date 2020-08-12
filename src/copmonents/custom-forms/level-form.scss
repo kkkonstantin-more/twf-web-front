@@ -1,0 +1,24 @@
+@import "../../styles/abstracts/variables";
+
+$margin-top: 2rem;
+
+.automatic-level-form {
+  display: flex;
+  align-items: center;
+  & > *:not(:last-child) {
+    margin-right: 1.5rem;
+    min-width: fit-content;
+  }
+  &__level-number {
+    font-size: $bg-font-size;
+    margin-top: $margin-top;
+  }
+  &__delete-button {
+    border: none;
+    background-color: inherit;
+    margin-top: $margin-top;
+  }
+  &__level-type-icon {
+    margin-top: $margin-top;
+  }
+}

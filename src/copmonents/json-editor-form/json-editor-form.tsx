@@ -53,7 +53,7 @@ const JSONEditorForm: React.FC = () => {
           },
           levels: {
             type: "array",
-            format: "tabs",
+            format: "table",
             title: "Уровни",
             options: {
               disable_array_delete_last_row: true,
@@ -327,6 +327,7 @@ const JSONEditorForm: React.FC = () => {
   return (
     <div className="u-container">
       <div id="editor-entry-point" ref={editorEntryPoint}></div>
+      <button onClick={() => console.log(editorJSON)}>log</button>
     </div>
   );
 };
