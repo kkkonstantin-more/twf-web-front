@@ -11,12 +11,13 @@ import MathQuillEditor from "../../copmonents/math-quill-editor/math-quill-edito
 import CustomForms from "../../copmonents/custom-forms/custom-forms";
 
 const CreateGamePage = () => {
-  const game = games[0];
+  const inputRef = React.createRef<HTMLInputElement>();
   return (
     <div className="create-game-page">
       <CustomForms />
       {/*<div className="u-container">*/}
-      {/*  <MathQuillEditor enableOutput={true} />*/}
+      {/*<input type="text" ref={inputRef} />*/}
+      {/*<MathQuillEditor enableOutput={true} inputRef={inputRef} />*/}
       {/*</div>*/}
       {/*<JSONEditorForm />*/}
       {/*<MathQuill />*/}

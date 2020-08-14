@@ -1,4 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { RefObject, useEffect, useState } from "react";
+
+import "mathquill/build/mathquill";
+import "mathquill/build/mathquill.css";
 
 import "./math-quill-editor.scss";
 
@@ -8,20 +11,21 @@ interface MathQuillEditorProps {
   startingLatexExpression?: string;
   enableOutput?: boolean;
   showOperationTab?: boolean;
+  inputRef: RefObject<HTMLInputElement>;
 }
 
 const MathQuillEditor: React.FC<MathQuillEditorProps> = ({
   config,
-  width,
   startingLatexExpression,
   enableOutput = true,
   showOperationTab = true,
-}) => {
+  inputRef,
+  width,
+}: MathQuillEditorProps) => {
+  if (inputRef.current) {
+    inputRef.current.style.display = "none";
+  }
   const [editor, setEditor] = useState<any>();
-  const [latexOutput, setLatexOutput] = useState<string>(
-    startingLatexExpression ? startingLatexExpression : ""
-  );
-
   const id = Date.now().toString();
 
   useEffect(() => {
@@ -40,7 +44,9 @@ const MathQuillEditor: React.FC<MathQuillEditorProps> = ({
             ...config.handlers,
             edit: function () {
               if (config.handlers.fns.edit) config.handlers.fns.edit();
-              setLatexOutput(mathField.latex());
+              if (inputRef.current) {
+                inputRef.current.value = mathField.latex();
+              }
             },
           },
         });
@@ -49,7 +55,9 @@ const MathQuillEditor: React.FC<MathQuillEditorProps> = ({
           ...config,
           handlers: {
             edit: function () {
-              setLatexOutput(mathField.latex());
+              if (inputRef.current) {
+                inputRef.current.value = mathField.latex();
+              }
             },
           },
         });
@@ -57,14 +65,16 @@ const MathQuillEditor: React.FC<MathQuillEditorProps> = ({
         mathField.config({
           handlers: {
             edit: function () {
-              setLatexOutput(mathField.latex());
+              if (inputRef.current) {
+                inputRef.current.value = mathField.latex();
+              }
             },
           },
         });
       }
     }
     setEditor(mathField);
-  }, []);
+  }, [inputRef]);
 
   const actions: { iconUrl: string; latexCmd: string }[] = [
     {
@@ -82,35 +92,24 @@ const MathQuillEditor: React.FC<MathQuillEditorProps> = ({
   ];
 
   return (
-    <div className="math-quill-editor u-mt-md u-mb-md">
-      <div className="math-quill-editor__operations">
-        {actions.map((action, i) => {
-          const { iconUrl, latexCmd } = action;
-          return (
-            <div key={i} className="math-quill-editor__operation">
-              <img src={iconUrl} onClick={() => editor.cmd(latexCmd)} />
-            </div>
-          );
-        })}
-      </div>
-      <div
-        id={id}
-        className="math-quill-editor__main-input"
-        // style={{ width: width ? width : "100%" }}
-      />
-      {enableOutput && (
-        <div className="math-quill-editor__latex-output">
-          <b>Latex:</b>
-          <input
-            type="text"
-            value={latexOutput}
-            onChange={(event) => {
-              setLatexOutput(event.target.value);
-              editor.latex(event.target.value);
-            }}
-          />
+    <div className="math-quill-editor">
+      {showOperationTab && (
+        <div className="math-quill-editor__operations">
+          {actions.map((action, i) => {
+            const { iconUrl, latexCmd } = action;
+            return (
+              <div key={i} className="math-quill-editor__operation">
+                <img src={iconUrl} onClick={() => editor.cmd(latexCmd)} />
+              </div>
+            );
+          })}
         </div>
       )}
+      <span
+        id={id}
+        className="math-quill-editor__main-input"
+        style={{ width: width ? width : "100%" }}
+      />
     </div>
   );
 };

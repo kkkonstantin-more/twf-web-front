@@ -1,12 +1,13 @@
 @import "../../styles/abstracts/variables";
 
 .math-quill-editor {
-  border: 1px solid $color-primary-dark;
   &__operations {
     display: flex;
     background-color: $color-primary-light;
     padding: 2rem;
     margin-bottom: -0.3rem;
+    border: 1px solid $color-primary-dark;
+    border-bottom: none;
   }
   &__operation > img {
     width: 2rem;
@@ -18,11 +19,5 @@
   &__main-input {
     width: 100%;
     min-height: 4rem;
-  }
-  &__latex-output {
-    padding: 2rem;
-    & > input {
-      margin-left: 2rem;
-    }
   }
 }

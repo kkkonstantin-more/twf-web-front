@@ -2,7 +2,7 @@
 
 $margin-top: 2rem;
 
-.automatic-level-form {
+.level-form {
   display: flex;
   align-items: center;
   & > *:not(:last-child) {
@@ -13,12 +13,20 @@ $margin-top: 2rem;
     font-size: $bg-font-size;
     margin-top: $margin-top;
   }
-  &__delete-button {
+  &__action-button {
     border: none;
     background-color: inherit;
     margin-top: $margin-top;
   }
   &__level-type-icon {
     margin-top: $margin-top;
+  }
+  &__add-fields {
+    display: flex;
+    align-items: center;
+    & > *:not(:last-child) {
+      margin-right: 1.5rem;
+      min-width: fit-content;
+    }
   }
 }
