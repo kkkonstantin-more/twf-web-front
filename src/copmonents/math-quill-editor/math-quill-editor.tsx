@@ -1,4 +1,5 @@
 import React, { RefObject, useEffect, useState } from "react";
+import { v4 as uuidv4 } from "uuid";
 
 import "mathquill/build/mathquill";
 import "mathquill/build/mathquill.css";
@@ -17,7 +18,6 @@ interface MathQuillEditorProps {
 const MathQuillEditor: React.FC<MathQuillEditorProps> = ({
   config,
   startingLatexExpression,
-  enableOutput = true,
   showOperationTab = true,
   inputRef,
   width,
@@ -26,7 +26,7 @@ const MathQuillEditor: React.FC<MathQuillEditorProps> = ({
     inputRef.current.style.display = "none";
   }
   const [editor, setEditor] = useState<any>();
-  const id = Date.now().toString();
+  const id = uuidv4();
 
   useEffect(() => {
     const htmlElement = document.getElementById(id);
@@ -34,45 +34,47 @@ const MathQuillEditor: React.FC<MathQuillEditorProps> = ({
     const MQ = window.MathQuill.getInterface(2);
     const mathField = config
       ? MQ.MathField(htmlElement, config)
-      : MQ.MathField(htmlElement, {});
+      : MQ.MathField(htmlElement);
 
-    if (enableOutput) {
-      if (config && config.handlers) {
-        mathField.config({
-          ...config,
-          handlers: {
-            ...config.handlers,
-            edit: function () {
-              if (config.handlers.fns.edit) config.handlers.fns.edit();
-              if (inputRef.current) {
-                inputRef.current.value = mathField.latex();
-              }
-            },
+    if (config && config.handlers) {
+      mathField.config({
+        ...config,
+        handlers: {
+          ...config.handlers,
+          edit: function () {
+            if (config.handlers.fns.edit) config.handlers.fns.edit();
+            if (inputRef.current) {
+              inputRef.current.value = mathField.latex();
+            }
           },
-        });
-      } else if (config) {
-        mathField.config({
-          ...config,
-          handlers: {
-            edit: function () {
-              if (inputRef.current) {
-                inputRef.current.value = mathField.latex();
-              }
-            },
+        },
+      });
+    } else if (config) {
+      mathField.config({
+        ...config,
+        handlers: {
+          edit: function () {
+            if (inputRef.current) {
+              inputRef.current.value = mathField.latex();
+            }
           },
-        });
-      } else {
-        mathField.config({
-          handlers: {
-            edit: function () {
-              if (inputRef.current) {
-                inputRef.current.value = mathField.latex();
-              }
-            },
+        },
+      });
+    } else {
+      mathField.config({
+        spaceBehavesLikeTab: true,
+        handlers: {
+          edit: function () {
+            if (inputRef.current) {
+              inputRef.current.value = mathField.latex();
+            }
           },
-        });
-      }
+        },
+      });
     }
+
+    if (startingLatexExpression) mathField.latex(startingLatexExpression);
+
     setEditor(mathField);
   }, [inputRef]);
 
