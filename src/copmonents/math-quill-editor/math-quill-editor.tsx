@@ -42,7 +42,14 @@ const MathQuillEditor: React.FC<MathQuillEditorProps> = ({
         handlers: {
           ...config.handlers,
           edit: function () {
-            if (config.handlers.fns.edit) config.handlers.fns.edit();
+            // edit function initialized for the first time
+            if (config.handlers.fns && config.handlers.fns.edit) {
+              config.handlers.fns.edit();
+            }
+            // edit function is already initialized
+            // if (config.handlers.edit) {
+            //   config.handlers.edit();
+            // }
             if (inputRef.current) {
               inputRef.current.value = mathField.latex();
             }

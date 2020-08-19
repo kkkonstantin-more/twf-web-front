@@ -8,7 +8,13 @@ import LevelForm, { Level, LevelType } from "./level-form";
 import Icon from "@mdi/react";
 import { mdiPlus } from "@mdi/js";
 
-const CustomForms: React.FC = () => {
+interface CustomFormsProps {
+  width?: string;
+}
+
+const CustomForms: React.FC<CustomFormsProps> = ({
+  width,
+}: CustomFormsProps) => {
   type FormInputs = {
     gameName: string;
     gameSpace: string;
@@ -29,7 +35,7 @@ const CustomForms: React.FC = () => {
   );
 
   return (
-    <div className="u-container custom-forms">
+    <div className="custom-forms" style={{ width }}>
       <FormProvider {...methods}>
         <div className="form-group">
           <label>Название игры</label>
@@ -57,13 +63,13 @@ const CustomForms: React.FC = () => {
                 key={field.id}
                 style={{ display: "flex", alignItems: "center" }}
               >
-                <LevelForm
-                  index={index}
-                  defaultValue={fields[index]}
-                  remove={remove}
-                  swap={swap}
-                  append={append}
-                />
+                {/*<LevelForm*/}
+                {/*  index={index}*/}
+                {/*  defaultValue={fields[index]}*/}
+                {/*  remove={remove}*/}
+                {/*  swap={swap}*/}
+                {/*  append={append}*/}
+                {/*/>*/}
               </div>
             );
           })}

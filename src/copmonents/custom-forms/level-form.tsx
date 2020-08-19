@@ -18,6 +18,7 @@ import {
   mdiContentCopy,
   mdiEye,
   mdiFileEye,
+  mdiPlayCircle,
   mdiRobot,
   mdiWrench,
 } from "@mdi/js";
@@ -55,10 +56,11 @@ export interface LevelFormProps {
   remove: (index: number) => void;
   swap: (from: number, to: number) => void;
   append: (level: Level) => void;
+  updateDemo: (index: number) => void;
 }
 
 const LevelForm: FC<LevelFormProps> = (props: LevelFormProps) => {
-  const { index, defaultValue, remove, swap, append } = props;
+  const { index, defaultValue, remove, swap, append, updateDemo } = props;
   const { register, getValues } = useFormContext();
 
   const goalTypes = [
@@ -71,7 +73,9 @@ const LevelForm: FC<LevelFormProps> = (props: LevelFormProps) => {
     "Упрощение",
     "Другое",
   ];
-  const [goalType, setGoalType] = useState("Сведение к целевому выражению");
+  const [goalType, setGoalType] = useState(
+    defaultValue.goalType || "Сведение к целевому выражению"
+  );
   const startExpressionRef: RefObject<HTMLInputElement> = React.createRef();
   const goalExpressionRef: RefObject<HTMLInputElement> = React.createRef();
 
@@ -749,6 +753,13 @@ const LevelForm: FC<LevelFormProps> = (props: LevelFormProps) => {
         size={2}
         action={() => {
           setShowHiddenFieldsModal(true);
+        }}
+      />
+      <ActionButton
+        mdiIconPath={mdiPlayCircle}
+        size={2}
+        action={() => {
+          updateDemo(index);
         }}
       />
       <AppModal
