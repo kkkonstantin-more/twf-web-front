@@ -25,7 +25,7 @@ import LevelForm, {
 
 const CreateGamePage = () => {
   const [showHintsBlock, setShowHintsBlock] = useState(false);
-  const [startExpressionHint, setStartExpressionHint] = useState("123");
+  const [startExpressionHint, setStartExpressionHint] = useState("");
   const [goalExpressionHint, setGoalExpressionHint] = useState("");
   const [currentEditedLevel, setCurrentEditedLevel] = useState<number | null>(
     null

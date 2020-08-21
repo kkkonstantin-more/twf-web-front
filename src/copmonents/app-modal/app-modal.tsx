@@ -6,12 +6,16 @@ interface AppModalProps {
   isOpen: boolean;
   close: Dispatch<void>;
   children: ReactNode;
+  width?: string;
+  height?: string;
 }
 
 const AppModal: React.FC<AppModalProps> = ({
   isOpen,
   close,
   children,
+  width,
+  height,
 }: AppModalProps) => {
   const customStyles = {
     content: {
@@ -21,6 +25,8 @@ const AppModal: React.FC<AppModalProps> = ({
       bottom: "auto",
       marginRight: "-50%",
       transform: "translate(-50%, -50%)",
+      width,
+      height,
     },
   };
   useEffect(() => {
