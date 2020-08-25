@@ -63,6 +63,7 @@ const CreateGamePage = () => {
 
   return (
     <div className="create-game-page">
+      <MathQuillEditor inputRef={React.createRef()} width="20rem" />
       <div
         className="create-game-page__form-container"
         style={{ width: showHintsBlock ? "50%" : "100%" }}

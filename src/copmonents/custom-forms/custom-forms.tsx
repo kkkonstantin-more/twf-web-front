@@ -7,6 +7,7 @@ import LevelForm, { Level, LevelType } from "./level-form";
 
 import Icon from "@mdi/react";
 import { mdiPlus } from "@mdi/js";
+import MathQuillEditor from "../math-quill-editor/math-quill-editor";
 
 interface CustomFormsProps {
   width?: string;

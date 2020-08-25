@@ -26,6 +26,7 @@ const MathQuillEditor: React.FC<MathQuillEditorProps> = ({
     inputRef.current.style.display = "none";
   }
   const [editor, setEditor] = useState<any>();
+  // generating unique id by uuid library
   const id = uuidv4();
 
   useEffect(() => {
@@ -101,7 +102,10 @@ const MathQuillEditor: React.FC<MathQuillEditorProps> = ({
   ];
 
   return (
-    <div className="math-quill-editor">
+    <div
+      className="math-quill-editor"
+      style={{ width: width ? width : "100%" }}
+    >
       {showOperationTab && (
         <div className="math-quill-editor__operations">
           {actions.map((action, i) => {
