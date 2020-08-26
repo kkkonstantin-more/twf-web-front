@@ -1,4 +1,5 @@
 import React, { RefObject, useEffect, useState } from "react";
+import Draggable from "react-draggable";
 
 import JSONEditorComponent from "../../copmonents/json-editor/json-editor";
 import CodeMirror from "../../copmonents/editors/code-mirror/code-mirror";
@@ -30,6 +31,7 @@ const CreateGamePage = () => {
   const [currentEditedLevel, setCurrentEditedLevel] = useState<number | null>(
     null
   );
+  const [hintsDeltaX, setHintsDeltaX] = useState(0);
 
   type FormInputs = {
     gameName: string;
@@ -63,10 +65,11 @@ const CreateGamePage = () => {
 
   return (
     <div className="create-game-page">
-      <MathQuillEditor inputRef={React.createRef()} width="20rem" />
       <div
         className="create-game-page__form-container"
-        style={{ width: showHintsBlock ? "50%" : "100%" }}
+        style={{
+          width: showHintsBlock ? `calc(100% + ${hintsDeltaX}` : "100%",
+        }}
       >
         <div className="create-game-page__form">
           <FormProvider {...methods}>
@@ -151,10 +154,18 @@ const CreateGamePage = () => {
       <div
         className="create-game-page__hints"
         style={{
-          width: showHintsBlock ? "48%" : "0",
+          width: showHintsBlock ? `calc(48% - ${hintsDeltaX}px)` : "0",
           opacity: showHintsBlock ? "1" : "0",
         }}
       >
+        <Draggable
+          onDrag={(_, { x }) => {
+            setHintsDeltaX((prevState: number) => prevState + x);
+          }}
+          axis="none"
+        >
+          <span className="create-game-page__hints-dragger" />
+        </Draggable>
         <div className="create-game-page__math-quill-hint">
           {showHintsBlock && (
             <>
