@@ -4,7 +4,7 @@ import translate from "../../../../translations/translate";
 import Icon from "@mdi/react";
 import { mdiVk, mdiGmail, mdiFacebook, mdiTelegram } from "@mdi/js";
 
-import { createArrayWithOneValue, shuffleArray } from "../../../../utils";
+import { createArrayWithOneValue, shuffleArray } from "../../../../utils/utils";
 
 import {
   horizontalPhotosUrls,
