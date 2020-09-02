@@ -12,13 +12,15 @@ const formsRu = {
   [prefix + ".registerButtonText"]: "Зарегистрироваться",
   [prefix + ".googleButtonText"]: "Через Google",
   [prefix +
-  ".errorText"]: "Что-то пошло не так... Проверьте введенные данные еще раз",
-  [prefix + ".successText"]: "Успешно!",
+  ".registerErrorDuplicate"]: "Пользователь с данным логином или email уже существует!",
+  [prefix +
+  ".registerInvalidForm"]: "Что-то пошло не так, проверьте корректность введенных данных",
+  [prefix + ".registerSuccess"]: "Успешная регистрация!",
 };
 
 const formsEn = {
   [prefix + ".emailLabel"]: "Email",
-  [prefix + ".loginOrEmailLabel"]: "login or email",
+  [prefix + ".loginOrEmailLabel"]: "Login or email",
   [prefix + ".passwordLabel"]: "Password",
   [prefix + ".loginButtonText"]: "Sign in",
   [prefix + ".googleButtonText"]: "With Google",
@@ -27,8 +29,11 @@ const formsEn = {
   [prefix + ".fullNameLabel"]: "Full name",
   [prefix + ".additionalInfoLabel"]: "Additional info",
   [prefix + ".registerButtonText"]: "Sign Up",
-  [prefix + ".errorText"]: "Something went wrong... Check your inputs again",
-  [prefix + ".successText"]: "Success!",
+  [prefix +
+  ".registerErrorDuplicate"]: "User with such email or login is already exists",
+  [prefix +
+  ".registerInvalidForm"]: "Something went wrong. Check correctness of your inputs",
+  [prefix + ".registerSuccess"]: "Registered successfully!",
 };
 
 export { formsEn, formsRu };

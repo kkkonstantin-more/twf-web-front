@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+// hooks
 import { useForm } from "react-hook-form";
 // translation
 import translate from "../../translations/translate";
@@ -19,12 +20,13 @@ const RegisterForm: React.FC<{ intl: any }> = ({ intl }) => {
   const registerButtonTextId: string =
     translationPrefix + ".registerButtonText";
   const googleButtonTextId: string = translationPrefix + ".googleButtonText";
-  const errorText: string = translationPrefix + ".errorText";
-  const successText: string = translationPrefix + ".successText";
-  // show response status
-  const [status, setStatus] = useState<boolean | null>(null);
-  // react-hook-form properties
-  const { register, handleSubmit, errors } = useForm();
+  const errorDuplicate = translationPrefix + ".registerErrorDuplicate";
+  const errorUnknown = translationPrefix + ".registerInvalidForm";
+  const success = translationPrefix + ".registerSuccess";
+  const { register, handleSubmit, errors, reset } = useForm();
+
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const onSubmit = (data: any) => {
     axios({
@@ -34,11 +36,17 @@ const RegisterForm: React.FC<{ intl: any }> = ({ intl }) => {
     })
       .then((res) => {
         console.log(res);
-        setStatus(true);
+        setErrorMessage(null);
+        setSuccessMessage(success);
+        reset();
       })
-      .catch((e) => {
-        console.log(e);
-        setStatus(false);
+      .catch(({ response }) => {
+        console.log(response);
+        if (response.data.includes("already in use")) {
+          setErrorMessage(errorDuplicate);
+        } else {
+          setErrorMessage(errorUnknown);
+        }
       });
   };
 
@@ -80,16 +88,15 @@ const RegisterForm: React.FC<{ intl: any }> = ({ intl }) => {
           </div>
         );
       })}
-      {status === false ? (
-        <div className="alert alert-error" role="alert">
-          {translate(errorText)}
+      {errorMessage && (
+        <div className="alert alert-danger" role="alert">
+          {translate(errorMessage)}
         </div>
-      ) : status === true ? (
+      )}
+      {successMessage && (
         <div className="alert alert-success" role="alert">
-          {translate(successText)}
+          {translate(successMessage)}
         </div>
-      ) : (
-        ""
       )}
       <div className="register-form__buttons">
         <button type="submit" className="btn">
