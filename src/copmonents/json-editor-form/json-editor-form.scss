@@ -1,0 +1,33 @@
+@import "../../styles/abstracts/variables";
+
+[data-schemapath="root.levels"] .table {
+  table-layout: fixed;
+
+  & > thead > tr > th:last-child {
+    width: 8rem;
+  }
+
+  & > tbody > tr > td {
+    overflow-x: scroll;
+  }
+}
+
+[data-schemapath="root.levels"] {
+  & > .card-title > label {
+    margin-right: 1rem;
+  }
+
+  .nav-link {
+    color: $color-primary-dark;
+    &.active {
+      background-color: $color-primary-dark !important;
+      color: $color-primary-light !important;
+    }
+
+    //width: 50rem;
+  }
+
+  & button {
+    border-radius: 0;
+  }
+}

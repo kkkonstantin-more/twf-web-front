@@ -1,0 +1,32 @@
+@import "../../styles/abstracts/variables";
+@import "../../styles/abstracts/mixins";
+
+.mixed-input {
+  &__mode-tabs {
+    display: flex;
+    border: 1px solid $color-primary-dark;
+    border-bottom: none;
+    background-color: $color-primary-light;
+  }
+  &__mode-tab {
+    text-align: center;
+    cursor: pointer;
+    font-size: $sm-font-size;
+    padding: 0 1rem;
+    display: flex;
+    &:not(:last-child) {
+      border-right: 1px solid $color-grey-dark;
+    }
+    & > span {
+      margin: auto;
+    }
+    &--active {
+      color: $color-primary-dark;
+      font-weight: 700;
+    }
+  }
+  &__error-message {
+    font-size: $sm-font-size;
+    color: $color-danger;
+  }
+}

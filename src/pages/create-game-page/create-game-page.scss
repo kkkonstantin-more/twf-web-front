@@ -1,0 +1,48 @@
+@import "../../styles/abstracts/variables";
+
+.create-game-page {
+  display: flex;
+  position: relative;
+  padding: 2rem;
+  overflow: hidden;
+  justify-content: space-between;
+  &__form-container {
+    transition: 0.3s;
+  }
+  &__form {
+  }
+  &__form-level {
+    overflow-x: scroll;
+    border: 1px solid $color-primary-dark;
+    border-radius: 5px;
+    padding: 2rem;
+    margin-left: 1rem;
+  }
+  &__icon {
+    position: absolute;
+    top: 0;
+    right: 2rem;
+    cursor: pointer;
+    z-index: 3;
+  }
+  &__hints {
+    //transition: 0.3s;
+    display: flex;
+    flex-direction: column;
+    border-left: 1px solid $color-primary-dark;
+    padding: 2rem;
+    position: relative;
+  }
+  &__math-quill-hint {
+    width: 30rem;
+  }
+  &__hints-dragger {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 0.5rem;
+    background-color: black;
+    cursor: col-resize;
+  }
+}

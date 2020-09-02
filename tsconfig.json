@@ -15,5 +15,10 @@
     "noEmit": true,
     "jsx": "react"
   },
+<<<<<<< HEAD
   "include": ["src"]
+=======
+  "include": ["src"],
+  "skipLibCheck": true
+>>>>>>> 681d1b25108564e3466fa6778ca3916f36a2f5e4
 }

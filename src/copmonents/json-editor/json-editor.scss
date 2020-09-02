@@ -1,0 +1,23 @@
+@import "../../styles/abstracts/variables";
+
+.json-editor-component {
+  height: 60vh;
+  width: 50vw;
+  & > .jsoneditor {
+    border: none;
+    & > .jsoneditor-menu {
+      background-color: $color-primary-dark;
+    }
+  }
+
+  .jsoneditor-contextmenu .jsoneditor-menu li button.jsoneditor-selected {
+    background-color: $color-primary;
+    &:hover {
+      background-color: $color-primary;
+    }
+  }
+
+  .jsoneditor-poweredBy {
+    display: none;
+  }
+}
