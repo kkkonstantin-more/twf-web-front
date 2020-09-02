@@ -4,8 +4,9 @@ import React, { FC, RefObject, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import useMergedRef from "@react-hook/merged-ref";
 // components
-import MathQuillEditor from "../math-quill-editor/math-quill-editor";
 import Icon from "@mdi/react";
+import AppModal from "../app-modal/app-modal";
+import MixedInput from "../mixed-input/mixed-input";
 // styles
 import "./level-form.scss";
 // icons
@@ -22,7 +23,6 @@ import {
   mdiRobot,
   mdiWrench,
 } from "@mdi/js";
-import AppModal from "../app-modal/app-modal";
 
 export enum LevelType {
   AUTO = "автоматический",
@@ -188,11 +188,7 @@ const LevelForm: FC<LevelFormProps> = (props: LevelFormProps) => {
           ref={useMergedRef(register(), startExpressionRef)}
           defaultValue={defaultValue.startExpression}
         />
-        <MathQuillEditor
-          inputRef={startExpressionRef}
-          showOperationTab={false}
-          startingLatexExpression={defaultValue.startExpression}
-        />
+        <MixedInput inputRef={startExpressionRef} />
       </div>
     ),
     goalType: (
@@ -261,11 +257,7 @@ const LevelForm: FC<LevelFormProps> = (props: LevelFormProps) => {
             ref={useMergedRef(register(), goalExpressionRef)}
             defaultValue={defaultValue.goalExpression}
           />
-          <MathQuillEditor
-            inputRef={goalExpressionRef}
-            showOperationTab={false}
-            startingLatexExpression={defaultValue.goalExpression}
-          />
+          <MixedInput inputRef={goalExpressionRef} />
         </div>
         <div
           className="form-group"

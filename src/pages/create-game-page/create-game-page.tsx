@@ -23,6 +23,7 @@ import LevelForm, {
   Level,
   LevelType,
 } from "../../copmonents/custom-forms/level-form";
+import MixedInput from "../../copmonents/mixed-input/mixed-input";
 
 const CreateGamePage = () => {
   const [showHintsBlock, setShowHintsBlock] = useState(false);
@@ -62,9 +63,12 @@ const CreateGamePage = () => {
   //     updateDemo(currentEditedLevel);
   //   }
   // }, [currentEditedLevel]);
+  const mainInputRef: RefObject<HTMLInputElement> = React.createRef();
 
   return (
     <div className="create-game-page">
+      <input type="text" ref={mainInputRef} />
+      <MixedInput inputRef={mainInputRef} />
       <div
         className="create-game-page__form-container"
         style={{

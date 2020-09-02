@@ -1,15 +1,15 @@
 if (typeof kotlin === "undefined") {
   throw new Error(
-    "Error loading module 'twf-lib-js'. Its dependency 'kotlin' was not found. Please, check whether 'kotlin' is loaded prior to 'twf-lib-js'."
+    "Error loading module 'twfKotlinLibrary'. Its dependency 'kotlin' was not found. Please, check whether 'kotlin' is loaded prior to 'twfKotlinLibrary'."
   );
 }
-this["twf-lib-js"] = (function (_, Kotlin) {
+var twfKotlinLibrary = (function (_, Kotlin) {
   "use strict";
-  var setOf = Kotlin.kotlin.collections.setOf_mh5how$;
-  var setOf_0 = Kotlin.kotlin.collections.setOf_i5x0yv$;
   var split = Kotlin.kotlin.text.split_ip8yn$;
   var toSet = Kotlin.kotlin.collections.toSet_7wnvza$;
   var ArrayList_init = Kotlin.kotlin.collections.ArrayList_init_287e2$;
+  var setOf = Kotlin.kotlin.collections.setOf_mh5how$;
+  var setOf_0 = Kotlin.kotlin.collections.setOf_i5x0yv$;
   var first = Kotlin.kotlin.collections.first_2p1efm$;
   var last = Kotlin.kotlin.collections.last_2p1efm$;
   var joinToString = Kotlin.kotlin.collections.joinToString_fmv235$;
@@ -193,6 +193,43 @@ this["twf-lib-js"] = (function (_, Kotlin) {
   MessageType.prototype.constructor = MessageType;
   Form.prototype = Object.create(Enum.prototype);
   Form.prototype.constructor = Form;
+  function stringToExpression(
+    string,
+    scope,
+    isMathMl,
+    functionConfiguration,
+    compiledConfiguration
+  ) {
+    if (scope === void 0) scope = "";
+    if (isMathMl === void 0) isMathMl = false;
+    if (functionConfiguration === void 0) {
+      var $receiver = split(scope, [";"]);
+      var destination = ArrayList_init();
+      var tmp$;
+      tmp$ = $receiver.iterator();
+      while (tmp$.hasNext()) {
+        var element = tmp$.next();
+        if (element.length > 0) destination.add_11rb$(element);
+      }
+      functionConfiguration = new FunctionConfiguration(toSet(destination));
+    }
+    if (compiledConfiguration === void 0)
+      compiledConfiguration = new CompiledConfiguration(
+        void 0,
+        functionConfiguration
+      );
+    return stringToExpression_0(
+      string,
+      scope,
+      isMathMl,
+      functionConfiguration,
+      compiledConfiguration
+    );
+  }
+  function expressionToTexString(expressionNode, characterEscapingDepth) {
+    if (characterEscapingDepth === void 0) characterEscapingDepth = 1;
+    return expressionToTexString_0(expressionNode, characterEscapingDepth);
+  }
   function compareWithoutSubstitutions(
     left,
     right,
@@ -262,8 +299,14 @@ this["twf-lib-js"] = (function (_, Kotlin) {
         functionConfiguration
       );
     return compareWithoutSubstitutions(
-      stringToExpression(left, void 0, void 0, void 0, compiledConfiguration),
-      stringToExpression(right, void 0, void 0, void 0, compiledConfiguration),
+      stringToExpression_0(left, void 0, void 0, void 0, compiledConfiguration),
+      stringToExpression_0(
+        right,
+        void 0,
+        void 0,
+        void 0,
+        compiledConfiguration
+      ),
       void 0,
       void 0,
       void 0,
@@ -310,7 +353,7 @@ this["twf-lib-js"] = (function (_, Kotlin) {
         functionConfiguration
       );
     return compareByPattern(
-      stringToExpression(
+      stringToExpression_0(
         expression,
         void 0,
         void 0,
@@ -368,7 +411,7 @@ this["twf-lib-js"] = (function (_, Kotlin) {
       compiledConfiguration
     );
   }
-  function stringToExpression(
+  function stringToExpression_0(
     string,
     scope,
     isMathMl,
@@ -410,7 +453,7 @@ this["twf-lib-js"] = (function (_, Kotlin) {
       characterEscapingDepth
     );
   }
-  function expressionToTexString(expressionNode, characterEscapingDepth) {
+  function expressionToTexString_0(expressionNode, characterEscapingDepth) {
     if (characterEscapingDepth === void 0) characterEscapingDepth = 1;
     return escapeCharacters(
       expressionNode.toTexView_odr8sm$(),
@@ -471,7 +514,7 @@ this["twf-lib-js"] = (function (_, Kotlin) {
         functionConfiguration
       );
     return expressionToStructureString(
-      stringToExpression(
+      stringToExpression_0(
         string,
         scope,
         isMathMl,
@@ -612,7 +655,7 @@ this["twf-lib-js"] = (function (_, Kotlin) {
     while (tmp$_2.hasNext()) {
       var item_0 = tmp$_2.next();
       destination_1.add_11rb$(
-        stringToExpression(
+        stringToExpression_0(
           item_0,
           void 0,
           void 0,
@@ -765,7 +808,7 @@ this["twf-lib-js"] = (function (_, Kotlin) {
     while (tmp$_2.hasNext()) {
       var item_0 = tmp$_2.next();
       destination_1.add_11rb$(
-        stringToExpression(
+        stringToExpression_0(
           item_0,
           void 0,
           void 0,
@@ -986,8 +1029,14 @@ this["twf-lib-js"] = (function (_, Kotlin) {
         functionConfiguration
       );
     return new ExpressionSubstitution(
-      stringToExpression(left, void 0, void 0, void 0, compiledConfiguration),
-      stringToExpression(right, void 0, void 0, void 0, compiledConfiguration),
+      stringToExpression_0(left, void 0, void 0, void 0, compiledConfiguration),
+      stringToExpression_0(
+        right,
+        void 0,
+        void 0,
+        void 0,
+        compiledConfiguration
+      ),
       void 0,
       basedOnTaskContext,
       void 0,
@@ -1194,7 +1243,7 @@ this["twf-lib-js"] = (function (_, Kotlin) {
         functionConfiguration
       );
     var substitutionPlaces = findSubstitutionPlacesInExpression(
-      stringToExpression(
+      stringToExpression_0(
         expression,
         void 0,
         void 0,
@@ -1275,7 +1324,7 @@ this["twf-lib-js"] = (function (_, Kotlin) {
         functionConfiguration
       );
     var substitutionPlaces = findSubstitutionPlacesInExpression(
-      stringToExpression(
+      stringToExpression_0(
         expression,
         void 0,
         void 0,
@@ -1354,7 +1403,7 @@ this["twf-lib-js"] = (function (_, Kotlin) {
         functionConfiguration
       );
     var tmp$_0;
-    var actualExpression = stringToExpression(
+    var actualExpression = stringToExpression_0(
       expression,
       void 0,
       void 0,
@@ -1438,7 +1487,7 @@ this["twf-lib-js"] = (function (_, Kotlin) {
         functionConfiguration
       );
     var tmp$_0;
-    var actualExpression = stringToExpression(
+    var actualExpression = stringToExpression_0(
       expression,
       void 0,
       void 0,
@@ -40491,15 +40540,17 @@ this["twf-lib-js"] = (function (_, Kotlin) {
   function transformationPartsToLog_2(transformation) {
     return transformation.computeIdentifier_6taknv$(false);
   }
+  _.stringToExpression = stringToExpression;
+  _.expressionToTextString = expressionToTexString;
   var package$api = _.api || (_.api = {});
   package$api.compareWithoutSubstitutions_ic33gh$ = compareWithoutSubstitutions;
   package$api.compareByPattern_fxceps$ = compareByPattern;
   package$api.compareWithoutSubstitutions_atx8px$ = compareWithoutSubstitutions_0;
   package$api.compareByPattern_atx8px$ = compareByPattern_0;
   package$api.compareWithoutSubstitutionsStructureStrings_atx8px$ = compareWithoutSubstitutionsStructureStrings;
-  package$api.stringToExpression_y630ta$ = stringToExpression;
+  package$api.stringToExpression_y630ta$ = stringToExpression_0;
   package$api.expressionToString_tvfpvg$ = expressionToString;
-  package$api.expressionToTexString_tvfpvg$ = expressionToTexString;
+  package$api.expressionToTexString_tvfpvg$ = expressionToTexString_0;
   package$api.structureStringToExpression_69c2cy$ = structureStringToExpression;
   package$api.expressionToStructureString_6718cy$ = expressionToStructureString;
   package$api.stringToStructureString_y630ta$ = stringToStructureString;
@@ -41317,6 +41368,6 @@ this["twf-lib-js"] = (function (_, Kotlin) {
   coloringEndLength = coloringEnd.length;
   coloringOffset = (coloringStartLength + coloringEndLength) | 0;
   underlining = "<mi>_</mi>";
-  Kotlin.defineModule("twf-lib-js", _);
+  Kotlin.defineModule("twfKotlinLibrary", _);
   return _;
-})(typeof this["twf-lib-js"] === "undefined" ? {} : this["twf-lib-js"], kotlin);
+})(typeof twfKotlinLibrary === "undefined" ? {} : twfKotlinLibrary, kotlin);

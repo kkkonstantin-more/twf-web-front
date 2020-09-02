@@ -7,12 +7,14 @@ import "mathquill/build/mathquill.css";
 import "./math-quill-editor.scss";
 
 interface MathQuillEditorProps {
+  inputRef: RefObject<HTMLInputElement>;
   config?: any;
   width?: string;
   startingLatexExpression?: string;
   enableOutput?: boolean;
   showOperationTab?: boolean;
-  inputRef: RefObject<HTMLInputElement>;
+  updateValue?: React.Dispatch<string>;
+  isInvalid?: boolean;
 }
 
 const MathQuillEditor: React.FC<MathQuillEditorProps> = ({
@@ -21,6 +23,8 @@ const MathQuillEditor: React.FC<MathQuillEditorProps> = ({
   showOperationTab = true,
   inputRef,
   width,
+  updateValue,
+  isInvalid,
 }: MathQuillEditorProps) => {
   if (inputRef.current) {
     inputRef.current.style.display = "none";
@@ -76,6 +80,9 @@ const MathQuillEditor: React.FC<MathQuillEditorProps> = ({
             if (inputRef.current) {
               inputRef.current.value = mathField.latex();
             }
+            if (updateValue) {
+              updateValue(mathField.latex());
+            }
           },
         },
       });
@@ -118,11 +125,7 @@ const MathQuillEditor: React.FC<MathQuillEditorProps> = ({
           })}
         </div>
       )}
-      <span
-        id={id}
-        className="math-quill-editor__main-input"
-        style={{ width: width ? width : "100%" }}
-      />
+      <span id={id} style={{ width: width ? width : "100%" }} />
     </div>
   );
 };

@@ -17,6 +17,8 @@
     }
   }
   &__main-input {
+    //border: 1px solid $color-danger;
+
     .mq-root-block {
       overflow-x: scroll;
       &::-webkit-scrollbar {
@@ -30,6 +32,12 @@
         background-color: rgba(0, 0, 0, 0.5);
         box-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
       }
+    }
+    &--invalid {
+      //outline: 1px solid $color-danger;
+      //&:focus {
+      //  border: 1px solid $color-danger;
+      //}
     }
   }
 }
