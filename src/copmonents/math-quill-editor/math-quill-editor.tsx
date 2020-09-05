@@ -125,7 +125,11 @@ const MathQuillEditor: React.FC<MathQuillEditorProps> = ({
           })}
         </div>
       )}
-      <span id={id} style={{ width: width ? width : "100%" }} />
+      <span
+        className="math-quill-editor__main-input"
+        id={id}
+        style={{ width: width ? width : "100%" }}
+      />
     </div>
   );
 };

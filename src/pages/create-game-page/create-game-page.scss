@@ -11,13 +11,6 @@
   }
   &__form {
   }
-  &__form-level {
-    overflow-x: scroll;
-    border: 1px solid $color-primary-dark;
-    border-radius: 5px;
-    padding: 2rem;
-    margin-left: 1rem;
-  }
   &__icon {
     position: absolute;
     top: 0;
@@ -44,5 +37,28 @@
     width: 0.5rem;
     background-color: black;
     cursor: col-resize;
+  }
+}
+
+.form-levels-table {
+  overflow-x: scroll;
+  border: 1px solid $color-primary-dark;
+  border-radius: 5px;
+  padding: 2rem;
+  margin-left: 1rem;
+}
+
+.form-levels-list {
+  display: flex;
+  &__select {
+    display: flex;
+    flex-direction: column;
+    width: 20%;
+    & > button {
+      text-align: left;
+    }
+  }
+  &__selected-level {
+    width: 70%;
   }
 }

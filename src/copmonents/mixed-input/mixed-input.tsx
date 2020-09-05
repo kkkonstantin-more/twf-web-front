@@ -90,7 +90,7 @@ const MixedInput: React.FC<MixedInputProps> = ({
           showOperationTab={false}
           updateValue={setCurrentValue}
           width={inputsWidth}
-          isInvalid={!!error}
+          // isInvalid={!!error}
         />
       )}
       {currentInputFormat === MathInputFormat.PLAIN_TEXT && (

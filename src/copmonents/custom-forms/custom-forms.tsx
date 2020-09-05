@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import { useFieldArray, useForm, FormProvider } from "react-hook-form";
 
@@ -12,6 +12,7 @@ import MathQuillEditor from "../math-quill-editor/math-quill-editor";
 interface CustomFormsProps {
   width?: string;
 }
+interface HiddenFields {}
 
 const CustomForms: React.FC<CustomFormsProps> = ({
   width,
@@ -21,6 +22,7 @@ const CustomForms: React.FC<CustomFormsProps> = ({
     gameSpace: string;
     levels: Level[];
   };
+  const [hiddenFields, setHiddenFields] = useState<HiddenFields>();
 
   const methods = useForm<FormInputs>({
     mode: "onSubmit",
@@ -58,7 +60,7 @@ const CustomForms: React.FC<CustomFormsProps> = ({
         </div>
         <h3>Уровни</h3>
         <div className="custom-forms__levels">
-          {fields.map((field, index: number) => {
+          {fields.map((field) => {
             return (
               <div
                 key={field.id}

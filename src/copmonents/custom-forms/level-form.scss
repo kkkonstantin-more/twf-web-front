@@ -3,8 +3,14 @@
 $margin-top: 2rem;
 
 .level-form {
-  display: flex;
-  align-items: center;
+  &--table {
+    display: flex;
+    align-items: center;
+  }
+  &--list {
+    display: flex;
+    flex-direction: column;
+  }
   & > *:not(:last-child) {
     margin-right: 1.5rem;
     min-width: fit-content;

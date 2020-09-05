@@ -5,7 +5,6 @@
     display: flex;
     background-color: $color-primary-light;
     padding: 2rem;
-    margin-bottom: -0.3rem;
     border: 1px solid $color-primary-dark;
     border-bottom: none;
   }
@@ -17,8 +16,7 @@
     }
   }
   &__main-input {
-    //border: 1px solid $color-danger;
-
+    margin-top: -0.3rem;
     .mq-root-block {
       overflow-x: scroll;
       &::-webkit-scrollbar {
@@ -32,12 +30,6 @@
         background-color: rgba(0, 0, 0, 0.5);
         box-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
       }
-    }
-    &--invalid {
-      //outline: 1px solid $color-danger;
-      //&:focus {
-      //  border: 1px solid $color-danger;
-      //}
     }
   }
 }

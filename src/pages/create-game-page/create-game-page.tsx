@@ -1,12 +1,6 @@
 import React, { RefObject, useEffect, useState } from "react";
 import Draggable from "react-draggable";
 
-import JSONEditorComponent from "../../copmonents/json-editor/json-editor";
-import CodeMirror from "../../copmonents/editors/code-mirror/code-mirror";
-import games from "./games";
-import JSONEditorForm from "../../copmonents/json-editor-form/json-editor-form";
-import MathQuill from "../../copmonents/math-quill/math-quill";
-
 import "../../copmonents/custom-forms/level-form.scss";
 import "./create-game-page.scss";
 import MathQuillEditor from "../../copmonents/math-quill-editor/math-quill-editor";
@@ -23,7 +17,11 @@ import LevelForm, {
   Level,
   LevelType,
 } from "../../copmonents/custom-forms/level-form";
-import MixedInput from "../../copmonents/mixed-input/mixed-input";
+
+export enum VisualizationMode {
+  TABLE = "TABLE",
+  LIST = "LIST",
+}
 
 const CreateGamePage = () => {
   const [showHintsBlock, setShowHintsBlock] = useState(false);
@@ -58,17 +56,15 @@ const CreateGamePage = () => {
     setGoalExpressionHint(getValues().levels[index].goalExpression);
     if (!showHintsBlock) setShowHintsBlock(true);
   };
-  // useEffect(() => {
-  //   if (currentEditedLevel !== null) {
-  //     updateDemo(currentEditedLevel);
-  //   }
-  // }, [currentEditedLevel]);
-  const mainInputRef: RefObject<HTMLInputElement> = React.createRef();
+
+  const [visualizationMode, setVisualizationMode] = useState<VisualizationMode>(
+    VisualizationMode.LIST
+  );
+
+  const [selectedLevel, setSelectedLevel] = useState<number | null>(null);
 
   return (
     <div className="create-game-page">
-      <input type="text" ref={mainInputRef} />
-      <MixedInput inputRef={mainInputRef} />
       <div
         className="create-game-page__form-container"
         style={{
@@ -96,53 +92,109 @@ const CreateGamePage = () => {
               />
             </div>
             <h3>Уровни</h3>
-            <div className="create-game-page__form-level">
-              {fields.map((field, index: number) => {
-                return (
-                  <div
-                    key={field.id}
-                    style={{ display: "flex", alignItems: "center" }}
+            {visualizationMode === VisualizationMode.TABLE && (
+              <div className="form-levels-table">
+                {fields.map((field, index: number) => {
+                  return (
+                    <div
+                      key={field.id}
+                      style={{ display: "flex", alignItems: "center" }}
+                    >
+                      <LevelForm
+                        levelType={fields[index].levelType}
+                        index={index}
+                        defaultValue={fields[index]}
+                        remove={remove}
+                        swap={swap}
+                        append={append}
+                        updateDemo={updateDemo}
+                        visualizationMode={VisualizationMode.TABLE}
+                      />
+                    </div>
+                  );
+                })}
+                <button
+                  className="btn u-mr-sm"
+                  onClick={() => {
+                    append({
+                      levelType: LevelType.AUTO,
+                    });
+                  }}
+                >
+                  <Icon path={mdiPlus} size={1.2} />
+                  <span>автоматический уровень</span>
+                </button>
+                <button
+                  className="btn"
+                  onClick={() => {
+                    append({
+                      levelType: LevelType.MANUAL,
+                    });
+                  }}
+                >
+                  <Icon path={mdiPlus} size={1.2} />
+                  <span>ручной уровень</span>
+                </button>
+                <button
+                  className="btn u-mt-md"
+                  onClick={() => console.log(getValues())}
+                >
+                  get values
+                </button>
+              </div>
+            )}
+            {visualizationMode === VisualizationMode.LIST && (
+              <div className="form-levels-list">
+                <div className="form-levels-list__select">
+                  {fields.map((field, index) => {
+                    return (
+                      <div
+                        key={field.id}
+                        onClick={() => setSelectedLevel(index)}
+                      >
+                        Уровень {index + 1}
+                      </div>
+                    );
+                  })}
+                  <button
+                    className="btn u-mb-sm"
+                    onClick={() => {
+                      append({
+                        levelType: LevelType.AUTO,
+                      });
+                    }}
                   >
+                    <Icon path={mdiPlus} size={1.2} />
+                    <span>автоматический уровень</span>
+                  </button>
+                  <button
+                    className="btn"
+                    onClick={() => {
+                      append({
+                        levelType: LevelType.MANUAL,
+                      });
+                    }}
+                  >
+                    <Icon path={mdiPlus} size={1.2} />
+                    <span>ручной уровень</span>
+                  </button>
+                </div>
+                <div className="form-levels-list__selected-level">
+                  {selectedLevel !== null && (
                     <LevelForm
-                      index={index}
-                      defaultValue={fields[index]}
+                      levelType={fields[selectedLevel].levelType}
+                      index={selectedLevel}
+                      defaultValue={fields[selectedLevel]}
                       remove={remove}
                       swap={swap}
                       append={append}
                       updateDemo={updateDemo}
+                      visualizationMode={VisualizationMode.LIST}
                     />
-                  </div>
-                );
-              })}
-              <button
-                className="btn u-mr-sm"
-                onClick={() => {
-                  append({
-                    levelType: LevelType.AUTO,
-                  });
-                }}
-              >
-                <Icon path={mdiPlus} size={1.2} />
-                <span>автоматический уровень</span>
-              </button>
-              <button
-                className="btn"
-                onClick={() => {
-                  append({
-                    levelType: LevelType.MANUAL,
-                  });
-                }}
-              >
-                <Icon path={mdiPlus} size={1.2} />
-                <span>ручной уровень</span>
-              </button>
-            </div>
-            <button
-              className="btn u-mt-md"
-              onClick={() => console.log(getValues())}
-            >
-              get values
-            </button>
+                  )}
+                </div>
+              </div>
+            )}
           </FormProvider>
         </div>
       </div>
