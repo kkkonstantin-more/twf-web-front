@@ -11,17 +11,18 @@ import {
 
 interface MixedInputProps {
   inputRef: React.RefObject<HTMLInputElement>;
+  width?: string;
 }
 
 const MixedInput: React.FC<MixedInputProps> = ({
   inputRef,
+  width,
 }: MixedInputProps) => {
   const [currentInputFormat, setCurrentInputFormat] = useState<MathInputFormat>(
     MathInputFormat.TEX
   );
   const [currentValue, setCurrentValue] = useState<string>("");
   const [error, setError] = useState<string | null>(null);
-  const inputsWidth = "20rem";
 
   const changeInputMode = (toFormat: MathInputFormat): void => {
     // validation of empty string leads to error
@@ -47,7 +48,7 @@ const MixedInput: React.FC<MixedInputProps> = ({
   }, [currentValue]);
 
   return (
-    <div className="mixed-input">
+    <div className="mixed-input" style={{ width }}>
       <div className="mixed-input__mode-tabs">
         <div
           className={`mixed-input__mode-tab ${
@@ -89,13 +90,13 @@ const MixedInput: React.FC<MixedInputProps> = ({
           inputRef={inputRef}
           showOperationTab={false}
           updateValue={setCurrentValue}
-          width={inputsWidth}
+          width={width}
           // isInvalid={!!error}
         />
       )}
       {currentInputFormat === MathInputFormat.PLAIN_TEXT && (
         <input
-          style={{ width: inputsWidth }}
+          style={{ width: width }}
           type="text"
           className={`form-control ${error !== null && "is-invalid"}`}
           value={currentValue}
@@ -111,7 +112,7 @@ const MixedInput: React.FC<MixedInputProps> = ({
       )}
       {currentInputFormat === MathInputFormat.STRUCTURE_STRING && (
         <input
-          style={{ width: inputsWidth }}
+          style={{ width: width }}
           type="text"
           className={`form-control ${error !== null && "is-invalid"}`}
           value={currentValue}

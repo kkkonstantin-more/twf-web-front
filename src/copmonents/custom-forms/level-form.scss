@@ -11,6 +11,16 @@ $margin-top: 2rem;
     display: flex;
     flex-direction: column;
   }
+  &__list-action-buttons {
+    display: flex;
+    & > * {
+      margin-top: 0 !important;
+      margin-bottom: 1rem;
+      &:not(:last-child) {
+        margin-right: 1rem;
+      }
+    }
+  }
   & > *:not(:last-child) {
     margin-right: 1.5rem;
     min-width: fit-content;
@@ -35,4 +45,9 @@ $margin-top: 2rem;
       min-width: fit-content;
     }
   }
+}
+
+.hidden-levels-fields-table {
+  border-collapse: separate;
+  border-spacing: 2rem;
 }

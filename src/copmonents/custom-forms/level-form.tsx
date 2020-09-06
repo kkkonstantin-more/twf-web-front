@@ -1,10 +1,10 @@
 // libs
-import React, { RefObject, useEffect, useState } from "react";
+import React, { RefObject, useState } from "react";
 // hooks
 import { useFormContext } from "react-hook-form";
 import useMergedRef from "@react-hook/merged-ref";
 // redux
-import { connect } from "react-redux";
+import { connect, MapDispatchToProps } from "react-redux";
 import { selectAllLevelsHiddenFields } from "../../redux/levels-hidden-fields/levels-hidden-fields.selectors";
 import { createStructuredSelector } from "reselect";
 import {
@@ -17,19 +17,16 @@ import Icon from "@mdi/react";
 import AppModal from "../app-modal/app-modal";
 import MixedInput from "../mixed-input/mixed-input";
 // types
-import {
-  AllLevelsHiddenFields,
-  AutoLevelsHiddenFields,
-  ManualLevelsHiddenFields,
-} from "../../redux/levels-hidden-fields/levels-hidden-fields.types";
-import { MapDispatchToProps } from "react-redux";
+import { AllLevelsHiddenFields } from "../../redux/levels-hidden-fields/levels-hidden-fields.types";
 // styles
 import "./level-form.scss";
 // icons
 import {
   mdiArrowDown,
+  mdiArrowExpandDown,
   mdiArrowExpandLeft,
   mdiArrowExpandRight,
+  mdiArrowExpandUp,
   mdiArrowUp,
   mdiClose,
   mdiContentCopy,
@@ -75,6 +72,7 @@ export interface LevelFormProps {
   levelType: LevelType;
   updateDemo: (index: number) => void;
   visualizationMode: VisualizationMode;
+  hidden?: boolean;
   // methods from react-use-form lib
   remove: (index: number) => void;
   swap: (from: number, to: number) => void;
@@ -95,6 +93,7 @@ type Props = LevelFormProps & MapProps & StateProps;
 const LevelForm: React.FC<Props> = ({
   index,
   defaultValue,
+  hidden,
   remove,
   swap,
   append,
@@ -241,7 +240,12 @@ const LevelForm: React.FC<Props> = ({
           ref={useMergedRef(register(), startExpressionRef)}
           defaultValue={defaultValue.startExpression}
         />
-        <MixedInput inputRef={startExpressionRef} />
+        <MixedInput
+          inputRef={startExpressionRef}
+          width={`${
+            visualizationMode === VisualizationMode.LIST ? "65vw" : "40rem"
+          }`}
+        />
       </div>
     ),
     goalType: (
@@ -310,7 +314,12 @@ const LevelForm: React.FC<Props> = ({
             ref={useMergedRef(register(), goalExpressionRef)}
             defaultValue={defaultValue.goalExpression}
           />
-          <MixedInput inputRef={goalExpressionRef} />
+          <MixedInput
+            inputRef={goalExpressionRef}
+            width={`${
+              visualizationMode === VisualizationMode.LIST ? "65vw" : "40rem"
+            }`}
+          />
         </div>
         <div
           className="form-group"
@@ -698,6 +707,79 @@ const LevelForm: React.FC<Props> = ({
     inputs.levelCode,
   ];
 
+  const tableActionButtonsLeft: {
+    mdiIconPath: string;
+    action: () => any;
+    size: number;
+  }[] = [
+    {
+      mdiIconPath: mdiContentCopy,
+      size: 1.5,
+      action() {
+        append({
+          ...getValues().levels[index],
+          levelType: defaultValue.levelType,
+        });
+      },
+    },
+    {
+      mdiIconPath: mdiArrowUp,
+      size: 1.5,
+      action() {
+        if (index !== 0) {
+          swap(index, index - 1);
+        }
+      },
+    },
+    {
+      mdiIconPath: mdiArrowDown,
+      size: 1.5,
+      action() {
+        if (index !== getValues().levels.length - 1) {
+          swap(index, index + 1);
+        }
+      },
+    },
+  ];
+
+  const tableActionButtonsRight: {
+    mdiIconPath: string;
+    action: () => any;
+    size: number;
+  }[] = [
+    {
+      mdiIconPath: mdiClose,
+      size: 2,
+      action() {
+        if (window.confirm(`Вы точно хотите удалить уровень ${index + 1}?`)) {
+          remove(index);
+        }
+      },
+    },
+    {
+      mdiIconPath: mdiFileEye,
+      size: 2,
+      action() {
+        setShowHiddenFieldsModal(true);
+      },
+    },
+    {
+      mdiIconPath: mdiPlayCircle,
+      size: 2,
+      action() {
+        updateDemo(index);
+      },
+    },
+  ];
+
+  const listActionButtons: {
+    mdiIconPath: string;
+    action: () => any;
+    size: number;
+  }[] = tableActionButtonsLeft.concat(tableActionButtonsRight).map((item) => {
+    return { ...item, size: 1.5 };
+  });
+
   return (
     <div
       className={`level-form ${
@@ -705,47 +787,39 @@ const LevelForm: React.FC<Props> = ({
           ? "level-form--table"
           : "level-form--list"
       }`}
+      style={{
+        display: `${hidden ? "none" : "flex"}`,
+      }}
     >
-      <button
-        className="level-form__action-button"
-        style={{ marginRight: "0.5rem" }}
-        onClick={() => {
-          append({
-            ...getValues().levels[index],
-            levelType: defaultValue.levelType,
-          });
-        }}
-      >
-        <Icon path={mdiContentCopy} size={1.5} />
-      </button>
-      <button
-        className="level-form__action-button"
-        style={{ marginRight: "0.5rem" }}
-        onClick={() => {
-          if (index !== 0) {
-            swap(index, index - 1);
-          }
-        }}
-      >
-        <Icon path={mdiArrowUp} size={1.5} />
-      </button>
-      <button
-        className="level-form__action-button"
-        style={{ marginRight: "1rem" }}
-        onClick={() => {
-          if (index !== getValues().levels.length - 1) {
-            swap(index, index + 1);
-          }
-        }}
-      >
-        <Icon path={mdiArrowDown} size={1.5} />
-      </button>
-      <div className="level-form__level-number">{index + 1}.</div>
+      {visualizationMode === VisualizationMode.LIST && (
+        <div className="level-form__list-action-buttons">
+          {listActionButtons.map((button, i) => {
+            return <ActionButton key={i} {...button} />;
+          })}
+        </div>
+      )}
+      {visualizationMode === VisualizationMode.TABLE &&
+        tableActionButtonsLeft.map((button, i) => {
+          const { size, action, mdiIconPath } = button;
+          return (
+            <ActionButton
+              key={i}
+              mdiIconPath={mdiIconPath}
+              size={size}
+              action={action}
+            />
+          );
+        })}
+      {visualizationMode === VisualizationMode.TABLE && (
+        <div className="level-form__level-number">{index + 1}.</div>
+      )}
       {defaultValue.levelType === LevelType.AUTO ? (
         <>
-          <span className="level-form__level-type-icon">
-            <Icon path={mdiRobot} size={2} />
-          </span>
+          {visualizationMode === VisualizationMode.TABLE && (
+            <span className="level-form__level-type-icon">
+              <Icon path={mdiRobot} size={2} />
+            </span>
+          )}
           {autoLevelBasicInputs.map((level: JSX.Element, i: number) => {
             return <div key={i}>{level}</div>;
           })}
@@ -762,9 +836,11 @@ const LevelForm: React.FC<Props> = ({
         </>
       ) : (
         <>
-          <span className="level-form__level-type-icon">
-            <Icon path={mdiWrench} size={2} />
-          </span>
+          {visualizationMode === VisualizationMode.TABLE && (
+            <span className="level-form__level-type-icon">
+              <Icon path={mdiWrench} size={2} />
+            </span>
+          )}
           {manualLevelBasicInputs.map((level: JSX.Element, i: number) => {
             return <div key={i}>{level}</div>;
           })}
@@ -780,46 +856,40 @@ const LevelForm: React.FC<Props> = ({
           })}
         </>
       )}
-      <button
-        className="level-form__action-button"
-        onClick={() => {
-          setShowAddFields(!showAddFields);
-        }}
-      >
-        <Icon
-          path={showAddFields ? mdiArrowExpandLeft : mdiArrowExpandRight}
+      {visualizationMode === VisualizationMode.LIST && (
+        <ActionButton
+          mdiIconPath={showAddFields ? mdiArrowExpandUp : mdiArrowExpandDown}
           size={2}
+          action={() => setShowAddFields(!showAddFields)}
         />
-      </button>
-      <button
-        className="level-form__action-button"
-        onClick={() => {
-          if (window.confirm(`Вы точно хотите удалить уровень ${index + 1}?`)) {
-            remove(index);
-          }
-        }}
-      >
-        <Icon path={mdiClose} size={2} />
-      </button>
-      <ActionButton
-        mdiIconPath={mdiFileEye}
-        size={2}
-        action={() => {
-          setShowHiddenFieldsModal(true);
-        }}
-      />
-      <ActionButton
-        mdiIconPath={mdiPlayCircle}
-        size={2}
-        action={() => {
-          updateDemo(index);
-        }}
-      />
+      )}
+      {visualizationMode === VisualizationMode.TABLE && (
+        <>
+          <ActionButton
+            mdiIconPath={
+              showAddFields ? mdiArrowExpandLeft : mdiArrowExpandRight
+            }
+            size={2}
+            action={() => setShowAddFields(!showAddFields)}
+          />
+          {tableActionButtonsRight.map((button, i) => {
+            const { size, mdiIconPath, action } = button;
+            return (
+              <ActionButton
+                key={i}
+                mdiIconPath={mdiIconPath}
+                size={size}
+                action={action}
+              />
+            );
+          })}
+        </>
+      )}
       <AppModal
         isOpen={showHiddenFieldsModal}
         close={() => setShowHiddenFieldsModal(false)}
       >
-        <table>
+        <table className="hidden-levels-fields-table">
           <tr>
             <th>Для всех</th>
             <th>Для уровня {index}</th>

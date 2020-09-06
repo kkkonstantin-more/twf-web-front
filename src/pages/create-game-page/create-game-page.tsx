@@ -4,9 +4,14 @@ import Draggable from "react-draggable";
 import "../../copmonents/custom-forms/level-form.scss";
 import "./create-game-page.scss";
 import MathQuillEditor from "../../copmonents/math-quill-editor/math-quill-editor";
-import CustomForms from "../../copmonents/custom-forms/custom-forms";
 import Icon from "@mdi/react";
-import { mdiCloseCircle, mdiCommentQuestion, mdiPlus } from "@mdi/js";
+import {
+  mdiCloseCircle,
+  mdiCommentQuestion,
+  mdiPlus,
+  mdiRobot,
+  mdiWrench,
+} from "@mdi/js";
 import {
   FormProvider,
   useFieldArray,
@@ -27,9 +32,6 @@ const CreateGamePage = () => {
   const [showHintsBlock, setShowHintsBlock] = useState(false);
   const [startExpressionHint, setStartExpressionHint] = useState("");
   const [goalExpressionHint, setGoalExpressionHint] = useState("");
-  const [currentEditedLevel, setCurrentEditedLevel] = useState<number | null>(
-    null
-  );
   const [hintsDeltaX, setHintsDeltaX] = useState(0);
 
   type FormInputs = {
@@ -92,72 +94,126 @@ const CreateGamePage = () => {
               />
             </div>
             <h3>Уровни</h3>
-            {visualizationMode === VisualizationMode.TABLE && (
-              <div className="form-levels-table">
-                {fields.map((field, index: number) => {
-                  return (
-                    <div
-                      key={field.id}
-                      style={{ display: "flex", alignItems: "center" }}
-                    >
-                      <LevelForm
-                        levelType={fields[index].levelType}
-                        index={index}
-                        defaultValue={fields[index]}
-                        remove={remove}
-                        swap={swap}
-                        append={append}
-                        updateDemo={updateDemo}
-                        visualizationMode={VisualizationMode.TABLE}
-                      />
-                    </div>
-                  );
-                })}
-                <button
-                  className="btn u-mr-sm"
-                  onClick={() => {
-                    append({
-                      levelType: LevelType.AUTO,
-                    });
-                  }}
-                >
-                  <Icon path={mdiPlus} size={1.2} />
-                  <span>автоматический уровень</span>
-                </button>
-                <button
-                  className="btn"
-                  onClick={() => {
-                    append({
-                      levelType: LevelType.MANUAL,
-                    });
-                  }}
-                >
-                  <Icon path={mdiPlus} size={1.2} />
-                  <span>ручной уровень</span>
-                </button>
-                <button
-                  className="btn u-mt-md"
-                  onClick={() => console.log(getValues())}
-                >
-                  get values
-                </button>
+            <div className="create-game-page__visualization-mode-switchers">
+              <div
+                className={`create-game-page__visualization-mode-switcher ${
+                  visualizationMode === VisualizationMode.LIST &&
+                  "create-game-page__visualization-mode-switcher--active"
+                }`}
+                onClick={() => {
+                  setVisualizationMode(VisualizationMode.LIST);
+                }}
+              >
+                Список
               </div>
-            )}
-            {visualizationMode === VisualizationMode.LIST && (
-              <div className="form-levels-list">
+              <div
+                className={`create-game-page__visualization-mode-switcher ${
+                  visualizationMode === VisualizationMode.TABLE &&
+                  "create-game-page__visualization-mode-switcher--active"
+                }`}
+                onClick={() => {
+                  setVisualizationMode(VisualizationMode.TABLE);
+                }}
+              >
+                Таблица
+              </div>
+            </div>
+            <div
+              className={`${
+                visualizationMode === VisualizationMode.TABLE
+                  ? "form-levels-table"
+                  : "form-levels-list"
+              }`}
+            >
+              {visualizationMode === VisualizationMode.LIST && (
                 <div className="form-levels-list__select">
                   {fields.map((field, index) => {
                     return (
                       <div
                         key={field.id}
                         onClick={() => setSelectedLevel(index)}
+                        className={`form-levels-list__select-option ${
+                          index === selectedLevel &&
+                          "form-levels-list__select-option--active"
+                        }`}
                       >
-                        Уровень {index + 1}
+                        <Icon
+                          path={
+                            field.levelType === LevelType.AUTO
+                              ? mdiRobot
+                              : mdiWrench
+                          }
+                          size={2}
+                          style={{ marginRight: "1rem" }}
+                        />
+                        <span>Уровень {index + 1}</span>
                       </div>
                     );
                   })}
+                  <div className="form-levels-list__action-buttons">
+                    <button
+                      className="btn u-mr-sm"
+                      onClick={() => {
+                        append({
+                          levelType: LevelType.AUTO,
+                        });
+                        setSelectedLevel(fields.length);
+                      }}
+                    >
+                      <Icon path={mdiPlus} size={1.2} />
+                      <span>автоматический уровень</span>
+                    </button>
+                    <button
+                      className="btn"
+                      onClick={() => {
+                        append({
+                          levelType: LevelType.MANUAL,
+                        });
+                        setSelectedLevel(fields.length);
+                      }}
+                    >
+                      <Icon path={mdiPlus} size={1.2} />
+                      <span>ручной уровень</span>
+                    </button>
+                    <button
+                      className="btn"
+                      onClick={() => console.log(getValues())}
+                    >
+                      get values
+                    </button>
+                  </div>
+                </div>
+              )}
+              <div
+                className={`${
+                  visualizationMode === VisualizationMode.LIST &&
+                  "form-levels-list__selected-level"
+                }`}
+              >
+                {fields.map((field, index: number) => {
+                  return (
+                    <LevelForm
+                      key={index}
+                      levelType={fields[index].levelType}
+                      index={index}
+                      defaultValue={fields[index]}
+                      remove={remove}
+                      swap={swap}
+                      append={append}
+                      updateDemo={updateDemo}
+                      visualizationMode={visualizationMode}
+                      hidden={
+                        visualizationMode === VisualizationMode.LIST &&
+                        index !== selectedLevel
+                      }
+                    />
+                  );
+                })}
+              </div>
+              {visualizationMode === VisualizationMode.TABLE && (
+                <div className="form-levels-table__add-level-buttons">
                   <button
-                    className="btn u-mb-sm"
+                    className="btn u-mr-sm"
                     onClick={() => {
                       append({
                         levelType: LevelType.AUTO,
@@ -168,7 +224,7 @@ const CreateGamePage = () => {
                     <span>автоматический уровень</span>
                   </button>
                   <button
-                    className="btn"
+                    className="btn u-mr-sm"
                     onClick={() => {
                       append({
                         levelType: LevelType.MANUAL,
@@ -178,26 +234,19 @@ const CreateGamePage = () => {
                     <Icon path={mdiPlus} size={1.2} />
                     <span>ручной уровень</span>
                   </button>
+                  <button
+                    className="btn"
+                    onClick={() => console.log(getValues())}
+                  >
+                    get values
+                  </button>
                 </div>
-                <div className="form-levels-list__selected-level">
-                  {selectedLevel !== null && (
-                    <LevelForm
-                      levelType={fields[selectedLevel].levelType}
-                      index={selectedLevel}
-                      defaultValue={fields[selectedLevel]}
-                      remove={remove}
-                      swap={swap}
-                      append={append}
-                      updateDemo={updateDemo}
-                      visualizationMode={VisualizationMode.LIST}
-                    />
-                  )}
-                </div>
-              </div>
-            )}
+              )}
+            </div>
           </FormProvider>
         </div>
       </div>
+      {/*HINTS BLOCK*/}
       <div
         className="create-game-page__icon"
         onClick={() => setShowHintsBlock(!showHintsBlock)}

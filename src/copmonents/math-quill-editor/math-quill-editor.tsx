@@ -109,10 +109,7 @@ const MathQuillEditor: React.FC<MathQuillEditorProps> = ({
   ];
 
   return (
-    <div
-      className="math-quill-editor"
-      style={{ width: width ? width : "100%" }}
-    >
+    <div className="math-quill-editor" style={{ width }}>
       {showOperationTab && (
         <div className="math-quill-editor__operations">
           {actions.map((action, i) => {
@@ -128,7 +125,7 @@ const MathQuillEditor: React.FC<MathQuillEditorProps> = ({
       <span
         className="math-quill-editor__main-input"
         id={id}
-        style={{ width: width ? width : "100%" }}
+        // style={{ width: width ? width : "100%" }}
       />
     </div>
   );

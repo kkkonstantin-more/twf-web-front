@@ -9,6 +9,7 @@ import UsersPage from "./pages/users-page/users-page";
 import LevelInfoPage from "./pages/level-info-page/level-info-page";
 import CreateGamePage from "./pages/create-game-page/create-game-page";
 import ConstructorMenuPage from "./pages/constructor-menu-page/constructor-menu-page";
+import SolveMathPage from "./pages/solve-math-page/solve-math-page";
 
 const Routes: React.FC = () => {
   return (
@@ -29,6 +30,7 @@ const Routes: React.FC = () => {
       />
       <Route exact path={"/json-editor"} component={CreateGamePage} />
       <Route exact path={"/constructor-menu"} component={ConstructorMenuPage} />
+      <Route exact path={"/solve-math"} component={SolveMathPage} />
     </Switch>
   );
 };
