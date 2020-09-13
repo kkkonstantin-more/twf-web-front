@@ -2,6 +2,10 @@
 @import "../../styles/abstracts/mixins";
 
 .mixed-input {
+  min-width: 17rem;
+  &__input {
+    min-width: 17rem;
+  }
   &__mode-tabs {
     display: flex;
     border: 1px solid $color-primary-dark;

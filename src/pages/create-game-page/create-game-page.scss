@@ -3,8 +3,8 @@
 .create-game-page {
   display: flex;
   position: relative;
-  padding: 2rem;
   overflow: hidden;
+  padding: 2rem;
   justify-content: space-between;
   &__visualization-mode-switchers {
     display: flex;
@@ -30,9 +30,9 @@
     }
   }
   &__form-container {
-    transition: 0.3s;
   }
   &__form {
+    width: 100%;
   }
   &__icon {
     position: absolute;
@@ -48,6 +48,7 @@
     //border-left: 1px solid $color-primary-dark;
     padding: 2rem;
     position: relative;
+    overflow-y: visible;
   }
   &__math-quill-hint {
     width: 30rem;
@@ -61,6 +62,10 @@
     margin-left: 1rem;
     background-color: $color-primary-dark;
     cursor: col-resize;
+    &--dragging {
+      width: 0.4rem;
+      background-color: $color-primary;
+    }
   }
 }
 
@@ -84,6 +89,14 @@
     cursor: pointer;
     display: flex;
     align-items: center;
+    & > svg {
+      min-width: 3rem;
+    }
+    & > span {
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+    }
     &--active {
       font-weight: bold;
       color: $color-primary-dark;

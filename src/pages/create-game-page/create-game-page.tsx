@@ -52,12 +52,31 @@ const CreateGamePage = () => {
       name: "levels", // unique name for your Field Array
     }
   );
+
+  const [levelNames, setLevelNames] = useState<string[]>([]);
   const currentEditedLevelRef: RefObject<HTMLInputElement> = React.createRef();
   const updateDemo = (index: number) => {
     setStartExpressionHint(getValues().levels[index].startExpression);
     setGoalExpressionHint(getValues().levels[index].goalExpression);
     if (!showHintsBlock) setShowHintsBlock(true);
   };
+
+  const updateName = (index: number, newName: string): void => {
+    setLevelNames((prevState: string[]) => {
+      return prevState.map((name: string, i: number) => {
+        return i === index ? newName : name;
+      });
+    });
+  };
+
+  // update names due to changes of fields
+  useEffect(() => {
+    setLevelNames(
+      fields.map((field, i) => {
+        return getValues().levels[i].name;
+      })
+    );
+  }, [fields]);
 
   const [visualizationMode, setVisualizationMode] = useState<VisualizationMode>(
     VisualizationMode.LIST
@@ -70,7 +89,7 @@ const CreateGamePage = () => {
       <div
         className="create-game-page__form-container"
         style={{
-          width: showHintsBlock ? `calc(100% + ${hintsDeltaX}` : "100%",
+          width: !showHintsBlock ? "100%" : `calc(50% + ${hintsDeltaX}px)`,
         }}
       >
         <div className="create-game-page__form">
@@ -146,7 +165,9 @@ const CreateGamePage = () => {
                           size={2}
                           style={{ marginRight: "1rem" }}
                         />
-                        <span>Уровень {index + 1}</span>
+                        <span>
+                          Уровень {index + 1}. {levelNames[index]}
+                        </span>
                       </div>
                     );
                   })}
@@ -206,6 +227,7 @@ const CreateGamePage = () => {
                         visualizationMode === VisualizationMode.LIST &&
                         index !== selectedLevel
                       }
+                      updateName={updateName}
                     />
                   );
                 })}
@@ -259,17 +281,25 @@ const CreateGamePage = () => {
       <div
         className="create-game-page__hints"
         style={{
-          width: showHintsBlock ? `calc(48% - ${hintsDeltaX}px)` : "0",
+          width: showHintsBlock ? `calc(50% - ${hintsDeltaX}px)` : "0",
           opacity: showHintsBlock ? "1" : "0",
         }}
       >
         <Draggable
-          onDrag={(_, { x }) => {
-            setHintsDeltaX((prevState: number) => prevState + x);
+          axis="x"
+          position={{
+            x: 0,
+            y: 0,
           }}
-          axis="none"
+          defaultClassName="create-game-page__hints-dragger"
+          defaultClassNameDragging="create-game-page__hints-dragger create-game-page__hints-dragger--dragging"
+          onStop={(_, { lastX }) => {
+            setHintsDeltaX((prevState) => {
+              return prevState + lastX;
+            });
+          }}
         >
-          <span className="create-game-page__hints-dragger" />
+          <span />
         </Draggable>
         <div className="create-game-page__math-quill-hint">
           {showHintsBlock && (

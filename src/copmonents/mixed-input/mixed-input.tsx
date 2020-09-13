@@ -98,7 +98,9 @@ const MixedInput: React.FC<MixedInputProps> = ({
         <input
           style={{ width: width }}
           type="text"
-          className={`form-control ${error !== null && "is-invalid"}`}
+          className={`mixed-input__input form-control ${
+            error !== null && "is-invalid"
+          }`}
           value={currentValue}
           onChange={(event) => {
             setCurrentValue(event.target.value);
@@ -114,7 +116,9 @@ const MixedInput: React.FC<MixedInputProps> = ({
         <input
           style={{ width: width }}
           type="text"
-          className={`form-control ${error !== null && "is-invalid"}`}
+          className={`mixed-input__input form-control ${
+            error !== null && "is-invalid"
+          }`}
           value={currentValue}
           onChange={(event) => {
             setCurrentValue(event.target.value);

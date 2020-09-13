@@ -10,6 +10,7 @@ interface MathQuillEditorProps {
   inputRef: RefObject<HTMLInputElement>;
   config?: any;
   width?: string;
+  maxWidth?: string;
   startingLatexExpression?: string;
   enableOutput?: boolean;
   showOperationTab?: boolean;
@@ -23,6 +24,7 @@ const MathQuillEditor: React.FC<MathQuillEditorProps> = ({
   showOperationTab = true,
   inputRef,
   width,
+  maxWidth,
   updateValue,
   isInvalid,
 }: MathQuillEditorProps) => {
@@ -125,7 +127,7 @@ const MathQuillEditor: React.FC<MathQuillEditorProps> = ({
       <span
         className="math-quill-editor__main-input"
         id={id}
-        // style={{ width: width ? width : "100%" }}
+        style={{ width, minWidth: "17rem" }}
       />
     </div>
   );

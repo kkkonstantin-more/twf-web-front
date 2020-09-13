@@ -1,6 +1,7 @@
 @import "../../styles/abstracts/variables";
 
 .math-quill-editor {
+  min-width: 17rem;
   &__operations {
     display: flex;
     background-color: $color-primary-light;
@@ -17,7 +18,6 @@
   }
   &__main-input {
     margin-top: -0.3rem;
-    width: 100%;
     .mq-root-block {
       overflow-x: scroll;
       &::-webkit-scrollbar {

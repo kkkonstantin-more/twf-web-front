@@ -1,5 +1,5 @@
 // libs
-import React, { RefObject, useState } from "react";
+import React, { RefObject, useEffect, useState } from "react";
 // hooks
 import { useFormContext } from "react-hook-form";
 import useMergedRef from "@react-hook/merged-ref";
@@ -73,6 +73,7 @@ export interface LevelFormProps {
   updateDemo: (index: number) => void;
   visualizationMode: VisualizationMode;
   hidden?: boolean;
+  updateName?: (index: number, newName: string) => void;
   // methods from react-use-form lib
   remove: (index: number) => void;
   swap: (from: number, to: number) => void;
@@ -103,6 +104,7 @@ const LevelForm: React.FC<Props> = ({
   allLevelsHiddenFields,
   toggleFieldVisibilityForAllManualLevels,
   toggleFieldVisibilityForAllAutoLevels,
+  updateName,
 }: Props) => {
   const { register, getValues } = useFormContext();
 
@@ -187,6 +189,17 @@ const LevelForm: React.FC<Props> = ({
     );
   };
 
+  const [mixedInputWidth, setMixedInputWidth] = useState<number>(0);
+  const inputRef: RefObject<HTMLInputElement> = React.createRef();
+  useEffect(() => {
+    if (inputRef.current) {
+      const width = window.getComputedStyle(inputRef.current, null);
+      setMixedInputWidth(
+        parseFloat(width.getPropertyValue("width").slice(0, -2))
+      );
+    }
+  }, [inputRef]);
+
   const inputs: { [key: string]: JSX.Element } = {
     levelType: (
       <div className="form-group">
@@ -209,7 +222,12 @@ const LevelForm: React.FC<Props> = ({
           className="form-control"
           name={`levels[${index}].name`}
           defaultValue={defaultValue.name}
-          ref={register()}
+          ref={useMergedRef(register(), inputRef)}
+          onChange={(e): void => {
+            if (updateName) {
+              updateName(index, e.target.value);
+            }
+          }}
         />
       </div>
     ),
@@ -242,9 +260,7 @@ const LevelForm: React.FC<Props> = ({
         />
         <MixedInput
           inputRef={startExpressionRef}
-          width={`${
-            visualizationMode === VisualizationMode.LIST ? "65vw" : "40rem"
-          }`}
+          width={mixedInputWidth + "px"}
         />
       </div>
     ),
@@ -316,9 +332,7 @@ const LevelForm: React.FC<Props> = ({
           />
           <MixedInput
             inputRef={goalExpressionRef}
-            width={`${
-              visualizationMode === VisualizationMode.LIST ? "65vw" : "40rem"
-            }`}
+            width={mixedInputWidth + "px"}
           />
         </div>
         <div
