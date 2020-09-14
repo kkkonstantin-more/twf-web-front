@@ -1,0 +1,28 @@
+@import "../../styles/abstracts/variables";
+
+.rule-pack-constructor {
+  margin: 2rem;
+
+  &__rules {
+    border: 1px solid $color-primary-dark;
+    margin-left: 2rem;
+    padding: 2rem;
+    border-radius: 5px;
+  }
+
+  &__rule {
+    display: flex;
+    align-items: center;
+    & > *:not(:last-child) {
+      margin-right: 2rem;
+    }
+  }
+}
+
+.rule-form {
+  display: flex;
+  align-items: center;
+  & > .form-group:not(:last-child) {
+    margin-right: 2rem;
+  }
+}

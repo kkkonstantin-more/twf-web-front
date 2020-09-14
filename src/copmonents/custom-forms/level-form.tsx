@@ -40,6 +40,30 @@ import {
 import store from "../../redux/store";
 import { VisualizationMode } from "../../pages/create-game-page/create-game-page";
 
+export const ActionButton = ({
+  action,
+  mdiIconPath,
+  size,
+  margin,
+}: {
+  mdiIconPath: string;
+  size: number;
+  action: () => any;
+  margin?: string;
+}): JSX.Element => {
+  return (
+    <button
+      className="level-form__action-button"
+      style={{ margin: margin ? margin : "" }}
+      onClick={() => {
+        action();
+      }}
+    >
+      <Icon path={mdiIconPath} size={size} />
+    </button>
+  );
+};
+
 export enum LevelType {
   AUTO = "автоматический",
   MANUAL = "ручной",
@@ -165,30 +189,6 @@ const LevelForm: React.FC<Props> = ({
     })
   );
 
-  const ActionButton = ({
-    action,
-    mdiIconPath,
-    size,
-    margin,
-  }: {
-    mdiIconPath: string;
-    size: number;
-    action: () => any;
-    margin?: string;
-  }): JSX.Element => {
-    return (
-      <button
-        className="level-form__action-button"
-        style={{ margin: margin ? margin : "" }}
-        onClick={() => {
-          action();
-        }}
-      >
-        <Icon path={mdiIconPath} size={size} />
-      </button>
-    );
-  };
-
   const [mixedInputWidth, setMixedInputWidth] = useState<number>(0);
   const inputRef: RefObject<HTMLInputElement> = React.createRef();
   useEffect(() => {
@@ -259,6 +259,7 @@ const LevelForm: React.FC<Props> = ({
           defaultValue={defaultValue.startExpression}
         />
         <MixedInput
+          value={defaultValue.startExpression}
           inputRef={startExpressionRef}
           width={mixedInputWidth + "px"}
         />
@@ -333,6 +334,7 @@ const LevelForm: React.FC<Props> = ({
           <MixedInput
             inputRef={goalExpressionRef}
             width={mixedInputWidth + "px"}
+            value={defaultValue.goalExpression}
           />
         </div>
         <div

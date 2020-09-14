@@ -22,6 +22,7 @@ import LevelForm, {
   Level,
   LevelType,
 } from "../../copmonents/custom-forms/level-form";
+import RulePackConstructor from "../../copmonents/rule-pack-constructor/rule-pack-constructor";
 
 export enum VisualizationMode {
   TABLE = "TABLE",
@@ -85,112 +86,173 @@ const CreateGamePage = () => {
   const [selectedLevel, setSelectedLevel] = useState<number | null>(null);
 
   return (
-    <div className="create-game-page">
-      <div
-        className="create-game-page__form-container"
-        style={{
-          width: !showHintsBlock ? "100%" : `calc(50% + ${hintsDeltaX}px)`,
-        }}
-      >
-        <div className="create-game-page__form">
-          <FormProvider {...methods}>
-            <div className="form-group">
-              <label>Название игры</label>
-              <input
-                name="gameName"
-                type="text"
-                className="form-control"
-                ref={register}
-              />
-            </div>
-            <div className="form-group">
-              <label>Game Space</label>
-              <input
-                name="gameSpace"
-                type="text"
-                className="form-control"
-                ref={register}
-              />
-            </div>
-            <h3>Уровни</h3>
-            <div className="create-game-page__visualization-mode-switchers">
-              <div
-                className={`create-game-page__visualization-mode-switcher ${
-                  visualizationMode === VisualizationMode.LIST &&
-                  "create-game-page__visualization-mode-switcher--active"
-                }`}
-                onClick={() => {
-                  setVisualizationMode(VisualizationMode.LIST);
-                }}
-              >
-                Список
+    <>
+      <div className="create-game-page">
+        <div
+          className="create-game-page__form-container"
+          style={{
+            width: !showHintsBlock ? "100%" : `calc(50% + ${hintsDeltaX}px)`,
+          }}
+        >
+          <div className="create-game-page__form">
+            <FormProvider {...methods}>
+              <div className="form-group">
+                <label>Название игры</label>
+                <input
+                  name="gameName"
+                  type="text"
+                  className="form-control"
+                  ref={register}
+                />
+              </div>
+              <div className="form-group">
+                <label>Game Space</label>
+                <input
+                  name="gameSpace"
+                  type="text"
+                  className="form-control"
+                  ref={register}
+                />
+              </div>
+              <h3>Уровни</h3>
+              <div className="create-game-page__visualization-mode-switchers">
+                <div
+                  className={`create-game-page__visualization-mode-switcher ${
+                    visualizationMode === VisualizationMode.LIST &&
+                    "create-game-page__visualization-mode-switcher--active"
+                  }`}
+                  onClick={() => {
+                    setVisualizationMode(VisualizationMode.LIST);
+                  }}
+                >
+                  Список
+                </div>
+                <div
+                  className={`create-game-page__visualization-mode-switcher ${
+                    visualizationMode === VisualizationMode.TABLE &&
+                    "create-game-page__visualization-mode-switcher--active"
+                  }`}
+                  onClick={() => {
+                    setVisualizationMode(VisualizationMode.TABLE);
+                  }}
+                >
+                  Таблица
+                </div>
               </div>
               <div
-                className={`create-game-page__visualization-mode-switcher ${
-                  visualizationMode === VisualizationMode.TABLE &&
-                  "create-game-page__visualization-mode-switcher--active"
+                className={`${
+                  visualizationMode === VisualizationMode.TABLE
+                    ? "form-levels-table"
+                    : "form-levels-list"
                 }`}
-                onClick={() => {
-                  setVisualizationMode(VisualizationMode.TABLE);
-                }}
               >
-                Таблица
-              </div>
-            </div>
-            <div
-              className={`${
-                visualizationMode === VisualizationMode.TABLE
-                  ? "form-levels-table"
-                  : "form-levels-list"
-              }`}
-            >
-              {visualizationMode === VisualizationMode.LIST && (
-                <div className="form-levels-list__select">
-                  {fields.map((field, index) => {
-                    return (
-                      <div
-                        key={field.id}
-                        onClick={() => setSelectedLevel(index)}
-                        className={`form-levels-list__select-option ${
-                          index === selectedLevel &&
-                          "form-levels-list__select-option--active"
-                        }`}
+                {visualizationMode === VisualizationMode.LIST && (
+                  <div className="form-levels-list__select">
+                    {fields.map((field, index) => {
+                      return (
+                        <div
+                          key={field.id}
+                          onClick={() => setSelectedLevel(index)}
+                          className={`form-levels-list__select-option ${
+                            index === selectedLevel &&
+                            "form-levels-list__select-option--active"
+                          }`}
+                        >
+                          <Icon
+                            path={
+                              field.levelType === LevelType.AUTO
+                                ? mdiRobot
+                                : mdiWrench
+                            }
+                            size={2}
+                            style={{ marginRight: "1rem" }}
+                          />
+                          <span>
+                            Уровень {index + 1}. {levelNames[index]}
+                          </span>
+                        </div>
+                      );
+                    })}
+                    <div className="form-levels-list__action-buttons">
+                      <button
+                        className="btn u-mr-sm"
+                        onClick={() => {
+                          append({
+                            levelType: LevelType.AUTO,
+                          });
+                          setSelectedLevel(fields.length);
+                        }}
                       >
-                        <Icon
-                          path={
-                            field.levelType === LevelType.AUTO
-                              ? mdiRobot
-                              : mdiWrench
-                          }
-                          size={2}
-                          style={{ marginRight: "1rem" }}
-                        />
-                        <span>
-                          Уровень {index + 1}. {levelNames[index]}
-                        </span>
-                      </div>
+                        <Icon path={mdiPlus} size={1.2} />
+                        <span>автоматический уровень</span>
+                      </button>
+                      <button
+                        className="btn"
+                        onClick={() => {
+                          append({
+                            levelType: LevelType.MANUAL,
+                          });
+                          setSelectedLevel(fields.length);
+                        }}
+                      >
+                        <Icon path={mdiPlus} size={1.2} />
+                        <span>ручной уровень</span>
+                      </button>
+                      <button
+                        className="btn"
+                        onClick={() => console.log(getValues())}
+                      >
+                        get values
+                      </button>
+                    </div>
+                  </div>
+                )}
+                <div
+                  className={`${
+                    visualizationMode === VisualizationMode.LIST &&
+                    "form-levels-list__selected-level"
+                  }`}
+                >
+                  {fields.map((field, index: number) => {
+                    return (
+                      <LevelForm
+                        key={index}
+                        levelType={fields[index].levelType}
+                        index={index}
+                        defaultValue={fields[index]}
+                        remove={remove}
+                        swap={swap}
+                        append={append}
+                        updateDemo={updateDemo}
+                        visualizationMode={visualizationMode}
+                        hidden={
+                          visualizationMode === VisualizationMode.LIST &&
+                          index !== selectedLevel
+                        }
+                        updateName={updateName}
+                      />
                     );
                   })}
-                  <div className="form-levels-list__action-buttons">
+                </div>
+                {visualizationMode === VisualizationMode.TABLE && (
+                  <div className="form-levels-table__add-level-buttons">
                     <button
                       className="btn u-mr-sm"
                       onClick={() => {
                         append({
                           levelType: LevelType.AUTO,
                         });
-                        setSelectedLevel(fields.length);
                       }}
                     >
                       <Icon path={mdiPlus} size={1.2} />
                       <span>автоматический уровень</span>
                     </button>
                     <button
-                      className="btn"
+                      className="btn u-mr-sm"
                       onClick={() => {
                         append({
                           levelType: LevelType.MANUAL,
                         });
-                        setSelectedLevel(fields.length);
                       }}
                     >
                       <Icon path={mdiPlus} size={1.2} />
@@ -203,127 +265,69 @@ const CreateGamePage = () => {
                       get values
                     </button>
                   </div>
-                </div>
-              )}
-              <div
-                className={`${
-                  visualizationMode === VisualizationMode.LIST &&
-                  "form-levels-list__selected-level"
-                }`}
-              >
-                {fields.map((field, index: number) => {
-                  return (
-                    <LevelForm
-                      key={index}
-                      levelType={fields[index].levelType}
-                      index={index}
-                      defaultValue={fields[index]}
-                      remove={remove}
-                      swap={swap}
-                      append={append}
-                      updateDemo={updateDemo}
-                      visualizationMode={visualizationMode}
-                      hidden={
-                        visualizationMode === VisualizationMode.LIST &&
-                        index !== selectedLevel
-                      }
-                      updateName={updateName}
-                    />
-                  );
-                })}
+                )}
               </div>
-              {visualizationMode === VisualizationMode.TABLE && (
-                <div className="form-levels-table__add-level-buttons">
-                  <button
-                    className="btn u-mr-sm"
-                    onClick={() => {
-                      append({
-                        levelType: LevelType.AUTO,
-                      });
-                    }}
-                  >
-                    <Icon path={mdiPlus} size={1.2} />
-                    <span>автоматический уровень</span>
-                  </button>
-                  <button
-                    className="btn u-mr-sm"
-                    onClick={() => {
-                      append({
-                        levelType: LevelType.MANUAL,
-                      });
-                    }}
-                  >
-                    <Icon path={mdiPlus} size={1.2} />
-                    <span>ручной уровень</span>
-                  </button>
-                  <button
-                    className="btn"
-                    onClick={() => console.log(getValues())}
-                  >
-                    get values
-                  </button>
-                </div>
-              )}
-            </div>
-          </FormProvider>
+            </FormProvider>
+          </div>
         </div>
-      </div>
-      {/*HINTS BLOCK*/}
-      <div
-        className="create-game-page__icon"
-        onClick={() => setShowHintsBlock(!showHintsBlock)}
-      >
-        <Icon
-          size={3}
-          path={showHintsBlock ? mdiCloseCircle : mdiCommentQuestion}
-        />
-      </div>
-      <div
-        className="create-game-page__hints"
-        style={{
-          width: showHintsBlock ? `calc(50% - ${hintsDeltaX}px)` : "0",
-          opacity: showHintsBlock ? "1" : "0",
-        }}
-      >
-        <Draggable
-          axis="x"
-          position={{
-            x: 0,
-            y: 0,
-          }}
-          defaultClassName="create-game-page__hints-dragger"
-          defaultClassNameDragging="create-game-page__hints-dragger create-game-page__hints-dragger--dragging"
-          onStop={(_, { lastX }) => {
-            setHintsDeltaX((prevState) => {
-              return prevState + lastX;
-            });
-          }}
+        {/*HINTS BLOCK*/}
+        <div
+          className="create-game-page__icon"
+          onClick={() => setShowHintsBlock(!showHintsBlock)}
         >
-          <span />
-        </Draggable>
-        <div className="create-game-page__math-quill-hint">
-          {showHintsBlock && (
-            <>
-              <h1>Как писать в TEX:</h1>
-              <img
-                src={require("../../assets/math-quill-hint.gif")}
-                alt="latex editor hint"
-                width="100%"
-                height="auto"
-              />
-            </>
-          )}
-        </div>
-        <div className="current-edited-level">
-          <h1>Редактируемый уровень:</h1>
-          <input type="text" ref={currentEditedLevelRef} />
-          <MathQuillEditor
-            inputRef={currentEditedLevelRef}
-            startingLatexExpression={`${startExpressionHint}=..=${goalExpressionHint}`}
+          <Icon
+            size={3}
+            path={showHintsBlock ? mdiCloseCircle : mdiCommentQuestion}
           />
         </div>
+        <div
+          className="create-game-page__hints"
+          style={{
+            width: showHintsBlock ? `calc(50% - ${hintsDeltaX}px)` : "0",
+            opacity: showHintsBlock ? "1" : "0",
+          }}
+        >
+          <Draggable
+            axis="x"
+            position={{
+              x: 0,
+              y: 0,
+            }}
+            defaultClassName="create-game-page__hints-dragger"
+            defaultClassNameDragging="create-game-page__hints-dragger create-game-page__hints-dragger--dragging"
+            onStop={(_, { lastX }) => {
+              setHintsDeltaX((prevState) => {
+                return prevState + lastX;
+              });
+            }}
+          >
+            <span />
+          </Draggable>
+          <div className="create-game-page__math-quill-hint">
+            {showHintsBlock && (
+              <>
+                <h1>Как писать в TEX:</h1>
+                <img
+                  src={require("../../assets/math-quill-hint.gif")}
+                  alt="latex editor hint"
+                  width="100%"
+                  height="auto"
+                />
+              </>
+            )}
+          </div>
+          <div className="current-edited-level">
+            <h1>Редактируемый уровень:</h1>
+            <input type="text" ref={currentEditedLevelRef} />
+            <MathQuillEditor
+              inputRef={currentEditedLevelRef}
+              startingLatexExpression={`${startExpressionHint}=..=${goalExpressionHint}`}
+            />
+          </div>
+        </div>
       </div>
-    </div>
+      <RulePackConstructor />
+    </>
   );
 };
 

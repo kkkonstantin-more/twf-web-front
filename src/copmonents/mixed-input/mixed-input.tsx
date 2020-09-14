@@ -12,16 +12,18 @@ import {
 interface MixedInputProps {
   inputRef: React.RefObject<HTMLInputElement>;
   width?: string;
+  value?: string;
 }
 
 const MixedInput: React.FC<MixedInputProps> = ({
   inputRef,
   width,
+  value,
 }: MixedInputProps) => {
   const [currentInputFormat, setCurrentInputFormat] = useState<MathInputFormat>(
     MathInputFormat.TEX
   );
-  const [currentValue, setCurrentValue] = useState<string>("");
+  const [currentValue, setCurrentValue] = useState<string>(value ? value : "");
   const [error, setError] = useState<string | null>(null);
 
   const changeInputMode = (toFormat: MathInputFormat): void => {

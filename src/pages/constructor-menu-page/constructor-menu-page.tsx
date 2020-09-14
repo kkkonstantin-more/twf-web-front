@@ -15,6 +15,35 @@ interface ConstructorMenuBlockProps {
   options: { name: string; action: () => any }[];
 }
 
+export const AllItemsList: React.FC<{ items: string[] }> = ({
+  items,
+}: {
+  items: string[];
+}) => {
+  const [selectedItems, setSelectedItems] = useState<string[]>(items);
+
+  return (
+    <div style={{ width: "100%" }}>
+      <input
+        type="text"
+        style={{ width: "100%", marginBottom: "2rem" }}
+        onChange={(e) =>
+          setSelectedItems(
+            items.filter((item: string) => item.includes(e.target.value))
+          )
+        }
+      />
+      {selectedItems.map((item: string, i: number) => {
+        return (
+          <div key={i} style={{ marginBottom: "1rem", cursor: "pointer" }}>
+            {item}
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
 const ConstructorMenuBlock: React.FC<ConstructorMenuBlockProps> = ({
   title,
   titleIconUrl,
@@ -45,33 +74,33 @@ const ConstructorMenuBlock: React.FC<ConstructorMenuBlockProps> = ({
   );
 };
 
+export const demoList = [
+  "Alison Park",
+  "Jackson Berger",
+  "Keri Dawson",
+  "Eva Gilbert",
+  "Michael Edwards",
+  "Delores Salazar",
+  "Etta Tyson",
+  "Nita Herrera",
+  "Fields Chavez",
+  "Aurelia Knapp",
+  "Patel Hatfield",
+  "Blackwell Gilmore",
+  "Randolph Mayo",
+  "Maureen Romero",
+  "Elva Hopkins",
+  "Allyson Sloan",
+  "Jeri Grimes",
+  "Myrtle Willis",
+  "Mclean Hodges",
+  "Lana Hayes",
+];
+
 const ConstructorMenuPage: React.FC = () => {
   const [currentTab, setCurrentTab] = useState(0);
   const [showAllItemsModal, setShowAllItemsModal] = useState(false);
   const history = useHistory();
-
-  const demoList = [
-    "Alison Park",
-    "Jackson Berger",
-    "Keri Dawson",
-    "Eva Gilbert",
-    "Michael Edwards",
-    "Delores Salazar",
-    "Etta Tyson",
-    "Nita Herrera",
-    "Fields Chavez",
-    "Aurelia Knapp",
-    "Patel Hatfield",
-    "Blackwell Gilmore",
-    "Randolph Mayo",
-    "Maureen Romero",
-    "Elva Hopkins",
-    "Allyson Sloan",
-    "Jeri Grimes",
-    "Myrtle Willis",
-    "Mclean Hodges",
-    "Lana Hayes",
-  ];
 
   const gameBlocks: ConstructorMenuBlockProps[] = [
     {
@@ -189,35 +218,6 @@ const ConstructorMenuPage: React.FC = () => {
       ],
     },
   ];
-
-  const AllItemsList: React.FC<{ items: string[] }> = ({
-    items,
-  }: {
-    items: string[];
-  }) => {
-    const [selectedItems, setSelectedItems] = useState<string[]>(items);
-
-    return (
-      <div style={{ width: "100%" }}>
-        <input
-          type="text"
-          style={{ width: "100%", marginBottom: "2rem" }}
-          onChange={(e) =>
-            setSelectedItems(
-              items.filter((item: string) => item.includes(e.target.value))
-            )
-          }
-        />
-        {selectedItems.map((item: string, i: number) => {
-          return (
-            <div key={i} style={{ marginBottom: "1rem", cursor: "pointer" }}>
-              {item}
-            </div>
-          );
-        })}
-      </div>
-    );
-  };
 
   return (
     <div className="constructor-menu-page">
