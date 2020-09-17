@@ -16,6 +16,8 @@ const formsRu = {
   [prefix +
   ".registerInvalidForm"]: "Что-то пошло не так, проверьте корректность введенных данных",
   [prefix + ".registerSuccess"]: "Успешная регистрация!",
+  [prefix + ".loginSuccess"]: "Успешно!",
+  [prefix + ".loginError"]: "Пользователя с таким паролем не существует",
 };
 
 const formsEn = {
@@ -34,6 +36,8 @@ const formsEn = {
   [prefix +
   ".registerInvalidForm"]: "Something went wrong. Check correctness of your inputs",
   [prefix + ".registerSuccess"]: "Registered successfully!",
+  [prefix + ".loginSuccess"]: "Success!",
+  [prefix + ".loginError"]: "User with such password doesn't exist",
 };
 
 export { formsEn, formsRu };

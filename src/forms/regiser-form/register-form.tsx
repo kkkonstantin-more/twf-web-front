@@ -13,8 +13,12 @@ import { registerFormInputs } from "./register-form.data";
 import GoogleLogin from "react-google-login";
 // styles
 import "./register-form.scss";
+import { Redirect } from "react-router-dom";
 
-const RegisterForm: React.FC<{ intl: any }> = ({ intl }) => {
+const RegisterForm: React.FC<{ intl: any; hideModal: () => void }> = ({
+  intl,
+  hideModal,
+}) => {
   // translation vars
   const translationPrefix: string = "forms";
   const registerButtonTextId: string =
@@ -28,6 +32,8 @@ const RegisterForm: React.FC<{ intl: any }> = ({ intl }) => {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
+  const [registered, setRegistered] = useState<boolean | null>(null);
+
   const onSubmit = (data: any) => {
     axios({
       method: "post",
@@ -39,6 +45,8 @@ const RegisterForm: React.FC<{ intl: any }> = ({ intl }) => {
         setErrorMessage(null);
         setSuccessMessage(success);
         reset();
+        setRegistered(true);
+        hideModal();
       })
       .catch(({ response }) => {
         console.log(response);
@@ -51,15 +59,37 @@ const RegisterForm: React.FC<{ intl: any }> = ({ intl }) => {
   };
 
   const responseGoogle = (response: any) => {
-    console.log(response);
+    if (response.hasOwnProperty("error")) {
+      setRegistered(false);
+    } else {
+      setRegistered(true);
+      hideModal();
+      // // send google's token to server
+      // const idTokenString = response.tokenId;
+      // console.log(response.tokenId);
+      // axios({
+      //   method: "get",
+      //   url: `${process.env.REACT_APP_SERVER_API}/api/auth/google_sing_in`,
+      //   params: { idTokenString },
+      // })
+      //   .then((res) => {
+      //     setAuthorized(res.status === 200);
+      //   })
+      //   .catch((e) => {
+      //     setAuthorized(false);
+      //     console.log(e.message);
+      //   });
+    }
   };
 
-  return (
+  return registered === true ? (
+    <Redirect to={"/constructor-menu"} />
+  ) : (
     <form className="register-form" onSubmit={handleSubmit(onSubmit)}>
-      {registerFormInputs.map((input: FormInput) => {
+      {registerFormInputs.map((input: FormInput, i) => {
         const { name, inputType, labelTranslationId, validation } = input;
         return (
-          <div className="form-group">
+          <div className="form-group" key={i}>
             <label htmlFor={labelTranslationId}>
               {translate(labelTranslationId)}
             </label>
@@ -109,7 +139,6 @@ const RegisterForm: React.FC<{ intl: any }> = ({ intl }) => {
           onSuccess={responseGoogle}
           onFailure={responseGoogle}
           cookiePolicy={"single_host_origin"}
-          style={{ fontSize: "10rem" }}
         />
       </div>
     </form>

@@ -33,14 +33,14 @@ const LoginRegisterModal: React.FC<LoginRegisterModalProps> = ({
             title={intl.formatMessage({ id: loginTabId })}
             className="login-register-modal__form"
           >
-            <LoginForm />
+            <LoginForm hideModal={() => setShowModal(false)} />
           </Tab>
           <Tab
             eventKey="register"
             title={intl.formatMessage({ id: registerTabId })}
             className="login-register-modal__form"
           >
-            <RegisterForm />
+            <RegisterForm hideModal={() => setShowModal(false)} />
           </Tab>
         </Tabs>
       </Modal>

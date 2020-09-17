@@ -14,8 +14,6 @@ import {
   mdiArrowUp,
   mdiClose,
   mdiContentCopy,
-  mdiFileEye,
-  mdiPlayCircle,
   mdiPlus,
 } from "@mdi/js";
 import MixedInput from "../mixed-input/mixed-input";

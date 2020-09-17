@@ -38,7 +38,7 @@ import {
   mdiWrench,
 } from "@mdi/js";
 import store from "../../redux/store";
-import { VisualizationMode } from "../../pages/create-game-page/create-game-page";
+import { VisualizationMode } from "../../constructors/task-set-constructor/task-set-constructor";
 
 export const ActionButton = ({
   action,

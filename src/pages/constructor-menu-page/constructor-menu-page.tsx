@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 // hooks
-import { useHistory } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 // components
 import AppModal from "../../copmonents/app-modal/app-modal";
 // icons
@@ -8,6 +8,7 @@ import Icon from "@mdi/react";
 import { mdiPencil, mdiPlus } from "@mdi/js";
 // styles
 import "./constructor-menu-page.scss";
+import mockTaskSets from "../../mock-data/task-sets";
 
 interface ConstructorMenuBlockProps {
   title: string;
@@ -15,12 +16,13 @@ interface ConstructorMenuBlockProps {
   options: { name: string; action: () => any }[];
 }
 
-export const AllItemsList: React.FC<{ items: string[] }> = ({
-  items,
-}: {
-  items: string[];
-}) => {
-  const [selectedItems, setSelectedItems] = useState<string[]>(items);
+export const AllItemsList: React.FC<{
+  items: { name: string; link: string }[];
+  url: string;
+}> = ({ items, url }) => {
+  const [selectedItems, setSelectedItems] = useState<
+    { name: string; link: string }[]
+  >(items);
 
   return (
     <div style={{ width: "100%" }}>
@@ -29,15 +31,26 @@ export const AllItemsList: React.FC<{ items: string[] }> = ({
         style={{ width: "100%", marginBottom: "2rem" }}
         onChange={(e) =>
           setSelectedItems(
-            items.filter((item: string) => item.includes(e.target.value))
+            items.filter((item) => {
+              return item.name.includes(e.target.value);
+            })
           )
         }
       />
-      {selectedItems.map((item: string, i: number) => {
+      {selectedItems.map((item, i) => {
         return (
-          <div key={i} style={{ marginBottom: "1rem", cursor: "pointer" }}>
-            {item}
-          </div>
+          <Link
+            to={`${url}/${item.link}`}
+            key={i}
+            style={{
+              marginBottom: "1rem",
+              cursor: "pointer",
+              display: "block",
+              color: "black",
+            }}
+          >
+            {item.name}
+          </Link>
         );
       })}
     </div>
@@ -97,45 +110,60 @@ export const demoList = [
   "Lana Hayes",
 ];
 
+export const demoTaskSetsLinks = mockTaskSets.map((e, i) => ({
+  link: (i + 1).toString(),
+  name: e.nameRu,
+}));
+
 const ConstructorMenuPage: React.FC = () => {
   const [currentTab, setCurrentTab] = useState(0);
   const [showAllItemsModal, setShowAllItemsModal] = useState(false);
   const history = useHistory();
+  const [items, setItems] = useState<{ name: string; link: string }[]>([]);
+  const [url, setUrl] = useState<string>("");
 
   const gameBlocks: ConstructorMenuBlockProps[] = [
     {
-      title: "Создать новую игру",
+      title: "Создать новый набор задач",
       titleIconUrl: mdiPlus,
       options: [
         {
           name: "С нуля",
-          action: () => history.push("/json-editor"),
+          action: () => history.push("/create-game"),
         },
         {
           name: "На основе уже существующей",
-          action: () => history.push("/json-editor"),
+          action: () => {
+            setItems(demoTaskSetsLinks);
+            setShowAllItemsModal(true);
+            setUrl("/create-game");
+          },
         },
       ],
     },
     {
-      title: "Редактировать существующую игру",
+      title: "Редактировать мои наборы задач",
       titleIconUrl: mdiPencil,
       options: [
         {
-          name: "Игра 3",
-          action: () => history.push("/json-editor"),
+          name: mockTaskSets[2].nameRu,
+          action: () => history.push("/create-game/3"),
         },
         {
-          name: "Игра 2",
-          action: () => history.push("/json-editor"),
+          name: mockTaskSets[1].nameRu,
+          action: () => history.push("/create-game/2"),
         },
         {
-          name: "Игра 1",
-          action: () => history.push("/json-editor"),
+          name: mockTaskSets[0].nameRu,
+          action: () => history.push("/create-game/1"),
         },
         {
           name: "Смотреть все",
-          action: () => setShowAllItemsModal(true),
+          action: () => {
+            setItems(demoTaskSetsLinks);
+            setShowAllItemsModal(true);
+            setUrl("/create-game");
+          },
         },
       ],
     },
@@ -265,7 +293,7 @@ const ConstructorMenuPage: React.FC = () => {
         width="50%"
         height="70%"
       >
-        <AllItemsList items={demoList} />
+        <AllItemsList items={items} url={url} />
       </AppModal>
     </div>
   );

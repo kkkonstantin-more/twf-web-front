@@ -50,9 +50,9 @@ const ForTutorsSection: React.FC = () => {
         {translate(titleId)}
       </h1>
       <div className="for-tutors-section__texts-with-svg">
-        {textWithSvgBlock.map((block: TextWithSvgBlock) => {
+        {textWithSvgBlock.map((block: TextWithSvgBlock, i) => {
           return (
-            <div className="for-tutors-section__text-with-svg">
+            <div className="for-tutors-section__text-with-svg" key={i}>
               <Icon
                 path={block.svgUrl}
                 style={{ color: block.backgroundColor }}

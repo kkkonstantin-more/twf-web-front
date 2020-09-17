@@ -1,0 +1,123 @@
+@import "../../styles/abstracts/variables";
+
+.create-game-page {
+  display: flex;
+  position: relative;
+  overflow: hidden;
+  padding: 2rem;
+  justify-content: space-between;
+  &__visualization-mode-switchers {
+    display: flex;
+    margin-bottom: 1rem;
+    border: 1px solid $color-primary-dark;
+    padding: 1rem;
+    border-radius: 5px;
+    width: fit-content;
+  }
+  &__visualization-mode-switcher {
+    cursor: pointer;
+    font-size: $sm-font-size;
+    &--active {
+      font-weight: bold;
+      color: $color-primary-dark;
+    }
+    &:first-child {
+      padding-right: 1rem;
+      border-right: 1px solid $color-primary-dark;
+    }
+    &:nth-child(2) {
+      padding-left: 1rem;
+    }
+  }
+  &__form-container {
+  }
+  &__form {
+    width: 100%;
+  }
+  &__icon {
+    position: absolute;
+    top: 0;
+    right: 2rem;
+    cursor: pointer;
+    z-index: 3;
+  }
+  &__hints {
+    //transition: 0.3s;
+    display: flex;
+    flex-direction: column;
+    //border-left: 1px solid $color-primary-dark;
+    padding: 2rem;
+    position: relative;
+    overflow-y: visible;
+  }
+  &__math-quill-hint {
+    width: 30rem;
+  }
+  &__hints-dragger {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 0.2rem;
+    margin-left: 1rem;
+    background-color: $color-primary-dark;
+    cursor: col-resize;
+    &--dragging {
+      width: 0.4rem;
+      background-color: $color-primary;
+    }
+  }
+}
+
+.form-levels-table {
+  overflow-x: scroll;
+  border: 1px solid $color-primary-dark;
+  border-radius: 5px;
+  padding: 2rem;
+  margin-left: 1rem;
+}
+
+.form-levels-list {
+  display: flex;
+  justify-content: space-between;
+  &__select {
+    display: flex;
+    flex-direction: column;
+    width: 20%;
+  }
+  &__select-option {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    & > svg {
+      min-width: 3rem;
+    }
+    & > span {
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+    &--active {
+      font-weight: bold;
+      color: $color-primary-dark;
+    }
+  }
+  &__selected-level {
+    width: 77%;
+    border: 1px solid $color-primary-dark;
+    border-radius: 5px;
+    padding: 2rem;
+  }
+  &__action-buttons {
+    display: flex;
+    flex-direction: column;
+    margin-top: 1rem;
+    & > button {
+      text-align: left;
+      width: 100%;
+      &:not(:last-child) {
+        margin-bottom: 1rem;
+      }
+    }
+  }
+}
