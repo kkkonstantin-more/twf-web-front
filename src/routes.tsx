@@ -10,6 +10,8 @@ import LevelInfoPage from "./pages/level-info-page/level-info-page";
 import ConstructorMenuPage from "./pages/constructor-menu-page/constructor-menu-page";
 import SolveMathPage from "./pages/solve-math-page/solve-math-page";
 import CreateGamePage from "./pages/create-game-page/create-game-page";
+import NamespaceConstructorComponent from "./constructors/namespace-constructor/namespace-constructor.component";
+import RulePackConstructor from "./constructors/rule-pack-constructor/rule-pack-constructor";
 
 const Routes: React.FC = () => {
   return (
@@ -35,6 +37,16 @@ const Routes: React.FC = () => {
       />
       <Route exact path={"/constructor-menu"} component={ConstructorMenuPage} />
       <Route exact path={"/solve-math"} component={SolveMathPage} />
+      <Route
+        exact
+        path="/namespace-constructor/:namespaceCode?"
+        component={NamespaceConstructorComponent}
+      />
+      <Route
+        exact
+        path="/rule-pack-constructor/:rulePackCode?"
+        component={RulePackConstructor}
+      />
     </Switch>
   );
 };

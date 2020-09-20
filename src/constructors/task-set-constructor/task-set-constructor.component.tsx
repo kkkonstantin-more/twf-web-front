@@ -1,7 +1,7 @@
 import React, { FC, RefObject, useEffect, useState } from "react";
 import Draggable from "react-draggable";
 import "../../copmonents/custom-forms/level-form.scss";
-import "./task-set-constructor.scss";
+import "./task-set-constructor.styles.scss";
 import MathQuillEditor from "../../copmonents/math-quill-editor/math-quill-editor";
 import Icon from "@mdi/react";
 import {
@@ -21,9 +21,10 @@ import LevelForm, {
   Level,
   LevelType,
 } from "../../copmonents/custom-forms/level-form";
-import RulePackConstructor from "../../copmonents/rule-pack-constructor/rule-pack-constructor";
+import RulePackConstructor from "../rule-pack-constructor/rule-pack-constructor";
 import mockTaskSets, { TaskSet } from "../../mock-data/task-sets";
 import Select from "react-select";
+import mockTasks, { TaskLink } from "../../mock-data/tasks";
 
 const subjectTypes: string[] = [
   "subject type 1",
@@ -58,7 +59,7 @@ const filterSubjectTypes = (
   return str ? str.split(",").map((e) => ({ label: e, value: e })) : undefined;
 };
 
-const TaskSetConstructor: React.FC<TaskSetConstructorProps> = ({
+const TaskSetConstructorComponent = ({
   taskSetToEditCode,
 }: TaskSetConstructorProps): JSX.Element => {
   const [showHintsBlock, setShowHintsBlock] = useState(false);
@@ -77,11 +78,21 @@ const TaskSetConstructor: React.FC<TaskSetConstructorProps> = ({
     levels: Level[];
   };
 
+  const tasks =
+    taskSetToEdit?.tasks.map((taskLink: TaskLink) => {
+      return mockTasks[taskLink.taskCode];
+    }) || [];
+
   const methods = useForm<FormInputs>({
     mode: "onSubmit",
+    defaultValues: {
+      gameName: taskSetToEdit?.nameEn || "",
+      gameSpace: taskSetToEdit?.taskSetSpaceCode || "",
+      levels: tasks,
+    },
   });
 
-  const { register, getValues, control } = methods;
+  const { register, getValues, control, setValue } = methods;
 
   const { fields, append, prepend, remove, swap, move, insert } = useFieldArray(
     {
@@ -89,6 +100,21 @@ const TaskSetConstructor: React.FC<TaskSetConstructorProps> = ({
       name: "levels", // unique name for your Field Array
     }
   );
+
+  useEffect(() => {
+    if (taskSetToEdit && taskSetToEdit.tasks) {
+      console.log(tasks);
+      setValue("levels", tasks);
+      // taskSetToEdit.tasks.forEach((taskLink) => {
+      //   console.log("exist");
+      //   if (mockTasks[taskLink.taskCode]) {
+      //     append({
+      //       ...mockTasks[taskLink.taskCode],
+      //     });
+      //   }
+      // });
+    }
+  }, []);
 
   const [levelNames, setLevelNames] = useState<string[]>([]);
   const currentEditedLevelRef: RefObject<HTMLInputElement> = React.createRef();
@@ -396,4 +422,4 @@ const TaskSetConstructor: React.FC<TaskSetConstructorProps> = ({
   );
 };
 
-export default TaskSetConstructor;
+export default TaskSetConstructorComponent;

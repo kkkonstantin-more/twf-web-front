@@ -9,6 +9,8 @@ import { mdiPencil, mdiPlus } from "@mdi/js";
 // styles
 import "./constructor-menu-page.scss";
 import mockTaskSets from "../../mock-data/task-sets";
+import { mockNamespaces } from "../../constructors/namespace-constructor/namespace-constructor.mock-data";
+import { mockRulePacks } from "../../constructors/rule-pack-constructor/rule-pack-constructor.mock-data";
 
 interface ConstructorMenuBlockProps {
   title: string;
@@ -110,9 +112,26 @@ export const demoList = [
   "Lana Hayes",
 ];
 
+export const usersDemoList = demoList.map((item: string) => ({
+  label: item,
+  value: item,
+}));
+
 export const demoTaskSetsLinks = mockTaskSets.map((e, i) => ({
   link: (i + 1).toString(),
   name: e.nameRu,
+}));
+
+export const namespacesLinks = Object.keys(mockNamespaces).map(
+  (key: string, i: number) => ({
+    link: key,
+    name: mockNamespaces[key].nameRu,
+  })
+);
+
+export const rulePacksLinks = Object.keys(mockRulePacks).map((key: string) => ({
+  link: key,
+  name: mockRulePacks[key].nameRu,
 }));
 
 const ConstructorMenuPage: React.FC = () => {
@@ -171,38 +190,46 @@ const ConstructorMenuPage: React.FC = () => {
 
   const gameSpaceBlocks: ConstructorMenuBlockProps[] = [
     {
-      title: "Создать новый GameSpace",
+      title: "Создать новый Namespace",
       titleIconUrl: mdiPlus,
       options: [
         {
           name: "С нуля",
-          action: () => history.push("/json-editor"),
+          action: () => history.push("/namespace-constructor"),
         },
         {
           name: "На основе уже существующего",
-          action: () => history.push("/json-editor"),
+          action: () => {
+            setItems(namespacesLinks);
+            setShowAllItemsModal(true);
+            setUrl("/namespace-constructor");
+          },
         },
       ],
     },
     {
-      title: "Редактировать существующий GameSpace",
+      title: "Редактировать существующий Namespace",
       titleIconUrl: mdiPencil,
       options: [
         {
-          name: "GameSpace 3",
-          action: () => history.push("/json-editor"),
+          name: mockNamespaces[3].nameRu,
+          action: () => history.push("/namespace-constructor/3"),
         },
         {
-          name: "GameSpace 2",
-          action: () => history.push("/json-editor"),
+          name: mockNamespaces[2].nameRu,
+          action: () => history.push("/namespace-constructor/2"),
         },
         {
-          name: "GameSpace 1",
-          action: () => history.push("/json-editor"),
+          name: mockNamespaces[1].nameRu,
+          action: () => history.push("/namespace-constructor/1"),
         },
         {
           name: "Смотреть все",
-          action: () => setShowAllItemsModal(true),
+          action: () => {
+            setItems(namespacesLinks);
+            setShowAllItemsModal(true);
+            setUrl("/namespace-constructor");
+          },
         },
       ],
     },
@@ -215,11 +242,15 @@ const ConstructorMenuPage: React.FC = () => {
       options: [
         {
           name: "С нуля",
-          action: () => history.push("/json-editor"),
+          action: () => history.push("/rule-pack-constructor"),
         },
         {
           name: "На основе уже существующего",
-          action: () => history.push("/json-editor"),
+          action: () => {
+            setItems(rulePacksLinks);
+            setShowAllItemsModal(true);
+            setUrl("/rule-pack-constructor");
+          },
         },
       ],
     },
@@ -228,20 +259,24 @@ const ConstructorMenuPage: React.FC = () => {
       titleIconUrl: mdiPencil,
       options: [
         {
-          name: "Пакет правил 3",
-          action: () => history.push("/json-editor"),
+          name: mockRulePacks[3].nameRu,
+          action: () => history.push("/rule-pack-constructor/3"),
         },
         {
-          name: "Пакет правил 2",
-          action: () => history.push("/json-editor"),
+          name: mockRulePacks[2].nameRu,
+          action: () => history.push("/rule-pack-constructor/2"),
         },
         {
-          name: "Пакет правил 1",
-          action: () => history.push("/json-editor"),
+          name: mockRulePacks[1].nameRu,
+          action: () => history.push("/rule-pack-constructor/1"),
         },
         {
           name: "Смотреть все",
-          action: () => setShowAllItemsModal(true),
+          action: () => {
+            setItems(rulePacksLinks);
+            setShowAllItemsModal(true);
+            setUrl("/rule-pack-constructor");
+          },
         },
       ],
     },
@@ -256,7 +291,7 @@ const ConstructorMenuPage: React.FC = () => {
           }`}
           onClick={() => setCurrentTab(0)}
         >
-          Игры
+          Наборы задач
         </li>
         <li
           className={`constructor-menu-page__tab ${
@@ -264,7 +299,7 @@ const ConstructorMenuPage: React.FC = () => {
           }`}
           onClick={() => setCurrentTab(1)}
         >
-          Game Spaces
+          Namespaces
         </li>
         <li
           className={`constructor-menu-page__tab ${

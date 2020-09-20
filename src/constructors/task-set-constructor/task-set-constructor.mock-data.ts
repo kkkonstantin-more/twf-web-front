@@ -1,4 +1,4 @@
-import { TaskLink } from "./tasks";
+import { TaskLink } from "../../mock-data/tasks";
 
 export interface TaskSet {
   taskSetSpaceCode: string;
@@ -9,8 +9,10 @@ export interface TaskSet {
   tasks: TaskLink[];
 }
 
-const mockTaskSets: TaskSet[] = [
-  {
+export const mockTaskSets: {
+  [code: string]: TaskSet;
+} = {
+  "1": {
     taskSetSpaceCode: "Space code 1",
     code: "code_1",
     nameEn: "Mock task set 1",
@@ -21,13 +23,9 @@ const mockTaskSets: TaskSet[] = [
         taskSetSpaceCode: "demo task set space code 1",
         taskCode: "1",
       },
-      {
-        taskSetSpaceCode: "demo task set space code 2",
-        taskCode: "2",
-      },
     ],
   },
-  {
+  "2": {
     taskSetSpaceCode: "Space code 2",
     code: "code_2",
     nameEn: "Mock task set 2",
@@ -40,7 +38,7 @@ const mockTaskSets: TaskSet[] = [
       },
     ],
   },
-  {
+  "3": {
     taskSetSpaceCode: "Space code 3",
     code: "code_3",
     nameEn: "Mock task set 3",
@@ -53,19 +51,4 @@ const mockTaskSets: TaskSet[] = [
       },
     ],
   },
-  {
-    taskSetSpaceCode: "Space code 4",
-    code: "code_4",
-    nameEn: "Mock task set 4",
-    nameRu: "Для профессоров",
-    subjectTypes: "subject type 4",
-    tasks: [
-      {
-        taskSetSpaceCode: "demo task set space code 4",
-        taskCode: "1",
-      },
-    ],
-  },
-];
-
-export default mockTaskSets;
+};

@@ -1,13 +1,20 @@
+// libs and hooks
 import React, { useEffect, useState } from "react";
-import Select from "react-select";
-
-import "./rule-pack-constructor.scss";
 import {
   FormProvider,
   useFieldArray,
   useForm,
   useFormContext,
 } from "react-hook-form";
+import useMergedRef from "@react-hook/merged-ref";
+import { useParams } from "react-router-dom";
+// components
+import Select from "react-select";
+import MixedInput from "../../copmonents/mixed-input/mixed-input";
+import { ActionButton } from "../../copmonents/custom-forms/level-form";
+// styles
+import "./rule-pack-constructor.scss";
+// icons
 import Icon from "@mdi/react";
 import {
   mdiArrowDown,
@@ -16,14 +23,12 @@ import {
   mdiContentCopy,
   mdiPlus,
 } from "@mdi/js";
-import MixedInput from "../mixed-input/mixed-input";
-import useMergedRef from "@react-hook/merged-ref";
-import { ActionButton } from "../custom-forms/level-form";
-import AppModal from "../app-modal/app-modal";
+// data
 import {
   AllItemsList,
   demoList,
 } from "../../pages/constructor-menu-page/constructor-menu-page";
+import { mockRulePacks, RulePackRule } from "./rule-pack-constructor.mock-data";
 
 interface RuleFormProps {
   index: number;
@@ -147,7 +152,12 @@ const RuleForm: React.FC<RuleFormProps> = ({
 };
 
 const RulePackConstructor: React.FC = () => {
-  const methods = useForm();
+  const { rulePackCode } = useParams();
+  const rulePackToEdit = mockRulePacks[rulePackCode];
+
+  const methods = useForm({
+    defaultValues: rulePackToEdit,
+  });
   const { register, getValues, control } = methods;
   const [showAllItemsModal, setShowAllItemsModal] = useState(false);
 

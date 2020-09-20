@@ -38,7 +38,7 @@ import {
   mdiWrench,
 } from "@mdi/js";
 import store from "../../redux/store";
-import { VisualizationMode } from "../../constructors/task-set-constructor/task-set-constructor";
+import { VisualizationMode } from "../../constructors/task-set-constructor/task-set-constructor.component";
 
 export const ActionButton = ({
   action,

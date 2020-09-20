@@ -49,23 +49,23 @@ const LoginForm: React.FC<{ intl: any; hideModal: () => void }> = ({
     if (response.hasOwnProperty("error")) {
       setAuthorized(false);
     } else {
-      setAuthorized(true);
-      hideModal();
-      // // send google's token to server
-      // const idTokenString = response.tokenId;
-      // console.log(response.tokenId);
-      // axios({
-      //   method: "get",
-      //   url: `${process.env.REACT_APP_SERVER_API}/api/auth/google_sing_in`,
-      //   params: { idTokenString },
-      // })
-      //   .then((res) => {
-      //     setAuthorized(res.status === 200);
-      //   })
-      //   .catch((e) => {
-      //     setAuthorized(false);
-      //     console.log(e.message);
-      //   });
+      // setAuthorized(true);
+      // hideModal();
+      // send google's token to server
+      const idTokenString = response.tokenId;
+      console.log(response.tokenId);
+      axios({
+        method: "get",
+        url: `${process.env.REACT_APP_SERVER_API}/api/auth/google_sing_in`,
+        params: { idTokenString },
+      })
+        .then((res) => {
+          setAuthorized(res.status === 200);
+        })
+        .catch((e) => {
+          setAuthorized(false);
+          console.log(e.message);
+        });
     }
   };
 
