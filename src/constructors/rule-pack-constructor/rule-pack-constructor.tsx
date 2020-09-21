@@ -246,10 +246,10 @@ const RulePackConstructor: React.FC = () => {
             name="rulePacks"
             placeholder=""
             isMulti
-            options={demoList.map((item) => {
+            options={Object.keys(mockRulePacks).map((key: string) => {
               return {
-                label: item,
-                value: item,
+                value: key,
+                label: mockRulePacks[key].nameRu,
               };
             })}
           />
