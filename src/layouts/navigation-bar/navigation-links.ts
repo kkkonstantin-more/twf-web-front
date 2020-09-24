@@ -26,10 +26,10 @@ const navigationLinks: Array<LinkInterface> = [
     linkNameId: translationPrefix + ".aboutUs",
     path: "/#aboutUsSection",
   },
-  // {
-  //   linkNameId: translationPrefix + ".constructor",
-  //   path: "/constructor",
-  // },
+  {
+    linkNameId: translationPrefix + ".constructor",
+    path: "/constructor-menu",
+  },
   // {
   //   linkNameId: translationPrefix + ".login",
   //   path: "/",

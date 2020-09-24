@@ -1,8 +1,27 @@
-import React, { FC, RefObject, useEffect, useState } from "react";
+// libs and hooks
+import React, { useEffect, useState } from "react";
+import { FormProvider, useFieldArray, useForm } from "react-hook-form";
+// custom hooks
+import useMockConstructorToEdit from "../hooks/use-mock-constructor-to-edit";
+// lib components
 import Draggable from "react-draggable";
-import "../../copmonents/custom-forms/level-form.scss";
-import "./task-set-constructor.styles.scss";
+import Select from "react-select";
+// custom components
 import MathQuillEditor from "../../copmonents/math-quill-editor/math-quill-editor";
+import TaskConstructor from "../task-constructor/task-constructor.component";
+import AppModal from "../../copmonents/app-modal/app-modal.component";
+import SelectConstructorItemList from "../../copmonents/select-constructor-item-list/select-constructor-item-list.component";
+// types
+import { SelectConstructorItemListItem } from "../../copmonents/select-constructor-item-list/select-constructor-item-list.types";
+import {
+  TaskLinkInput,
+  TaskSetConstructorInputs,
+} from "./task-set-constructor.types";
+// data
+import { mockTasks } from "../task-constructor/task-constructor.mock-data";
+import { mockTaskSets } from "./task-set-constructor.mock-data";
+import { subjectTypes } from "./task-set-constructor.data";
+// icons
 import Icon from "@mdi/react";
 import {
   mdiCloseCircle,
@@ -11,113 +30,68 @@ import {
   mdiRobot,
   mdiWrench,
 } from "@mdi/js";
-import {
-  FormProvider,
-  useFieldArray,
-  useForm,
-  useFormContext,
-} from "react-hook-form";
-import LevelForm, {
-  Level,
-  LevelType,
-} from "../../copmonents/custom-forms/level-form";
-import RulePackConstructor from "../rule-pack-constructor/rule-pack-constructor";
-import mockTaskSets, { TaskSet } from "../../mock-data/task-sets";
-import Select from "react-select";
-import mockTasks, { TaskLink } from "../../mock-data/tasks";
-
-const subjectTypes: string[] = [
-  "subject type 1",
-  "subject type 2",
-  "subject type 3",
-  "subject type 4",
-  "subject type 5",
-  "subject type 6",
-  "subject type 7",
-  "subject type 8",
-  "subject type 9",
-  "subject type 10",
-];
+// styles
+import "./task-set-constructor.styles.scss";
 
 export enum VisualizationMode {
   TABLE = "TABLE",
   LIST = "LIST",
 }
 
-interface TaskSetConstructorProps {
-  taskSetToEditCode?: any;
-}
-
-interface SelectOption {
-  label: string;
-  value: string;
-}
-
 const filterSubjectTypes = (
   str: string | undefined
-): SelectOption[] | undefined => {
+):
+  | {
+      label: string;
+      value: string;
+    }[]
+  | undefined => {
   return str ? str.split(",").map((e) => ({ label: e, value: e })) : undefined;
 };
 
-const TaskSetConstructorComponent = ({
-  taskSetToEditCode,
-}: TaskSetConstructorProps): JSX.Element => {
+const TaskSetConstructor = (): JSX.Element => {
   const [showHintsBlock, setShowHintsBlock] = useState(false);
   const [startExpressionHint, setStartExpressionHint] = useState("");
   const [goalExpressionHint, setGoalExpressionHint] = useState("");
   const [hintsDeltaX, setHintsDeltaX] = useState(0);
+  const [showSelectModal, setShowSelectModal] = useState(false);
 
-  const taskSetToEdit: TaskSet | null =
-    taskSetToEditCode && mockTaskSets[taskSetToEditCode - 1]
-      ? mockTaskSets[taskSetToEditCode - 1]
-      : null;
-
-  type FormInputs = {
-    gameName: string;
-    gameSpace: string;
-    levels: Level[];
-  };
+  const taskSetToEdit = useMockConstructorToEdit<TaskSetConstructorInputs>(
+    mockTaskSets
+  );
 
   const tasks =
-    taskSetToEdit?.tasks.map((taskLink: TaskLink) => {
+    taskSetToEdit?.tasks.map((taskLink: TaskLinkInput) => {
       return mockTasks[taskLink.taskCode];
     }) || [];
 
-  const methods = useForm<FormInputs>({
+  const methods = useForm({
     mode: "onSubmit",
-    defaultValues: {
-      gameName: taskSetToEdit?.nameEn || "",
-      gameSpace: taskSetToEdit?.taskSetSpaceCode || "",
-      levels: tasks,
-    },
+    defaultValues: { ...taskSetToEdit, levels: tasks },
+  });
+  const { register, getValues, control } = methods;
+  const { fields, append } = useFieldArray({
+    control,
+    name: "tasks",
   });
 
-  const { register, getValues, control, setValue } = methods;
-
-  const { fields, append, prepend, remove, swap, move, insert } = useFieldArray(
-    {
-      control, // control props comes from useForm (optional: if you are using FormContext)
-      name: "levels", // unique name for your Field Array
-    }
-  );
-
-  useEffect(() => {
-    if (taskSetToEdit && taskSetToEdit.tasks) {
-      console.log(tasks);
-      setValue("levels", tasks);
-      // taskSetToEdit.tasks.forEach((taskLink) => {
-      //   console.log("exist");
-      //   if (mockTasks[taskLink.taskCode]) {
-      //     append({
-      //       ...mockTasks[taskLink.taskCode],
-      //     });
-      //   }
-      // });
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (taskSetToEdit && taskSetToEdit.tasks) {
+  //     console.log(tasks);
+  //     setValue("levels", tasks);
+  //     // taskSetToEdit.tasks.forEach((taskLink) => {
+  //     //   console.log("exist");
+  //     //   if (mockTasks[taskLink.taskCode]) {
+  //     //     append({
+  //     //       ...mockTasks[taskLink.taskCode],
+  //     //     });
+  //     //   }
+  //     // });
+  //   }
+  // }, []);
 
   const [levelNames, setLevelNames] = useState<string[]>([]);
-  const currentEditedLevelRef: RefObject<HTMLInputElement> = React.createRef();
+  const currentEditedLevelRef: React.RefObject<HTMLInputElement> = React.createRef();
   const updateDemo = (index: number) => {
     setStartExpressionHint(getValues().levels[index].startExpression);
     setGoalExpressionHint(getValues().levels[index].goalExpression);
@@ -136,7 +110,7 @@ const TaskSetConstructorComponent = ({
   useEffect(() => {
     setLevelNames(
       fields.map((field, i) => {
-        return getValues().levels[i].name;
+        return getValues().levels[i].nameRu;
       })
     );
   }, [fields]);
@@ -166,7 +140,7 @@ const TaskSetConstructorComponent = ({
                 type="text"
                 className="form-control"
                 ref={register}
-                defaultValue={taskSetToEdit?.taskSetSpaceCode}
+                defaultValue={taskSetToEdit?.namespace}
               />
             </div>
             <div className="form-group">
@@ -253,9 +227,7 @@ const TaskSetConstructorComponent = ({
                       >
                         <Icon
                           path={
-                            field.levelType === LevelType.AUTO
-                              ? mdiRobot
-                              : mdiWrench
+                            field.levelType === "auto" ? mdiRobot : mdiWrench
                           }
                           size={2}
                           style={{ marginRight: "1rem" }}
@@ -271,7 +243,7 @@ const TaskSetConstructorComponent = ({
                       className="btn u-mr-sm"
                       onClick={() => {
                         append({
-                          levelType: LevelType.AUTO,
+                          levelType: "auto",
                         });
                         setSelectedLevel(fields.length);
                       }}
@@ -283,13 +255,22 @@ const TaskSetConstructorComponent = ({
                       className="btn"
                       onClick={() => {
                         append({
-                          levelType: LevelType.MANUAL,
+                          levelType: "manual",
                         });
                         setSelectedLevel(fields.length);
                       }}
                     >
                       <Icon path={mdiPlus} size={1.2} />
                       <span>ручной уровень</span>
+                    </button>
+                    <button
+                      className="btn u-mr-sm"
+                      onClick={() => {
+                        setShowSelectModal(true);
+                      }}
+                    >
+                      <Icon path={mdiPlus} size={1.2} />
+                      <span>существующий уровень</span>
                     </button>
                     <button
                       className="btn"
@@ -308,14 +289,11 @@ const TaskSetConstructorComponent = ({
               >
                 {fields.map((field, index: number) => {
                   return (
-                    <LevelForm
+                    <TaskConstructor
                       key={index}
                       levelType={fields[index].levelType}
                       index={index}
                       defaultValue={fields[index]}
-                      remove={remove}
-                      swap={swap}
-                      append={append}
                       updateDemo={updateDemo}
                       visualizationMode={visualizationMode}
                       hidden={
@@ -333,7 +311,7 @@ const TaskSetConstructorComponent = ({
                     className="btn u-mr-sm"
                     onClick={() => {
                       append({
-                        levelType: LevelType.AUTO,
+                        levelType: "auto",
                       });
                     }}
                   >
@@ -344,12 +322,21 @@ const TaskSetConstructorComponent = ({
                     className="btn u-mr-sm"
                     onClick={() => {
                       append({
-                        levelType: LevelType.MANUAL,
+                        levelType: "manual",
                       });
                     }}
                   >
                     <Icon path={mdiPlus} size={1.2} />
                     <span>ручной уровень</span>
+                  </button>
+                  <button
+                    className="btn u-mr-sm"
+                    onClick={() => {
+                      setShowSelectModal(true);
+                    }}
+                  >
+                    <Icon path={mdiPlus} size={1.2} />
+                    <span>существующий уровень</span>
                   </button>
                   <button
                     className="btn"
@@ -362,6 +349,27 @@ const TaskSetConstructorComponent = ({
             </div>
           </FormProvider>
         </div>
+        <AppModal
+          isOpen={showSelectModal}
+          close={() => setShowSelectModal(false)}
+        >
+          <SelectConstructorItemList
+            items={Object.keys(mockTasks).map(
+              (code: string): SelectConstructorItemListItem => {
+                const { nameRu, namespace } = mockTasks[code];
+                return {
+                  name: nameRu,
+                  namespace,
+                  code,
+                  onClickAction: () => {
+                    append(mockTasks[code]);
+                    setShowSelectModal(false);
+                  },
+                };
+              }
+            )}
+          />
+        </AppModal>
       </div>
       {/*HINTS BLOCK*/}
       <div
@@ -422,4 +430,4 @@ const TaskSetConstructorComponent = ({
   );
 };
 
-export default TaskSetConstructorComponent;
+export default TaskSetConstructor;

@@ -1,63 +1,24 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 // hooks
-import { Link, useHistory } from "react-router-dom";
+import { Link, useHistory, useParams } from "react-router-dom";
 // components
-import AppModal from "../../copmonents/app-modal/app-modal";
+import AppModalComponent from "../../copmonents/app-modal/app-modal.component";
 // icons
 import Icon from "@mdi/react";
 import { mdiPencil, mdiPlus } from "@mdi/js";
 // styles
 import "./constructor-menu-page.scss";
-import mockTaskSets from "../../mock-data/task-sets";
 import { mockNamespaces } from "../../constructors/namespace-constructor/namespace-constructor.mock-data";
 import { mockRulePacks } from "../../constructors/rule-pack-constructor/rule-pack-constructor.mock-data";
+import SelectConstructorItemList from "../../copmonents/select-constructor-item-list/select-constructor-item-list.component";
+import { SelectConstructorItemListItem } from "../../copmonents/select-constructor-item-list/select-constructor-item-list.types";
+import { mockTaskSets } from "../../constructors/task-set-constructor/task-set-constructor.mock-data";
 
 interface ConstructorMenuBlockProps {
   title: string;
   titleIconUrl: string;
   options: { name: string; action: () => any }[];
 }
-
-export const AllItemsList: React.FC<{
-  items: { name: string; link: string }[];
-  url: string;
-}> = ({ items, url }) => {
-  const [selectedItems, setSelectedItems] = useState<
-    { name: string; link: string }[]
-  >(items);
-
-  return (
-    <div style={{ width: "100%" }}>
-      <input
-        type="text"
-        style={{ width: "100%", marginBottom: "2rem" }}
-        onChange={(e) =>
-          setSelectedItems(
-            items.filter((item) => {
-              return item.name.includes(e.target.value);
-            })
-          )
-        }
-      />
-      {selectedItems.map((item, i) => {
-        return (
-          <Link
-            to={`${url}/${item.link}`}
-            key={i}
-            style={{
-              marginBottom: "1rem",
-              cursor: "pointer",
-              display: "block",
-              color: "black",
-            }}
-          >
-            {item.name}
-          </Link>
-        );
-      })}
-    </div>
-  );
-};
 
 const ConstructorMenuBlock: React.FC<ConstructorMenuBlockProps> = ({
   title,
@@ -117,29 +78,21 @@ export const usersDemoList = demoList.map((item: string) => ({
   value: item,
 }));
 
-export const demoTaskSetsLinks = mockTaskSets.map((e, i) => ({
-  link: (i + 1).toString(),
-  name: e.nameRu,
-}));
-
-export const namespacesLinks = Object.keys(mockNamespaces).map(
-  (key: string, i: number) => ({
-    link: key,
-    name: mockNamespaces[key].nameRu,
-  })
-);
-
-export const rulePacksLinks = Object.keys(mockRulePacks).map((key: string) => ({
-  link: key,
-  name: mockRulePacks[key].nameRu,
-}));
+type Tab = "taskSet" | "namespace" | "rulePack";
 
 const ConstructorMenuPage: React.FC = () => {
-  const [currentTab, setCurrentTab] = useState(0);
+  const tabs: Tab[] = ["taskSet", "namespace", "rulePack"];
+  const { activeTab } = useParams();
+  const [currentTab, setCurrentTab] = useState<Tab>(tabs[0]);
   const [showAllItemsModal, setShowAllItemsModal] = useState(false);
   const history = useHistory();
-  const [items, setItems] = useState<{ name: string; link: string }[]>([]);
-  const [url, setUrl] = useState<string>("");
+  const [items, setItems] = useState<SelectConstructorItemListItem[]>([]);
+
+  useEffect(() => {
+    if (activeTab && tabs.includes(activeTab)) {
+      setCurrentTab(activeTab);
+    }
+  }, [activeTab]);
 
   const gameBlocks: ConstructorMenuBlockProps[] = [
     {
@@ -148,14 +101,27 @@ const ConstructorMenuPage: React.FC = () => {
       options: [
         {
           name: "С нуля",
-          action: () => history.push("/create-game"),
+          action: () => history.push("/task-set-constructor"),
         },
         {
           name: "На основе уже существующей",
           action: () => {
-            setItems(demoTaskSetsLinks);
+            setItems(
+              Object.keys(mockTaskSets).map(
+                (code: string): SelectConstructorItemListItem => {
+                  const { nameRu, namespace } = mockTaskSets[code];
+                  return {
+                    name: nameRu,
+                    code,
+                    namespace,
+                    onClickAction: () => {
+                      history.push("/task-set-constructor/" + code);
+                    },
+                  };
+                }
+              )
+            );
             setShowAllItemsModal(true);
-            setUrl("/create-game");
           },
         },
       ],
@@ -165,23 +131,36 @@ const ConstructorMenuPage: React.FC = () => {
       titleIconUrl: mdiPencil,
       options: [
         {
+          name: mockTaskSets[3].nameRu,
+          action: () => history.push("/task-set-constructor/3"),
+        },
+        {
           name: mockTaskSets[2].nameRu,
-          action: () => history.push("/create-game/3"),
+          action: () => history.push("/task-set-constructor/2"),
         },
         {
           name: mockTaskSets[1].nameRu,
-          action: () => history.push("/create-game/2"),
-        },
-        {
-          name: mockTaskSets[0].nameRu,
-          action: () => history.push("/create-game/1"),
+          action: () => history.push("/task-set-constructor/1"),
         },
         {
           name: "Смотреть все",
           action: () => {
-            setItems(demoTaskSetsLinks);
+            setItems(
+              Object.keys(mockTaskSets).map(
+                (code: string): SelectConstructorItemListItem => {
+                  const { nameRu, namespace } = mockTaskSets[code];
+                  return {
+                    name: nameRu,
+                    code,
+                    namespace,
+                    onClickAction: () => {
+                      history.push("/task-set-constructor/" + code);
+                    },
+                  };
+                }
+              )
+            );
             setShowAllItemsModal(true);
-            setUrl("/create-game");
           },
         },
       ],
@@ -200,9 +179,19 @@ const ConstructorMenuPage: React.FC = () => {
         {
           name: "На основе уже существующего",
           action: () => {
-            setItems(namespacesLinks);
+            setItems(
+              Object.keys(mockNamespaces).map((code: string) => {
+                const { nameRu } = mockNamespaces[code];
+                return {
+                  code,
+                  name: nameRu,
+                  onClickAction: () => {
+                    history.push("/namespace-constructor/" + code);
+                  },
+                };
+              })
+            );
             setShowAllItemsModal(true);
-            setUrl("/namespace-constructor");
           },
         },
       ],
@@ -226,9 +215,19 @@ const ConstructorMenuPage: React.FC = () => {
         {
           name: "Смотреть все",
           action: () => {
-            setItems(namespacesLinks);
+            setItems(
+              Object.keys(mockNamespaces).map((code: string) => {
+                const { nameRu } = mockNamespaces[code];
+                return {
+                  code,
+                  name: nameRu,
+                  onClickAction: () => {
+                    history.push("/namespace-constructor/" + code);
+                  },
+                };
+              })
+            );
             setShowAllItemsModal(true);
-            setUrl("/namespace-constructor");
           },
         },
       ],
@@ -247,9 +246,21 @@ const ConstructorMenuPage: React.FC = () => {
         {
           name: "На основе уже существующего",
           action: () => {
-            setItems(rulePacksLinks);
+            setItems(
+              Object.keys(mockRulePacks).map((code: string) => {
+                const { nameRu, namespace } = mockRulePacks[code];
+
+                return {
+                  code,
+                  name: nameRu,
+                  namespace,
+                  onClickAction: (): void => {
+                    history.push("/rule-pack-constructor/" + code);
+                  },
+                };
+              })
+            );
             setShowAllItemsModal(true);
-            setUrl("/rule-pack-constructor");
           },
         },
       ],
@@ -273,9 +284,21 @@ const ConstructorMenuPage: React.FC = () => {
         {
           name: "Смотреть все",
           action: () => {
-            setItems(rulePacksLinks);
+            setItems(
+              Object.keys(mockRulePacks).map((code: string) => {
+                const { nameRu, namespace } = mockRulePacks[code];
+
+                return {
+                  code,
+                  name: nameRu,
+                  namespace,
+                  onClickAction: (): void => {
+                    history.push("/rule-pack-constructor/" + code);
+                  },
+                };
+              })
+            );
             setShowAllItemsModal(true);
-            setUrl("/rule-pack-constructor");
           },
         },
       ],
@@ -287,49 +310,49 @@ const ConstructorMenuPage: React.FC = () => {
       <ul className="constructor-menu-page__tabs">
         <li
           className={`constructor-menu-page__tab ${
-            currentTab === 0 && "constructor-menu-page__tab--active"
+            currentTab === tabs[0] && "constructor-menu-page__tab--active"
           }`}
-          onClick={() => setCurrentTab(0)}
+          onClick={() => history.push("/constructor-menu/" + tabs[0])}
         >
           Наборы задач
         </li>
         <li
           className={`constructor-menu-page__tab ${
-            currentTab === 1 && "constructor-menu-page__tab--active"
+            currentTab === tabs[1] && "constructor-menu-page__tab--active"
           }`}
-          onClick={() => setCurrentTab(1)}
+          onClick={() => history.push("/constructor-menu/" + tabs[1])}
         >
           Namespaces
         </li>
         <li
           className={`constructor-menu-page__tab ${
-            currentTab === 2 && "constructor-menu-page__tab--active"
+            currentTab === tabs[2] && "constructor-menu-page__tab--active"
           }`}
-          onClick={() => setCurrentTab(2)}
+          onClick={() => history.push("/constructor-menu/" + tabs[2])}
         >
           Пакеты Правил
         </li>
       </ul>
-      {currentTab === 0 &&
+      {currentTab === tabs[0] &&
         gameBlocks.map((block: ConstructorMenuBlockProps, i: number) => {
           return <ConstructorMenuBlock key={i} {...block} />;
         })}
-      {currentTab === 1 &&
+      {currentTab === tabs[1] &&
         gameSpaceBlocks.map((block: ConstructorMenuBlockProps, i: number) => {
           return <ConstructorMenuBlock key={i} {...block} />;
         })}
-      {currentTab === 2 &&
+      {currentTab === tabs[2] &&
         rulePacksBlocks.map((block: ConstructorMenuBlockProps, i: number) => {
           return <ConstructorMenuBlock key={i} {...block} />;
         })}
-      <AppModal
+      <AppModalComponent
         isOpen={showAllItemsModal}
         close={() => setShowAllItemsModal(false)}
         width="50%"
         height="70%"
       >
-        <AllItemsList items={items} url={url} />
-      </AppModal>
+        <SelectConstructorItemList items={items} />
+      </AppModalComponent>
     </div>
   );
 };

@@ -1,32 +1,14 @@
-export interface RulePackRule {
-  left: string;
-  right: string;
-  basedOnTaskContext: {
-    value: boolean;
-    label: "Да" | "Нет";
-  };
-  matchJumbledAndNested: {
-    value: boolean;
-    label: "Да" | "Нет";
-  };
-}
-
-export interface RulePackInputs {
-  code: string;
-  nameEn: string;
-  nameRu: string;
-  rulePacks: string[];
-  rules: RulePackRule[];
-}
+import { RulePackConstructorInputs } from "./rule-pack-constructor.types";
 
 export const mockRulePacks: {
-  [code: string]: RulePackInputs;
+  [code: string]: RulePackConstructorInputs;
 } = {
   "1": {
+    namespace: "ns_1",
     code: "1",
     nameEn: "rule pack 1",
     nameRu: "пакет правил 1",
-    rulePacks: [],
+    rulePacks: "",
     rules: [
       {
         left: "2+2",
@@ -67,10 +49,11 @@ export const mockRulePacks: {
     ],
   },
   "2": {
+    namespace: "ns_2",
     code: "2",
     nameEn: "rule pack 2",
     nameRu: "пакет правил 2",
-    rulePacks: [],
+    rulePacks: "",
     rules: [
       {
         left: "2+2",
@@ -111,10 +94,11 @@ export const mockRulePacks: {
     ],
   },
   "3": {
+    namespace: "ns_1",
     code: "3",
     nameEn: "rule pack 3",
     nameRu: "пакет правил 3",
-    rulePacks: [],
+    rulePacks: "",
     rules: [
       {
         left: "2+2",

@@ -9,9 +9,9 @@ import UsersPage from "./pages/users-page/users-page";
 import LevelInfoPage from "./pages/level-info-page/level-info-page";
 import ConstructorMenuPage from "./pages/constructor-menu-page/constructor-menu-page";
 import SolveMathPage from "./pages/solve-math-page/solve-math-page";
-import CreateGamePage from "./pages/create-game-page/create-game-page";
 import NamespaceConstructorComponent from "./constructors/namespace-constructor/namespace-constructor.component";
-import RulePackConstructor from "./constructors/rule-pack-constructor/rule-pack-constructor";
+import RulePackConstructorComponent from "./constructors/rule-pack-constructor/rule-pack-constructor.component";
+import TaskSetConstructor from "./constructors/task-set-constructor/task-set-constructor.component";
 
 const Routes: React.FC = () => {
   return (
@@ -32,20 +32,24 @@ const Routes: React.FC = () => {
       />
       <Route
         exact
-        path={"/create-game/:gameCode?"}
-        component={CreateGamePage}
+        path={"/task-set-constructor/:code?"}
+        component={TaskSetConstructor}
       />
-      <Route exact path={"/constructor-menu"} component={ConstructorMenuPage} />
+      <Route
+        exact
+        path={"/constructor-menu/:activeTab?"}
+        component={ConstructorMenuPage}
+      />
       <Route exact path={"/solve-math"} component={SolveMathPage} />
       <Route
         exact
-        path="/namespace-constructor/:namespaceCode?"
+        path="/namespace-constructor/:code?"
         component={NamespaceConstructorComponent}
       />
       <Route
         exact
-        path="/rule-pack-constructor/:rulePackCode?"
-        component={RulePackConstructor}
+        path="/rule-pack-constructor/:code?"
+        component={RulePackConstructorComponent}
       />
     </Switch>
   );

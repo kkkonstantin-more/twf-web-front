@@ -1,0 +1,7 @@
+.rule-constructor {
+  display: flex;
+  align-items: center;
+  & > .form-group:not(:last-child) {
+    margin-right: 2rem;
+  }
+}

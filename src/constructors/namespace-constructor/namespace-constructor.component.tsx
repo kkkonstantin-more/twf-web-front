@@ -1,7 +1,8 @@
-// libs
+// libs and hooks
 import React from "react";
 import { useForm, Controller } from "react-hook-form";
-import { useParams } from "react-router-dom";
+// custom hooks
+import useMockConstructorToEdit from "../hooks/use-mock-constructor-to-edit";
 // components
 import Select from "react-select";
 // types
@@ -22,9 +23,9 @@ import "./namespace-constructor.styles.scss";
 import { mockNamespaces } from "./namespace-constructor.mock-data";
 
 const NamespaceConstructorComponent = (): JSX.Element => {
-  // get namespace from url
-  const { namespaceCode } = useParams();
-  const namespaceToEdit = mockNamespaces[namespaceCode];
+  const namespaceToEdit = useMockConstructorToEdit<NamespaceConstructorInputs>(
+    mockNamespaces
+  );
 
   const { register, getValues, control, watch } = useForm<
     NamespaceConstructorInputs
@@ -52,7 +53,6 @@ const NamespaceConstructorComponent = (): JSX.Element => {
           type="text"
           className="form-control"
           ref={register}
-          // defaultValue={namespaceToEdit?.nameEn}
         />
       </div>
       <div className="form-group">
@@ -62,7 +62,6 @@ const NamespaceConstructorComponent = (): JSX.Element => {
           type="text"
           className="form-control"
           ref={register}
-          // defaultValue={namespaceToEdit?.nameRu}
         />
       </div>
       <div className="form-group">
@@ -72,7 +71,6 @@ const NamespaceConstructorComponent = (): JSX.Element => {
           type="text"
           className="form-control"
           ref={register}
-          // defaultValue={namespaceToEdit?.nameEn}
         />
       </div>
       <div className="form-group">
@@ -93,7 +91,6 @@ const NamespaceConstructorComponent = (): JSX.Element => {
             as={Select}
             control={control}
             name="readGrantedUsers"
-            defaultValue={namespaceToEdit?.readGrantedUsers}
             isMulti={true}
             options={usersDemoList}
             ref={register}
@@ -118,7 +115,6 @@ const NamespaceConstructorComponent = (): JSX.Element => {
             as={Select}
             control={control}
             name="editGrantedUsers"
-            defaultValue={namespaceToEdit?.editGrantedUsers}
             isMulti={true}
             options={usersDemoList}
             ref={register}
@@ -132,7 +128,6 @@ const NamespaceConstructorComponent = (): JSX.Element => {
           control={control}
           name="taskSetList"
           isMulti={true}
-          defaultValue={namespaceToEdit?.taskSetList}
           options={Object.keys(mockTaskSets).map((key: string) => {
             return {
               label: mockTaskSets[key].nameRu,

@@ -1,3 +1,9 @@
+export type AllowReadValueOption = {
+  value: boolean;
+  label: "Открытый" | "Закрытый";
+};
+export type AllowEditValueOption = AllowReadValueOption;
+
 export interface NamespaceConstructorInputs {
   nameEn: string;
   nameRu: string;
@@ -8,10 +14,3 @@ export interface NamespaceConstructorInputs {
   editGrantedUsers: { label: string; value: string }[];
   taskSetList: { label: string; value: string }[];
 }
-
-export type AllowReadValueOption = {
-  value: boolean;
-  label: "Открытый" | "Закрытый";
-};
-
-export type AllowEditValueOption = AllowReadValueOption;
