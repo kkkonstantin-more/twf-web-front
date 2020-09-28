@@ -6,7 +6,7 @@ import useMockConstructorToEdit from "../hooks/use-mock-constructor-to-edit";
 // lib components
 import Select from "react-select";
 // custom components
-import ActionButton from "../../copmonents/action-button/action-button.component";
+import ActionButton from "../../components/action-button/action-button.component";
 import RuleConstructor from "../rule-constructor/rule-constructor.component";
 // styles
 import "./rule-pack-constructor.scss";

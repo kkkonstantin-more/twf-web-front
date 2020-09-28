@@ -4,7 +4,7 @@ import { useFormContext } from "react-hook-form";
 import useMergedRef from "@react-hook/merged-ref";
 // components
 import Select from "react-select";
-import MixedInput from "../../copmonents/mixed-input/mixed-input";
+import MixedInput from "../../components/mixed-input/mixed-input";
 // types
 import { RuleConstructorProps } from "./rule-constructor.types";
 // styles

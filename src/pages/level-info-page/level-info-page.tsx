@@ -17,15 +17,15 @@ import {
 import { fetchLevelTabsStartAsync } from "../../redux/level-tabs/level-tabs.actions";
 import { fetchUserTabsStartAsync } from "../../redux/user-tabs/user-tabs.actions";
 // components
-import AppTabHeader from "../../copmonents/app-tab-header/app-tab-header";
-import AppTabsList from "../../copmonents/app-tabs-list/app-tabs-list";
+import AppTabHeader from "../../components/app-tab-header/app-tab-header";
+import AppTabsList from "../../components/app-tabs-list/app-tabs-list";
 import InfiniteScroll from "react-infinite-scroller";
-import AppSpinner from "../../copmonents/app-spinner/app-spinner";
-import FetchErrorMessage from "../../copmonents/fetch-error-message/fetch-error-message";
+import AppSpinner from "../../components/app-spinner/app-spinner";
+import FetchErrorMessage from "../../components/fetch-error-message/fetch-error-message";
 // types
 import { AppTabType } from "../../types/app-tabs/AppTab";
 import { FetchLevelsRequestData } from "../../redux/level-tabs/level-tabs.types";
-import { AppTabProps } from "../../copmonents/app-tab/app-tab";
+import { AppTabProps } from "../../components/app-tab/app-tab";
 import {
   FetchUsersRequestData,
   UsersSortingProperty,

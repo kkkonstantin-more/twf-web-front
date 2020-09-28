@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import translate from "../../../../translations/translate";
 
-import PhoneGamePreview from "../../../../copmonents/phone-game-preview/phone-game-preview";
+import PhoneGamePreview from "../../../../components/phone-game-preview/phone-game-preview";
 
 import "./hero-section.scss";
 

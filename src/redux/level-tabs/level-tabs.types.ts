@@ -1,4 +1,4 @@
-import { AppTabProps } from "../../copmonents/app-tab/app-tab";
+import { AppTabProps } from "../../components/app-tab/app-tab";
 
 export enum LevelTabsActionTypes {
   FETCH_LEVEL_TABS_START = "FETCH_LEVEL_TABS_START",

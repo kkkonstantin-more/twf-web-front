@@ -1,16 +1,22 @@
 @import "../../styles/abstracts/variables";
 
 .select-constructor-item-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
   &__items {
-    border-top: 1px dashed $color-primary-dark;
+    flex-basis: 50%;
   }
   &__item {
     padding: 1rem;
-    border-bottom: 1px dashed $color-primary-dark;
     cursor: pointer;
+    &:not(:last-child) {
+      border-bottom: 1px dashed $color-primary-dark;
+    }
     &:hover {
       background-color: $color-primary-light;
     }
+    font-size: $sm-font-size;
   }
   &__search-field {
     display: flex;
@@ -20,6 +26,7 @@
       flex-grow: 1;
       margin-left: 1rem;
     }
+    flex-basis: 100%;
   }
   &__search-icon {
     position: absolute;
@@ -41,6 +48,7 @@
     padding: 0 1rem 1rem 1rem;
     font-size: $sm-font-size;
     align-items: center;
+    flex-basis: 100%;
   }
   &__sorter {
     display: flex;
@@ -50,6 +58,15 @@
     font-weight: 700;
     &:not(:last-child) {
       margin-right: 1rem;
+    }
+  }
+  &__filters {
+    flex-basis: 48%;
+    padding: 1rem;
+  }
+  &__filter {
+    &:not(:last-child) {
+      margin-bottom: 1rem;
     }
   }
 }

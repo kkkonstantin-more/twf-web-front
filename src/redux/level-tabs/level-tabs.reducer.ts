@@ -2,7 +2,7 @@ import LEVEL_TABS_INITIAL_STATE from "./level-tabs.state";
 
 import { LevelTabsActionTypes, LevelTabsState } from "./level-tabs.types";
 import { filterFetchedLevelsData } from "./level-tabs.utils";
-import { AppTabProps } from "../../copmonents/app-tab/app-tab";
+import { AppTabProps } from "../../components/app-tab/app-tab";
 
 const levelTabsReducer = (
   state: LevelTabsState = LEVEL_TABS_INITIAL_STATE,

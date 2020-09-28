@@ -14,9 +14,9 @@ import watch from "redux-watch";
 import store from "../../redux/store";
 // components
 import Icon from "@mdi/react";
-import AppModalComponent from "../../copmonents/app-modal/app-modal.component";
-import MixedInput from "../../copmonents/mixed-input/mixed-input";
-import ActionButton from "../../copmonents/action-button/action-button.component";
+import AppModalComponent from "../../components/app-modal/app-modal.component";
+import MixedInput from "../../components/mixed-input/mixed-input";
+import ActionButton from "../../components/action-button/action-button.component";
 // types
 import { AllLevelsHiddenFields } from "../../redux/levels-hidden-fields/levels-hidden-fields.types";
 import { VisualizationMode } from "../task-set-constructor/task-set-constructor.component";

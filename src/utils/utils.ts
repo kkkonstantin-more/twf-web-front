@@ -1,4 +1,4 @@
-import { AppTabProps } from "../copmonents/app-tab/app-tab";
+import { AppTabProps } from "../components/app-tab/app-tab";
 
 const createArrayWithOneValue = (value: any, length: number): any[] => {
   const arr = [];

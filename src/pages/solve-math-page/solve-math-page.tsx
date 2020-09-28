@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import Stepper from "react-stepper-horizontal";
 
 import "./solve-math-page.scss";
-import MathQuillEditor from "../../copmonents/math-quill-editor/math-quill-editor";
+import MathQuillEditor from "../../components/math-quill-editor/math-quill-editor";
 
 const SolveMathPage: React.FC = () => {
   const [activeStep, setActiveStep] = useState<number>(0);

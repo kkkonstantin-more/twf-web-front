@@ -4,9 +4,9 @@ import { useParams } from "react-router-dom";
 import translate from "../../translations/translate";
 import { injectIntl } from "react-intl";
 // components
-import AppTabsList from "../../copmonents/app-tabs-list/app-tabs-list";
-import AppTabHeader from "../../copmonents/app-tab-header/app-tab-header";
-import AppSpinner from "../../copmonents/app-spinner/app-spinner";
+import AppTabsList from "../../components/app-tabs-list/app-tabs-list";
+import AppTabHeader from "../../components/app-tab-header/app-tab-header";
+import AppSpinner from "../../components/app-spinner/app-spinner";
 import InfiniteScroll from "react-infinite-scroller";
 import { Tab, Tabs } from "react-bootstrap";
 // redux
@@ -44,12 +44,12 @@ import {
   UsersSortingProperty,
 } from "../../redux/user-tabs/user-tabs.types";
 import { AppTabType } from "../../types/app-tabs/AppTab";
-import { AppTabProps } from "../../copmonents/app-tab/app-tab";
+import { AppTabProps } from "../../components/app-tab/app-tab";
 // data
 import HEADER_TABS_STATE from "../../redux/header-tabs/header-tabs.state";
 // styles
 import "./game-info-page.scss";
-import FetchErrorMessage from "../../copmonents/fetch-error-message/fetch-error-message";
+import FetchErrorMessage from "../../components/fetch-error-message/fetch-error-message";
 import { LevelAppTabFieldName } from "../../types/app-tabs/LevelAppTab";
 
 interface GameInfoPageProps {

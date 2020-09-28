@@ -7,12 +7,12 @@ import useMockConstructorToEdit from "../hooks/use-mock-constructor-to-edit";
 import Draggable from "react-draggable";
 import Select from "react-select";
 // custom components
-import MathQuillEditor from "../../copmonents/math-quill-editor/math-quill-editor";
+import MathQuillEditor from "../../components/math-quill-editor/math-quill-editor";
 import TaskConstructor from "../task-constructor/task-constructor.component";
-import AppModal from "../../copmonents/app-modal/app-modal.component";
-import SelectConstructorItemList from "../../copmonents/select-constructor-item-list/select-constructor-item-list.component";
+import AppModal from "../../components/app-modal/app-modal.component";
+import SelectConstructorItemList from "../../components/filterable-select-list/filterable-select-list.component";
 // types
-import { SelectConstructorItemListItem } from "../../copmonents/select-constructor-item-list/select-constructor-item-list.types";
+import { FilterableSelectListItem } from "../../components/filterable-select-list/filterable-select-list.types";
 import {
   TaskLinkInput,
   TaskSetConstructorInputs,
@@ -54,7 +54,7 @@ const TaskSetConstructor = (): JSX.Element => {
   const [startExpressionHint, setStartExpressionHint] = useState("");
   const [goalExpressionHint, setGoalExpressionHint] = useState("");
   const [hintsDeltaX, setHintsDeltaX] = useState(0);
-  const [showSelectModal, setShowSelectModal] = useState(false);
+  const [showSelectModal, setShowSelectModal] = useState(true);
 
   const taskSetToEdit = useMockConstructorToEdit<TaskSetConstructorInputs>(
     mockTaskSets
@@ -355,19 +355,26 @@ const TaskSetConstructor = (): JSX.Element => {
         >
           <SelectConstructorItemList
             items={Object.keys(mockTasks).map(
-              (code: string): SelectConstructorItemListItem => {
+              (code: string): FilterableSelectListItem => {
                 const { nameRu, namespace } = mockTasks[code];
                 return {
                   name: nameRu,
                   namespace,
                   code,
-                  onClickAction: () => {
+                  game: (() => {
+                    const arr = ["game 1", "game 2", "game 3", "game 4"];
+                    const startIdx = Math.floor(Math.random() * 4);
+                    const endIdx = Math.floor(Math.random() * 5) + startIdx + 1;
+                    return arr.slice(startIdx, endIdx);
+                  })(),
+                  onSelect: () => {
                     append(mockTasks[code]);
                     setShowSelectModal(false);
                   },
                 };
               }
             )}
+            propsToFilter={["namespace", "game"]}
           />
         </AppModal>
       </div>

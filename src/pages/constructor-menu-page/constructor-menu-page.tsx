@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 // hooks
-import { Link, useHistory, useParams } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 // components
-import AppModalComponent from "../../copmonents/app-modal/app-modal.component";
+import AppModalComponent from "../../components/app-modal/app-modal.component";
 // icons
 import Icon from "@mdi/react";
 import { mdiPencil, mdiPlus } from "@mdi/js";
@@ -10,8 +10,8 @@ import { mdiPencil, mdiPlus } from "@mdi/js";
 import "./constructor-menu-page.scss";
 import { mockNamespaces } from "../../constructors/namespace-constructor/namespace-constructor.mock-data";
 import { mockRulePacks } from "../../constructors/rule-pack-constructor/rule-pack-constructor.mock-data";
-import SelectConstructorItemList from "../../copmonents/select-constructor-item-list/select-constructor-item-list.component";
-import { SelectConstructorItemListItem } from "../../copmonents/select-constructor-item-list/select-constructor-item-list.types";
+import SelectConstructorItemList from "../../components/filterable-select-list/filterable-select-list.component";
+import { FilterableSelectListItem } from "../../components/filterable-select-list/filterable-select-list.types";
 import { mockTaskSets } from "../../constructors/task-set-constructor/task-set-constructor.mock-data";
 
 interface ConstructorMenuBlockProps {
@@ -86,7 +86,7 @@ const ConstructorMenuPage: React.FC = () => {
   const [currentTab, setCurrentTab] = useState<Tab>(tabs[0]);
   const [showAllItemsModal, setShowAllItemsModal] = useState(false);
   const history = useHistory();
-  const [items, setItems] = useState<SelectConstructorItemListItem[]>([]);
+  const [items, setItems] = useState<FilterableSelectListItem[]>([]);
 
   useEffect(() => {
     if (activeTab && tabs.includes(activeTab)) {
@@ -108,13 +108,13 @@ const ConstructorMenuPage: React.FC = () => {
           action: () => {
             setItems(
               Object.keys(mockTaskSets).map(
-                (code: string): SelectConstructorItemListItem => {
+                (code: string): FilterableSelectListItem => {
                   const { nameRu, namespace } = mockTaskSets[code];
                   return {
                     name: nameRu,
                     code,
                     namespace,
-                    onClickAction: () => {
+                    onSelect: () => {
                       history.push("/task-set-constructor/" + code);
                     },
                   };
@@ -147,13 +147,13 @@ const ConstructorMenuPage: React.FC = () => {
           action: () => {
             setItems(
               Object.keys(mockTaskSets).map(
-                (code: string): SelectConstructorItemListItem => {
+                (code: string): FilterableSelectListItem => {
                   const { nameRu, namespace } = mockTaskSets[code];
                   return {
                     name: nameRu,
                     code,
                     namespace,
-                    onClickAction: () => {
+                    onSelect: () => {
                       history.push("/task-set-constructor/" + code);
                     },
                   };
@@ -185,7 +185,7 @@ const ConstructorMenuPage: React.FC = () => {
                 return {
                   code,
                   name: nameRu,
-                  onClickAction: () => {
+                  onSelect: () => {
                     history.push("/namespace-constructor/" + code);
                   },
                 };
@@ -221,7 +221,7 @@ const ConstructorMenuPage: React.FC = () => {
                 return {
                   code,
                   name: nameRu,
-                  onClickAction: () => {
+                  onSelect: () => {
                     history.push("/namespace-constructor/" + code);
                   },
                 };
@@ -254,7 +254,7 @@ const ConstructorMenuPage: React.FC = () => {
                   code,
                   name: nameRu,
                   namespace,
-                  onClickAction: (): void => {
+                  onSelect: (): void => {
                     history.push("/rule-pack-constructor/" + code);
                   },
                 };
@@ -292,9 +292,10 @@ const ConstructorMenuPage: React.FC = () => {
                   code,
                   name: nameRu,
                   namespace,
-                  onClickAction: (): void => {
+                  onSelect: (): void => {
                     history.push("/rule-pack-constructor/" + code);
                   },
+                  filterProps: [namespace],
                 };
               })
             );
@@ -351,7 +352,7 @@ const ConstructorMenuPage: React.FC = () => {
         width="50%"
         height="70%"
       >
-        <SelectConstructorItemList items={items} />
+        <SelectConstructorItemList items={items} propsToFilter={[]} />
       </AppModalComponent>
     </div>
   );

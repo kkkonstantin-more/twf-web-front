@@ -3,7 +3,7 @@ import translate from "../../../../translations/translate";
 import { Link } from "react-router-dom";
 import axios from "axios";
 
-import RatingsTable from "../../../../copmonents/ratings-table/ratings-table";
+import RatingsTable from "../../../../components/ratings-table/ratings-table";
 // types
 import {
   FetchedUsersData,

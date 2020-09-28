@@ -1,7 +1,7 @@
 import USER_TABS_INITIAL_STATE from "./user-tabs.state";
 
 import { UserTabsActionTypes, UserTabsState } from "./user-tabs.types";
-import { AppTabProps } from "../../copmonents/app-tab/app-tab";
+import { AppTabProps } from "../../components/app-tab/app-tab";
 import { filterFetchedUsersData } from "./user-tabs.utils";
 
 const userTabsReducer = (

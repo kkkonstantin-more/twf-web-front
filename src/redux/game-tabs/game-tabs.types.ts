@@ -1,4 +1,4 @@
-import { AppTabProps } from "../../copmonents/app-tab/app-tab";
+import { AppTabProps } from "../../components/app-tab/app-tab";
 
 export enum GameTabsActionTypes {
   FETCH_GAME_TABS_START = "FETCH_GAME_TABS_START",

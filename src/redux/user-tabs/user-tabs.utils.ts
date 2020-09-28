@@ -1,4 +1,4 @@
-import { AppTabProps } from "../../copmonents/app-tab/app-tab";
+import { AppTabProps } from "../../components/app-tab/app-tab";
 import { AppTabType } from "../../types/app-tabs/AppTab";
 import { UserAppTabFieldName } from "../../types/app-tabs/UserAppTab";
 import { FetchedUsersData } from "./user-tabs.types";
