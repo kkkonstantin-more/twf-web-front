@@ -362,7 +362,12 @@ const TaskSetConstructor = (): JSX.Element => {
                   namespace,
                   code,
                   game: (() => {
-                    const arr = ["game 1", "game 2", "game 3", "game 4"];
+                    const arr = [
+                      "интересная игра",
+                      "очень сложно",
+                      "просто",
+                      "ЕГЭ",
+                    ];
                     const startIdx = Math.floor(Math.random() * 4);
                     const endIdx = Math.floor(Math.random() * 5) + startIdx + 1;
                     return arr.slice(startIdx, endIdx);

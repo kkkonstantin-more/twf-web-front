@@ -208,9 +208,14 @@ const SelectConstructorItemList = ({
             onChange={(e: React.ChangeEvent<HTMLInputElement>): void => {
               setSelectedItems(
                 items.filter((item: FilterableSelectListItem): boolean => {
-                  return item[currentSearchKey]
-                    .toLowerCase()
-                    .includes(e.target.value.toLowerCase());
+                  return Array.isArray(item[currentSearchKey])
+                    ? item[currentSearchKey]
+                        .join("")
+                        .toLowerCase()
+                        .includes(e.target.value.toLowerCase())
+                    : item[currentSearchKey]
+                        .toLowerCase()
+                        .includes(e.target.value.toLowerCase());
                 })
               );
             }}
