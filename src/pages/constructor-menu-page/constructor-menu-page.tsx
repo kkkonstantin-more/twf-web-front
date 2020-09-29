@@ -87,6 +87,7 @@ const ConstructorMenuPage: React.FC = () => {
   const [showAllItemsModal, setShowAllItemsModal] = useState(false);
   const history = useHistory();
   const [items, setItems] = useState<FilterableSelectListItem[]>([]);
+  const [propsToFilter, setPropsToFilter] = useState<string[]>([]);
 
   useEffect(() => {
     if (activeTab && tabs.includes(activeTab)) {
@@ -114,6 +115,18 @@ const ConstructorMenuPage: React.FC = () => {
                     name: nameRu,
                     code,
                     namespace,
+                    subjectType: (() => {
+                      const arr = [
+                        "тригонометрия",
+                        "логарифмы",
+                        "теория вероятности",
+                        "производные",
+                      ];
+                      const startIdx = Math.floor(Math.random() * 4);
+                      const endIdx =
+                        Math.floor(Math.random() * 5) + startIdx + 1;
+                      return arr.slice(startIdx, endIdx);
+                    })(),
                     onSelect: () => {
                       history.push("/task-set-constructor/" + code);
                     },
@@ -121,6 +134,7 @@ const ConstructorMenuPage: React.FC = () => {
                 }
               )
             );
+            setPropsToFilter(["namespace", "subjectType"]);
             setShowAllItemsModal(true);
           },
         },
@@ -153,6 +167,18 @@ const ConstructorMenuPage: React.FC = () => {
                     name: nameRu,
                     code,
                     namespace,
+                    subjectType: (() => {
+                      const arr = [
+                        "тригонометрия",
+                        "логарифмы",
+                        "теория вероятности",
+                        "производные",
+                      ];
+                      const startIdx = Math.floor(Math.random() * 4);
+                      const endIdx =
+                        Math.floor(Math.random() * 5) + startIdx + 1;
+                      return arr.slice(startIdx, endIdx);
+                    })(),
                     onSelect: () => {
                       history.push("/task-set-constructor/" + code);
                     },
@@ -160,6 +186,7 @@ const ConstructorMenuPage: React.FC = () => {
                 }
               )
             );
+            setPropsToFilter(["namespace", "subjectType"]);
             setShowAllItemsModal(true);
           },
         },
@@ -260,6 +287,7 @@ const ConstructorMenuPage: React.FC = () => {
                 };
               })
             );
+            setPropsToFilter(["namespace"]);
             setShowAllItemsModal(true);
           },
         },
@@ -299,6 +327,7 @@ const ConstructorMenuPage: React.FC = () => {
                 };
               })
             );
+            setPropsToFilter(["namespace"]);
             setShowAllItemsModal(true);
           },
         },
@@ -352,7 +381,10 @@ const ConstructorMenuPage: React.FC = () => {
         width="50%"
         height="70%"
       >
-        <SelectConstructorItemList items={items} propsToFilter={[]} />
+        <SelectConstructorItemList
+          items={items}
+          propsToFilter={propsToFilter}
+        />
       </AppModalComponent>
     </div>
   );

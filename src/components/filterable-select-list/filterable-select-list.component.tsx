@@ -1,177 +1,130 @@
 // libs and hooks
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 // lib components
 import Select from "react-select";
-// styles
-import "./filterable-select-list.styles.scss";
 // types
 import {
   FilterableSelectListProps,
   FilterableSelectListItem,
   FilterableSelectListSortTokens,
 } from "./filterable-select-list.types";
+// utils
+import {
+  getSelectedItems,
+  getSortTokensFromItems,
+  isItemPropMatchingSearch,
+} from "./filterable-select-list.utils";
 // icons
 import Icon from "@mdi/react";
-import { mdiArrowDown, mdiArrowUp, mdiMagnify } from "@mdi/js";
+import { mdiMagnify } from "@mdi/js";
+// styles
+import "./filterable-select-list.styles.scss";
+import { SelectOption } from "../../types/react-select";
 
 const SelectConstructorItemList = ({
   items,
   propsToFilter,
 }: FilterableSelectListProps): JSX.Element => {
+  const searchKeys: string[] = [
+    ...Object.keys(items[0]).filter((prop: string) => {
+      return prop !== "onSelect";
+    }),
+    "all",
+  ];
+  const allSortTokens: FilterableSelectListSortTokens = getSortTokensFromItems(
+    items,
+    propsToFilter
+  );
+
   const [selectedItems, setSelectedItems] = useState<
     FilterableSelectListItem[]
   >(items);
-  const searchKeys: string[] = Object.keys(items[0]).filter((prop: string) => {
-    return prop !== "onSelect";
-  });
-  const [currentSearchKey, setCurrentSearchKey] = useState<string>("name");
-
-  const allSortTokens: FilterableSelectListSortTokens = Object.fromEntries(
-    propsToFilter.map((searchKey: string) => {
-      return [
-        searchKey,
-        items
-          .reduce((acc: string[], item: FilterableSelectListItem): string[] => {
-            return Array.isArray(item[searchKey])
-              ? acc.concat(item[searchKey])
-              : [...acc, item[searchKey]];
-          }, [])
-          .filter(
-            (item: string, i: number, arr: string[]) => arr.indexOf(item) === i
-          ),
-      ];
-    })
-  );
+  const [currentSearchKey, setCurrentSearchKey] = useState<string>("all");
+  const [selectedSortTokens, setSelectedSortTokens] = useState<
+    FilterableSelectListSortTokens
+  >(Object.fromEntries(propsToFilter.map((prop: string) => [prop, []])));
   const [visibleSortTokens, setVisibleSortTokens] = useState<
     FilterableSelectListSortTokens
   >(allSortTokens);
-  const [selectedSortTokens, setSelectedSortTokens] = useState<
-    FilterableSelectListSortTokens
-  >(Object.create(allSortTokens));
 
-  useEffect(() => {
-    // setSelectedItems(
-    //   items.filter((item) => {
-    //     return propsToFilter.every((key: string) => {
-    //       return Array.isArray(item[key])
-    //         ? item[key].some((it: any) => currentSorters[key].includes(it))
-    //         : currentSorters[key].includes(item[key]);
-    //     });
-    //   })
-    // );
-    // console.log(selectedItems);
-    console.log(selectedSortTokens);
-  }, [selectedSortTokens]);
-
-  const updateVisibleTokens = (
-    prevSelectedTokens: FilterableSelectListSortTokens,
-    selectedSortTokens: FilterableSelectListSortTokens,
-    changedKey: string,
-    action: "add" | "remove"
-  ) => {
-    const selectedItems = items.filter((item: FilterableSelectListItem) => {
-      return Object.keys(selectedSortTokens)
-        .filter((key: string) => selectedSortTokens[key].length !== 0)
-        .every((key: string) => {
-          return Array.isArray(item[key])
-            ? item[key].some((val: string) => {
-                return selectedSortTokens[key].includes(val);
-              })
-            : selectedSortTokens[key].includes(item[key]);
+  const onChangeSelect = (
+    selectedOptions: SelectOption[],
+    filterProp: string,
+    propsToFilter: string[]
+  ): void => {
+    const newSelectedSortTokens = {
+      ...selectedSortTokens,
+      [filterProp]:
+        selectedOptions === null
+          ? []
+          : selectedOptions.map((option: SelectOption) => option.value),
+    };
+    const newVisibleSortTokens: FilterableSelectListSortTokens = Object.fromEntries(
+      propsToFilter.map((prop: string) => [prop, []])
+    );
+    const newSelectedItems: FilterableSelectListItem[] = getSelectedItems(
+      items,
+      newSelectedSortTokens
+    );
+    for (const tokenKey in allSortTokens) {
+      if (allSortTokens.hasOwnProperty(tokenKey)) {
+        allSortTokens[tokenKey].forEach((token: string) => {
+          if (
+            getSelectedItems(items, {
+              ...newSelectedSortTokens,
+              [tokenKey]: [...newSelectedSortTokens[tokenKey], token],
+            }).length !== 0 &&
+            getSelectedItems(items, {
+              ...newSelectedSortTokens,
+              [tokenKey]: [...newSelectedSortTokens[tokenKey], token],
+            }).length !== getSelectedItems(items, newSelectedSortTokens).length
+          ) {
+            newVisibleSortTokens[tokenKey].push(token);
+          }
         });
-    });
-    setSelectedItems(selectedItems);
-
-    const newVisibleSortTokens =
-      selectedSortTokens[changedKey].length !== 0
-        ? Object.fromEntries([
-            ...propsToFilter
-              .filter((searchKey: string) => searchKey !== changedKey)
-              .map((searchKey: string) => {
-                return [
-                  searchKey,
-                  selectedItems
-                    .reduce(
-                      (
-                        acc: string[],
-                        item: FilterableSelectListItem
-                      ): string[] => {
-                        return Array.isArray(item[searchKey])
-                          ? acc.concat(item[searchKey])
-                          : [...acc, item[searchKey]];
-                      },
-                      []
-                    )
-                    .filter(
-                      (item: string, i: number, arr: string[]) =>
-                        arr.indexOf(item) === i
-                    ),
-                ];
-              }),
-            [changedKey, visibleSortTokens[changedKey]],
-          ])
-        : Object.fromEntries(
-            propsToFilter.map((searchKey: string) => {
-              return [
-                searchKey,
-                selectedItems
-                  .reduce(
-                    (
-                      acc: string[],
-                      item: FilterableSelectListItem
-                    ): string[] => {
-                      return Array.isArray(item[searchKey])
-                        ? acc.concat(item[searchKey])
-                        : [...acc, item[searchKey]];
-                    },
-                    []
-                  )
-                  .filter(
-                    (item: string, i: number, arr: string[]) =>
-                      arr.indexOf(item) === i
-                  ),
-              ];
-            })
-          );
+      }
+    }
+    const currentTokensOfVisibleItems = getSortTokensFromItems(
+      newSelectedItems,
+      propsToFilter
+    );
+    for (const tokenKey in currentTokensOfVisibleItems) {
+      if (currentTokensOfVisibleItems.hasOwnProperty(tokenKey)) {
+        currentTokensOfVisibleItems[tokenKey].forEach((token: string) => {
+          if (
+            newVisibleSortTokens.hasOwnProperty(tokenKey) &&
+            !newVisibleSortTokens[tokenKey].includes(token)
+          ) {
+            newVisibleSortTokens[tokenKey].push(token);
+          }
+        });
+      }
+    }
+    setSelectedItems(newSelectedItems);
+    setSelectedSortTokens(newSelectedSortTokens);
     setVisibleSortTokens(newVisibleSortTokens);
   };
 
-  // const [sortersDescending, setSortersDescending] = useState<boolean[]>(
-  //   searchKeys.map((_: SearchKey): boolean => false)
-  // );
-
-  // const namespaces: any[] = items
-  //   .map((item) => {
-  //     return item.namespace;
-  //   })
-  //   .filter((item, i, arr) => arr.indexOf(item) === i);
-  //
-  // const [selectedNamespaces, setSelectedNamespaces] = useState<any[]>(
-  //   namespaces
-  // );
-  //
-  // const filter = (): FilterableSelectListItem[] => {
-  //   const visibleItems = items.filter((item: FilterableSelectListItem) => {
-  //     //@ts-ignore
-  //     return selectedNamespaces.includes(item.namespace);
-  //   });
-  //   return visibleItems;
-  // };
-  //
-  // useEffect(() => {
-  //   setVisibleItems(filter());
-  // }, [selectedNamespaces]);
-
-  // const translateKey = (key: SearchKey) => {
-  //   switch (key) {
-  //     case "code":
-  //       return "код";
-  //     case "name":
-  //       return "имя";
-  //     case "namespace":
-  //       return "namespace";
-  //   }
-  // };
+  const onChangeSearchInput = (searchKey: string, inputValue: string): void => {
+    const relevantItems = getSelectedItems(items, selectedSortTokens);
+    if (searchKey === "all") {
+      setSelectedItems(
+        relevantItems.filter((item: FilterableSelectListItem) => {
+          return searchKeys
+            .filter((searchKey: string) => searchKey !== "all")
+            .some((itemKey: string) => {
+              return isItemPropMatchingSearch(item[itemKey], inputValue);
+            });
+        })
+      );
+    } else {
+      setSelectedItems(
+        relevantItems.filter((item: FilterableSelectListItem) => {
+          return isItemPropMatchingSearch(item[searchKey], inputValue);
+        })
+      );
+    }
+  };
 
   return (
     <div className="select-constructor-item-list">
@@ -206,69 +159,11 @@ const SelectConstructorItemList = ({
             className="form-control select-constructor-item-list__search-input"
             placeholder={`Введите ${currentSearchKey}`}
             onChange={(e: React.ChangeEvent<HTMLInputElement>): void => {
-              setSelectedItems(
-                items.filter((item: FilterableSelectListItem): boolean => {
-                  return Array.isArray(item[currentSearchKey])
-                    ? item[currentSearchKey]
-                        .join("")
-                        .toLowerCase()
-                        .includes(e.target.value.toLowerCase())
-                    : item[currentSearchKey]
-                        .toLowerCase()
-                        .includes(e.target.value.toLowerCase());
-                })
-              );
+              onChangeSearchInput(currentSearchKey, e.target.value);
             }}
           />
         </div>
       </div>
-      {/*<div className="select-constructor-item-list__sorters">*/}
-      {/*  <span>Сортировать по</span>*/}
-      {/*  {searchKeys.map(*/}
-      {/*    (sortKey: string, i: number): JSX.Element => {*/}
-      {/*      return (*/}
-      {/*        <div*/}
-      {/*          key={i}*/}
-      {/*          className="select-constructor-item-list__sorter"*/}
-      {/*          onClick={(): void => {*/}
-      {/*            setVisibleItems(*/}
-      {/*              (prevState: FilterableSelectListItem[]) => {*/}
-      {/*                return prevState.sort(*/}
-      {/*                  (*/}
-      {/*                    a: FilterableSelectListItem,*/}
-      {/*                    b: FilterableSelectListItem*/}
-      {/*                  ): number => {*/}
-      {/*                    // @ts-ignore*/}
-      {/*                    return a[sortKey] < b[sortKey]*/}
-      {/*                      ? sortersDescending[i]*/}
-      {/*                        ? -1*/}
-      {/*                        : 1*/}
-      {/*                      : sortersDescending[i]*/}
-      {/*                      ? 1*/}
-      {/*                      : -1;*/}
-      {/*                  }*/}
-      {/*                );*/}
-      {/*              }*/}
-      {/*            );*/}
-      {/*            setSortersDescending((prevState: boolean[]) => {*/}
-      {/*              return prevState.map(*/}
-      {/*                (desc: boolean, j: number): boolean => {*/}
-      {/*                  return j === i ? !desc : desc;*/}
-      {/*                }*/}
-      {/*              );*/}
-      {/*            });*/}
-      {/*          }}*/}
-      {/*        >*/}
-      {/*          <Icon*/}
-      {/*            path={sortersDescending[i] ? mdiArrowDown : mdiArrowUp}*/}
-      {/*            size={1}*/}
-      {/*          />*/}
-      {/*          <span>{translateKey(sortKey)}</span>*/}
-      {/*        </div>*/}
-      {/*      );*/}
-      {/*    }*/}
-      {/*  )}*/}
-      {/*</div>*/}
       <div className="select-constructor-item-list__items">
         {selectedItems.length === 0 ? (
           <div style={{ padding: "1rem" }}>Элементы отсутствуют</div>
@@ -276,7 +171,13 @@ const SelectConstructorItemList = ({
           selectedItems.map(
             (item: FilterableSelectListItem, i: number): JSX.Element => {
               return (
-                <div key={i} className="select-constructor-item-list__item">
+                <div
+                  key={i}
+                  className="select-constructor-item-list__item"
+                  onClick={() => {
+                    item.onSelect();
+                  }}
+                >
                   {Object.keys(item)
                     .filter((key: string) => key !== "onSelect")
                     .map((key: string) => {
@@ -284,7 +185,7 @@ const SelectConstructorItemList = ({
                         ? item[key].join(", ")
                         : item[key];
                       return (
-                        <div>
+                        <div key={i}>
                           <b>{key}: </b>
                           <span>{value}</span>
                         </div>
@@ -297,120 +198,27 @@ const SelectConstructorItemList = ({
         )}
       </div>
       <div className="select-constructor-item-list__filters">
-        {propsToFilter.map((filterPropName: string, i: number) => {
-          return (
-            <div key={i} className="select-constructor-item-list__filter">
-              <h2>{filterPropName}</h2>
-              <Select
-                options={visibleSortTokens[filterPropName].map(
-                  (item: string) => ({
-                    label: item,
-                    value: item,
-                  })
-                )}
-                isMulti={true}
-                onChange={(selectedTokens: any, { action }: any) => {
-                  console.log(action);
-                  if (!selectedTokens) {
-                    selectedTokens = [];
-                  }
-                  setSelectedSortTokens((prevState) => {
-                    updateVisibleTokens(
-                      visibleSortTokens,
-                      {
-                        ...prevState,
-                        [filterPropName]: selectedTokens.map(
-                          (value: any) => value.value
-                        ),
-                      },
-                      filterPropName,
-                      action === "select-option" ? "add" : "remove"
-                    );
-                    return {
-                      ...prevState,
-                      [filterPropName]: selectedTokens.map(
-                        (value: any) => value.value
-                      ),
-                    };
-                  });
-                  // let newSorters = {};
-                  // const itemsWithNewSorter
-                  // currentSorters !== null
-                  //   ? {
-                  //       ...currentSorters,
-                  //       [searchKey]: values.map((value: any) => value.value),
-                  //     }
-                  //   : {
-                  //       ...sorters,
-                  //       [searchKey]: values.map((value: any) => value.value),
-                  //     };
-                  // const selectedItems = items.filter((item) => {
-                  //   return propsToFilter
-                  //     .filter((key: string) => newSorters[key].length !== 0)
-                  //     .every((key: string) => {
-                  //       return Array.isArray(item[key])
-                  //         ? item[key].some((it: any) =>
-                  //             newSorters[key].includes(it)
-                  //           )
-                  //         : newSorters[key].includes(item[key]);
-                  //     });
-                  // });
-                  // setCurrentSorters(
-                  //   Object.fromEntries(
-                  //     propsToFilter.map((searchKey: string) => {
-                  //       return [
-                  //         searchKey,
-                  //         selectedItems
-                  //           .reduce(
-                  //             (
-                  //               acc: string[],
-                  //               item: FilterableSelectListItem
-                  //             ): string[] => {
-                  //               return Array.isArray(item[searchKey])
-                  //                 ? acc.concat(item[searchKey])
-                  //                 : [...acc, item[searchKey]];
-                  //             },
-                  //             []
-                  //           )
-                  //           .filter(
-                  //             (item: string, i: number, arr: string[]) =>
-                  //               arr.indexOf(item) === i
-                  //           ),
-                  //       ];
-                  //     })
-                  //   )
-                  // );
-                  // setSelectedItems(selectedItems);
-                  // console.log(newSorters);
-                  // console.log(
-                  //   Object.keys(newSorters).filter(
-                  //     (key: string) => key !== searchKey
-                  //   ).map((key: string) => {
-                  //     return newSorters[key].filter()
-                  //   })
-                  // );
-                  // setCurrentSorters(
-                  //   (prevState: FilterableSelectListSortTokens) => {
-                  //     return {
-                  //       ...prevState,
-                  //       [searchKey]: values.map((value: any) => value.value),
-                  //     };
-                  //   }
-                  // );
-                }}
-              />
-            </div>
-          );
-        })}
-        {/*  <h2>Фильтры</h2>*/}
-        {/*  <Select*/}
-        {/*    options={namespaces.map((item) => ({*/}
-        {/*      label: item,*/}
-        {/*      value: item,*/}
-        {/*    }))}*/}
-        {/*    isMulti={true}*/}
-
-        {/*  />*/}
+        {propsToFilter.map(
+          (filterProp: string, i: number): JSX.Element => {
+            return (
+              <div key={i} className="select-constructor-item-list__filter">
+                <h2>{filterProp}</h2>
+                <Select
+                  options={visibleSortTokens[filterProp].map(
+                    (item: string) => ({
+                      label: item,
+                      value: item,
+                    })
+                  )}
+                  isMulti={true}
+                  onChange={(selectedTokens: any): void => {
+                    onChangeSelect(selectedTokens, filterProp, propsToFilter);
+                  }}
+                />
+              </div>
+            );
+          }
+        )}
       </div>
     </div>
   );

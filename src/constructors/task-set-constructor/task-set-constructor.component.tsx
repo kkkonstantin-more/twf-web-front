@@ -54,7 +54,7 @@ const TaskSetConstructor = (): JSX.Element => {
   const [startExpressionHint, setStartExpressionHint] = useState("");
   const [goalExpressionHint, setGoalExpressionHint] = useState("");
   const [hintsDeltaX, setHintsDeltaX] = useState(0);
-  const [showSelectModal, setShowSelectModal] = useState(true);
+  const [showSelectModal, setShowSelectModal] = useState(false);
 
   const taskSetToEdit = useMockConstructorToEdit<TaskSetConstructorInputs>(
     mockTaskSets
@@ -352,6 +352,8 @@ const TaskSetConstructor = (): JSX.Element => {
         <AppModal
           isOpen={showSelectModal}
           close={() => setShowSelectModal(false)}
+          width="80vw"
+          height="80vh"
         >
           <SelectConstructorItemList
             items={Object.keys(mockTasks).map(
@@ -361,12 +363,23 @@ const TaskSetConstructor = (): JSX.Element => {
                   name: nameRu,
                   namespace,
                   code,
-                  game: (() => {
+                  taskSet: (() => {
                     const arr = [
                       "интересная игра",
                       "очень сложно",
                       "просто",
                       "ЕГЭ",
+                    ];
+                    const startIdx = Math.floor(Math.random() * 4);
+                    const endIdx = Math.floor(Math.random() * 5) + startIdx + 1;
+                    return arr.slice(startIdx, endIdx);
+                  })(),
+                  subjectType: (() => {
+                    const arr = [
+                      "тригонометрия",
+                      "логарифмы",
+                      "теория вероятности",
+                      "производные",
                     ];
                     const startIdx = Math.floor(Math.random() * 4);
                     const endIdx = Math.floor(Math.random() * 5) + startIdx + 1;
@@ -379,7 +392,7 @@ const TaskSetConstructor = (): JSX.Element => {
                 };
               }
             )}
-            propsToFilter={["namespace", "game"]}
+            propsToFilter={["namespace", "taskSet", "subjectType"]}
           />
         </AppModal>
       </div>
