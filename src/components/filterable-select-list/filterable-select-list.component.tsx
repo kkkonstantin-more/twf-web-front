@@ -8,6 +8,7 @@ import {
   FilterableSelectListItem,
   FilterableSelectListSortTokens,
 } from "./filterable-select-list.types";
+import { SelectOption } from "../../types/react-select";
 // utils
 import {
   getSelectedItems,
@@ -19,7 +20,6 @@ import Icon from "@mdi/react";
 import { mdiMagnify } from "@mdi/js";
 // styles
 import "./filterable-select-list.styles.scss";
-import { SelectOption } from "../../types/react-select";
 
 const SelectConstructorItemList = ({
   items,
@@ -126,6 +126,28 @@ const SelectConstructorItemList = ({
     }
   };
 
+  const targetHeight = 3;
+
+  const styles = {
+    control: (base: any) => ({
+      ...base,
+      minHeight: "initial",
+    }),
+    valueContainer: (base: any) => ({
+      ...base,
+      height: `${targetHeight}rem`,
+      padding: "1rem",
+    }),
+    clearIndicator: (base: any) => ({
+      ...base,
+      padding: `${(targetHeight - 2 - 0.1 - 0.1) / 2}rem`,
+    }),
+    dropdownIndicator: (base: any) => ({
+      ...base,
+      padding: `${(targetHeight - 2 - 0.1 - 0.1) / 2}rem`,
+    }),
+  };
+
   return (
     <div className="select-constructor-item-list">
       <div className="select-constructor-item-list__search-field">
@@ -204,6 +226,7 @@ const SelectConstructorItemList = ({
               <div key={i} className="select-constructor-item-list__filter">
                 <h2>{filterProp}</h2>
                 <Select
+                  styles={styles}
                   options={visibleSortTokens[filterProp].map(
                     (item: string) => ({
                       label: item,

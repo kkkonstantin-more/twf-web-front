@@ -1,9 +1,13 @@
 @import "../../styles/abstracts/variables";
+@import "../../styles/abstracts/mixins";
 
 .select-constructor-item-list {
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
+  @include respond(phone) {
+    flex-direction: column;
+  }
   &__items {
     flex-basis: 50%;
   }
@@ -27,6 +31,10 @@
       margin-left: 1rem;
     }
     flex-basis: 100%;
+    @include respond(phone) {
+      order: -2;
+      width: 100%;
+    }
   }
   &__search-icon {
     position: absolute;
@@ -63,6 +71,10 @@
   &__filters {
     flex-basis: 48%;
     padding: 1rem;
+    @include respond(phone) {
+      order: -1;
+      width: 100%;
+    }
   }
   &__filter {
     &:not(:last-child) {

@@ -1,4 +1,5 @@
 @import "../../styles/abstracts/variables";
+@import "../../styles/abstracts/mixins";
 
 .create-game-page {
   display: flex;
@@ -41,19 +42,33 @@
     cursor: pointer;
     z-index: 3;
   }
-  &__hints {
+  &__hints-desktop {
     //transition: 0.3s;
     display: flex;
     flex-direction: column;
     //border-left: 1px solid $color-primary-dark;
-    padding: 2rem;
+    //padding: 2rem;
     position: relative;
     overflow-y: visible;
+    opacity: 0;
+    &--visible {
+      opacity: 1;
+      padding: 2rem;
+    }
+    @include respond(phone) {
+      display: none;
+    }
+  }
+  &__hints-phone {
+    display: none;
+    @include respond(phone) {
+      display: block;
+    }
   }
   &__math-quill-hint {
     width: 30rem;
   }
-  &__hints-dragger {
+  &__hints-desktop-dragger {
     position: absolute;
     left: 0;
     top: 0;
@@ -75,15 +90,33 @@
   border-radius: 5px;
   padding: 2rem;
   margin-left: 1rem;
+  &__action-buttons {
+    display: flex;
+  }
+  &__action-button {
+    &:not(:last-child) {
+      margin-right: 1rem;
+    }
+  }
+  @include respond(phone) {
+    margin-left: 0;
+  }
 }
 
 .form-levels-list {
   display: flex;
   justify-content: space-between;
+  @include respond(phone) {
+    flex-direction: column;
+  }
   &__select {
     display: flex;
     flex-direction: column;
     width: 20%;
+    @include respond(phone) {
+      width: 100%;
+      margin-bottom: 1rem;
+    }
   }
   &__select-option {
     cursor: pointer;
@@ -107,16 +140,30 @@
     border: 1px solid $color-primary-dark;
     border-radius: 5px;
     padding: 2rem;
+    @include respond(phone) {
+      width: 100%;
+    }
   }
   &__action-buttons {
     display: flex;
     flex-direction: column;
     margin-top: 1rem;
-    & > button {
-      text-align: left;
+    @include respond(phone) {
+      flex-direction: row;
       width: 100%;
+      order: -1;
+    }
+  }
+  &__action-button {
+    text-align: left;
+    width: 100%;
+    &:not(:last-child) {
+      margin-bottom: 1rem;
+    }
+    @include respond(phone) {
+      margin-bottom: 1rem;
       &:not(:last-child) {
-        margin-bottom: 1rem;
+        margin-right: 1rem;
       }
     }
   }

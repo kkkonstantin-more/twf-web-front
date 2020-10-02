@@ -16,7 +16,7 @@ import {
   allowEditOptions,
   allowReadOptions,
 } from "./namespace-constructor.data";
-import { usersDemoList } from "../../pages/constructor-menu-page/constructor-menu-page";
+import { usersDemoList } from "../../pages/constructor-menu-page/constructor-menu-page.component";
 import { mockTaskSets } from "../task-set-constructor/task-set-constructor.mock-data";
 // styles
 import "./namespace-constructor.styles.scss";

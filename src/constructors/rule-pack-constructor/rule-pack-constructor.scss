@@ -16,5 +16,6 @@
     & > *:not(:last-child) {
       margin-right: 2rem;
     }
+    overflow: scroll;
   }
 }

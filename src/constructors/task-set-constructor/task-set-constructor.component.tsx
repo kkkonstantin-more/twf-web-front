@@ -123,12 +123,27 @@ const TaskSetConstructor = (): JSX.Element => {
 
   const subjectTypeValue = useState({ label: "1", value: "1" });
 
+  const mobileHintsRef: React.RefObject<HTMLDivElement> = React.createRef();
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    if (mobileHintsRef.current) {
+      if (window.getComputedStyle(mobileHintsRef.current).display === "block") {
+        setIsMobile(true);
+      } else {
+        setIsMobile(false);
+      }
+    }
+  }, [mobileHintsRef]);
+
   return (
     <div className="create-game-page">
       <div
         className="create-game-page__form-container"
         style={{
-          width: !showHintsBlock ? "100%" : `calc(50% + ${hintsDeltaX}px)`,
+          width:
+            !showHintsBlock || isMobile
+              ? "100%"
+              : `calc(50% + ${hintsDeltaX}px)`,
         }}
       >
         <div className="create-game-page__form">
@@ -163,7 +178,7 @@ const TaskSetConstructor = (): JSX.Element => {
                 defaultValue={taskSetToEdit?.nameRu}
               />
             </div>
-            <div>
+            <div className="form-group">
               <label>Предметные области</label>
               <Select
                 isMulti
@@ -240,7 +255,7 @@ const TaskSetConstructor = (): JSX.Element => {
                   })}
                   <div className="form-levels-list__action-buttons">
                     <button
-                      className="btn u-mr-sm"
+                      className="btn form-levels-list__action-button"
                       onClick={() => {
                         append({
                           levelType: "auto",
@@ -249,10 +264,10 @@ const TaskSetConstructor = (): JSX.Element => {
                       }}
                     >
                       <Icon path={mdiPlus} size={1.2} />
-                      <span>автоматический уровень</span>
+                      <span>авто уровень</span>
                     </button>
                     <button
-                      className="btn"
+                      className="btn form-levels-list__action-button"
                       onClick={() => {
                         append({
                           levelType: "manual",
@@ -264,7 +279,7 @@ const TaskSetConstructor = (): JSX.Element => {
                       <span>ручной уровень</span>
                     </button>
                     <button
-                      className="btn u-mr-sm"
+                      className="btn form-levels-list__action-button u-mr-sm"
                       onClick={() => {
                         setShowSelectModal(true);
                       }}
@@ -273,7 +288,7 @@ const TaskSetConstructor = (): JSX.Element => {
                       <span>существующий уровень</span>
                     </button>
                     <button
-                      className="btn"
+                      className="btn form-levels-list__action-button"
                       onClick={() => console.log(getValues())}
                     >
                       get values
@@ -306,9 +321,9 @@ const TaskSetConstructor = (): JSX.Element => {
                 })}
               </div>
               {visualizationMode === VisualizationMode.TABLE && (
-                <div className="form-levels-table__add-level-buttons">
+                <div className="form-levels-table__action-buttons">
                   <button
-                    className="btn u-mr-sm"
+                    className="btn form-levels-table__action-button"
                     onClick={() => {
                       append({
                         levelType: "auto",
@@ -316,10 +331,10 @@ const TaskSetConstructor = (): JSX.Element => {
                     }}
                   >
                     <Icon path={mdiPlus} size={1.2} />
-                    <span>автоматический уровень</span>
+                    <span>авто уровень</span>
                   </button>
                   <button
-                    className="btn u-mr-sm"
+                    className="btn form-levels-table__action-button"
                     onClick={() => {
                       append({
                         levelType: "manual",
@@ -330,7 +345,7 @@ const TaskSetConstructor = (): JSX.Element => {
                     <span>ручной уровень</span>
                   </button>
                   <button
-                    className="btn u-mr-sm"
+                    className="btn form-levels-table__action-button"
                     onClick={() => {
                       setShowSelectModal(true);
                     }}
@@ -339,7 +354,7 @@ const TaskSetConstructor = (): JSX.Element => {
                     <span>существующий уровень</span>
                   </button>
                   <button
-                    className="btn"
+                    className="btn form-levels-table__action-button"
                     onClick={() => console.log(getValues())}
                   >
                     get values
@@ -386,8 +401,9 @@ const TaskSetConstructor = (): JSX.Element => {
                     return arr.slice(startIdx, endIdx);
                   })(),
                   onSelect: () => {
-                    append(mockTasks[code]);
+                    append(mockTasks[code], true);
                     setShowSelectModal(false);
+                    setSelectedLevel(fields.length);
                   },
                 };
               }
@@ -407,10 +423,11 @@ const TaskSetConstructor = (): JSX.Element => {
         />
       </div>
       <div
-        className="create-game-page__hints"
+        className={`create-game-page__hints-desktop ${
+          showHintsBlock && "create-game-page__hints-desktop--visible"
+        }`}
         style={{
           width: showHintsBlock ? `calc(50% - ${hintsDeltaX}px)` : "0",
-          opacity: showHintsBlock ? "1" : "0",
         }}
       >
         <Draggable
@@ -419,8 +436,8 @@ const TaskSetConstructor = (): JSX.Element => {
             x: 0,
             y: 0,
           }}
-          defaultClassName="create-game-page__hints-dragger"
-          defaultClassNameDragging="create-game-page__hints-dragger create-game-page__hints-dragger--dragging"
+          defaultClassName="create-game-page__hints-desktop-dragger"
+          defaultClassNameDragging="create-game-page__hints-desktop-dragger create-game-page__hints-desktop-dragger--dragging"
           onStop={(_, { lastX }) => {
             setHintsDeltaX((prevState) => {
               return prevState + lastX;
@@ -450,6 +467,38 @@ const TaskSetConstructor = (): JSX.Element => {
             startingLatexExpression={`${startExpressionHint}=..=${goalExpressionHint}`}
           />
         </div>
+      </div>
+      <div ref={mobileHintsRef} className="create-game-page__hints-phone">
+        {isMobile && (
+          <AppModal
+            isOpen={showHintsBlock}
+            close={() => setShowHintsBlock(false)}
+          >
+            <>
+              <div className="create-game-page__math-quill-hint">
+                {showHintsBlock && (
+                  <>
+                    <h1>Как писать в TEX:</h1>
+                    <img
+                      src={require("../../assets/math-quill-hint.gif")}
+                      alt="latex editor hint"
+                      width="100%"
+                      height="auto"
+                    />
+                  </>
+                )}
+              </div>
+              <div className="current-edited-level">
+                <h1>Редактируемый уровень:</h1>
+                <input type="text" ref={currentEditedLevelRef} />
+                <MathQuillEditor
+                  inputRef={currentEditedLevelRef}
+                  startingLatexExpression={`${startExpressionHint}=..=${goalExpressionHint}`}
+                />
+              </div>
+            </>
+          </AppModal>
+        )}
       </div>
     </div>
   );

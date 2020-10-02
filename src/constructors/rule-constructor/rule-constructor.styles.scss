@@ -4,4 +4,7 @@
   & > .form-group:not(:last-child) {
     margin-right: 2rem;
   }
+  &__select {
+    min-width: 15rem;
+  }
 }

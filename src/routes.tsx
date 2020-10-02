@@ -7,7 +7,7 @@ import GameInfoPage from "./pages/game-info-page/game-info-page";
 import PlayerInfoPage from "./pages/player-info-page/player-info-page";
 import UsersPage from "./pages/users-page/users-page";
 import LevelInfoPage from "./pages/level-info-page/level-info-page";
-import ConstructorMenuPage from "./pages/constructor-menu-page/constructor-menu-page";
+import ConstructorMenuPageComponent from "./pages/constructor-menu-page/constructor-menu-page.component";
 import SolveMathPage from "./pages/solve-math-page/solve-math-page";
 import NamespaceConstructorComponent from "./constructors/namespace-constructor/namespace-constructor.component";
 import RulePackConstructorComponent from "./constructors/rule-pack-constructor/rule-pack-constructor.component";
@@ -38,7 +38,7 @@ const Routes: React.FC = () => {
       <Route
         exact
         path={"/constructor-menu/:activeTab?"}
-        component={ConstructorMenuPage}
+        component={ConstructorMenuPageComponent}
       />
       <Route exact path={"/solve-math"} component={SolveMathPage} />
       <Route

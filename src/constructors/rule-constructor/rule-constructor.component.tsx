@@ -87,7 +87,7 @@ const RuleConstructor = ({ index, defaultValue }: RuleConstructorProps) => {
           width={mixedInputWidth + "px"}
         />
       </div>
-      <div className="form-group">
+      <div className="form-group rule-constructor__select">
         <label>Based on task context</label>
         <Select
           value={basedOnTaskContext}
@@ -104,8 +104,8 @@ const RuleConstructor = ({ index, defaultValue }: RuleConstructorProps) => {
           }}
         />
       </div>
-      <div className="form-group">
-        <label>Based on task context</label>
+      <div className="form-group rule-constructor__select">
+        <label>Match jumbled and nested</label>
         <Select
           value={matchJumbledAndNested}
           name="matchJumbledAndNested"

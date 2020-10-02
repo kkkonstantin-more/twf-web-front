@@ -7,7 +7,7 @@ import AppModalComponent from "../../components/app-modal/app-modal.component";
 import Icon from "@mdi/react";
 import { mdiPencil, mdiPlus } from "@mdi/js";
 // styles
-import "./constructor-menu-page.scss";
+import "./constructor-menu-page.styles.scss";
 import { mockNamespaces } from "../../constructors/namespace-constructor/namespace-constructor.mock-data";
 import { mockRulePacks } from "../../constructors/rule-pack-constructor/rule-pack-constructor.mock-data";
 import SelectConstructorItemList from "../../components/filterable-select-list/filterable-select-list.component";
@@ -20,7 +20,7 @@ interface ConstructorMenuBlockProps {
   options: { name: string; action: () => any }[];
 }
 
-const ConstructorMenuBlock: React.FC<ConstructorMenuBlockProps> = ({
+const ConstructorMenuBlock = ({
   title,
   titleIconUrl,
   options,
@@ -80,7 +80,7 @@ export const usersDemoList = demoList.map((item: string) => ({
 
 type Tab = "taskSet" | "namespace" | "rulePack";
 
-const ConstructorMenuPage: React.FC = () => {
+const ConstructorMenuPageComponent: React.FC = () => {
   const tabs: Tab[] = ["taskSet", "namespace", "rulePack"];
   const { activeTab } = useParams();
   const [currentTab, setCurrentTab] = useState<Tab>(tabs[0]);
@@ -363,18 +363,21 @@ const ConstructorMenuPage: React.FC = () => {
           Пакеты Правил
         </li>
       </ul>
-      {currentTab === tabs[0] &&
-        gameBlocks.map((block: ConstructorMenuBlockProps, i: number) => {
-          return <ConstructorMenuBlock key={i} {...block} />;
-        })}
-      {currentTab === tabs[1] &&
-        gameSpaceBlocks.map((block: ConstructorMenuBlockProps, i: number) => {
-          return <ConstructorMenuBlock key={i} {...block} />;
-        })}
-      {currentTab === tabs[2] &&
-        rulePacksBlocks.map((block: ConstructorMenuBlockProps, i: number) => {
-          return <ConstructorMenuBlock key={i} {...block} />;
-        })}
+      <div className="constructor-menu-page__blocks">
+        {currentTab === tabs[0] &&
+          gameBlocks.map((block: ConstructorMenuBlockProps, i: number) => {
+            return <ConstructorMenuBlock key={i} {...block} />;
+          })}
+        {currentTab === tabs[1] &&
+          gameSpaceBlocks.map((block: ConstructorMenuBlockProps, i: number) => {
+            return <ConstructorMenuBlock key={i} {...block} />;
+          })}
+        {currentTab === tabs[2] &&
+          rulePacksBlocks.map((block: ConstructorMenuBlockProps, i: number) => {
+            return <ConstructorMenuBlock key={i} {...block} />;
+          })}
+      </div>
+
       <AppModalComponent
         isOpen={showAllItemsModal}
         close={() => setShowAllItemsModal(false)}
@@ -390,4 +393,4 @@ const ConstructorMenuPage: React.FC = () => {
   );
 };
 
-export default ConstructorMenuPage;
+export default ConstructorMenuPageComponent;
