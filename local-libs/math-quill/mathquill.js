@@ -1955,7 +1955,8 @@ JS environment could actually contain many instances. */
       ctrlr.scrollHoriz();
     };
 
-    _.moveOutOf = _.moveTowards = _.deleteOutOf = _.deleteTowards = _.unselectInto = _.selectOutOf = _.selectTowards = function () { // called by Controller::escapeDir, moveDir // called by Controller::moveDir // called by Controller::deleteDir // called by Controller::deleteDir // called by Controller::selectDir // called by Controller::selectDir // called by Controller::selectDir
+    _.moveOutOf = _.moveTowards = _.deleteOutOf = _.deleteTowards = _.unselectInto = _.selectOutOf = _.selectTowards = function () {
+      // called by Controller::escapeDir, moveDir // called by Controller::moveDir // called by Controller::deleteDir // called by Controller::deleteDir // called by Controller::selectDir // called by Controller::selectDir // called by Controller::selectDir
       pray("overridden or never called on this node");
     };
   });
@@ -3532,7 +3533,8 @@ JS environment could actually contain many instances. */
     "&there4;"
   );
 
-  LatexCmds.cuz = LatexCmds.because = bind( // l33t
+  LatexCmds.cuz = LatexCmds.because = bind(
+    // l33t
     BinaryOperator,
     "\\because ",
     "&#8757;"
@@ -3852,7 +3854,8 @@ case '!':
     "&#8726;"
   );
 
-  LatexCmds.not = LatexCmds["\u00ac"] = LatexCmds.neg = bind( //bind(Symbol,'\\not ','<span class="not">/</span>');
+  LatexCmds.not = LatexCmds["\u00ac"] = LatexCmds.neg = bind(
+    //bind(Symbol,'\\not ','<span class="not">/</span>');
     VanillaSymbol,
     "\\neg ",
     "&not;"
@@ -3966,7 +3969,8 @@ case '!':
     "&alefsym;"
   );
 
-  LatexCmds.xist = LatexCmds.xists = LatexCmds.exist = LatexCmds.exists = bind( //LOL
+  LatexCmds.xist = LatexCmds.xists = LatexCmds.exist = LatexCmds.exists = bind(
+    //LOL
     VanillaSymbol,
     "\\exists ",
     "&exist;"
@@ -4221,7 +4225,8 @@ case '!':
       BuiltInOpNames[mostOps[i]] = AutoOpNames[mostOps[i]] = 1;
     }
 
-    var builtInTrigs = "sin cos tan arcsin arccos arctan sinh cosh tanh sec csc cot coth".split( // why coth but not sech and csch, LaTeX?
+    var builtInTrigs = "sin cos tan arcsin arccos arctan sinh cosh tanh sec csc cot coth".split(
+      // why coth but not sech and csch, LaTeX?
       " "
     );
     for (var i = 0; i < builtInTrigs.length; i += 1) {
@@ -4355,7 +4360,8 @@ case '!':
 
   LatexCmds.epsilon = bind(Variable, "\\epsilon ", "&#1013;"); //W3C or Unicode?
 
-  LatexCmds.epsiv = LatexCmds.varepsilon = bind( //Elsevier and 9573-13 //AMS and LaTeX
+  LatexCmds.epsiv = LatexCmds.varepsilon = bind(
+    //Elsevier and 9573-13 //AMS and LaTeX
     Variable,
     "\\varepsilon ",
     "&epsilon;"
@@ -4363,32 +4369,37 @@ case '!':
 
   LatexCmds.piv = LatexCmds.varpi = bind(Variable, "\\varpi ", "&piv;"); //W3C/Unicode and Elsevier and 9573-13 //AMS and LaTeX
 
-  LatexCmds.sigmaf = LatexCmds.sigmav = LatexCmds.varsigma = bind( //W3C/Unicode //Elsevier //LaTeX
+  LatexCmds.sigmaf = LatexCmds.sigmav = LatexCmds.varsigma = bind(
+    //W3C/Unicode //Elsevier //LaTeX
     Variable,
     "\\varsigma ",
     "&sigmaf;"
   );
 
-  LatexCmds.thetav = LatexCmds.vartheta = LatexCmds.thetasym = bind( //Elsevier and 9573-13 //AMS and LaTeX //W3C/Unicode
+  LatexCmds.thetav = LatexCmds.vartheta = LatexCmds.thetasym = bind(
+    //Elsevier and 9573-13 //AMS and LaTeX //W3C/Unicode
     Variable,
     "\\vartheta ",
     "&thetasym;"
   );
 
-  LatexCmds.upsilon = LatexCmds.upsi = bind( //AMS and LaTeX and W3C/Unicode //Elsevier and 9573-13
+  LatexCmds.upsilon = LatexCmds.upsi = bind(
+    //AMS and LaTeX and W3C/Unicode //Elsevier and 9573-13
     Variable,
     "\\upsilon ",
     "&upsilon;"
   );
 
   //these aren't even mentioned in the HTML character entity references
-  LatexCmds.gammad = LatexCmds.Gammad = LatexCmds.digamma = bind( //Elsevier //9573-13 -- WTF, right? I dunno if this was a typo in the reference (see above) //LaTeX
+  LatexCmds.gammad = LatexCmds.Gammad = LatexCmds.digamma = bind(
+    //Elsevier //9573-13 -- WTF, right? I dunno if this was a typo in the reference (see above) //LaTeX
     Variable,
     "\\digamma ",
     "&#989;"
   );
 
-  LatexCmds.kappav = LatexCmds.varkappa = bind( //Elsevier //AMS and LaTeX
+  LatexCmds.kappav = LatexCmds.varkappa = bind(
+    //Elsevier //AMS and LaTeX
     Variable,
     "\\varkappa ",
     "&#1008;"
@@ -4402,7 +4413,8 @@ case '!':
 
   //uppercase greek letters
 
-  LatexCmds.Upsilon = LatexCmds.Upsi = LatexCmds.upsih = LatexCmds.Upsih = bind( //LaTeX //Elsevier and 9573-13 //W3C/Unicode "upsilon with hook" //'cos it makes sense to me
+  LatexCmds.Upsilon = LatexCmds.Upsi = LatexCmds.upsih = LatexCmds.Upsih = bind(
+    //LaTeX //Elsevier and 9573-13 //W3C/Unicode "upsilon with hook" //'cos it makes sense to me
     Symbol,
     "\\Upsilon ",
     '<var style="font-family: serif">&upsih;</var>'
@@ -5518,7 +5530,8 @@ case '!':
     _.createLeftOf = LiveFraction.prototype.createLeftOf;
   }));
 
-  LatexCmds.editable = LatexCmds.MathQuillMathField = P(MathCommand, function ( // backcompat with before cfd3620 on #233
+  LatexCmds.editable = LatexCmds.MathQuillMathField = P(MathCommand, function (
+    // backcompat with before cfd3620 on #233
     _,
     super_
   ) {

@@ -1,0 +1,422 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`filterableSelectList renders correctly 1`] = `
+<div
+  className="select-constructor-item-list"
+>
+  <div
+    className="select-constructor-item-list__search-field"
+  >
+    <div
+      className="form-group"
+    >
+      <select
+        className="form-control select-constructor-item-list__select-input"
+        onChange={[Function]}
+        value="all"
+      >
+        <option
+          key="0"
+          value="name"
+        >
+          name
+        </option>
+        <option
+          key="1"
+          value="namespace"
+        >
+          namespace
+        </option>
+        <option
+          key="2"
+          value="code"
+        >
+          code
+        </option>
+        <option
+          key="3"
+          value="taskSet"
+        >
+          taskSet
+        </option>
+        <option
+          key="4"
+          value="subjectType"
+        >
+          subjectType
+        </option>
+        <option
+          key="5"
+          value="all"
+        >
+          all
+        </option>
+      </select>
+    </div>
+    <div
+      className="form-group"
+    >
+      <Icon
+        className="select-constructor-item-list__search-icon"
+        color="currentColor"
+        horizontal={false}
+        path="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L20.5,19L19,20.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z"
+        rotate={0}
+        size={1.5}
+        spin={false}
+        vertical={false}
+      />
+      <input
+        className="form-control select-constructor-item-list__search-input"
+        onChange={[Function]}
+        placeholder="Введите all"
+        type="text"
+      />
+    </div>
+  </div>
+  <div
+    className="select-constructor-item-list__items"
+  >
+    <div
+      className="select-constructor-item-list__item"
+      key="0"
+      onClick={[Function]}
+    >
+      <div
+        key="0"
+      >
+        <b>
+          name
+          : 
+        </b>
+        <span>
+          Запредельно сложная задача
+        </span>
+      </div>
+      <div
+        key="0"
+      >
+        <b>
+          namespace
+          : 
+        </b>
+        <span>
+          super_difficult
+        </span>
+      </div>
+      <div
+        key="0"
+      >
+        <b>
+          code
+          : 
+        </b>
+        <span>
+          very_difficult_task
+        </span>
+      </div>
+      <div
+        key="0"
+      >
+        <b>
+          taskSet
+          : 
+        </b>
+        <span>
+          интересные задачки, очень сложно, зубодробительный набор, поступление в университет
+        </span>
+      </div>
+      <div
+        key="0"
+      >
+        <b>
+          subjectType
+          : 
+        </b>
+        <span>
+          тригонометрия, множества, дифференциалы, производные, полиномы, пределы
+        </span>
+      </div>
+    </div>
+    <div
+      className="select-constructor-item-list__item"
+      key="1"
+      onClick={[Function]}
+    >
+      <div
+        key="1"
+      >
+        <b>
+          name
+          : 
+        </b>
+        <span>
+          Умеренно сложная задача
+        </span>
+      </div>
+      <div
+        key="1"
+      >
+        <b>
+          namespace
+          : 
+        </b>
+        <span>
+          little_bit_difficult
+        </span>
+      </div>
+      <div
+        key="1"
+      >
+        <b>
+          code
+          : 
+        </b>
+        <span>
+          not_so_easy_task
+        </span>
+      </div>
+      <div
+        key="1"
+      >
+        <b>
+          taskSet
+          : 
+        </b>
+        <span>
+          интересные задачки, поступление в университет, на подумать
+        </span>
+      </div>
+      <div
+        key="1"
+      >
+        <b>
+          subjectType
+          : 
+        </b>
+        <span>
+          тригонометрия, логарифмы, теория вероятности
+        </span>
+      </div>
+    </div>
+    <div
+      className="select-constructor-item-list__item"
+      key="2"
+      onClick={[Function]}
+    >
+      <div
+        key="2"
+      >
+        <b>
+          name
+          : 
+        </b>
+        <span>
+          Простота
+        </span>
+      </div>
+      <div
+        key="2"
+      >
+        <b>
+          namespace
+          : 
+        </b>
+        <span>
+          super_simple
+        </span>
+      </div>
+      <div
+        key="2"
+      >
+        <b>
+          code
+          : 
+        </b>
+        <span>
+          easy_breezy
+        </span>
+      </div>
+      <div
+        key="2"
+      >
+        <b>
+          taskSet
+          : 
+        </b>
+        <span>
+          просто, ЕГЭ
+        </span>
+      </div>
+      <div
+        key="2"
+      >
+        <b>
+          subjectType
+          : 
+        </b>
+        <span>
+          логарифмы, производные
+        </span>
+      </div>
+    </div>
+  </div>
+  <div
+    className="select-constructor-item-list__filters"
+  >
+    <div
+      className="select-constructor-item-list__filter"
+      key="0"
+    >
+      <h2>
+        namespace
+      </h2>
+      <StateManager
+        defaultInputValue=""
+        defaultMenuIsOpen={false}
+        defaultValue={null}
+        isMulti={true}
+        onChange={[Function]}
+        options={
+          Array [
+            Object {
+              "label": "super_difficult",
+              "value": "super_difficult",
+            },
+            Object {
+              "label": "little_bit_difficult",
+              "value": "little_bit_difficult",
+            },
+            Object {
+              "label": "super_simple",
+              "value": "super_simple",
+            },
+          ]
+        }
+        styles={
+          Object {
+            "clearIndicator": [Function],
+            "control": [Function],
+            "dropdownIndicator": [Function],
+            "valueContainer": [Function],
+          }
+        }
+      />
+    </div>
+    <div
+      className="select-constructor-item-list__filter"
+      key="1"
+    >
+      <h2>
+        subjectType
+      </h2>
+      <StateManager
+        defaultInputValue=""
+        defaultMenuIsOpen={false}
+        defaultValue={null}
+        isMulti={true}
+        onChange={[Function]}
+        options={
+          Array [
+            Object {
+              "label": "тригонометрия",
+              "value": "тригонометрия",
+            },
+            Object {
+              "label": "множества",
+              "value": "множества",
+            },
+            Object {
+              "label": "дифференциалы",
+              "value": "дифференциалы",
+            },
+            Object {
+              "label": "производные",
+              "value": "производные",
+            },
+            Object {
+              "label": "полиномы",
+              "value": "полиномы",
+            },
+            Object {
+              "label": "пределы",
+              "value": "пределы",
+            },
+            Object {
+              "label": "логарифмы",
+              "value": "логарифмы",
+            },
+            Object {
+              "label": "теория вероятности",
+              "value": "теория вероятности",
+            },
+          ]
+        }
+        styles={
+          Object {
+            "clearIndicator": [Function],
+            "control": [Function],
+            "dropdownIndicator": [Function],
+            "valueContainer": [Function],
+          }
+        }
+      />
+    </div>
+    <div
+      className="select-constructor-item-list__filter"
+      key="2"
+    >
+      <h2>
+        taskSet
+      </h2>
+      <StateManager
+        defaultInputValue=""
+        defaultMenuIsOpen={false}
+        defaultValue={null}
+        isMulti={true}
+        onChange={[Function]}
+        options={
+          Array [
+            Object {
+              "label": "интересные задачки",
+              "value": "интересные задачки",
+            },
+            Object {
+              "label": "очень сложно",
+              "value": "очень сложно",
+            },
+            Object {
+              "label": "зубодробительный набор",
+              "value": "зубодробительный набор",
+            },
+            Object {
+              "label": "поступление в университет",
+              "value": "поступление в университет",
+            },
+            Object {
+              "label": "на подумать",
+              "value": "на подумать",
+            },
+            Object {
+              "label": "просто",
+              "value": "просто",
+            },
+            Object {
+              "label": "ЕГЭ",
+              "value": "ЕГЭ",
+            },
+          ]
+        }
+        styles={
+          Object {
+            "clearIndicator": [Function],
+            "control": [Function],
+            "dropdownIndicator": [Function],
+            "valueContainer": [Function],
+          }
+        }
+      />
+    </div>
+  </div>
+</div>
+`;

@@ -21,7 +21,7 @@ import { mdiMagnify } from "@mdi/js";
 // styles
 import "./filterable-select-list.styles.scss";
 
-const SelectConstructorItemList = ({
+const FilterableSelectList = ({
   items,
   propsToFilter,
 }: FilterableSelectListProps): JSX.Element => {
@@ -153,7 +153,7 @@ const SelectConstructorItemList = ({
       <div className="select-constructor-item-list__search-field">
         <div className="form-group">
           <select
-            className="form-control"
+            className="form-control select-constructor-item-list__select-input"
             value={currentSearchKey}
             onChange={(e: React.FormEvent<HTMLSelectElement>): void => {
               setCurrentSearchKey(e.currentTarget.value);
@@ -247,4 +247,4 @@ const SelectConstructorItemList = ({
   );
 };
 
-export default SelectConstructorItemList;
+export default FilterableSelectList;
