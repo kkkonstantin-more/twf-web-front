@@ -126,28 +126,6 @@ const FilterableSelectList = ({
     }
   };
 
-  const targetHeight = 3;
-
-  const styles = {
-    control: (base: any) => ({
-      ...base,
-      minHeight: "initial",
-    }),
-    valueContainer: (base: any) => ({
-      ...base,
-      height: `${targetHeight}rem`,
-      padding: "1rem",
-    }),
-    clearIndicator: (base: any) => ({
-      ...base,
-      padding: `${(targetHeight - 2 - 0.1 - 0.1) / 2}rem`,
-    }),
-    dropdownIndicator: (base: any) => ({
-      ...base,
-      padding: `${(targetHeight - 2 - 0.1 - 0.1) / 2}rem`,
-    }),
-  };
-
   return (
     <div className="select-constructor-item-list">
       <div className="select-constructor-item-list__search-field">
@@ -207,7 +185,7 @@ const FilterableSelectList = ({
                         ? item[key].join(", ")
                         : item[key];
                       return (
-                        <div key={i}>
+                        <div key={key}>
                           <b>{key}: </b>
                           <span>{value}</span>
                         </div>
@@ -226,7 +204,7 @@ const FilterableSelectList = ({
               <div key={i} className="select-constructor-item-list__filter">
                 <h2>{filterProp}</h2>
                 <Select
-                  styles={styles}
+                  classNamePrefix="react-select"
                   options={visibleSortTokens[filterProp].map(
                     (item: string) => ({
                       label: item,

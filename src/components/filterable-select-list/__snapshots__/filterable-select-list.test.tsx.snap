@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`filterableSelectList renders correctly 1`] = `
+exports[`filterableSelectList matches snapshot 1`] = `
 <div
   className="select-constructor-item-list"
 >
@@ -83,7 +83,7 @@ exports[`filterableSelectList renders correctly 1`] = `
       onClick={[Function]}
     >
       <div
-        key="0"
+        key="name"
       >
         <b>
           name
@@ -94,7 +94,7 @@ exports[`filterableSelectList renders correctly 1`] = `
         </span>
       </div>
       <div
-        key="0"
+        key="namespace"
       >
         <b>
           namespace
@@ -105,7 +105,7 @@ exports[`filterableSelectList renders correctly 1`] = `
         </span>
       </div>
       <div
-        key="0"
+        key="code"
       >
         <b>
           code
@@ -116,7 +116,7 @@ exports[`filterableSelectList renders correctly 1`] = `
         </span>
       </div>
       <div
-        key="0"
+        key="taskSet"
       >
         <b>
           taskSet
@@ -127,7 +127,7 @@ exports[`filterableSelectList renders correctly 1`] = `
         </span>
       </div>
       <div
-        key="0"
+        key="subjectType"
       >
         <b>
           subjectType
@@ -144,7 +144,7 @@ exports[`filterableSelectList renders correctly 1`] = `
       onClick={[Function]}
     >
       <div
-        key="1"
+        key="name"
       >
         <b>
           name
@@ -155,7 +155,7 @@ exports[`filterableSelectList renders correctly 1`] = `
         </span>
       </div>
       <div
-        key="1"
+        key="namespace"
       >
         <b>
           namespace
@@ -166,7 +166,7 @@ exports[`filterableSelectList renders correctly 1`] = `
         </span>
       </div>
       <div
-        key="1"
+        key="code"
       >
         <b>
           code
@@ -177,7 +177,7 @@ exports[`filterableSelectList renders correctly 1`] = `
         </span>
       </div>
       <div
-        key="1"
+        key="taskSet"
       >
         <b>
           taskSet
@@ -188,7 +188,7 @@ exports[`filterableSelectList renders correctly 1`] = `
         </span>
       </div>
       <div
-        key="1"
+        key="subjectType"
       >
         <b>
           subjectType
@@ -205,7 +205,7 @@ exports[`filterableSelectList renders correctly 1`] = `
       onClick={[Function]}
     >
       <div
-        key="2"
+        key="name"
       >
         <b>
           name
@@ -216,7 +216,7 @@ exports[`filterableSelectList renders correctly 1`] = `
         </span>
       </div>
       <div
-        key="2"
+        key="namespace"
       >
         <b>
           namespace
@@ -227,7 +227,7 @@ exports[`filterableSelectList renders correctly 1`] = `
         </span>
       </div>
       <div
-        key="2"
+        key="code"
       >
         <b>
           code
@@ -238,7 +238,7 @@ exports[`filterableSelectList renders correctly 1`] = `
         </span>
       </div>
       <div
-        key="2"
+        key="taskSet"
       >
         <b>
           taskSet
@@ -249,7 +249,7 @@ exports[`filterableSelectList renders correctly 1`] = `
         </span>
       </div>
       <div
-        key="2"
+        key="subjectType"
       >
         <b>
           subjectType
@@ -272,6 +272,7 @@ exports[`filterableSelectList renders correctly 1`] = `
         namespace
       </h2>
       <StateManager
+        classNamePrefix="react-select"
         defaultInputValue=""
         defaultMenuIsOpen={false}
         defaultValue={null}
@@ -293,14 +294,6 @@ exports[`filterableSelectList renders correctly 1`] = `
             },
           ]
         }
-        styles={
-          Object {
-            "clearIndicator": [Function],
-            "control": [Function],
-            "dropdownIndicator": [Function],
-            "valueContainer": [Function],
-          }
-        }
       />
     </div>
     <div
@@ -311,6 +304,7 @@ exports[`filterableSelectList renders correctly 1`] = `
         subjectType
       </h2>
       <StateManager
+        classNamePrefix="react-select"
         defaultInputValue=""
         defaultMenuIsOpen={false}
         defaultValue={null}
@@ -352,14 +346,6 @@ exports[`filterableSelectList renders correctly 1`] = `
             },
           ]
         }
-        styles={
-          Object {
-            "clearIndicator": [Function],
-            "control": [Function],
-            "dropdownIndicator": [Function],
-            "valueContainer": [Function],
-          }
-        }
       />
     </div>
     <div
@@ -370,6 +356,7 @@ exports[`filterableSelectList renders correctly 1`] = `
         taskSet
       </h2>
       <StateManager
+        classNamePrefix="react-select"
         defaultInputValue=""
         defaultMenuIsOpen={false}
         defaultValue={null}
@@ -406,14 +393,6 @@ exports[`filterableSelectList renders correctly 1`] = `
               "value": "ЕГЭ",
             },
           ]
-        }
-        styles={
-          Object {
-            "clearIndicator": [Function],
-            "control": [Function],
-            "dropdownIndicator": [Function],
-            "valueContainer": [Function],
-          }
         }
       />
     </div>
