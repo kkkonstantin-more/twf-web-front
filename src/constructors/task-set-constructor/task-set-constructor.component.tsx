@@ -26,8 +26,11 @@ import Icon from "@mdi/react";
 import {
   mdiCloseCircle,
   mdiCommentQuestion,
+  mdiFormatListBulleted,
   mdiPlus,
   mdiRobot,
+  mdiTable,
+  mdiTableLarge,
   mdiWrench,
 } from "@mdi/js";
 // styles
@@ -196,29 +199,31 @@ const TaskSetConstructor = (): JSX.Element => {
               {/*/>*/}
             </div>
 
-            <h3>Уровни</h3>
-            <div className="create-game-page__visualization-mode-switchers">
-              <div
-                className={`create-game-page__visualization-mode-switcher ${
-                  visualizationMode === VisualizationMode.LIST &&
-                  "create-game-page__visualization-mode-switcher--active"
-                }`}
-                onClick={() => {
-                  setVisualizationMode(VisualizationMode.LIST);
-                }}
-              >
-                Список
-              </div>
-              <div
-                className={`create-game-page__visualization-mode-switcher ${
-                  visualizationMode === VisualizationMode.TABLE &&
-                  "create-game-page__visualization-mode-switcher--active"
-                }`}
-                onClick={() => {
-                  setVisualizationMode(VisualizationMode.TABLE);
-                }}
-              >
-                Таблица
+            <div className="u-flex" style={{ alignItems: "center" }}>
+              <h3>Уровни</h3>
+              <div className="create-game-page__visualization-mode-switchers">
+                <div
+                  className={`create-game-page__visualization-mode-switcher ${
+                    visualizationMode === VisualizationMode.LIST &&
+                    "create-game-page__visualization-mode-switcher--active"
+                  }`}
+                  onClick={() => {
+                    setVisualizationMode(VisualizationMode.LIST);
+                  }}
+                >
+                  <Icon path={mdiFormatListBulleted} size={1.5} />
+                </div>
+                <div
+                  className={`create-game-page__visualization-mode-switcher ${
+                    visualizationMode === VisualizationMode.TABLE &&
+                    "create-game-page__visualization-mode-switcher--active"
+                  }`}
+                  onClick={() => {
+                    setVisualizationMode(VisualizationMode.TABLE);
+                  }}
+                >
+                  <Icon path={mdiTableLarge} size={1.5} />
+                </div>
               </div>
             </div>
             <div
@@ -258,6 +263,20 @@ const TaskSetConstructor = (): JSX.Element => {
                       className="btn form-levels-list__action-button"
                       onClick={() => {
                         append({
+                          levelType: "manual",
+                        });
+                        setSelectedLevel(fields.length);
+                      }}
+                    >
+                      <Icon path={mdiPlus} size={1.2} />
+                      <span>
+                        <b>ручной уровень</b>
+                      </span>
+                    </button>
+                    <button
+                      className="btn form-levels-list__action-button"
+                      onClick={() => {
+                        append({
                           levelType: "auto",
                         });
                         setSelectedLevel(fields.length);
@@ -265,18 +284,6 @@ const TaskSetConstructor = (): JSX.Element => {
                     >
                       <Icon path={mdiPlus} size={1.2} />
                       <span>авто уровень</span>
-                    </button>
-                    <button
-                      className="btn form-levels-list__action-button"
-                      onClick={() => {
-                        append({
-                          levelType: "manual",
-                        });
-                        setSelectedLevel(fields.length);
-                      }}
-                    >
-                      <Icon path={mdiPlus} size={1.2} />
-                      <span>ручной уровень</span>
                     </button>
                     <button
                       className="btn form-levels-list__action-button u-mr-sm"
@@ -326,23 +333,25 @@ const TaskSetConstructor = (): JSX.Element => {
                     className="btn form-levels-table__action-button"
                     onClick={() => {
                       append({
+                        levelType: "manual",
+                      });
+                    }}
+                  >
+                    <Icon path={mdiPlus} size={1.2} />
+                    <span>
+                      <b>ручной уровень</b>
+                    </span>
+                  </button>
+                  <button
+                    className="btn form-levels-table__action-button"
+                    onClick={() => {
+                      append({
                         levelType: "auto",
                       });
                     }}
                   >
                     <Icon path={mdiPlus} size={1.2} />
                     <span>авто уровень</span>
-                  </button>
-                  <button
-                    className="btn form-levels-table__action-button"
-                    onClick={() => {
-                      append({
-                        levelType: "manual",
-                      });
-                    }}
-                  >
-                    <Icon path={mdiPlus} size={1.2} />
-                    <span>ручной уровень</span>
                   </button>
                   <button
                     className="btn form-levels-table__action-button"

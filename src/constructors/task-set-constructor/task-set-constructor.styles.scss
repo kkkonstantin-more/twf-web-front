@@ -9,9 +9,7 @@
   justify-content: space-between;
   &__visualization-mode-switchers {
     display: flex;
-    margin-bottom: 1rem;
-    border: 1px solid $color-primary-dark;
-    padding: 1rem;
+    margin-left: 1rem;
     border-radius: 5px;
     width: fit-content;
   }
@@ -90,6 +88,7 @@
   border-radius: 5px;
   padding: 2rem;
   margin-left: 1rem;
+  margin-top: 1rem;
   &__action-buttons {
     display: flex;
   }
