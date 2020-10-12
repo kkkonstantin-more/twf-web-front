@@ -1,401 +1,954 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`filterableSelectList matches snapshot 1`] = `
-<div
-  className="select-constructor-item-list"
->
-  <div
-    className="select-constructor-item-list__search-field"
-  >
-    <div
-      className="form-group"
-    >
-      <select
-        className="form-control select-constructor-item-list__select-input"
-        onChange={[Function]}
-        value="all"
+exports[`FilterableSelectList matches snapshot 1`] = `
+Object {
+  "asFragment": [Function],
+  "baseElement": <body>
+    <div>
+      <div
+        class="select-constructor-item-list"
       >
-        <option
-          key="0"
-          value="name"
+        <div
+          class="select-constructor-item-list__search-field"
         >
-          name
-        </option>
-        <option
-          key="1"
-          value="namespace"
+          <div
+            class="form-group"
+          >
+            <select
+              class="form-control select-constructor-item-list__select-input"
+              data-testid="select-search-key"
+            >
+              <option
+                value="name"
+              >
+                name
+              </option>
+              <option
+                value="namespace"
+              >
+                namespace
+              </option>
+              <option
+                value="code"
+              >
+                code
+              </option>
+              <option
+                value="taskSet"
+              >
+                taskSet
+              </option>
+              <option
+                value="subjectType"
+              >
+                subjectType
+              </option>
+              <option
+                value="all"
+              >
+                all
+              </option>
+            </select>
+          </div>
+          <div
+            class="form-group"
+          >
+            <svg
+              class="select-constructor-item-list__search-icon"
+              role="presentation"
+              style="width: 2.25rem; height: 2.25rem;"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L20.5,19L19,20.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z"
+                style="fill: currentColor;"
+              />
+            </svg>
+            <input
+              class="form-control select-constructor-item-list__search-input"
+              data-testid="search-input"
+              placeholder="Введите all"
+              type="text"
+            />
+          </div>
+        </div>
+        <div
+          class="select-constructor-item-list__items"
         >
-          namespace
-        </option>
-        <option
-          key="2"
-          value="code"
+          <div
+            class="select-constructor-item-list__item"
+            data-testid="item"
+          >
+            <div>
+              <b>
+                name
+                : 
+              </b>
+              <span>
+                Запредельно сложная задача
+              </span>
+            </div>
+            <div>
+              <b>
+                namespace
+                : 
+              </b>
+              <span>
+                super_difficult
+              </span>
+            </div>
+            <div>
+              <b>
+                code
+                : 
+              </b>
+              <span>
+                very_difficult_task
+              </span>
+            </div>
+            <div>
+              <b>
+                taskSet
+                : 
+              </b>
+              <span>
+                интересные задачки, очень сложно, зубодробительный набор, поступление в университет
+              </span>
+            </div>
+            <div>
+              <b>
+                subjectType
+                : 
+              </b>
+              <span>
+                тригонометрия, множества, дифференциалы, производные, полиномы, пределы
+              </span>
+            </div>
+          </div>
+          <div
+            class="select-constructor-item-list__item"
+            data-testid="item"
+          >
+            <div>
+              <b>
+                name
+                : 
+              </b>
+              <span>
+                Умеренно сложная задача
+              </span>
+            </div>
+            <div>
+              <b>
+                namespace
+                : 
+              </b>
+              <span>
+                little_bit_difficult
+              </span>
+            </div>
+            <div>
+              <b>
+                code
+                : 
+              </b>
+              <span>
+                not_so_easy_task
+              </span>
+            </div>
+            <div>
+              <b>
+                taskSet
+                : 
+              </b>
+              <span>
+                интересные задачки, поступление в университет, на подумать
+              </span>
+            </div>
+            <div>
+              <b>
+                subjectType
+                : 
+              </b>
+              <span>
+                тригонометрия, логарифмы, теория вероятности
+              </span>
+            </div>
+          </div>
+          <div
+            class="select-constructor-item-list__item"
+            data-testid="item"
+          >
+            <div>
+              <b>
+                name
+                : 
+              </b>
+              <span>
+                Простота
+              </span>
+            </div>
+            <div>
+              <b>
+                namespace
+                : 
+              </b>
+              <span>
+                super_simple
+              </span>
+            </div>
+            <div>
+              <b>
+                code
+                : 
+              </b>
+              <span>
+                easy_breezy
+              </span>
+            </div>
+            <div>
+              <b>
+                taskSet
+                : 
+              </b>
+              <span>
+                просто, ЕГЭ
+              </span>
+            </div>
+            <div>
+              <b>
+                subjectType
+                : 
+              </b>
+              <span>
+                логарифмы, производные
+              </span>
+            </div>
+          </div>
+        </div>
+        <div
+          class="select-constructor-item-list__filters"
         >
-          code
-        </option>
-        <option
-          key="3"
-          value="taskSet"
+          <div
+            class="select-constructor-item-list__filter"
+            data-testid="select-namespace"
+          >
+            <h2>
+              namespace
+            </h2>
+            <div
+              class=" css-2b097c-container"
+            >
+              <div
+                class="react-select__control css-yk16xz-control"
+              >
+                <div
+                  class="react-select__value-container react-select__value-container--is-multi css-g1d714-ValueContainer"
+                >
+                  <div
+                    class="react-select__placeholder css-1wa3eu0-placeholder"
+                  >
+                    Select...
+                  </div>
+                  <div
+                    class="css-b8ldur-Input"
+                  >
+                    <div
+                      class="react-select__input"
+                      style="display: inline-block;"
+                    >
+                      <input
+                        aria-autocomplete="list"
+                        autocapitalize="none"
+                        autocomplete="off"
+                        autocorrect="off"
+                        id="react-select-2-input"
+                        spellcheck="false"
+                        style="box-sizing: content-box; width: 2px; border: 0px; font-size: inherit; opacity: 1; outline: 0; padding: 0px;"
+                        tabindex="0"
+                        type="text"
+                        value=""
+                      />
+                      <div
+                        style="position: absolute; top: 0px; left: 0px; visibility: hidden; height: 0px; overflow: scroll; white-space: pre; font-size: inherit; font-family: -webkit-small-control; letter-spacing: normal; text-transform: none;"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="react-select__indicators css-1hb7zxy-IndicatorsContainer"
+                >
+                  <span
+                    class="react-select__indicator-separator css-1okebmr-indicatorSeparator"
+                  />
+                  <div
+                    aria-hidden="true"
+                    class="react-select__indicator react-select__dropdown-indicator css-tlfecz-indicatorContainer"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="css-6q0nyr-Svg"
+                      focusable="false"
+                      height="20"
+                      viewBox="0 0 20 20"
+                      width="20"
+                    >
+                      <path
+                        d="M4.516 7.548c0.436-0.446 1.043-0.481 1.576 0l3.908 3.747 3.908-3.747c0.533-0.481 1.141-0.446 1.574 0 0.436 0.445 0.408 1.197 0 1.615-0.406 0.418-4.695 4.502-4.695 4.502-0.217 0.223-0.502 0.335-0.787 0.335s-0.57-0.112-0.789-0.335c0 0-4.287-4.084-4.695-4.502s-0.436-1.17 0-1.615z"
+                      />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="select-constructor-item-list__filter"
+            data-testid="select-taskSet"
+          >
+            <h2>
+              taskSet
+            </h2>
+            <div
+              class=" css-2b097c-container"
+            >
+              <div
+                class="react-select__control css-yk16xz-control"
+              >
+                <div
+                  class="react-select__value-container react-select__value-container--is-multi css-g1d714-ValueContainer"
+                >
+                  <div
+                    class="react-select__placeholder css-1wa3eu0-placeholder"
+                  >
+                    Select...
+                  </div>
+                  <div
+                    class="css-b8ldur-Input"
+                  >
+                    <div
+                      class="react-select__input"
+                      style="display: inline-block;"
+                    >
+                      <input
+                        aria-autocomplete="list"
+                        autocapitalize="none"
+                        autocomplete="off"
+                        autocorrect="off"
+                        id="react-select-3-input"
+                        spellcheck="false"
+                        style="box-sizing: content-box; width: 2px; border: 0px; font-size: inherit; opacity: 1; outline: 0; padding: 0px;"
+                        tabindex="0"
+                        type="text"
+                        value=""
+                      />
+                      <div
+                        style="position: absolute; top: 0px; left: 0px; visibility: hidden; height: 0px; overflow: scroll; white-space: pre; font-size: inherit; font-family: -webkit-small-control; letter-spacing: normal; text-transform: none;"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="react-select__indicators css-1hb7zxy-IndicatorsContainer"
+                >
+                  <span
+                    class="react-select__indicator-separator css-1okebmr-indicatorSeparator"
+                  />
+                  <div
+                    aria-hidden="true"
+                    class="react-select__indicator react-select__dropdown-indicator css-tlfecz-indicatorContainer"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="css-6q0nyr-Svg"
+                      focusable="false"
+                      height="20"
+                      viewBox="0 0 20 20"
+                      width="20"
+                    >
+                      <path
+                        d="M4.516 7.548c0.436-0.446 1.043-0.481 1.576 0l3.908 3.747 3.908-3.747c0.533-0.481 1.141-0.446 1.574 0 0.436 0.445 0.408 1.197 0 1.615-0.406 0.418-4.695 4.502-4.695 4.502-0.217 0.223-0.502 0.335-0.787 0.335s-0.57-0.112-0.789-0.335c0 0-4.287-4.084-4.695-4.502s-0.436-1.17 0-1.615z"
+                      />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="select-constructor-item-list__filter"
+            data-testid="select-subjectType"
+          >
+            <h2>
+              subjectType
+            </h2>
+            <div
+              class=" css-2b097c-container"
+            >
+              <div
+                class="react-select__control css-yk16xz-control"
+              >
+                <div
+                  class="react-select__value-container react-select__value-container--is-multi css-g1d714-ValueContainer"
+                >
+                  <div
+                    class="react-select__placeholder css-1wa3eu0-placeholder"
+                  >
+                    Select...
+                  </div>
+                  <div
+                    class="css-b8ldur-Input"
+                  >
+                    <div
+                      class="react-select__input"
+                      style="display: inline-block;"
+                    >
+                      <input
+                        aria-autocomplete="list"
+                        autocapitalize="none"
+                        autocomplete="off"
+                        autocorrect="off"
+                        id="react-select-4-input"
+                        spellcheck="false"
+                        style="box-sizing: content-box; width: 2px; border: 0px; font-size: inherit; opacity: 1; outline: 0; padding: 0px;"
+                        tabindex="0"
+                        type="text"
+                        value=""
+                      />
+                      <div
+                        style="position: absolute; top: 0px; left: 0px; visibility: hidden; height: 0px; overflow: scroll; white-space: pre; font-size: inherit; font-family: -webkit-small-control; letter-spacing: normal; text-transform: none;"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="react-select__indicators css-1hb7zxy-IndicatorsContainer"
+                >
+                  <span
+                    class="react-select__indicator-separator css-1okebmr-indicatorSeparator"
+                  />
+                  <div
+                    aria-hidden="true"
+                    class="react-select__indicator react-select__dropdown-indicator css-tlfecz-indicatorContainer"
+                  >
+                    <svg
+                      aria-hidden="true"
+                      class="css-6q0nyr-Svg"
+                      focusable="false"
+                      height="20"
+                      viewBox="0 0 20 20"
+                      width="20"
+                    >
+                      <path
+                        d="M4.516 7.548c0.436-0.446 1.043-0.481 1.576 0l3.908 3.747 3.908-3.747c0.533-0.481 1.141-0.446 1.574 0 0.436 0.445 0.408 1.197 0 1.615-0.406 0.418-4.695 4.502-4.695 4.502-0.217 0.223-0.502 0.335-0.787 0.335s-0.57-0.112-0.789-0.335c0 0-4.287-4.084-4.695-4.502s-0.436-1.17 0-1.615z"
+                      />
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>,
+  "container": <div>
+    <div
+      class="select-constructor-item-list"
+    >
+      <div
+        class="select-constructor-item-list__search-field"
+      >
+        <div
+          class="form-group"
         >
-          taskSet
-        </option>
-        <option
-          key="4"
-          value="subjectType"
+          <select
+            class="form-control select-constructor-item-list__select-input"
+            data-testid="select-search-key"
+          >
+            <option
+              value="name"
+            >
+              name
+            </option>
+            <option
+              value="namespace"
+            >
+              namespace
+            </option>
+            <option
+              value="code"
+            >
+              code
+            </option>
+            <option
+              value="taskSet"
+            >
+              taskSet
+            </option>
+            <option
+              value="subjectType"
+            >
+              subjectType
+            </option>
+            <option
+              value="all"
+            >
+              all
+            </option>
+          </select>
+        </div>
+        <div
+          class="form-group"
         >
-          subjectType
-        </option>
-        <option
-          key="5"
-          value="all"
+          <svg
+            class="select-constructor-item-list__search-icon"
+            role="presentation"
+            style="width: 2.25rem; height: 2.25rem;"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L20.5,19L19,20.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z"
+              style="fill: currentColor;"
+            />
+          </svg>
+          <input
+            class="form-control select-constructor-item-list__search-input"
+            data-testid="search-input"
+            placeholder="Введите all"
+            type="text"
+          />
+        </div>
+      </div>
+      <div
+        class="select-constructor-item-list__items"
+      >
+        <div
+          class="select-constructor-item-list__item"
+          data-testid="item"
         >
-          all
-        </option>
-      </select>
+          <div>
+            <b>
+              name
+              : 
+            </b>
+            <span>
+              Запредельно сложная задача
+            </span>
+          </div>
+          <div>
+            <b>
+              namespace
+              : 
+            </b>
+            <span>
+              super_difficult
+            </span>
+          </div>
+          <div>
+            <b>
+              code
+              : 
+            </b>
+            <span>
+              very_difficult_task
+            </span>
+          </div>
+          <div>
+            <b>
+              taskSet
+              : 
+            </b>
+            <span>
+              интересные задачки, очень сложно, зубодробительный набор, поступление в университет
+            </span>
+          </div>
+          <div>
+            <b>
+              subjectType
+              : 
+            </b>
+            <span>
+              тригонометрия, множества, дифференциалы, производные, полиномы, пределы
+            </span>
+          </div>
+        </div>
+        <div
+          class="select-constructor-item-list__item"
+          data-testid="item"
+        >
+          <div>
+            <b>
+              name
+              : 
+            </b>
+            <span>
+              Умеренно сложная задача
+            </span>
+          </div>
+          <div>
+            <b>
+              namespace
+              : 
+            </b>
+            <span>
+              little_bit_difficult
+            </span>
+          </div>
+          <div>
+            <b>
+              code
+              : 
+            </b>
+            <span>
+              not_so_easy_task
+            </span>
+          </div>
+          <div>
+            <b>
+              taskSet
+              : 
+            </b>
+            <span>
+              интересные задачки, поступление в университет, на подумать
+            </span>
+          </div>
+          <div>
+            <b>
+              subjectType
+              : 
+            </b>
+            <span>
+              тригонометрия, логарифмы, теория вероятности
+            </span>
+          </div>
+        </div>
+        <div
+          class="select-constructor-item-list__item"
+          data-testid="item"
+        >
+          <div>
+            <b>
+              name
+              : 
+            </b>
+            <span>
+              Простота
+            </span>
+          </div>
+          <div>
+            <b>
+              namespace
+              : 
+            </b>
+            <span>
+              super_simple
+            </span>
+          </div>
+          <div>
+            <b>
+              code
+              : 
+            </b>
+            <span>
+              easy_breezy
+            </span>
+          </div>
+          <div>
+            <b>
+              taskSet
+              : 
+            </b>
+            <span>
+              просто, ЕГЭ
+            </span>
+          </div>
+          <div>
+            <b>
+              subjectType
+              : 
+            </b>
+            <span>
+              логарифмы, производные
+            </span>
+          </div>
+        </div>
+      </div>
+      <div
+        class="select-constructor-item-list__filters"
+      >
+        <div
+          class="select-constructor-item-list__filter"
+          data-testid="select-namespace"
+        >
+          <h2>
+            namespace
+          </h2>
+          <div
+            class=" css-2b097c-container"
+          >
+            <div
+              class="react-select__control css-yk16xz-control"
+            >
+              <div
+                class="react-select__value-container react-select__value-container--is-multi css-g1d714-ValueContainer"
+              >
+                <div
+                  class="react-select__placeholder css-1wa3eu0-placeholder"
+                >
+                  Select...
+                </div>
+                <div
+                  class="css-b8ldur-Input"
+                >
+                  <div
+                    class="react-select__input"
+                    style="display: inline-block;"
+                  >
+                    <input
+                      aria-autocomplete="list"
+                      autocapitalize="none"
+                      autocomplete="off"
+                      autocorrect="off"
+                      id="react-select-2-input"
+                      spellcheck="false"
+                      style="box-sizing: content-box; width: 2px; border: 0px; font-size: inherit; opacity: 1; outline: 0; padding: 0px;"
+                      tabindex="0"
+                      type="text"
+                      value=""
+                    />
+                    <div
+                      style="position: absolute; top: 0px; left: 0px; visibility: hidden; height: 0px; overflow: scroll; white-space: pre; font-size: inherit; font-family: -webkit-small-control; letter-spacing: normal; text-transform: none;"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div
+                class="react-select__indicators css-1hb7zxy-IndicatorsContainer"
+              >
+                <span
+                  class="react-select__indicator-separator css-1okebmr-indicatorSeparator"
+                />
+                <div
+                  aria-hidden="true"
+                  class="react-select__indicator react-select__dropdown-indicator css-tlfecz-indicatorContainer"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="css-6q0nyr-Svg"
+                    focusable="false"
+                    height="20"
+                    viewBox="0 0 20 20"
+                    width="20"
+                  >
+                    <path
+                      d="M4.516 7.548c0.436-0.446 1.043-0.481 1.576 0l3.908 3.747 3.908-3.747c0.533-0.481 1.141-0.446 1.574 0 0.436 0.445 0.408 1.197 0 1.615-0.406 0.418-4.695 4.502-4.695 4.502-0.217 0.223-0.502 0.335-0.787 0.335s-0.57-0.112-0.789-0.335c0 0-4.287-4.084-4.695-4.502s-0.436-1.17 0-1.615z"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="select-constructor-item-list__filter"
+          data-testid="select-taskSet"
+        >
+          <h2>
+            taskSet
+          </h2>
+          <div
+            class=" css-2b097c-container"
+          >
+            <div
+              class="react-select__control css-yk16xz-control"
+            >
+              <div
+                class="react-select__value-container react-select__value-container--is-multi css-g1d714-ValueContainer"
+              >
+                <div
+                  class="react-select__placeholder css-1wa3eu0-placeholder"
+                >
+                  Select...
+                </div>
+                <div
+                  class="css-b8ldur-Input"
+                >
+                  <div
+                    class="react-select__input"
+                    style="display: inline-block;"
+                  >
+                    <input
+                      aria-autocomplete="list"
+                      autocapitalize="none"
+                      autocomplete="off"
+                      autocorrect="off"
+                      id="react-select-3-input"
+                      spellcheck="false"
+                      style="box-sizing: content-box; width: 2px; border: 0px; font-size: inherit; opacity: 1; outline: 0; padding: 0px;"
+                      tabindex="0"
+                      type="text"
+                      value=""
+                    />
+                    <div
+                      style="position: absolute; top: 0px; left: 0px; visibility: hidden; height: 0px; overflow: scroll; white-space: pre; font-size: inherit; font-family: -webkit-small-control; letter-spacing: normal; text-transform: none;"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div
+                class="react-select__indicators css-1hb7zxy-IndicatorsContainer"
+              >
+                <span
+                  class="react-select__indicator-separator css-1okebmr-indicatorSeparator"
+                />
+                <div
+                  aria-hidden="true"
+                  class="react-select__indicator react-select__dropdown-indicator css-tlfecz-indicatorContainer"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="css-6q0nyr-Svg"
+                    focusable="false"
+                    height="20"
+                    viewBox="0 0 20 20"
+                    width="20"
+                  >
+                    <path
+                      d="M4.516 7.548c0.436-0.446 1.043-0.481 1.576 0l3.908 3.747 3.908-3.747c0.533-0.481 1.141-0.446 1.574 0 0.436 0.445 0.408 1.197 0 1.615-0.406 0.418-4.695 4.502-4.695 4.502-0.217 0.223-0.502 0.335-0.787 0.335s-0.57-0.112-0.789-0.335c0 0-4.287-4.084-4.695-4.502s-0.436-1.17 0-1.615z"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="select-constructor-item-list__filter"
+          data-testid="select-subjectType"
+        >
+          <h2>
+            subjectType
+          </h2>
+          <div
+            class=" css-2b097c-container"
+          >
+            <div
+              class="react-select__control css-yk16xz-control"
+            >
+              <div
+                class="react-select__value-container react-select__value-container--is-multi css-g1d714-ValueContainer"
+              >
+                <div
+                  class="react-select__placeholder css-1wa3eu0-placeholder"
+                >
+                  Select...
+                </div>
+                <div
+                  class="css-b8ldur-Input"
+                >
+                  <div
+                    class="react-select__input"
+                    style="display: inline-block;"
+                  >
+                    <input
+                      aria-autocomplete="list"
+                      autocapitalize="none"
+                      autocomplete="off"
+                      autocorrect="off"
+                      id="react-select-4-input"
+                      spellcheck="false"
+                      style="box-sizing: content-box; width: 2px; border: 0px; font-size: inherit; opacity: 1; outline: 0; padding: 0px;"
+                      tabindex="0"
+                      type="text"
+                      value=""
+                    />
+                    <div
+                      style="position: absolute; top: 0px; left: 0px; visibility: hidden; height: 0px; overflow: scroll; white-space: pre; font-size: inherit; font-family: -webkit-small-control; letter-spacing: normal; text-transform: none;"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div
+                class="react-select__indicators css-1hb7zxy-IndicatorsContainer"
+              >
+                <span
+                  class="react-select__indicator-separator css-1okebmr-indicatorSeparator"
+                />
+                <div
+                  aria-hidden="true"
+                  class="react-select__indicator react-select__dropdown-indicator css-tlfecz-indicatorContainer"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="css-6q0nyr-Svg"
+                    focusable="false"
+                    height="20"
+                    viewBox="0 0 20 20"
+                    width="20"
+                  >
+                    <path
+                      d="M4.516 7.548c0.436-0.446 1.043-0.481 1.576 0l3.908 3.747 3.908-3.747c0.533-0.481 1.141-0.446 1.574 0 0.436 0.445 0.408 1.197 0 1.615-0.406 0.418-4.695 4.502-4.695 4.502-0.217 0.223-0.502 0.335-0.787 0.335s-0.57-0.112-0.789-0.335c0 0-4.287-4.084-4.695-4.502s-0.436-1.17 0-1.615z"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-    <div
-      className="form-group"
-    >
-      <Icon
-        className="select-constructor-item-list__search-icon"
-        color="currentColor"
-        horizontal={false}
-        path="M9.5,3A6.5,6.5 0 0,1 16,9.5C16,11.11 15.41,12.59 14.44,13.73L14.71,14H15.5L20.5,19L19,20.5L14,15.5V14.71L13.73,14.44C12.59,15.41 11.11,16 9.5,16A6.5,6.5 0 0,1 3,9.5A6.5,6.5 0 0,1 9.5,3M9.5,5C7,5 5,7 5,9.5C5,12 7,14 9.5,14C12,14 14,12 14,9.5C14,7 12,5 9.5,5Z"
-        rotate={0}
-        size={1.5}
-        spin={false}
-        vertical={false}
-      />
-      <input
-        className="form-control select-constructor-item-list__search-input"
-        onChange={[Function]}
-        placeholder="Введите all"
-        type="text"
-      />
-    </div>
-  </div>
-  <div
-    className="select-constructor-item-list__items"
-  >
-    <div
-      className="select-constructor-item-list__item"
-      key="0"
-      onClick={[Function]}
-    >
-      <div
-        key="name"
-      >
-        <b>
-          name
-          : 
-        </b>
-        <span>
-          Запредельно сложная задача
-        </span>
-      </div>
-      <div
-        key="namespace"
-      >
-        <b>
-          namespace
-          : 
-        </b>
-        <span>
-          super_difficult
-        </span>
-      </div>
-      <div
-        key="code"
-      >
-        <b>
-          code
-          : 
-        </b>
-        <span>
-          very_difficult_task
-        </span>
-      </div>
-      <div
-        key="taskSet"
-      >
-        <b>
-          taskSet
-          : 
-        </b>
-        <span>
-          интересные задачки, очень сложно, зубодробительный набор, поступление в университет
-        </span>
-      </div>
-      <div
-        key="subjectType"
-      >
-        <b>
-          subjectType
-          : 
-        </b>
-        <span>
-          тригонометрия, множества, дифференциалы, производные, полиномы, пределы
-        </span>
-      </div>
-    </div>
-    <div
-      className="select-constructor-item-list__item"
-      key="1"
-      onClick={[Function]}
-    >
-      <div
-        key="name"
-      >
-        <b>
-          name
-          : 
-        </b>
-        <span>
-          Умеренно сложная задача
-        </span>
-      </div>
-      <div
-        key="namespace"
-      >
-        <b>
-          namespace
-          : 
-        </b>
-        <span>
-          little_bit_difficult
-        </span>
-      </div>
-      <div
-        key="code"
-      >
-        <b>
-          code
-          : 
-        </b>
-        <span>
-          not_so_easy_task
-        </span>
-      </div>
-      <div
-        key="taskSet"
-      >
-        <b>
-          taskSet
-          : 
-        </b>
-        <span>
-          интересные задачки, поступление в университет, на подумать
-        </span>
-      </div>
-      <div
-        key="subjectType"
-      >
-        <b>
-          subjectType
-          : 
-        </b>
-        <span>
-          тригонометрия, логарифмы, теория вероятности
-        </span>
-      </div>
-    </div>
-    <div
-      className="select-constructor-item-list__item"
-      key="2"
-      onClick={[Function]}
-    >
-      <div
-        key="name"
-      >
-        <b>
-          name
-          : 
-        </b>
-        <span>
-          Простота
-        </span>
-      </div>
-      <div
-        key="namespace"
-      >
-        <b>
-          namespace
-          : 
-        </b>
-        <span>
-          super_simple
-        </span>
-      </div>
-      <div
-        key="code"
-      >
-        <b>
-          code
-          : 
-        </b>
-        <span>
-          easy_breezy
-        </span>
-      </div>
-      <div
-        key="taskSet"
-      >
-        <b>
-          taskSet
-          : 
-        </b>
-        <span>
-          просто, ЕГЭ
-        </span>
-      </div>
-      <div
-        key="subjectType"
-      >
-        <b>
-          subjectType
-          : 
-        </b>
-        <span>
-          логарифмы, производные
-        </span>
-      </div>
-    </div>
-  </div>
-  <div
-    className="select-constructor-item-list__filters"
-  >
-    <div
-      className="select-constructor-item-list__filter"
-      key="0"
-    >
-      <h2>
-        namespace
-      </h2>
-      <StateManager
-        classNamePrefix="react-select"
-        defaultInputValue=""
-        defaultMenuIsOpen={false}
-        defaultValue={null}
-        isMulti={true}
-        onChange={[Function]}
-        options={
-          Array [
-            Object {
-              "label": "super_difficult",
-              "value": "super_difficult",
-            },
-            Object {
-              "label": "little_bit_difficult",
-              "value": "little_bit_difficult",
-            },
-            Object {
-              "label": "super_simple",
-              "value": "super_simple",
-            },
-          ]
-        }
-      />
-    </div>
-    <div
-      className="select-constructor-item-list__filter"
-      key="1"
-    >
-      <h2>
-        subjectType
-      </h2>
-      <StateManager
-        classNamePrefix="react-select"
-        defaultInputValue=""
-        defaultMenuIsOpen={false}
-        defaultValue={null}
-        isMulti={true}
-        onChange={[Function]}
-        options={
-          Array [
-            Object {
-              "label": "тригонометрия",
-              "value": "тригонометрия",
-            },
-            Object {
-              "label": "множества",
-              "value": "множества",
-            },
-            Object {
-              "label": "дифференциалы",
-              "value": "дифференциалы",
-            },
-            Object {
-              "label": "производные",
-              "value": "производные",
-            },
-            Object {
-              "label": "полиномы",
-              "value": "полиномы",
-            },
-            Object {
-              "label": "пределы",
-              "value": "пределы",
-            },
-            Object {
-              "label": "логарифмы",
-              "value": "логарифмы",
-            },
-            Object {
-              "label": "теория вероятности",
-              "value": "теория вероятности",
-            },
-          ]
-        }
-      />
-    </div>
-    <div
-      className="select-constructor-item-list__filter"
-      key="2"
-    >
-      <h2>
-        taskSet
-      </h2>
-      <StateManager
-        classNamePrefix="react-select"
-        defaultInputValue=""
-        defaultMenuIsOpen={false}
-        defaultValue={null}
-        isMulti={true}
-        onChange={[Function]}
-        options={
-          Array [
-            Object {
-              "label": "интересные задачки",
-              "value": "интересные задачки",
-            },
-            Object {
-              "label": "очень сложно",
-              "value": "очень сложно",
-            },
-            Object {
-              "label": "зубодробительный набор",
-              "value": "зубодробительный набор",
-            },
-            Object {
-              "label": "поступление в университет",
-              "value": "поступление в университет",
-            },
-            Object {
-              "label": "на подумать",
-              "value": "на подумать",
-            },
-            Object {
-              "label": "просто",
-              "value": "просто",
-            },
-            Object {
-              "label": "ЕГЭ",
-              "value": "ЕГЭ",
-            },
-          ]
-        }
-      />
-    </div>
-  </div>
-</div>
+  </div>,
+  "debug": [Function],
+  "findAllByAltText": [Function],
+  "findAllByDisplayValue": [Function],
+  "findAllByLabelText": [Function],
+  "findAllByPlaceholderText": [Function],
+  "findAllByRole": [Function],
+  "findAllByTestId": [Function],
+  "findAllByText": [Function],
+  "findAllByTitle": [Function],
+  "findByAltText": [Function],
+  "findByDisplayValue": [Function],
+  "findByLabelText": [Function],
+  "findByPlaceholderText": [Function],
+  "findByRole": [Function],
+  "findByTestId": [Function],
+  "findByText": [Function],
+  "findByTitle": [Function],
+  "getAllByAltText": [Function],
+  "getAllByDisplayValue": [Function],
+  "getAllByLabelText": [Function],
+  "getAllByPlaceholderText": [Function],
+  "getAllByRole": [Function],
+  "getAllByTestId": [Function],
+  "getAllByText": [Function],
+  "getAllByTitle": [Function],
+  "getByAltText": [Function],
+  "getByDisplayValue": [Function],
+  "getByLabelText": [Function],
+  "getByPlaceholderText": [Function],
+  "getByRole": [Function],
+  "getByTestId": [Function],
+  "getByText": [Function],
+  "getByTitle": [Function],
+  "queryAllByAltText": [Function],
+  "queryAllByDisplayValue": [Function],
+  "queryAllByLabelText": [Function],
+  "queryAllByPlaceholderText": [Function],
+  "queryAllByRole": [Function],
+  "queryAllByTestId": [Function],
+  "queryAllByText": [Function],
+  "queryAllByTitle": [Function],
+  "queryByAltText": [Function],
+  "queryByDisplayValue": [Function],
+  "queryByLabelText": [Function],
+  "queryByPlaceholderText": [Function],
+  "queryByRole": [Function],
+  "queryByTestId": [Function],
+  "queryByText": [Function],
+  "queryByTitle": [Function],
+  "rerender": [Function],
+  "unmount": [Function],
+}
 `;

@@ -131,6 +131,7 @@ const FilterableSelectList = ({
       <div className="select-constructor-item-list__search-field">
         <div className="form-group">
           <select
+            data-testid="select-search-key"
             className="form-control select-constructor-item-list__select-input"
             value={currentSearchKey}
             onChange={(e: React.FormEvent<HTMLSelectElement>): void => {
@@ -155,6 +156,7 @@ const FilterableSelectList = ({
             className="select-constructor-item-list__search-icon"
           />
           <input
+            data-testid="search-input"
             type="text"
             className="form-control select-constructor-item-list__search-input"
             placeholder={`Введите ${currentSearchKey}`}
@@ -172,6 +174,7 @@ const FilterableSelectList = ({
             (item: FilterableSelectListItem, i: number): JSX.Element => {
               return (
                 <div
+                  data-testid="item"
                   key={i}
                   className="select-constructor-item-list__item"
                   onClick={() => {
@@ -201,7 +204,11 @@ const FilterableSelectList = ({
         {propsToFilter.map(
           (filterProp: string, i: number): JSX.Element => {
             return (
-              <div key={i} className="select-constructor-item-list__filter">
+              <div
+                key={i}
+                data-testid={`select-${filterProp}`}
+                className="select-constructor-item-list__filter"
+              >
                 <h2>{filterProp}</h2>
                 <Select
                   classNamePrefix="react-select"

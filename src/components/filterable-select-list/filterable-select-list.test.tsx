@@ -1,11 +1,17 @@
-// libs
 import React from "react";
-import { mount, ReactWrapper, shallow, ShallowWrapper } from "enzyme";
 import { toMatchImageSnapshot } from "jest-image-snapshot";
-import Select from "react-select/base";
-// tested components
+import {
+  render,
+  fireEvent,
+  prettyDOM,
+  getByText,
+  findByText,
+  waitForElement,
+  RenderResult,
+  screen,
+} from "@testing-library/react";
+
 import FilterableSelectList from "./filterable-select-list.component";
-// types
 import { FilterableSelectListItem } from "./filterable-select-list.types";
 // add toMatchImageSnapshot to Jest
 expect.extend({ toMatchImageSnapshot });
@@ -49,220 +55,127 @@ const mockTasks: FilterableSelectListItem[] = [
   },
 ];
 
-describe("filterableSelectList", () => {
-  const shallowWrapper: ShallowWrapper = shallow(
+const renderFilterableSelectList = (): RenderResult => {
+  return render(
     <FilterableSelectList
       items={mockTasks}
-      propsToFilter={["namespace", "subjectType", "taskSet"]}
+      propsToFilter={["namespace", "taskSet", "subjectType"]}
     />
   );
-  const mountedWrapper: ReactWrapper = mount(
-    <FilterableSelectList
-      items={mockTasks}
-      propsToFilter={["namespace", "subjectType", "taskSet"]}
-    />
-  );
-  const selectKeyInput: ShallowWrapper = shallowWrapper.find(
-    ".select-constructor-item-list__select-input"
-  );
-  const searchInput: ShallowWrapper = shallowWrapper.find(
-    ".select-constructor-item-list__search-input"
-  );
-  const getItems = function <T>(wrapper: T): T {
-    // @ts-ignore
-    return wrapper.find(".select-constructor-item-list__item");
-  };
-  const getItemName = (item: ShallowWrapper | ReactWrapper): string => {
-    return item.find("span").at(0).text();
-  };
+};
 
+const selectOptionFromReactSelect = async (
+  container: HTMLElement,
+  placeHolderText: string,
+  optionText: string
+): Promise<void> => {
+  const keyDownEvent = {
+    key: "ArrowDown",
+  };
+  const placeholder = getByText(container, placeHolderText);
+  fireEvent.keyDown(placeholder, keyDownEvent);
+  await findByText(container, optionText);
+  fireEvent.click(getByText(container, optionText));
+};
+
+const deleteTokenFromReactSelect = (
+  container: HTMLElement,
+  tokenIndex: number
+): void => {
+  fireEvent.click(container.querySelectorAll("svg")[tokenIndex]);
+};
+
+describe("FilterableSelectList", () => {
   it("matches snapshot", () => {
-    expect(shallowWrapper).toMatchSnapshot();
+    expect(renderFilterableSelectList()).toMatchSnapshot();
   });
 
   it("search field finds expected items with 'all' search key", () => {
-    selectKeyInput.simulate("change", {
-      currentTarget: {
-        value: "all",
-      },
+    const { getByTestId, getAllByTestId } = renderFilterableSelectList();
+    fireEvent.change(getByTestId("select-search-key"), {
+      currentTarget: { value: "all" },
     });
-    searchInput.simulate("change", {
-      target: {
-        value: "difficult",
-      },
+    fireEvent.change(getByTestId("search-input"), {
+      target: { value: "difficult" },
     });
-    getItems(shallowWrapper).forEach((item: ShallowWrapper) => {
-      expect(getItemName(item)).toMatch(
-        new RegExp(`${mockTasks[0].name}|${mockTasks[1].name}`)
-      );
-    });
+    expect(getAllByTestId("item")).toHaveLength(2);
+    expect(screen.getByText(mockTasks[0].name)).toBeTruthy();
+    expect(screen.getByText(mockTasks[1].name)).toBeTruthy();
   });
 
   it("search field finds expected items with specific search key 1", () => {
-    selectKeyInput.simulate("change", {
-      currentTarget: {
-        value: "all",
-      },
+    const { getByTestId, getAllByTestId } = renderFilterableSelectList();
+    fireEvent.change(getByTestId("select-search-key"), {
+      currentTarget: { value: "taskSet" },
     });
-    searchInput.simulate("change", {
-      target: {
-        value: "производные",
-      },
+    fireEvent.change(getByTestId("search-input"), {
+      target: { value: "производные" },
     });
-    const items: ShallowWrapper = getItems(shallowWrapper);
-    expect(items).toHaveLength(2);
-    items.forEach((item: ShallowWrapper) => {
-      expect(getItemName(item)).toMatch(
-        new RegExp(`${mockTasks[0].name}|${mockTasks[2].name}`)
-      );
-    });
+    expect(getAllByTestId("item")).toHaveLength(2);
+    expect(screen.getByText(mockTasks[0].name)).toBeTruthy();
+    expect(screen.getByText(mockTasks[2].name)).toBeTruthy();
   });
 
   it("search field finds expected items with specific search key 2", () => {
-    selectKeyInput.simulate("change", {
-      currentTarget: {
-        value: "namespace",
-      },
+    const { getByTestId, queryByTestId } = renderFilterableSelectList();
+    fireEvent.change(getByTestId("select-search-key"), {
+      currentTarget: { value: "namespace" },
     });
-    searchInput.simulate("change", {
-      target: {
-        value: "this namespace doesn't exist",
-      },
+    fireEvent.change(getByTestId("search-input"), {
+      target: { value: "this namespace doesn't exist" },
     });
-    expect(getItems(shallowWrapper)).toHaveLength(0);
+    expect(queryByTestId("item")).toBeNull();
   });
 
-  it("all provided filters are rendered on the page", () => {
-    expect(mountedWrapper.find(Select)).toHaveLength(3);
+  it("selected tokens provide expected items list 1", async () => {
+    const { getByTestId, getAllByTestId } = renderFilterableSelectList();
+    await selectOptionFromReactSelect(
+      getByTestId("select-namespace"),
+      "Select...",
+      "super_simple"
+    );
+    expect(getAllByTestId("item")).toHaveLength(1);
+    expect(screen.getByText(mockTasks[2].name)).toBeTruthy();
   });
 
-  it("selected tokens in filters provide expected items list 1", () => {
-    // select super_difficult namespace
-    mountedWrapper
-      .find(".react-select__dropdown-indicator")
-      .first()
-      .simulate("mouseDown", {
-        button: 0,
-      });
-    mountedWrapper.find(".react-select__option").first().simulate("click");
-    const item: ReactWrapper = getItems(mountedWrapper);
-    expect(item).toHaveLength(1);
-    expect(getItemName(item)).toMatch(mockTasks[0].name);
-    mountedWrapper.unmount().mount();
+  it("selected tokens provide expected items list 2", async () => {
+    const { getByTestId, getAllByTestId } = renderFilterableSelectList();
+    await selectOptionFromReactSelect(
+      getByTestId("select-subjectType"),
+      "Select...",
+      "множества"
+    );
+    await selectOptionFromReactSelect(
+      getByTestId("select-subjectType"),
+      "множества",
+      "производные"
+    );
+    expect(getAllByTestId("item")).toHaveLength(2);
+    expect(screen.getByText(mockTasks[0].name)).toBeTruthy();
+    expect(screen.getByText(mockTasks[2].name)).toBeTruthy();
   });
 
-  it("selected tokens in filters provide expected items list 2", () => {
-    // select множества in subjectType filter
-    mountedWrapper
-      .find(".react-select__dropdown-indicator")
-      .at(2)
-      .simulate("mouseDown", {
-        button: 0,
-      });
-    mountedWrapper.find(".react-select__option").at(2).simulate("click");
-    // select производные in subjectType filter
-    mountedWrapper
-      .find(".react-select__dropdown-indicator")
-      .at(2)
-      .simulate("mouseDown", {
-        button: 0,
-      });
-    mountedWrapper.find(".react-select__option").at(2).simulate("click");
-    const items: ReactWrapper = getItems(mountedWrapper);
-    expect(items).toHaveLength(2);
-    items.forEach((item: ReactWrapper) => {
-      expect(item.text()).toMatch(
-        new RegExp(`${mockTasks[0].name}|${mockTasks[2].name}`)
-      );
-    });
-    mountedWrapper.unmount().mount();
-  });
-
-  it("selected tokens in filters provide expected items list 3", () => {
-    // select little_bit_difficult namespace
-    mountedWrapper
-      .find(".react-select__dropdown-indicator")
-      .first()
-      .simulate("mouseDown", {
-        button: 0,
-      });
-    mountedWrapper.find(".react-select__option").at(2).simulate("click");
-    // select super_difficult namespace
-    mountedWrapper
-      .find(".react-select__dropdown-indicator")
-      .first()
-      .simulate("mouseDown", {
-        button: 0,
-      });
-    mountedWrapper.find(".react-select__option").first().simulate("click");
-    // select на подумать in taskSet
-    mountedWrapper
-      .find(".react-select__dropdown-indicator")
-      .last()
-      .simulate("mouseDown", {
-        button: 0,
-      });
-    mountedWrapper.find(".react-select__option").at(5).simulate("click");
-    // remove namespace tokens
-    mountedWrapper
-      .find(".react-select__multi-value__remove")
-      .at(1)
-      .simulate("click");
-    mountedWrapper
-      .find(".react-select__multi-value__remove")
-      .at(1)
-      .simulate("click");
-    const item: ReactWrapper = getItems(mountedWrapper);
-    expect(item).toHaveLength(1);
-    expect(getItemName(item)).toMatch(mockTasks[1].name);
-    mountedWrapper.unmount().mount();
-  });
-
-  it("possible tokens to choose are relevant due to selected tokens", () => {
-    // select на интересные задачки in taskSet
-    mountedWrapper
-      .find(".react-select__dropdown-indicator")
-      .last()
-      .simulate("mouseDown", {
-        button: 0,
-      });
-    mountedWrapper.find(".react-select__option").at(1).simulate("click");
-    // check namespace options
-    mountedWrapper
-      .find(".react-select__dropdown-indicator")
-      .first()
-      .simulate("mouseDown", {
-        button: 0,
-      });
-    mountedWrapper
-      .find(".react-select__option")
-      .forEach((item: ReactWrapper) => {
-        expect(item.text()).toMatch(
-          new RegExp(`${mockTasks[0].namespace}|${mockTasks[1].namespace}`)
-        );
-      });
-    mountedWrapper
-      .find(".react-select__dropdown-indicator")
-      .first()
-      .simulate("mouseDown", {
-        button: 0,
-      });
-    // check that taskSet options include all taskSets
-    mountedWrapper
-      .find(".react-select__dropdown-indicator")
-      .last()
-      .simulate("mouseDown", {
-        button: 0,
-      });
-    const allTaskSets: string[] = mockTasks
-      .reduce((acc: string[], item: FilterableSelectListItem) => {
-        return acc.concat([...item.taskSet]);
-      }, [])
-      .filter((ts: string, i: number, arr: string[]) => {
-        return arr.indexOf(ts) === i && ts !== "интересные задачки";
-      });
-    mountedWrapper.find(".react-select__option").forEach((ts: ReactWrapper) => {
-      expect(allTaskSets).toContain(ts.text());
-    });
+  it("selected tokens provide expected items list 3", async () => {
+    const { getByTestId, getAllByTestId } = renderFilterableSelectList();
+    await selectOptionFromReactSelect(
+      getByTestId("select-namespace"),
+      "Select...",
+      "little_bit_difficult"
+    );
+    await selectOptionFromReactSelect(
+      getByTestId("select-namespace"),
+      "little_bit_difficult",
+      "super_difficult"
+    );
+    await selectOptionFromReactSelect(
+      getByTestId("select-taskSet"),
+      "Select...",
+      "на подумать"
+    );
+    // delete all namespace tokens
+    deleteTokenFromReactSelect(getByTestId("select-namespace"), 0);
+    deleteTokenFromReactSelect(getByTestId("select-namespace"), 0);
+    expect(getAllByTestId("item")).toHaveLength(1);
+    expect(screen.getByText(mockTasks[1].name)).toBeTruthy();
   });
 });
