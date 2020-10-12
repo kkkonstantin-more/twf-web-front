@@ -1,21 +1,20 @@
+// libs
 import React from "react";
-import { toMatchImageSnapshot } from "jest-image-snapshot";
 import {
   render,
   fireEvent,
-  prettyDOM,
   getByText,
-  findByText,
-  waitForElement,
   RenderResult,
   screen,
 } from "@testing-library/react";
-
+import { toMatchImageSnapshot } from "jest-image-snapshot";
+// components
 import FilterableSelectList from "./filterable-select-list.component";
+// types
 import { FilterableSelectListItem } from "./filterable-select-list.types";
 // add toMatchImageSnapshot to Jest
 expect.extend({ toMatchImageSnapshot });
-
+// mock data
 const mockTasks: FilterableSelectListItem[] = [
   {
     name: "Запредельно сложная задача",
@@ -54,7 +53,7 @@ const mockTasks: FilterableSelectListItem[] = [
     onSelect: jest.fn().mockReturnValue(undefined),
   },
 ];
-
+// helpers
 const renderFilterableSelectList = (): RenderResult => {
   return render(
     <FilterableSelectList
@@ -63,19 +62,20 @@ const renderFilterableSelectList = (): RenderResult => {
     />
   );
 };
-
-const selectOptionFromReactSelect = async (
+/** if optionText isn't provided only triggers dropdown of options */
+const selectOptionFromReactSelect = (
   container: HTMLElement,
-  placeHolderText: string,
-  optionText: string
-): Promise<void> => {
-  const keyDownEvent = {
-    key: "ArrowDown",
-  };
-  const placeholder = getByText(container, placeHolderText);
-  fireEvent.keyDown(placeholder, keyDownEvent);
-  await findByText(container, optionText);
-  fireEvent.click(getByText(container, optionText));
+  optionText?: string
+): void => {
+  const placeholder = container.querySelector("div")?.firstChild?.firstChild;
+  if (placeholder) {
+    fireEvent.keyDown(placeholder, {
+      key: "ArrowDown",
+    });
+    if (optionText) {
+      fireEvent.click(getByText(container, optionText));
+    }
+  }
 };
 
 const deleteTokenFromReactSelect = (
@@ -127,27 +127,21 @@ describe("FilterableSelectList", () => {
     expect(queryByTestId("item")).toBeNull();
   });
 
-  it("selected tokens provide expected items list 1", async () => {
+  it("selected tokens provide expected items list 1", () => {
     const { getByTestId, getAllByTestId } = renderFilterableSelectList();
-    await selectOptionFromReactSelect(
+    selectOptionFromReactSelect(
       getByTestId("select-namespace"),
-      "Select...",
       "super_simple"
     );
     expect(getAllByTestId("item")).toHaveLength(1);
     expect(screen.getByText(mockTasks[2].name)).toBeTruthy();
   });
 
-  it("selected tokens provide expected items list 2", async () => {
+  it("selected tokens provide expected items list 2", () => {
     const { getByTestId, getAllByTestId } = renderFilterableSelectList();
-    await selectOptionFromReactSelect(
+    selectOptionFromReactSelect(getByTestId("select-subjectType"), "множества");
+    selectOptionFromReactSelect(
       getByTestId("select-subjectType"),
-      "Select...",
-      "множества"
-    );
-    await selectOptionFromReactSelect(
-      getByTestId("select-subjectType"),
-      "множества",
       "производные"
     );
     expect(getAllByTestId("item")).toHaveLength(2);
@@ -155,27 +149,50 @@ describe("FilterableSelectList", () => {
     expect(screen.getByText(mockTasks[2].name)).toBeTruthy();
   });
 
-  it("selected tokens provide expected items list 3", async () => {
+  it("selected tokens provide expected items list 3", () => {
     const { getByTestId, getAllByTestId } = renderFilterableSelectList();
-    await selectOptionFromReactSelect(
+    selectOptionFromReactSelect(
       getByTestId("select-namespace"),
-      "Select...",
       "little_bit_difficult"
     );
-    await selectOptionFromReactSelect(
+    selectOptionFromReactSelect(
       getByTestId("select-namespace"),
-      "little_bit_difficult",
       "super_difficult"
     );
-    await selectOptionFromReactSelect(
-      getByTestId("select-taskSet"),
-      "Select...",
-      "на подумать"
-    );
+    selectOptionFromReactSelect(getByTestId("select-taskSet"), "на подумать");
     // delete all namespace tokens
     deleteTokenFromReactSelect(getByTestId("select-namespace"), 0);
     deleteTokenFromReactSelect(getByTestId("select-namespace"), 0);
     expect(getAllByTestId("item")).toHaveLength(1);
     expect(screen.getByText(mockTasks[1].name)).toBeTruthy();
+  });
+
+  it("possible tokens to choose are relevant due to selected tokens", () => {
+    const { getByTestId } = renderFilterableSelectList();
+    const selectTaskSetContainer: HTMLElement = getByTestId("select-taskSet");
+    selectOptionFromReactSelect(
+      getByTestId("select-taskSet"),
+      "интересные задачки"
+    );
+    // check that all taskSet tokens are provided
+    selectOptionFromReactSelect(selectTaskSetContainer);
+    mockTasks.forEach((item: FilterableSelectListItem) => {
+      item.taskSet
+        .filter((ts: string) => ts !== "интересные задачки")
+        .forEach((ts: string) =>
+          expect(getByText(selectTaskSetContainer, ts)).toBeTruthy()
+        );
+    });
+    // check that namespaces are relevant
+    const selectNamespaceContainer: HTMLElement = getByTestId(
+      "select-namespace"
+    );
+    selectOptionFromReactSelect(selectNamespaceContainer);
+    expect(
+      getByText(selectNamespaceContainer, mockTasks[0].namespace)
+    ).toBeTruthy();
+    expect(
+      getByText(selectNamespaceContainer, mockTasks[1].namespace)
+    ).toBeTruthy();
   });
 });
