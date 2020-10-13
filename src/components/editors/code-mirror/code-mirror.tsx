@@ -31,13 +31,23 @@ const jsonlint = require("jsonlint-mod");
 // @ts-ignore
 window["jsonlint"] = jsonlint;
 
-const CodeMirrorEditor: React.FC<{ initialJSON: object }> = ({
+const CodeMirrorEditor = ({
   initialJSON,
-}) => {
+  updateExternalObj,
+}: {
+  initialJSON: any;
+  updateExternalObj?: (newVal: any) => void;
+}): JSX.Element => {
   const [editor, setEditor] = useState<any>(null);
   const [inputValue, setInputValue] = useState<string>("");
 
   const entryPoint: React.Ref<any> = useRef();
+
+  useEffect(() => {
+    if (editor) {
+      editor.setValue(JSON.stringify(initialJSON, null, 2));
+    }
+  }, [initialJSON]);
 
   useEffect(() => {
     const entryPoint = document.getElementById("entry-point");
@@ -65,6 +75,11 @@ const CodeMirrorEditor: React.FC<{ initialJSON: object }> = ({
           title: "custom error",
         }
       );
+      editor.on("change", () => {
+        if (updateExternalObj) {
+          updateExternalObj(JSON.parse(editor.getValue()));
+        }
+      });
       var marker = document.getElementById("myError");
       if (marker) {
         marker.setAttribute("class", "CodeMirror-lint-marker-error");
@@ -76,7 +91,6 @@ const CodeMirrorEditor: React.FC<{ initialJSON: object }> = ({
         setEditor(editor);
         //document.getElementById("myError");
       }
-      console.log(editor);
     }
   }, []);
 
