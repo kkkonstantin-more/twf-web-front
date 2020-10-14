@@ -1,5 +1,5 @@
 // libs and hooks
-import React from "react";
+import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 // custom hooks
 import useMockConstructorToEdit from "../hooks/use-mock-constructor-to-edit";
@@ -10,6 +10,9 @@ import {
   AllowEditValueOption,
   AllowReadValueOption,
   NamespaceConstructorInputs,
+  NamespaceConstructorMapDispatch,
+  NamespaceConstructorMapState,
+  NamespaceConstructorProps,
 } from "./namespace-constructor.types";
 // data
 import {
@@ -22,16 +25,28 @@ import { mockTaskSets } from "../task-set-constructor/task-set-constructor.mock-
 import "./namespace-constructor.styles.scss";
 import { mockNamespaces } from "./namespace-constructor.mock-data";
 
-const NamespaceConstructorComponent = (): JSX.Element => {
+import { createStructuredSelector } from "reselect";
+import { selectNamespaceJSON } from "../../redux/constructor-jsons/constructor-jsons.selectors";
+import { updateNamespaceJSON } from "../../redux/constructor-jsons/constructor-jsons.actions";
+import { connect, DispatchProp, MapDispatchToProps } from "react-redux";
+
+const NamespaceConstructorComponent = ({
+  updateNamespaceJSON,
+  namespaceJSON,
+}: NamespaceConstructorProps): JSX.Element => {
   const namespaceToEdit = useMockConstructorToEdit<NamespaceConstructorInputs>(
     mockNamespaces
   );
+
+  if (namespaceToEdit) {
+    updateNamespaceJSON(namespaceToEdit);
+  }
 
   const { register, getValues, control, watch } = useForm<
     NamespaceConstructorInputs
   >({
     mode: "onSubmit",
-    defaultValues: namespaceToEdit,
+    defaultValues: namespaceToEdit ? namespaceToEdit : namespaceJSON,
   });
 
   const allowReadValue: AllowReadValueOption = watch(
@@ -53,6 +68,9 @@ const NamespaceConstructorComponent = (): JSX.Element => {
           type="text"
           className="form-control"
           ref={register}
+          onBlur={() => {
+            updateNamespaceJSON(getValues());
+          }}
         />
       </div>
       <div className="form-group">
@@ -62,6 +80,9 @@ const NamespaceConstructorComponent = (): JSX.Element => {
           type="text"
           className="form-control"
           ref={register}
+          onBlur={() => {
+            updateNamespaceJSON(getValues());
+          }}
         />
       </div>
       <div className="form-group">
@@ -71,6 +92,9 @@ const NamespaceConstructorComponent = (): JSX.Element => {
           type="text"
           className="form-control"
           ref={register}
+          onBlur={() => {
+            updateNamespaceJSON(getValues());
+          }}
         />
       </div>
       <div className="form-group">
@@ -82,6 +106,9 @@ const NamespaceConstructorComponent = (): JSX.Element => {
           name="allowRead"
           options={allowReadOptions}
           ref={register}
+          onBlur={() => {
+            updateNamespaceJSON(getValues());
+          }}
         />
       </div>
       {allowReadValue && !allowReadValue.value && (
@@ -94,6 +121,9 @@ const NamespaceConstructorComponent = (): JSX.Element => {
             isMulti={true}
             options={usersDemoList}
             ref={register}
+            onBlur={() => {
+              updateNamespaceJSON(getValues());
+            }}
           />
         </div>
       )}
@@ -106,6 +136,9 @@ const NamespaceConstructorComponent = (): JSX.Element => {
           defaultValue={namespaceToEdit?.allowEdit || allowEditOptions[1]}
           options={allowEditOptions}
           ref={register}
+          onBlur={() => {
+            updateNamespaceJSON(getValues());
+          }}
         />
       </div>
       {allowEditValue && !allowEditValue.value && (
@@ -118,6 +151,9 @@ const NamespaceConstructorComponent = (): JSX.Element => {
             isMulti={true}
             options={usersDemoList}
             ref={register}
+            onBlur={() => {
+              updateNamespaceJSON(getValues());
+            }}
           />
         </div>
       )}
@@ -135,6 +171,9 @@ const NamespaceConstructorComponent = (): JSX.Element => {
             };
           })}
           ref={register}
+          onBlur={() => {
+            updateNamespaceJSON(getValues());
+          }}
         />
       </div>
       <button className="btn" onClick={() => console.log(getValues())}>
@@ -144,4 +183,20 @@ const NamespaceConstructorComponent = (): JSX.Element => {
   );
 };
 
-export default NamespaceConstructorComponent;
+const mapStateToProps = createStructuredSelector<any, any>({
+  namespaceJSON: selectNamespaceJSON,
+});
+
+const mapDispatchToProps = (dispatch: MapDispatchToProps<any, any>) => ({
+  updateNamespaceJSON: (namespaceJSON: NamespaceConstructorInputs) => {
+    return dispatch(updateNamespaceJSON(namespaceJSON));
+  },
+});
+
+export default connect<
+  NamespaceConstructorMapState,
+  NamespaceConstructorMapDispatch
+>(
+  mapStateToProps,
+  mapDispatchToProps
+)(NamespaceConstructorComponent);

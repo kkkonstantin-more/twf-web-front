@@ -9,9 +9,7 @@ import UsersPage from "./pages/users-page/users-page";
 import LevelInfoPage from "./pages/level-info-page/level-info-page";
 import ConstructorMenuPageComponent from "./pages/constructor-menu-page/constructor-menu-page.component";
 import SolveMathPage from "./pages/solve-math-page/solve-math-page";
-import NamespaceConstructorComponent from "./constructors/namespace-constructor/namespace-constructor.component";
-import RulePackConstructorComponent from "./constructors/rule-pack-constructor/rule-pack-constructor.component";
-import TaskSetConstructor from "./constructors/task-set-constructor/task-set-constructor.component";
+import ConstructorPage from "./pages/constructor-page/constructor-page.component";
 
 const Routes: React.FC = () => {
   return (
@@ -32,25 +30,11 @@ const Routes: React.FC = () => {
       />
       <Route
         exact
-        path={"/task-set-constructor/:code?"}
-        component={TaskSetConstructor}
-      />
-      <Route
-        exact
         path={"/constructor-menu/:activeTab?"}
         component={ConstructorMenuPageComponent}
       />
       <Route exact path={"/solve-math"} component={SolveMathPage} />
-      <Route
-        exact
-        path="/namespace-constructor/:code?"
-        component={NamespaceConstructorComponent}
-      />
-      <Route
-        exact
-        path="/rule-pack-constructor/:code?"
-        component={RulePackConstructorComponent}
-      />
+      <Route path={"/constructor"} component={ConstructorPage} />
     </Switch>
   );
 };
