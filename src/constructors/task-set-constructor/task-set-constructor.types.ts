@@ -1,3 +1,5 @@
+import { TaskConstructorInputs } from "../task-constructor/task-constructor.types";
+
 export interface TaskLinkInput {
   namespace: string;
   taskCode: string;
@@ -9,5 +11,5 @@ export interface TaskSetConstructorInputs {
   nameEn: string;
   nameRu: string;
   subjectTypes: string;
-  tasks: TaskLinkInput[];
+  tasks: TaskConstructorInputs[];
 }

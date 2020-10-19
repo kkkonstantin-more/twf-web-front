@@ -14,6 +14,16 @@ const constructorJSONsReducer = (
         ...state,
         namespace: action.payload,
       };
+    case "UPDATE_RULE_PACK_JSON":
+      return {
+        ...state,
+        rulePack: action.payload,
+      };
+    case "UPDATE_TASK_SET_JSON":
+      return {
+        ...state,
+        taskSet: action.payload,
+      };
     default:
       return state;
   }

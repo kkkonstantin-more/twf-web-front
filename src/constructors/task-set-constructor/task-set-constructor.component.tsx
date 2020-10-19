@@ -1,5 +1,5 @@
 // libs and hooks
-import React, { useEffect, useState } from "react";
+import React, { Dispatch, useEffect, useState } from "react";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 // custom hooks
 import useMockConstructorToEdit from "../hooks/use-mock-constructor-to-edit";
@@ -35,7 +35,22 @@ import {
 } from "@mdi/js";
 // styles
 import "./task-set-constructor.styles.scss";
-import CodeMirrorEditor from "../../components/editors/code-mirror/code-mirror";
+import { createStructuredSelector } from "reselect";
+import { RootState } from "../../redux/root-reducer";
+import { RulePackConstructorInputs } from "../rule-pack-constructor/rule-pack-constructor.types";
+import {
+  selectRulePackJSON,
+  selectTaskSetJSON,
+} from "../../redux/constructor-jsons/constructor-jsons.selectors";
+import {
+  UpdateRulePackJSONAction,
+  UpdateTaskSetJSONAction,
+} from "../../redux/constructor-jsons/constructor-jsons.types";
+import {
+  updateRulePackJSON,
+  updateTaskSetJSON,
+} from "../../redux/constructor-jsons/constructor-jsons.actions";
+import { connect, ConnectedProps } from "react-redux";
 
 export enum VisualizationMode {
   TABLE = "TABLE",
@@ -53,7 +68,10 @@ const filterSubjectTypes = (
   return str ? str.split(",").map((e) => ({ label: e, value: e })) : undefined;
 };
 
-const TaskSetConstructor = (): JSX.Element => {
+const TaskSetConstructor = ({
+  taskSetJSON,
+  updateTaskSetJSON,
+}: ConnectedProps<typeof connector>): JSX.Element => {
   const [showHintsBlock, setShowHintsBlock] = useState(false);
   const [startExpressionHint, setStartExpressionHint] = useState("");
   const [goalExpressionHint, setGoalExpressionHint] = useState("");
@@ -64,20 +82,28 @@ const TaskSetConstructor = (): JSX.Element => {
     mockTaskSets
   );
 
-  const tasks =
-    taskSetToEdit?.tasks.map((taskLink: TaskLinkInput) => {
-      return mockTasks[taskLink.taskCode];
-    }) || [];
+  if (taskSetToEdit) {
+    updateTaskSetJSON(taskSetToEdit);
+  }
+
+  // const tasks =
+  //   taskSetToEdit?.tasks.map((taskLink: TaskLinkInput) => {
+  //     return mockTasks[taskLink.taskCode];
+  //   }) || [];
 
   const methods = useForm({
     mode: "onSubmit",
-    defaultValues: { ...taskSetToEdit, levels: tasks },
+    defaultValues: taskSetToEdit ? { ...taskSetToEdit } : taskSetJSON,
   });
   const { register, getValues, control, reset } = methods;
   const { fields, append } = useFieldArray({
     control,
     name: "tasks",
   });
+
+  // useEffect(() => {
+  //   reset(taskSetJSON);
+  // }, [taskSetJSON]);
 
   // useEffect(() => {
   //   if (taskSetToEdit && taskSetToEdit.tasks) {
@@ -97,8 +123,8 @@ const TaskSetConstructor = (): JSX.Element => {
   const [levelNames, setLevelNames] = useState<string[]>([]);
   const currentEditedLevelRef: React.RefObject<HTMLInputElement> = React.createRef();
   const updateDemo = (index: number) => {
-    setStartExpressionHint(getValues().levels[index].startExpression);
-    setGoalExpressionHint(getValues().levels[index].goalExpression);
+    setStartExpressionHint(getValues().tasks[index].startExpression);
+    setGoalExpressionHint(getValues().tasks[index].goalExpression);
     if (!showHintsBlock) setShowHintsBlock(true);
   };
 
@@ -112,11 +138,13 @@ const TaskSetConstructor = (): JSX.Element => {
 
   // update names due to changes of fields
   useEffect(() => {
-    setLevelNames(
-      fields.map((field, i) => {
-        return getValues().levels[i].nameRu;
-      })
-    );
+    if (fields && getValues().tasks) {
+      setLevelNames(
+        fields.map((field, i) => {
+          return getValues().tasks[i].nameRu;
+        })
+      );
+    }
   }, [fields]);
 
   const [visualizationMode, setVisualizationMode] = useState<VisualizationMode>(
@@ -139,240 +167,139 @@ const TaskSetConstructor = (): JSX.Element => {
     }
   }, [mobileHintsRef]);
 
-  const [currentEditMode, setCurrentEditMode] = useState<"forms" | "editor">(
-    "forms"
-  );
-
-  const [codeMirrorJson, setCodeMirrorJson] = useState<any>({});
-
-  useEffect(() => {
-    setCodeMirrorJson(getValues());
-  }, [currentEditMode]);
-
   return (
-    <>
-      <div className="u-flex">
-        <p
-          className="u-mr-md"
-          onClick={() => {
-            setCurrentEditMode("forms");
-          }}
-        >
-          Forms
-        </p>
-        <p
-          onClick={() => {
-            setCurrentEditMode("editor");
-          }}
-        >
-          JSON
-        </p>
-      </div>
-      {currentEditMode === "editor" && (
-        <CodeMirrorEditor
-          initialJSON={codeMirrorJson}
-          updateExternalObj={(newVal: any) => reset(newVal)}
-        />
-      )}
+    <div className="create-game-page">
       <div
-        style={{ display: currentEditMode === "forms" ? "block" : "none" }}
-        className="create-game-page"
+        className="create-game-page__form-container"
+        style={{
+          width:
+            !showHintsBlock || isMobile
+              ? "100%"
+              : `calc(50% + ${hintsDeltaX}px)`,
+        }}
       >
-        <div
-          className="create-game-page__form-container"
-          style={{
-            width:
-              !showHintsBlock || isMobile
-                ? "100%"
-                : `calc(50% + ${hintsDeltaX}px)`,
-          }}
-        >
-          <div className="create-game-page__form">
-            <FormProvider {...methods}>
-              <div className="form-group">
-                <label>Task Set Space Code</label>
-                <input
-                  name="taskSetSpaceCode"
-                  type="text"
-                  className="form-control"
-                  ref={register}
-                  defaultValue={taskSetToEdit?.namespace}
-                />
-              </div>
-              <div className="form-group">
-                <label>Имя En</label>
-                <input
-                  name="nameEn"
-                  type="text"
-                  className="form-control"
-                  ref={register}
-                  defaultValue={taskSetToEdit?.nameEn}
-                />
-              </div>
-              <div className="form-group">
-                <label>Имя Ru</label>
-                <input
-                  name="nameRu"
-                  type="text"
-                  className="form-control"
-                  ref={register}
-                  defaultValue={taskSetToEdit?.nameRu}
-                />
-              </div>
-              <div className="form-group">
-                <label>Предметные области</label>
-                <Select
-                  isMulti
-                  name="subjectTypes"
-                  defaultValue={filterSubjectTypes(taskSetToEdit?.subjectTypes)}
-                  options={filterSubjectTypes(subjectTypes.join(","))}
-                  ref={register}
-                />
-                {/*<input*/}
-                {/*  name="nameRu"*/}
-                {/*  type="text"*/}
-                {/*  className="form-control"*/}
-                {/*  ref={register}*/}
-                {/*  defaultValue={taskSetToEdit?.nameRu}*/}
-                {/*/>*/}
-              </div>
+        <div className="create-game-page__form">
+          <FormProvider {...methods}>
+            {/*<div className="form-group">*/}
+            {/*  <label>Task Set Space Code</label>*/}
+            {/*  <input*/}
+            {/*    name="taskSetSpaceCode"*/}
+            {/*    type="text"*/}
+            {/*    className="form-control"*/}
+            {/*    ref={register}
+            onBlur=() => updateTaskSetJSON(getValues()*/}
+            {/*    defaultValue={taskSetToEdit?.namespace}*/}
+            {/*  />*/}
+            {/*</div>*/}
+            <div className="form-group">
+              <label>Имя En</label>
+              <input
+                name="nameEn"
+                type="text"
+                className="form-control"
+                ref={register}
+                onBlur={() => updateTaskSetJSON(getValues())}
+                defaultValue={taskSetToEdit?.nameEn}
+              />
+            </div>
+            <div className="form-group">
+              <label>Имя Ru</label>
+              <input
+                name="nameRu"
+                type="text"
+                className="form-control"
+                ref={register}
+                onBlur={() => updateTaskSetJSON(getValues())}
+                defaultValue={taskSetToEdit?.nameRu}
+              />
+            </div>
+            <div className="form-group">
+              <label>Предметные области</label>
+              <Select
+                isMulti
+                name="subjectTypes"
+                defaultValue={filterSubjectTypes(taskSetToEdit?.subjectTypes)}
+                options={filterSubjectTypes(subjectTypes.join(","))}
+                ref={register}
+                onBlur={() => updateTaskSetJSON(getValues())}
+              />
+              {/*<input*/}
+              {/*  name="nameRu"*/}
+              {/*  type="text"*/}
+              {/*  className="form-control"*/}
+              {/*  ref={register}
+              onBlur=() => updateTaskSetJSON(getValues()*/}
+              {/*  defaultValue={taskSetToEdit?.nameRu}*/}
+              {/*/>*/}
+            </div>
 
-              <div className="u-flex" style={{ alignItems: "center" }}>
-                <h3>Уровни</h3>
-                <div className="create-game-page__visualization-mode-switchers">
-                  <div
-                    className={`create-game-page__visualization-mode-switcher ${
-                      visualizationMode === VisualizationMode.LIST &&
-                      "create-game-page__visualization-mode-switcher--active"
-                    }`}
-                    onClick={() => {
-                      setVisualizationMode(VisualizationMode.LIST);
-                    }}
-                  >
-                    <Icon path={mdiFormatListBulleted} size={1.5} />
-                  </div>
-                  <div
-                    className={`create-game-page__visualization-mode-switcher ${
-                      visualizationMode === VisualizationMode.TABLE &&
-                      "create-game-page__visualization-mode-switcher--active"
-                    }`}
-                    onClick={() => {
-                      setVisualizationMode(VisualizationMode.TABLE);
-                    }}
-                  >
-                    <Icon path={mdiTableLarge} size={1.5} />
-                  </div>
+            <div className="u-flex" style={{ alignItems: "center" }}>
+              <h3>Уровни</h3>
+              <div className="create-game-page__visualization-mode-switchers">
+                <div
+                  className={`create-game-page__visualization-mode-switcher ${
+                    visualizationMode === VisualizationMode.LIST &&
+                    "create-game-page__visualization-mode-switcher--active"
+                  }`}
+                  onClick={() => {
+                    setVisualizationMode(VisualizationMode.LIST);
+                  }}
+                >
+                  <Icon path={mdiFormatListBulleted} size={1.5} />
+                </div>
+                <div
+                  className={`create-game-page__visualization-mode-switcher ${
+                    visualizationMode === VisualizationMode.TABLE &&
+                    "create-game-page__visualization-mode-switcher--active"
+                  }`}
+                  onClick={() => {
+                    setVisualizationMode(VisualizationMode.TABLE);
+                  }}
+                >
+                  <Icon path={mdiTableLarge} size={1.5} />
                 </div>
               </div>
-              <div
-                className={`${
-                  visualizationMode === VisualizationMode.TABLE
-                    ? "form-levels-table"
-                    : "form-levels-list"
-                }`}
-              >
-                {visualizationMode === VisualizationMode.LIST && (
-                  <div className="form-levels-list__select">
-                    {fields.map((field, index) => {
-                      return (
-                        <div
-                          key={field.id}
-                          onClick={() => setSelectedLevel(index)}
-                          className={`form-levels-list__select-option ${
-                            index === selectedLevel &&
-                            "form-levels-list__select-option--active"
-                          }`}
-                        >
-                          <Icon
-                            path={
-                              field.levelType === "auto" ? mdiRobot : mdiWrench
-                            }
-                            size={2}
-                            style={{ marginRight: "1rem" }}
-                          />
-                          <span>
-                            Уровень {index + 1}. {levelNames[index]}
-                          </span>
-                        </div>
-                      );
-                    })}
-                    <div className="form-levels-list__action-buttons">
-                      <button
-                        className="btn form-levels-list__action-button"
-                        onClick={() => {
-                          append({
-                            levelType: "manual",
-                          });
-                          setSelectedLevel(fields.length);
-                        }}
-                      >
-                        <Icon path={mdiPlus} size={1.2} />
-                        <span>
-                          <b>ручной уровень</b>
-                        </span>
-                      </button>
-                      <button
-                        className="btn form-levels-list__action-button"
-                        onClick={() => {
-                          append({
-                            levelType: "auto",
-                          });
-                          setSelectedLevel(fields.length);
-                        }}
-                      >
-                        <Icon path={mdiPlus} size={1.2} />
-                        <span>авто уровень</span>
-                      </button>
-                      <button
-                        className="btn form-levels-list__action-button u-mr-sm"
-                        onClick={() => {
-                          setShowSelectModal(true);
-                        }}
-                      >
-                        <Icon path={mdiPlus} size={1.2} />
-                        <span>существующий уровень</span>
-                      </button>
-                      <button
-                        className="btn form-levels-list__action-button"
-                        onClick={() => console.log(getValues())}
-                      >
-                        get values
-                      </button>
-                    </div>
-                  </div>
-                )}
-                <div
-                  className={`${
-                    visualizationMode === VisualizationMode.LIST &&
-                    "form-levels-list__selected-level"
-                  }`}
-                >
-                  {fields.map((field, index: number) => {
+            </div>
+            <div
+              className={`${
+                visualizationMode === VisualizationMode.TABLE
+                  ? "form-levels-table"
+                  : "form-levels-list"
+              }`}
+            >
+              {visualizationMode === VisualizationMode.LIST && (
+                <div className="form-levels-list__select">
+                  {fields.map((field, index) => {
                     return (
-                      <TaskConstructor
-                        key={index}
-                        levelType={fields[index].levelType}
-                        index={index}
-                        defaultValue={fields[index]}
-                        updateDemo={updateDemo}
-                        visualizationMode={visualizationMode}
-                        hidden={
-                          visualizationMode === VisualizationMode.LIST &&
-                          index !== selectedLevel
-                        }
-                        updateName={updateName}
-                      />
+                      <div
+                        key={field.id}
+                        onClick={() => setSelectedLevel(index)}
+                        className={`form-levels-list__select-option ${
+                          index === selectedLevel &&
+                          "form-levels-list__select-option--active"
+                        }`}
+                      >
+                        <Icon
+                          path={
+                            field.levelType === "auto" ? mdiRobot : mdiWrench
+                          }
+                          size={2}
+                          style={{ marginRight: "1rem" }}
+                        />
+                        <span>
+                          Уровень {index + 1}. {levelNames[index]}
+                        </span>
+                      </div>
                     );
                   })}
-                </div>
-                {visualizationMode === VisualizationMode.TABLE && (
-                  <div className="form-levels-table__action-buttons">
+                  <div className="form-levels-list__action-buttons">
                     <button
-                      className="btn form-levels-table__action-button"
+                      className="btn form-levels-list__action-button"
                       onClick={() => {
                         append({
                           levelType: "manual",
                         });
+                        setSelectedLevel(fields.length);
                       }}
                     >
                       <Icon path={mdiPlus} size={1.2} />
@@ -381,18 +308,19 @@ const TaskSetConstructor = (): JSX.Element => {
                       </span>
                     </button>
                     <button
-                      className="btn form-levels-table__action-button"
+                      className="btn form-levels-list__action-button"
                       onClick={() => {
                         append({
                           levelType: "auto",
                         });
+                        setSelectedLevel(fields.length);
                       }}
                     >
                       <Icon path={mdiPlus} size={1.2} />
                       <span>авто уровень</span>
                     </button>
                     <button
-                      className="btn form-levels-table__action-button"
+                      className="btn form-levels-list__action-button u-mr-sm"
                       onClick={() => {
                         setShowSelectModal(true);
                       }}
@@ -401,157 +329,236 @@ const TaskSetConstructor = (): JSX.Element => {
                       <span>существующий уровень</span>
                     </button>
                     <button
-                      className="btn form-levels-table__action-button"
+                      className="btn form-levels-list__action-button"
                       onClick={() => console.log(getValues())}
                     >
                       get values
                     </button>
                   </div>
-                )}
-              </div>
-            </FormProvider>
-          </div>
-          <AppModal
-            isOpen={showSelectModal}
-            close={() => setShowSelectModal(false)}
-            width="80vw"
-            height="80vh"
-          >
-            <SelectConstructorItemList
-              items={Object.keys(mockTasks).map(
-                (code: string): FilterableSelectListItem => {
-                  const { nameRu, namespace } = mockTasks[code];
-                  return {
-                    name: nameRu,
-                    namespace,
-                    code,
-                    taskSet: (() => {
-                      const arr = [
-                        "интересная игра",
-                        "очень сложно",
-                        "просто",
-                        "ЕГЭ",
-                      ];
-                      const startIdx = Math.floor(Math.random() * 4);
-                      const endIdx =
-                        Math.floor(Math.random() * 5) + startIdx + 1;
-                      return arr.slice(startIdx, endIdx);
-                    })(),
-                    subjectType: (() => {
-                      const arr = [
-                        "тригонометрия",
-                        "логарифмы",
-                        "теория вероятности",
-                        "производные",
-                      ];
-                      const startIdx = Math.floor(Math.random() * 4);
-                      const endIdx =
-                        Math.floor(Math.random() * 5) + startIdx + 1;
-                      return arr.slice(startIdx, endIdx);
-                    })(),
-                    onSelect: () => {
-                      append(mockTasks[code], true);
-                      setShowSelectModal(false);
-                      setSelectedLevel(fields.length);
-                    },
-                  };
-                }
+                </div>
               )}
-              propsToFilter={["namespace", "taskSet", "subjectType"]}
-            />
-          </AppModal>
+              <div
+                className={`${
+                  visualizationMode === VisualizationMode.LIST &&
+                  "form-levels-list__selected-level"
+                }`}
+              >
+                {fields.map((field, index: number) => {
+                  return (
+                    <TaskConstructor
+                      key={index}
+                      levelType={fields[index].levelType}
+                      index={index}
+                      defaultValue={fields[index]}
+                      updateDemo={updateDemo}
+                      visualizationMode={visualizationMode}
+                      hidden={
+                        visualizationMode === VisualizationMode.LIST &&
+                        index !== selectedLevel
+                      }
+                      updateName={updateName}
+                    />
+                  );
+                })}
+              </div>
+              {visualizationMode === VisualizationMode.TABLE && (
+                <div className="form-levels-table__action-buttons">
+                  <button
+                    className="btn form-levels-table__action-button"
+                    onClick={() => {
+                      append({
+                        levelType: "manual",
+                      });
+                    }}
+                  >
+                    <Icon path={mdiPlus} size={1.2} />
+                    <span>
+                      <b>ручной уровень</b>
+                    </span>
+                  </button>
+                  <button
+                    className="btn form-levels-table__action-button"
+                    onClick={() => {
+                      append({
+                        levelType: "auto",
+                      });
+                    }}
+                  >
+                    <Icon path={mdiPlus} size={1.2} />
+                    <span>авто уровень</span>
+                  </button>
+                  <button
+                    className="btn form-levels-table__action-button"
+                    onClick={() => {
+                      setShowSelectModal(true);
+                    }}
+                  >
+                    <Icon path={mdiPlus} size={1.2} />
+                    <span>существующий уровень</span>
+                  </button>
+                  <button
+                    className="btn form-levels-table__action-button"
+                    onClick={() => console.log(getValues())}
+                  >
+                    get values
+                  </button>
+                </div>
+              )}
+            </div>
+          </FormProvider>
         </div>
-        {/*HINTS BLOCK*/}
-        <div
-          className="create-game-page__icon"
-          onClick={() => setShowHintsBlock(!showHintsBlock)}
+        <AppModal
+          isOpen={showSelectModal}
+          close={() => setShowSelectModal(false)}
+          width="80vw"
+          height="80vh"
         >
-          <Icon
-            size={3}
-            path={showHintsBlock ? mdiCloseCircle : mdiCommentQuestion}
+          <SelectConstructorItemList
+            items={Object.keys(mockTasks).map(
+              (code: string): FilterableSelectListItem => {
+                const { nameRu, namespace } = mockTasks[code];
+                return {
+                  name: nameRu,
+                  namespace,
+                  code,
+                  taskSet: (() => {
+                    const arr = [
+                      "интересная игра",
+                      "очень сложно",
+                      "просто",
+                      "ЕГЭ",
+                    ];
+                    const startIdx = Math.floor(Math.random() * 4);
+                    const endIdx = Math.floor(Math.random() * 5) + startIdx + 1;
+                    return arr.slice(startIdx, endIdx);
+                  })(),
+                  subjectType: (() => {
+                    const arr = [
+                      "тригонометрия",
+                      "логарифмы",
+                      "теория вероятности",
+                      "производные",
+                    ];
+                    const startIdx = Math.floor(Math.random() * 4);
+                    const endIdx = Math.floor(Math.random() * 5) + startIdx + 1;
+                    return arr.slice(startIdx, endIdx);
+                  })(),
+                  onSelect: () => {
+                    append(mockTasks[code], true);
+                    setShowSelectModal(false);
+                    setSelectedLevel(fields.length);
+                  },
+                };
+              }
+            )}
+            propsToFilter={["namespace", "taskSet", "subjectType"]}
           />
-        </div>
-        <div
-          className={`create-game-page__hints-desktop ${
-            showHintsBlock && "create-game-page__hints-desktop--visible"
-          }`}
-          style={{
-            width: showHintsBlock ? `calc(50% - ${hintsDeltaX}px)` : "0",
+        </AppModal>
+      </div>
+      {/*HINTS BLOCK*/}
+      <div
+        className="create-game-page__icon"
+        onClick={() => setShowHintsBlock(!showHintsBlock)}
+      >
+        <Icon
+          size={3}
+          path={showHintsBlock ? mdiCloseCircle : mdiCommentQuestion}
+        />
+      </div>
+      <div
+        className={`create-game-page__hints-desktop ${
+          showHintsBlock && "create-game-page__hints-desktop--visible"
+        }`}
+        style={{
+          width: showHintsBlock ? `calc(50% - ${hintsDeltaX}px)` : "0",
+        }}
+      >
+        <Draggable
+          axis="x"
+          position={{
+            x: 0,
+            y: 0,
+          }}
+          defaultClassName="create-game-page__hints-desktop-dragger"
+          defaultClassNameDragging="create-game-page__hints-desktop-dragger create-game-page__hints-desktop-dragger--dragging"
+          onStop={(_, { lastX }) => {
+            setHintsDeltaX((prevState) => {
+              return prevState + lastX;
+            });
           }}
         >
-          <Draggable
-            axis="x"
-            position={{
-              x: 0,
-              y: 0,
-            }}
-            defaultClassName="create-game-page__hints-desktop-dragger"
-            defaultClassNameDragging="create-game-page__hints-desktop-dragger create-game-page__hints-desktop-dragger--dragging"
-            onStop={(_, { lastX }) => {
-              setHintsDeltaX((prevState) => {
-                return prevState + lastX;
-              });
-            }}
-          >
-            <span />
-          </Draggable>
-          <div className="create-game-page__math-quill-hint">
-            {showHintsBlock && (
-              <>
-                <h1>Как писать в TEX:</h1>
-                <img
-                  src={require("../../assets/math-quill-hint.gif")}
-                  alt="latex editor hint"
-                  width="100%"
-                  height="auto"
-                />
-              </>
-            )}
-          </div>
-          <div className="current-edited-level">
-            <h1>Редактируемый уровень:</h1>
-            <input type="text" ref={currentEditedLevelRef} />
-            <MathQuillEditor
-              inputRef={currentEditedLevelRef}
-              startingLatexExpression={`${startExpressionHint}=..=${goalExpressionHint}`}
-            />
-          </div>
-        </div>
-        <div ref={mobileHintsRef} className="create-game-page__hints-phone">
-          {isMobile && (
-            <AppModal
-              isOpen={showHintsBlock}
-              close={() => setShowHintsBlock(false)}
-            >
-              <>
-                <div className="create-game-page__math-quill-hint">
-                  {showHintsBlock && (
-                    <>
-                      <h1>Как писать в TEX:</h1>
-                      <img
-                        src={require("../../assets/math-quill-hint.gif")}
-                        alt="latex editor hint"
-                        width="100%"
-                        height="auto"
-                      />
-                    </>
-                  )}
-                </div>
-                <div className="current-edited-level">
-                  <h1>Редактируемый уровень:</h1>
-                  <input type="text" ref={currentEditedLevelRef} />
-                  <MathQuillEditor
-                    inputRef={currentEditedLevelRef}
-                    startingLatexExpression={`${startExpressionHint}=..=${goalExpressionHint}`}
-                  />
-                </div>
-              </>
-            </AppModal>
+          <span />
+        </Draggable>
+        <div className="create-game-page__math-quill-hint">
+          {showHintsBlock && (
+            <>
+              <h1>Как писать в TEX:</h1>
+              <img
+                src={require("../../assets/math-quill-hint.gif")}
+                alt="latex editor hint"
+                width="100%"
+                height="auto"
+              />
+            </>
           )}
         </div>
+        <div className="current-edited-level">
+          <h1>Редактируемый уровень:</h1>
+          <input type="text" ref={currentEditedLevelRef} />
+          <MathQuillEditor
+            inputRef={currentEditedLevelRef}
+            startingLatexExpression={`${startExpressionHint}=..=${goalExpressionHint}`}
+          />
+        </div>
       </div>
-    </>
+      <div ref={mobileHintsRef} className="create-game-page__hints-phone">
+        {isMobile && (
+          <AppModal
+            isOpen={showHintsBlock}
+            close={() => setShowHintsBlock(false)}
+          >
+            <>
+              <div className="create-game-page__math-quill-hint">
+                {showHintsBlock && (
+                  <>
+                    <h1>Как писать в TEX:</h1>
+                    <img
+                      src={require("../../assets/math-quill-hint.gif")}
+                      alt="latex editor hint"
+                      width="100%"
+                      height="auto"
+                    />
+                  </>
+                )}
+              </div>
+              <div className="current-edited-level">
+                <h1>Редактируемый уровень:</h1>
+                <input type="text" ref={currentEditedLevelRef} />
+                <MathQuillEditor
+                  inputRef={currentEditedLevelRef}
+                  startingLatexExpression={`${startExpressionHint}=..=${goalExpressionHint}`}
+                />
+              </div>
+            </>
+          </AppModal>
+        )}
+      </div>
+    </div>
   );
 };
 
-export default TaskSetConstructor;
+const mapState = createStructuredSelector<
+  RootState,
+  { taskSetJSON: TaskSetConstructorInputs }
+>({
+  taskSetJSON: selectTaskSetJSON,
+});
+
+const mapDispatch = (dispatch: Dispatch<UpdateTaskSetJSONAction>) => ({
+  updateTaskSetJSON: (taskSetJSON: TaskSetConstructorInputs) =>
+    dispatch(updateTaskSetJSON(taskSetJSON)),
+});
+
+const connector = connect(mapState, mapDispatch);
+
+export default connector(TaskSetConstructor);

@@ -57,7 +57,7 @@ const FilterableSelectList = ({
       [filterProp]:
         selectedOptions === null
           ? []
-          : selectedOptions.map((option: SelectOption) => option.value),
+          : selectedOptions.map((option: SelectOption) => option.label),
     };
     const newVisibleSortTokens: FilterableSelectListSortTokens = Object.fromEntries(
       propsToFilter.map((prop: string) => [prop, []])

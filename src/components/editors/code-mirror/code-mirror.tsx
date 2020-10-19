@@ -1,4 +1,4 @@
-import React, { createRef, useEffect, useRef, useState } from "react";
+import React, { createRef, Dispatch, useEffect, useRef, useState } from "react";
 
 // import "codemirror/lib/codemirror";
 import "codemirror/mode/javascript/javascript";
@@ -26,34 +26,77 @@ import "codemirror/addon/hint/javascript-hint";
 import "codemirror/addon/hint/show-hint";
 
 import "./code-mirror.scss";
+import {
+  ConstructorJSONsActionTypes,
+  UpdateNamespaceJSONAction,
+} from "../../../redux/constructor-jsons/constructor-jsons.types";
+import { NamespaceConstructorInputs } from "../../../constructors/namespace-constructor/namespace-constructor.types";
+import { connect, ConnectedProps, MapDispatchToProps } from "react-redux";
+import { createStructuredSelector } from "reselect";
+import {
+  selectNamespaceJSON,
+  selectRulePackJSON,
+  selectTaskSetJSON,
+} from "../../../redux/constructor-jsons/constructor-jsons.selectors";
+import {
+  updateNamespaceJSON,
+  updateRulePackJSON,
+  updateTaskSetJSON,
+} from "../../../redux/constructor-jsons/constructor-jsons.actions";
+import { ConstructorType } from "../../../pages/constructor-page/constructor-page.types";
+import { RootState } from "../../../redux/root-reducer";
+import { RulePackConstructorInputs } from "../../../constructors/rule-pack-constructor/rule-pack-constructor.types";
+import { TaskSetConstructorInputs } from "../../../constructors/task-set-constructor/task-set-constructor.types";
 
 const jsonlint = require("jsonlint-mod");
 // @ts-ignore
 window["jsonlint"] = jsonlint;
 
+export interface CodeMirrorProps {
+  constructorType: ConstructorType;
+}
+
 const CodeMirrorEditor = ({
-  initialJSON,
-  updateExternalObj,
-}: {
-  initialJSON: any;
-  updateExternalObj?: (newVal: any) => void;
-}): JSX.Element => {
+  constructorType,
+  rulePackJSON,
+  namespaceJSON,
+  taskSetJSON,
+  updateNamespaceJSON,
+  updateRulePackJSON,
+  updateTaskSetJSON,
+}: CodeMirrorProps & ConnectedProps<typeof connector>): JSX.Element => {
   const [editor, setEditor] = useState<any>(null);
   const [inputValue, setInputValue] = useState<string>("");
 
   const entryPoint: React.Ref<any> = useRef();
 
-  useEffect(() => {
-    if (editor) {
-      editor.setValue(JSON.stringify(initialJSON, null, 2));
+  const currentJSON = (() => {
+    switch (constructorType) {
+      case "namespace":
+        return namespaceJSON;
+      case "rulePack":
+        return rulePackJSON;
+      case "taskSet":
+        return taskSetJSON;
     }
-  }, [initialJSON]);
+  })();
+
+  const updateCurrentJSON = (() => {
+    switch (constructorType) {
+      case "namespace":
+        return updateNamespaceJSON;
+      case "rulePack":
+        return updateRulePackJSON;
+      case "taskSet":
+        return updateTaskSetJSON;
+    }
+  })();
 
   useEffect(() => {
     const entryPoint = document.getElementById("entry-point");
     if (entryPoint) {
       const editor = CodeMirror(entryPoint, {
-        value: JSON.stringify(initialJSON, null, 2),
+        value: JSON.stringify(currentJSON, null, 2),
         mode: "application/ld+json",
         lineNumbers: true,
         tabSize: 2,
@@ -67,104 +110,135 @@ const CodeMirrorEditor = ({
         lineWrapping: true,
         autoCloseBrackets: true,
       });
-      editor.markText(
-        { line: 5, ch: 5 },
-        { line: 7, ch: 15 },
-        {
-          className: "CodeMirror-lint-mark-error",
-          title: "custom error",
-        }
-      );
+      // editor.markText(
+      //   { line: 5, ch: 5 },
+      //   { line: 7, ch: 15 },
+      //   {
+      //     className: "CodeMirror-lint-mark-error",
+      //     title: "custom error",
+      //   }
+      // );
       editor.on("change", () => {
-        if (updateExternalObj) {
-          updateExternalObj(JSON.parse(editor.getValue()));
-        }
+        updateCurrentJSON(JSON.parse(editor.getValue()));
       });
-      var marker = document.getElementById("myError");
-      if (marker) {
-        marker.setAttribute("class", "CodeMirror-lint-marker-error");
-        marker.setAttribute("data-toggle", "tooltip");
-        marker.setAttribute("data-placement", "right");
-        marker.setAttribute("title", "Error!");
-        marker.setAttribute("id", "myError");
-        editor.setGutterMarker(6, "gutter-error", marker);
-        setEditor(editor);
-        //document.getElementById("myError");
-      }
+      //   var marker = document.getElementById("myError");
+      //   if (marker) {
+      //     marker.setAttribute("class", "CodeMirror-lint-marker-error");
+      //     marker.setAttribute("data-toggle", "tooltip");
+      //     marker.setAttribute("data-placement", "right");
+      //     marker.setAttribute("title", "Error!");
+      //     marker.setAttribute("id", "myError");
+      //     editor.setGutterMarker(6, "gutter-error", marker);
+      //     setEditor(editor);
+      //     //document.getElementById("myError");
+      //   }
     }
   }, []);
 
   return (
     <div className="code-mirror">
-      <div style={{ height: "70vh" }} ref={entryPoint} id="entry-point" />
-      <div id="myError" />
-      <div className="code-mirror__actions">
-        <h1>actions</h1>
-        {/*<button className="btn" onClick={() => editor.undo()}>*/}
-        {/*  undo (cmd + z)*/}
-        {/*</button>*/}
-        {/*<button className="btn" onClick={() => editor.redo()}>*/}
-        {/*  redo (cmd + shift+ z)*/}
-        {/*</button>*/}
-        {/*<button*/}
-        {/*  className="btn"*/}
-        {/*  onClick={() => editor.execCommand("autocomplete")}*/}
-        {/*>*/}
-        {/*  autocomplete*/}
-        {/*</button>*/}
-        {/*<button className="btn" onClick={() => editor.execCommand("find")}>*/}
-        {/*  find*/}
-        {/*</button>*/}
-        <button onClick={() => editor.setValue(JSON.stringify(initialJSON))}>
-          update text
-        </button>
-        <button onClick={() => console.log(editor.doc.getHistory())}>
-          log history
-        </button>
-        <button
-          onClick={() => {
-            editor.replaceRange("lalal", { line: 1, ch: 5 });
-          }}
-        >
-          change line
-        </button>
-        <button
-          onClick={() => {
-            console.log(editor.getLineTokens(1)[4].start);
-          }}
-        >
-          tokens
-        </button>
-        <button
-          onClick={() => {
-            console.log(editor.getSearchCursor("game").replace("12"));
-          }}
-        >
-          find gameSpace
-        </button>
-        <hr />
-        <input
-          type="text"
-          value={inputValue}
-          onChange={(e) => {
-            setInputValue(e.target.value);
-            const { start, end } = editor.getLineTokens(1)[4];
-            editor.replaceRange(
-              `"${e.target.value}"`,
-              {
-                line: 1,
-                ch: start,
-              },
-              {
-                line: 1,
-                ch: end,
-              }
-            );
-          }}
-        />
-      </div>
+      <div
+        style={{ height: "70vh", width: "100%", marginLeft: "2rem" }}
+        ref={entryPoint}
+        id="entry-point"
+      />
+      {/*<div id="myError" />*/}
+      {/*<div className="code-mirror__actions">*/}
+      {/*  <h1>actions</h1>*/}
+      {/*  /!*<button className="btn" onClick={() => editor.undo()}>*!/*/}
+      {/*  /!*  undo (cmd + z)*!/*/}
+      {/*  /!*</button>*!/*/}
+      {/*  /!*<button className="btn" onClick={() => editor.redo()}>*!/*/}
+      {/*  /!*  redo (cmd + shift+ z)*!/*/}
+      {/*  /!*</button>*!/*/}
+      {/*  /!*<button*!/*/}
+      {/*  /!*  className="btn"*!/*/}
+      {/*  /!*  onClick={() => editor.execCommand("autocomplete")}*!/*/}
+      {/*  /!*>*!/*/}
+      {/*  /!*  autocomplete*!/*/}
+      {/*  /!*</button>*!/*/}
+      {/*  /!*<button className="btn" onClick={() => editor.execCommand("find")}>*!/*/}
+      {/*  /!*  find*!/*/}
+      {/*  /!*</button>*!/*/}
+      {/*  <button onClick={() => editor.setValue(JSON.stringify(namespaceJSON))}>*/}
+      {/*    update text*/}
+      {/*  </button>*/}
+      {/*  <button onClick={() => console.log(editor.doc.getHistory())}>*/}
+      {/*    log history*/}
+      {/*  </button>*/}
+      {/*  <button*/}
+      {/*    onClick={() => {*/}
+      {/*      editor.replaceRange("lalal", { line: 1, ch: 5 });*/}
+      {/*    }}*/}
+      {/*  >*/}
+      {/*    change line*/}
+      {/*  </button>*/}
+      {/*  <button*/}
+      {/*    onClick={() => {*/}
+      {/*      console.log(editor.getLineTokens(1)[4].start);*/}
+      {/*    }}*/}
+      {/*  >*/}
+      {/*    tokens*/}
+      {/*  </button>*/}
+      {/*  <button*/}
+      {/*    onClick={() => {*/}
+      {/*      console.log(editor.getSearchCursor("game").replace("12"));*/}
+      {/*    }}*/}
+      {/*  >*/}
+      {/*    find gameSpace*/}
+      {/*  </button>*/}
+      {/*  <hr />*/}
+      {/*  <input*/}
+      {/*    type="text"*/}
+      {/*    value={inputValue}*/}
+      {/*    onChange={(e) => {*/}
+      {/*      setInputValue(e.target.value);*/}
+      {/*      const { start, end } = editor.getLineTokens(1)[4];*/}
+      {/*      editor.replaceRange(*/}
+      {/*        `"${e.target.value}"`,*/}
+      {/*        {*/}
+      {/*          line: 1,*/}
+      {/*          ch: start,*/}
+      {/*        },*/}
+      {/*        {*/}
+      {/*          line: 1,*/}
+      {/*          ch: end,*/}
+      {/*        }*/}
+      {/*      );*/}
+      {/*    }}*/}
+      {/*  />*/}
+      {/*</div>*/}
     </div>
   );
 };
 
-export default CodeMirrorEditor;
+const mapStateToProps = createStructuredSelector<
+  RootState,
+  {
+    namespaceJSON: NamespaceConstructorInputs;
+    rulePackJSON: RulePackConstructorInputs;
+    taskSetJSON: TaskSetConstructorInputs;
+  }
+>({
+  namespaceJSON: selectNamespaceJSON,
+  rulePackJSON: selectRulePackJSON,
+  taskSetJSON: selectTaskSetJSON,
+});
+
+const mapDispatchToProps = (
+  dispatch: Dispatch<ConstructorJSONsActionTypes>
+) => ({
+  updateNamespaceJSON: (namespaceJSON: NamespaceConstructorInputs) => {
+    return dispatch(updateNamespaceJSON(namespaceJSON));
+  },
+  updateTaskSetJSON: (taskSetJSON: TaskSetConstructorInputs) => {
+    return dispatch(updateTaskSetJSON(taskSetJSON));
+  },
+  updateRulePackJSON: (rulePackJSON: RulePackConstructorInputs) => {
+    return dispatch(updateRulePackJSON(rulePackJSON));
+  },
+});
+
+const connector = connect(mapStateToProps, mapDispatchToProps);
+
+export default connector(CodeMirrorEditor);

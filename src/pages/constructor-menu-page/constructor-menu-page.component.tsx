@@ -102,7 +102,7 @@ const ConstructorMenuPageComponent: React.FC = () => {
       options: [
         {
           name: "С нуля",
-          action: () => history.push("/task-set-constructor"),
+          action: () => history.push("/constructor/task-set/"),
         },
         {
           name: "На основе уже существующей",
@@ -128,7 +128,7 @@ const ConstructorMenuPageComponent: React.FC = () => {
                       return arr.slice(startIdx, endIdx);
                     })(),
                     onSelect: () => {
-                      history.push("/task-set-constructor/" + code);
+                      history.push("/constructor/task-set/" + code);
                     },
                   };
                 }
@@ -146,15 +146,15 @@ const ConstructorMenuPageComponent: React.FC = () => {
       options: [
         {
           name: mockTaskSets[3].nameRu,
-          action: () => history.push("/task-set-constructor/3"),
+          action: () => history.push("/constructor/task-set/3"),
         },
         {
           name: mockTaskSets[2].nameRu,
-          action: () => history.push("/task-set-constructor/2"),
+          action: () => history.push("/constructor/task-set/2"),
         },
         {
           name: mockTaskSets[1].nameRu,
-          action: () => history.push("/task-set-constructor/1"),
+          action: () => history.push("/constructor/task-set/1"),
         },
         {
           name: "Смотреть все",
@@ -180,7 +180,7 @@ const ConstructorMenuPageComponent: React.FC = () => {
                       return arr.slice(startIdx, endIdx);
                     })(),
                     onSelect: () => {
-                      history.push("/task-set-constructor/" + code);
+                      history.push("/constructor/task-set/" + code);
                     },
                   };
                 }
@@ -201,7 +201,7 @@ const ConstructorMenuPageComponent: React.FC = () => {
       options: [
         {
           name: "С нуля",
-          action: () => history.push("/namespace-constructor"),
+          action: () => history.push("/constructor/namespace"),
         },
         {
           name: "На основе уже существующего",
@@ -213,7 +213,7 @@ const ConstructorMenuPageComponent: React.FC = () => {
                   code,
                   name: nameRu,
                   onSelect: () => {
-                    history.push("/namespace-constructor/" + code);
+                    history.push("/constructor/namespace/" + code);
                   },
                 };
               })
@@ -229,15 +229,15 @@ const ConstructorMenuPageComponent: React.FC = () => {
       options: [
         {
           name: mockNamespaces[3].nameRu,
-          action: () => history.push("/namespace-constructor/3"),
+          action: () => history.push("/constructor/namespace/3"),
         },
         {
           name: mockNamespaces[2].nameRu,
-          action: () => history.push("/namespace-constructor/2"),
+          action: () => history.push("/constructor/namespace/2"),
         },
         {
           name: mockNamespaces[1].nameRu,
-          action: () => history.push("/namespace-constructor/1"),
+          action: () => history.push("/constructor/namespace/1"),
         },
         {
           name: "Смотреть все",
@@ -249,7 +249,7 @@ const ConstructorMenuPageComponent: React.FC = () => {
                   code,
                   name: nameRu,
                   onSelect: () => {
-                    history.push("/namespace-constructor/" + code);
+                    history.push("/constructor/namespace/" + code);
                   },
                 };
               })
@@ -299,15 +299,15 @@ const ConstructorMenuPageComponent: React.FC = () => {
       options: [
         {
           name: mockRulePacks[3].nameRu,
-          action: () => history.push("/rule-pack-constructor/3"),
+          action: () => history.push("/constructor/rule-pack/3"),
         },
         {
           name: mockRulePacks[2].nameRu,
-          action: () => history.push("/rule-pack-constructor/2"),
+          action: () => history.push("/constructor/rule-pack/2"),
         },
         {
           name: mockRulePacks[1].nameRu,
-          action: () => history.push("/rule-pack-constructor/1"),
+          action: () => history.push("/constructor/rule-pack/1"),
         },
         {
           name: "Смотреть все",
@@ -321,7 +321,7 @@ const ConstructorMenuPageComponent: React.FC = () => {
                   name: nameRu,
                   namespace,
                   onSelect: (): void => {
-                    history.push("/rule-pack-constructor/" + code);
+                    history.push("/constructor/rule-pack/" + code);
                   },
                   filterProps: [namespace],
                 };

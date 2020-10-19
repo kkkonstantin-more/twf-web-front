@@ -1,19 +1,26 @@
 // libs and hooks
-import React, { useState } from "react";
+import React, { Dispatch, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 // custom hooks
 import useMockConstructorToEdit from "../hooks/use-mock-constructor-to-edit";
 // components
 import Select from "react-select";
+import ConstructorInput from "../../components/constructor-input/constructor-input.component";
+// redux
+import { selectNamespaceJSON } from "../../redux/constructor-jsons/constructor-jsons.selectors";
+import { updateNamespaceJSON } from "../../redux/constructor-jsons/constructor-jsons.actions";
+import { connect, ConnectedProps } from "react-redux";
+import { createStructuredSelector } from "reselect";
 // types
 import {
   AllowEditValueOption,
   AllowReadValueOption,
   NamespaceConstructorInputs,
-  NamespaceConstructorMapDispatch,
-  NamespaceConstructorMapState,
-  NamespaceConstructorProps,
 } from "./namespace-constructor.types";
+import { ConstructorInputProps } from "../../components/constructor-input/construcor-input.types";
+import { SelectInput } from "../../types/react-select";
+import { RootState } from "../../redux/root-reducer";
+import { UpdateNamespaceJSONAction } from "../../redux/constructor-jsons/constructor-jsons.types";
 // data
 import {
   allowEditOptions,
@@ -21,19 +28,16 @@ import {
 } from "./namespace-constructor.data";
 import { usersDemoList } from "../../pages/constructor-menu-page/constructor-menu-page.component";
 import { mockTaskSets } from "../task-set-constructor/task-set-constructor.mock-data";
+import { mockNamespaces } from "./namespace-constructor.mock-data";
+// utils
+import { isSelectInput } from "../utils";
 // styles
 import "./namespace-constructor.styles.scss";
-import { mockNamespaces } from "./namespace-constructor.mock-data";
-
-import { createStructuredSelector } from "reselect";
-import { selectNamespaceJSON } from "../../redux/constructor-jsons/constructor-jsons.selectors";
-import { updateNamespaceJSON } from "../../redux/constructor-jsons/constructor-jsons.actions";
-import { connect, DispatchProp, MapDispatchToProps } from "react-redux";
 
 const NamespaceConstructorComponent = ({
-  updateNamespaceJSON,
   namespaceJSON,
-}: NamespaceConstructorProps): JSX.Element => {
+  updateNamespaceJSON,
+}: ConnectedProps<typeof connector>): JSX.Element => {
   const namespaceToEdit = useMockConstructorToEdit<NamespaceConstructorInputs>(
     mockNamespaces
   );
@@ -58,124 +62,124 @@ const NamespaceConstructorComponent = ({
     allowEditOptions[1]
   );
 
+  const [inputs] = useState<(ConstructorInputProps | SelectInput)[]>([
+    {
+      name: "nameEn",
+      label: "Имя en",
+      type: "text",
+      register,
+      onBlur: (): void => {
+        updateNamespaceJSON(getValues());
+      },
+    },
+    {
+      name: "nameRu",
+      label: "Имя ru",
+      type: "text",
+      register,
+      onBlur: (): void => {
+        updateNamespaceJSON(getValues());
+      },
+    },
+    {
+      name: "code",
+      label: "Код",
+      type: "text",
+      register,
+      onBlur: (): void => {
+        updateNamespaceJSON(getValues());
+      },
+    },
+    {
+      name: "allowRead",
+      label: "Доступ к чтению",
+      isMulti: false,
+      register,
+      options: allowReadOptions,
+      defaultValue: namespaceToEdit?.allowRead || allowReadOptions[0],
+      onBlur: (): void => {
+        updateNamespaceJSON(getValues());
+      },
+    },
+    {
+      name: "readGrantedUsers",
+      label: "Пользователи с правом чтения",
+      isMulti: true,
+      register,
+      options: usersDemoList,
+      onBlur: (): void => {
+        updateNamespaceJSON(getValues());
+      },
+      isRendered: !allowEditValue?.value,
+    },
+    {
+      name: "allowEdit",
+      label: "Доступ к редактированию",
+      isMulti: false,
+      register,
+      options: allowEditOptions,
+      defaultValue: namespaceToEdit?.allowEdit || allowEditOptions[1],
+      onBlur: (): void => {
+        updateNamespaceJSON(getValues());
+      },
+    },
+    {
+      name: "editGrantedUsers",
+      label: "Пользователи с правом редактирования",
+      isMulti: true,
+      register,
+      options: usersDemoList,
+      onBlur: (): void => {
+        updateNamespaceJSON(getValues());
+      },
+      isRendered: !allowReadValue?.value,
+    },
+    {
+      name: "taskSetList",
+      label: "Наборы задач",
+      isMulti: true,
+      register,
+      options: Object.keys(mockTaskSets).map((key: string) => {
+        return {
+          label: mockTaskSets[key].nameRu,
+          value: mockTaskSets[key].code,
+        };
+      }),
+      onBlur: (): void => {
+        updateNamespaceJSON(getValues());
+      },
+    },
+  ]);
+
   return (
     <div className="namespace-constructor u-container">
       <h1>Создать Namespace</h1>
-      <div className="form-group">
-        <label>Имя en</label>
-        <input
-          name="nameEn"
-          type="text"
-          className="form-control"
-          ref={register}
-          onBlur={() => {
-            updateNamespaceJSON(getValues());
-          }}
-        />
-      </div>
-      <div className="form-group">
-        <label>Имя ru</label>
-        <input
-          name="nameRu"
-          type="text"
-          className="form-control"
-          ref={register}
-          onBlur={() => {
-            updateNamespaceJSON(getValues());
-          }}
-        />
-      </div>
-      <div className="form-group">
-        <label>Код</label>
-        <input
-          name="code"
-          type="text"
-          className="form-control"
-          ref={register}
-          onBlur={() => {
-            updateNamespaceJSON(getValues());
-          }}
-        />
-      </div>
-      <div className="form-group">
-        <label>Доступ к чтению</label>
-        <Controller
-          as={Select}
-          control={control}
-          defaultValue={namespaceToEdit?.allowRead || allowReadOptions[0]}
-          name="allowRead"
-          options={allowReadOptions}
-          ref={register}
-          onBlur={() => {
-            updateNamespaceJSON(getValues());
-          }}
-        />
-      </div>
-      {allowReadValue && !allowReadValue.value && (
-        <div className="form-group">
-          <label>Ползователи с правом чтения</label>
-          <Controller
-            as={Select}
-            control={control}
-            name="readGrantedUsers"
-            isMulti={true}
-            options={usersDemoList}
-            ref={register}
-            onBlur={() => {
-              updateNamespaceJSON(getValues());
-            }}
-          />
-        </div>
+      {inputs.map(
+        (input: ConstructorInputProps | SelectInput): JSX.Element => {
+          const { name, label } = input;
+          if (isSelectInput(input)) {
+            const SelectElement: JSX.Element = (
+              <>
+                <label>{label}</label>
+                <Controller as={Select} control={control} {...input} />
+              </>
+            );
+            if (name === "readGrantedUsers") {
+              return (
+                <div key={name}>{!allowReadValue?.value && SelectElement}</div>
+              );
+            } else if (name === "editGrantedUsers") {
+              return (
+                <div key={name}>{!allowEditValue?.value && SelectElement}</div>
+              );
+            } else {
+              return <div key={name}>{SelectElement}</div>;
+            }
+          } else {
+            return <ConstructorInput key={name} {...input} />;
+          }
+        }
       )}
-      <div className="form-group">
-        <label>Доступ к редактированию</label>
-        <Controller
-          as={Select}
-          control={control}
-          name="allowEdit"
-          defaultValue={namespaceToEdit?.allowEdit || allowEditOptions[1]}
-          options={allowEditOptions}
-          ref={register}
-          onBlur={() => {
-            updateNamespaceJSON(getValues());
-          }}
-        />
-      </div>
-      {allowEditValue && !allowEditValue.value && (
-        <div className="form-group">
-          <label>Пользователи с правом редактирования</label>
-          <Controller
-            as={Select}
-            control={control}
-            name="editGrantedUsers"
-            isMulti={true}
-            options={usersDemoList}
-            ref={register}
-            onBlur={() => {
-              updateNamespaceJSON(getValues());
-            }}
-          />
-        </div>
-      )}
-      <div className="form-group">
-        <label>Наборы задач</label>
-        <Controller
-          as={Select}
-          control={control}
-          name="taskSetList"
-          isMulti={true}
-          options={Object.keys(mockTaskSets).map((key: string) => {
-            return {
-              label: mockTaskSets[key].nameRu,
-              value: mockTaskSets[key].code,
-            };
-          })}
-          ref={register}
-          onBlur={() => {
-            updateNamespaceJSON(getValues());
-          }}
-        />
-      </div>
       <button className="btn" onClick={() => console.log(getValues())}>
         get values
       </button>
@@ -183,20 +187,18 @@ const NamespaceConstructorComponent = ({
   );
 };
 
-const mapStateToProps = createStructuredSelector<any, any>({
+const mapState = createStructuredSelector<
+  RootState,
+  { namespaceJSON: NamespaceConstructorInputs }
+>({
   namespaceJSON: selectNamespaceJSON,
 });
 
-const mapDispatchToProps = (dispatch: MapDispatchToProps<any, any>) => ({
-  updateNamespaceJSON: (namespaceJSON: NamespaceConstructorInputs) => {
-    return dispatch(updateNamespaceJSON(namespaceJSON));
-  },
+const mapDispatch = (dispatch: Dispatch<UpdateNamespaceJSONAction>) => ({
+  updateNamespaceJSON: (namespaceJSON: NamespaceConstructorInputs) =>
+    dispatch(updateNamespaceJSON(namespaceJSON)),
 });
 
-export default connect<
-  NamespaceConstructorMapState,
-  NamespaceConstructorMapDispatch
->(
-  mapStateToProps,
-  mapDispatchToProps
-)(NamespaceConstructorComponent);
+const connector = connect(mapState, mapDispatch);
+
+export default connector(NamespaceConstructorComponent);

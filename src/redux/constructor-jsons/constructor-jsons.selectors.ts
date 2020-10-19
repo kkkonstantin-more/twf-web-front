@@ -10,3 +10,13 @@ export const selectNamespaceJSON = createSelector(
   [selectConstructorJSONs],
   (JSONs: ConstructorJSONs) => JSONs.namespace
 );
+
+export const selectRulePackJSON = createSelector(
+  [selectConstructorJSONs],
+  (JSONs: ConstructorJSONs) => JSONs.rulePack
+);
+
+export const selectTaskSetJSON = createSelector(
+  [selectConstructorJSONs],
+  (JSONs: ConstructorJSONs) => JSONs.taskSet
+);

@@ -17,6 +17,22 @@ const CONSTRUCTOR_JSONS_INITIAL_STATE: ConstructorJSONs = {
     readGrantedUsers: [],
     taskSetList: [],
   },
+  rulePack: {
+    code: "",
+    nameEn: "",
+    nameRu: "",
+    namespace: "",
+    rulePacks: "",
+    rules: [],
+  },
+  taskSet: {
+    code: "",
+    nameEn: "",
+    nameRu: "",
+    namespace: "",
+    subjectTypes: "",
+    tasks: [],
+  },
 };
 
 export default CONSTRUCTOR_JSONS_INITIAL_STATE;

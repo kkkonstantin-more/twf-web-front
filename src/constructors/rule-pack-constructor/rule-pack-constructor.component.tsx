@@ -1,6 +1,11 @@
 // libs and hooks
-import React from "react";
-import { FormProvider, useFieldArray, useForm } from "react-hook-form";
+import React, { Dispatch } from "react";
+import {
+  Controller,
+  FormProvider,
+  useFieldArray,
+  useForm,
+} from "react-hook-form";
 // custom hooks
 import useMockConstructorToEdit from "../hooks/use-mock-constructor-to-edit";
 // lib components
@@ -22,14 +27,41 @@ import {
 // data
 import { mockRulePacks } from "./rule-pack-constructor.mock-data";
 import { RulePackConstructorInputs } from "./rule-pack-constructor.types";
+import { ConstructorInputProps } from "../../components/constructor-input/construcor-input.types";
+import { SelectInput } from "../../types/react-select";
+import { isSelectInput } from "../utils";
+import ConstructorInput from "../../components/constructor-input/constructor-input.component";
+import { createStructuredSelector } from "reselect";
+import { RootState } from "../../redux/root-reducer";
+import { NamespaceConstructorInputs } from "../namespace-constructor/namespace-constructor.types";
+import {
+  selectNamespaceJSON,
+  selectRulePackJSON,
+} from "../../redux/constructor-jsons/constructor-jsons.selectors";
+import {
+  UpdateNamespaceJSONAction,
+  UpdateRulePackJSONAction,
+} from "../../redux/constructor-jsons/constructor-jsons.types";
+import {
+  updateNamespaceJSON,
+  updateRulePackJSON,
+} from "../../redux/constructor-jsons/constructor-jsons.actions";
+import { connect, ConnectedProps } from "react-redux";
 
-const RulePackConstructor = (): JSX.Element => {
+const RulePackConstructor = ({
+  rulePackJSON,
+  updateRulePackJSON,
+}: ConnectedProps<typeof connector>): JSX.Element => {
   const rulePackToEdit = useMockConstructorToEdit<RulePackConstructorInputs>(
     mockRulePacks
   );
 
+  if (rulePackToEdit) {
+    updateRulePackJSON(rulePackToEdit);
+  }
+
   const useFormMethods = useForm<RulePackConstructorInputs>({
-    defaultValues: rulePackToEdit,
+    defaultValues: rulePackToEdit || rulePackJSON,
   });
   const { register, getValues, control } = useFormMethods;
   const { fields, append, swap, remove } = useFieldArray({
@@ -79,7 +111,7 @@ const RulePackConstructor = (): JSX.Element => {
     {
       mdiIconPath: mdiClose,
       size: 2,
-      action(index) {
+      action(index: number) {
         if (window.confirm(`Вы точно хотите удалить правило ${index + 1}?`)) {
           remove(index);
         }
@@ -87,42 +119,55 @@ const RulePackConstructor = (): JSX.Element => {
     },
   ];
 
+  const inputs: (ConstructorInputProps | SelectInput)[] = [
+    {
+      name: "nameEn",
+      label: "Название  En",
+      type: "text",
+      register,
+      onBlur: () => updateRulePackJSON(getValues()),
+    },
+    {
+      name: "nameRu",
+      label: "Название Ru",
+      type: "text",
+      register,
+      onBlur: () => updateRulePackJSON(getValues()),
+    },
+    {
+      name: "rulePacks",
+      label: "Добавить существующие пакеты",
+      isMulti: true,
+      options: Object.keys(mockRulePacks).map((key: string) => {
+        return {
+          value: key,
+          label: mockRulePacks[key].nameRu,
+        };
+      }),
+      register,
+      onBlur: () => updateRulePackJSON(getValues()),
+    },
+  ];
+
   return (
     <FormProvider {...useFormMethods}>
       <div className="rule-pack-constructor">
         <h2>Создать RulePack</h2>
-        <div className="form-group">
-          <label>Название En</label>
-          <input
-            name="nameEn"
-            type="text"
-            className="form-control"
-            ref={register}
-          />
-        </div>
-        <div className="form-group">
-          <label>Название Ru</label>
-          <input
-            name="nameRu"
-            type="text"
-            className="form-control"
-            ref={register}
-          />
-        </div>
-        <div className="form-group">
-          <label>Добавить существующие пакеты</label>
-          <Select
-            name="rulePacks"
-            placeholder=""
-            isMulti
-            options={Object.keys(mockRulePacks).map((key: string) => {
-              return {
-                value: key,
-                label: mockRulePacks[key].nameRu,
-              };
-            })}
-          />
-        </div>
+        {inputs.map((input: ConstructorInputProps | SelectInput) => {
+          if (isSelectInput(input)) {
+            const { label } = input;
+            const inputProps = Object.assign({}, input);
+            delete inputProps.label;
+            return (
+              <div key={input.name}>
+                <label>{label}</label>
+                <Controller as={Select} control={control} {...inputProps} />
+              </div>
+            );
+          } else {
+            return <ConstructorInput key={input.name} {...input} />;
+          }
+        })}
         <h3>Правила:</h3>
         <div className="rule-pack-constructor__rules">
           {fields.map((field, i) => {
@@ -183,4 +228,18 @@ const RulePackConstructor = (): JSX.Element => {
   );
 };
 
-export default RulePackConstructor;
+const mapState = createStructuredSelector<
+  RootState,
+  { rulePackJSON: RulePackConstructorInputs }
+>({
+  rulePackJSON: selectRulePackJSON,
+});
+
+const mapDispatch = (dispatch: Dispatch<UpdateRulePackJSONAction>) => ({
+  updateRulePackJSON: (rulePackJSON: RulePackConstructorInputs) =>
+    dispatch(updateRulePackJSON(rulePackJSON)),
+});
+
+const connector = connect(mapState, mapDispatch);
+
+export default connector(RulePackConstructor);

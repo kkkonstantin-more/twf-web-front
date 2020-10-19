@@ -1,0 +1,20 @@
+@import "../../styles/abstracts/variables";
+
+.constructor-page {
+  &__editing-mode-switchers {
+    margin: 1rem 0 0 2rem;
+    display: flex;
+  }
+  &__editing-mode-switcher {
+    cursor: pointer;
+    border: 1px $color-primary-dark solid;
+    padding: 1rem;
+    &:first-child {
+      border-right: none;
+    }
+    &--active {
+      font-weight: 700;
+      color: $color-primary-dark;
+    }
+  }
+}

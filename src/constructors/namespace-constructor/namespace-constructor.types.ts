@@ -1,9 +1,10 @@
-import { UpdateNamespaceJSONAction } from "../../redux/constructor-jsons/constructor-jsons.types";
+import { SelectOption } from "../../types/react-select";
 
-export type AllowReadValueOption = {
+export interface AllowReadValueOption extends SelectOption {
   value: boolean;
   label: "Открытый" | "Закрытый";
-};
+}
+
 export type AllowEditValueOption = AllowReadValueOption;
 
 export interface NamespaceConstructorInputs {
@@ -16,18 +17,3 @@ export interface NamespaceConstructorInputs {
   editGrantedUsers: { label: string; value: string }[];
   taskSetList: { label: string; value: string }[];
 }
-
-export interface NamespaceConstructorMapDispatch {
-  updateNamespaceJSON: (
-    namespaceJSON: NamespaceConstructorInputs
-  ) => {
-    type: UpdateNamespaceJSONAction;
-  };
-}
-
-export interface NamespaceConstructorMapState {
-  namespaceJSON: NamespaceConstructorInputs;
-}
-
-export type NamespaceConstructorProps = NamespaceConstructorMapDispatch &
-  NamespaceConstructorMapState;
