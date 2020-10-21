@@ -3,7 +3,7 @@ import React, { RefObject, useEffect, useState } from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import useMergedRef from "@react-hook/merged-ref";
 // redux
-import { connect, MapDispatchToProps } from "react-redux";
+import { connect, ConnectedProps, MapDispatchToProps } from "react-redux";
 import { selectAllLevelsHiddenFields } from "../../redux/levels-hidden-fields/levels-hidden-fields.selectors";
 import { createStructuredSelector } from "reselect";
 import {
@@ -20,7 +20,10 @@ import ActionButton from "../../components/action-button/action-button.component
 // types
 import { AllLevelsHiddenFields } from "../../redux/levels-hidden-fields/levels-hidden-fields.types";
 import { VisualizationMode } from "../task-set-constructor/task-set-constructor.component";
-import { TaskConstructorProps } from "./task-constructor.types";
+import {
+  TaskConstructorInputs,
+  TaskConstructorProps,
+} from "./task-constructor.types";
 // data
 import { goalTypes } from "./task-constructor.data";
 // styles
@@ -42,17 +45,13 @@ import {
   mdiRobot,
   mdiWrench,
 } from "@mdi/js";
-
-interface MapProps {
-  toggleFieldVisibilityForAllManualLevels: (fieldName: string) => any;
-  toggleFieldVisibilityForAllAutoLevels: (fieldName: string) => any;
-}
-
-interface StateProps {
-  allLevelsHiddenFields: AllLevelsHiddenFields;
-}
-
-type Props = TaskConstructorProps & MapProps & StateProps;
+import { RootState } from "../../redux/root-reducer";
+import { TaskSetConstructorInputs } from "../task-set-constructor/task-set-constructor.types";
+import { selectTaskSetJSON } from "../../redux/constructor-jsons/constructor-jsons.selectors";
+import { updateTaskSetJSON } from "../../redux/constructor-jsons/constructor-jsons.actions";
+import { ConstructorInputProps } from "../../components/constructor-input/construcor-input.types";
+import ConstructorInput from "../../components/constructor-input/constructor-input.component";
+import { ConstructorSelectProps } from "../../components/constructor-select/constructor-select.types";
 
 const TaskConstructor = ({
   index,
@@ -65,7 +64,9 @@ const TaskConstructor = ({
   toggleFieldVisibilityForAllManualLevels,
   toggleFieldVisibilityForAllAutoLevels,
   updateName,
-}: Props) => {
+  taskSetJSON,
+  updateTaskSetJSON,
+}: TaskConstructorProps & ConnectedProps<typeof connector>) => {
   const { register, getValues, control } = useFormContext();
   const { append, swap, remove } = useFieldArray({
     name: "tasks",
@@ -130,6 +131,37 @@ const TaskConstructor = ({
     }
   }, [inputRef]);
 
+  const altInputs: ConstructorInputProps[] | ConstructorSelectProps = [
+    {
+      name: `tasks[${index}].levelType`,
+      label: "Тип уровня",
+      defaultValue: defaultValue.levelType,
+    },
+    {
+      name: `tasks[${index}].name`,
+      label: "Имя",
+      defaultValue: defaultValue.name,
+    },
+    {
+      name: `tasks[${index}].startExpression`,
+      label: "Стартовое выражение",
+      defaultValue: defaultValue.startExpression,
+      expressionInput: true,
+      isVisible: (() =>
+        levelType === "manual" && !localHiddenFields.subjectTypes)(),
+    },
+  ].map((input: any) => {
+    return {
+      ...input,
+      register: register,
+      type: "text",
+      onBlur: () => {
+        // @ts-ignore
+        updateTaskSetJSON(getValues());
+      },
+    };
+  });
+
   const inputs: { [key: string]: JSX.Element } = {
     levelType: (
       <div className="form-group">
@@ -137,7 +169,7 @@ const TaskConstructor = ({
         <input
           type="text"
           className="form-control"
-          name={`levels[${index}].levelType`}
+          name={`tasks[${index}].levelType`}
           defaultValue={defaultValue.levelType}
           ref={register()}
           readOnly
@@ -150,13 +182,17 @@ const TaskConstructor = ({
         <input
           type="text"
           className="form-control"
-          name={`levels[${index}].name`}
+          name={`tasks[${index}].name`}
           defaultValue={defaultValue.name}
           ref={useMergedRef(register(), inputRef)}
           onChange={(e): void => {
             if (updateName) {
               updateName(index, e.target.value);
             }
+          }}
+          onBlur={() => {
+            // @ts-ignore
+            updateTaskSetJSON(getValues());
           }}
         />
       </div>
@@ -181,7 +217,7 @@ const TaskConstructor = ({
           />
         )}
         <input
-          name={`levels[${index}].startExpression`}
+          name={`tasks[${index}].startExpression`}
           // className="form-control"
           type="text"
           // eslint-disable-next-line
@@ -215,7 +251,7 @@ const TaskConstructor = ({
           />
         )}
         <select
-          name={`levels[${index}].goalType`}
+          name={`tasks[${index}].goalType`}
           className="form-control"
           ref={register()}
           value={goalType}
@@ -254,7 +290,7 @@ const TaskConstructor = ({
             />
           )}
           <input
-            name={`levels[${index}].goalExpression`}
+            name={`tasks[${index}].goalExpression`}
             className="form-control"
             type="text"
             // eslint-disable-next-line
@@ -278,7 +314,7 @@ const TaskConstructor = ({
         >
           <label>Натуральное число</label>
           <input
-            name={`levels[${index}].goalNaturalNumber`}
+            name={`tasks[${index}].goalNaturalNumber`}
             className="form-control"
             type="number"
             ref={register()}
@@ -308,7 +344,7 @@ const TaskConstructor = ({
           />
         )}
         <input
-          name={`levels[${index}].subjectTypes`}
+          name={`tasks[${index}].subjectTypes`}
           className="form-control"
           type="text"
           ref={register()}
@@ -331,7 +367,7 @@ const TaskConstructor = ({
           margin="0 0 0 0.5rem"
         />
         <input
-          name={`levels[${index}].additionalPacks`}
+          name={`tasks[${index}].additionalPacks`}
           className="form-control"
           type="text"
           ref={register()}
@@ -354,7 +390,7 @@ const TaskConstructor = ({
           margin="0 0 0 0.5rem"
         />
         <input
-          name={`levels[${index}].customLevelPack`}
+          name={`tasks[${index}].customLevelPack`}
           className="form-control"
           type="text"
           ref={register()}
@@ -377,7 +413,7 @@ const TaskConstructor = ({
           margin="0 0 0 0.5rem"
         />
         <input
-          name={`levels[${index}].expectedSteps`}
+          name={`tasks[${index}].expectedSteps`}
           className="form-control"
           type="text"
           ref={register()}
@@ -406,7 +442,7 @@ const TaskConstructor = ({
           />
         )}
         <input
-          name={`levels[${index}].expectedTime`}
+          name={`tasks[${index}].expectedTime`}
           className="form-control"
           type="text"
           ref={register()}
@@ -429,7 +465,7 @@ const TaskConstructor = ({
           margin="0 0 0 0.5rem"
         />
         <input
-          name={`levels[${index}].levelNameEn`}
+          name={`tasks[${index}].levelNameEn`}
           className="form-control"
           type="text"
           ref={register()}
@@ -452,7 +488,7 @@ const TaskConstructor = ({
           margin="0 0 0 0.5rem"
         />
         <input
-          name={`levels[${index}].levelNameRu`}
+          name={`tasks[${index}].levelNameRu`}
           className="form-control"
           type="text"
           ref={register()}
@@ -475,7 +511,7 @@ const TaskConstructor = ({
           margin="0 0 0 0.5rem"
         />
         <input
-          name={`levels[${index}].levelCode`}
+          name={`tasks[${index}].levelCode`}
           className="form-control"
           type="text"
           ref={register()}
@@ -506,7 +542,7 @@ const TaskConstructor = ({
           />
         )}
         <input
-          name={`levels[${index}].autoGeneratedLevelsCount`}
+          name={`tasks[${index}].autoGeneratedLevelsCount`}
           className="form-control"
           type="text"
           ref={register()}
@@ -534,7 +570,7 @@ const TaskConstructor = ({
           />
         )}
         <input
-          name={`levels[${index}].operations`}
+          name={`tasks[${index}].operations`}
           className="form-control"
           type="text"
           ref={register()}
@@ -565,7 +601,7 @@ const TaskConstructor = ({
           />
         )}
         <input
-          name={`levels[${index}].stepsCountInterval`}
+          name={`tasks[${index}].stepsCountInterval`}
           className="form-control"
           type="text"
           ref={register()}
@@ -596,7 +632,7 @@ const TaskConstructor = ({
           />
         )}
         <input
-          name={`levels[${index}].implicitTransformationsCount`}
+          name={`tasks[${index}].implicitTransformationsCount`}
           className="form-control"
           type="text"
           ref={register()}
@@ -765,8 +801,8 @@ const TaskConstructor = ({
               <Icon path={mdiRobot} size={2} />
             </span>
           )}
-          {autoLevelBasicInputs.map((level: JSX.Element, i: number) => {
-            return <div key={i}>{level}</div>;
+          {altInputs.map((level: ConstructorInputProps, i: number) => {
+            return <ConstructorInput key={i} {...level} />;
           })}
           {autoLevelAdditionalInputs.map((level: JSX.Element, i: number) => {
             return (
@@ -786,8 +822,8 @@ const TaskConstructor = ({
               <Icon path={mdiWrench} size={2} />
             </span>
           )}
-          {manualLevelBasicInputs.map((level: JSX.Element, i: number) => {
-            return <div key={i}>{level}</div>;
+          {altInputs.map((level: ConstructorInputProps, i: number) => {
+            return <ConstructorInput key={i} {...level} />;
           })}
           {manualLevelAdditionalInputs.map((level: JSX.Element, i: number) => {
             return (
@@ -881,20 +917,29 @@ const TaskConstructor = ({
   );
 };
 
-const mapStateToProps = createStructuredSelector<any, any>({
+const mapStateToProps = createStructuredSelector<
+  RootState,
+  {
+    allLevelsHiddenFields: AllLevelsHiddenFields;
+    taskSetJSON: TaskSetConstructorInputs;
+  }
+>({
   allLevelsHiddenFields: selectAllLevelsHiddenFields,
+  taskSetJSON: selectTaskSetJSON,
 });
 
-const mapDispatchToProps: MapDispatchToProps<any, any> = (dispatch: any) => ({
+const mapDispatchToProps = (dispatch: any) => ({
   toggleFieldVisibilityForAllManualLevels: (fieldName: string) => {
     return dispatch(toggleFieldVisibilityForAllManualLevels(fieldName));
   },
   toggleFieldVisibilityForAllAutoLevels: (fieldName: string) => {
     return dispatch(toggleFieldVisibilityForAllAutoLevels(fieldName));
   },
+  updateTaskSetJSON: (taskSetJSON: TaskSetConstructorInputs) => {
+    return dispatch(updateTaskSetJSON(taskSetJSON));
+  },
 });
 
-export default connect<StateProps, MapProps, TaskConstructorProps>(
-  mapStateToProps,
-  mapDispatchToProps
-)(TaskConstructor);
+const connector = connect(mapStateToProps, mapDispatchToProps);
+
+export default connector(TaskConstructor);

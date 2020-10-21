@@ -1,4 +1,4 @@
-import { SelectOption } from "../../types/react-select";
+import { SelectOption } from "../../components/constructor-select/constructor-select.types";
 
 export interface AllowReadValueOption extends SelectOption {
   value: boolean;
@@ -13,7 +13,7 @@ export interface NamespaceConstructorInputs {
   code: string;
   allowRead: AllowReadValueOption;
   allowEdit: AllowEditValueOption;
-  readGrantedUsers: { label: string; value: string }[];
-  editGrantedUsers: { label: string; value: string }[];
-  taskSetList: { label: string; value: string }[];
+  readGrantedUsers: SelectOption[];
+  editGrantedUsers: SelectOption[];
+  taskSetList: SelectOption[];
 }

@@ -1,5 +1,5 @@
 import { ConstructorInputProps } from "../components/constructor-input/construcor-input.types";
-import { SelectInput } from "../types/react-select";
+import { ConstructorSelectProps } from "../components/constructor-select/constructor-select.types";
 
 export const filterReactSelectOptions = (options: any[]) => {
   return options.map((option: any) => {
@@ -10,7 +10,7 @@ export const filterReactSelectOptions = (options: any[]) => {
 };
 
 export const isSelectInput = (
-  input: ConstructorInputProps | SelectInput
-): input is SelectInput => {
-  return (input as SelectInput).options !== undefined;
+  input: ConstructorInputProps | ConstructorSelectProps
+): input is ConstructorSelectProps => {
+  return (input as ConstructorSelectProps).options !== undefined;
 };

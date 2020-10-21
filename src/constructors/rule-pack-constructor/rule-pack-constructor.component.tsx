@@ -28,7 +28,7 @@ import {
 import { mockRulePacks } from "./rule-pack-constructor.mock-data";
 import { RulePackConstructorInputs } from "./rule-pack-constructor.types";
 import { ConstructorInputProps } from "../../components/constructor-input/construcor-input.types";
-import { SelectInput } from "../../types/react-select";
+import { ConstructorSelectProps } from "../../components/constructor-select/constructor-select.types";
 import { isSelectInput } from "../utils";
 import ConstructorInput from "../../components/constructor-input/constructor-input.component";
 import { createStructuredSelector } from "reselect";
@@ -119,7 +119,7 @@ const RulePackConstructor = ({
     },
   ];
 
-  const inputs: (ConstructorInputProps | SelectInput)[] = [
+  const inputs: (ConstructorInputProps | ConstructorSelectProps)[] = [
     {
       name: "nameEn",
       label: "Название  En",
@@ -146,6 +146,7 @@ const RulePackConstructor = ({
       }),
       register,
       onBlur: () => updateRulePackJSON(getValues()),
+      control,
     },
   ];
 
@@ -153,7 +154,7 @@ const RulePackConstructor = ({
     <FormProvider {...useFormMethods}>
       <div className="rule-pack-constructor">
         <h2>Создать RulePack</h2>
-        {inputs.map((input: ConstructorInputProps | SelectInput) => {
+        {inputs.map((input: ConstructorInputProps | ConstructorSelectProps) => {
           if (isSelectInput(input)) {
             const { label } = input;
             const inputProps = Object.assign({}, input);

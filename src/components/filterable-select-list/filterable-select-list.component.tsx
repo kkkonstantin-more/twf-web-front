@@ -8,7 +8,7 @@ import {
   FilterableSelectListItem,
   FilterableSelectListSortTokens,
 } from "./filterable-select-list.types";
-import { SelectOption } from "../../types/react-select";
+import { SelectOption } from "../constructor-select/constructor-select.types";
 // utils
 import {
   getSelectedItems,

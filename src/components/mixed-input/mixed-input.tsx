@@ -13,12 +13,14 @@ interface MixedInputProps {
   inputRef: React.RefObject<HTMLInputElement>;
   width?: string;
   value?: string;
+  onChange?: () => void;
 }
 
 const MixedInput: React.FC<MixedInputProps> = ({
   inputRef,
   width,
   value,
+  onChange,
 }: MixedInputProps) => {
   const [currentInputFormat, setCurrentInputFormat] = useState<MathInputFormat>(
     MathInputFormat.TEX
@@ -46,6 +48,9 @@ const MixedInput: React.FC<MixedInputProps> = ({
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.value = currentValue;
+    }
+    if (onChange) {
+      onChange();
     }
   }, [currentValue]);
 

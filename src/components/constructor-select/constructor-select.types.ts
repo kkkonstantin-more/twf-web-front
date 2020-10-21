@@ -4,12 +4,15 @@ export interface SelectOption {
   label: string;
 }
 
-export interface SelectInput {
+export interface ConstructorSelectProps {
   name: string;
   label: string;
-  register: any;
+  register?: any;
   options: SelectOption[];
-  defaultValue?: SelectOption;
+  defaultValue?: SelectOption | SelectOption[];
   onBlur?: () => void;
   isMulti: boolean;
+  isRendered?: boolean;
+  isVisible?: boolean;
+  control?: any;
 }
