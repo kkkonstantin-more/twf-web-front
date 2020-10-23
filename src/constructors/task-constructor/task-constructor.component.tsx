@@ -58,7 +58,7 @@ const TaskConstructor = ({
   defaultValue,
   hidden,
   updateDemo,
-  levelType,
+  taskCreationType,
   visualizationMode,
   allLevelsHiddenFields,
   toggleFieldVisibilityForAllManualLevels,
@@ -81,7 +81,7 @@ const TaskConstructor = ({
 
   const [localHiddenFields, setLocalHiddenFields] = useState<any>(
     (() =>
-      levelType === "auto"
+      taskCreationType === "auto"
         ? allLevelsHiddenFields.autoLevelsHiddenFields
         : allLevelsHiddenFields.manualLevelsHiddenFields)()
   );
@@ -91,7 +91,7 @@ const TaskConstructor = ({
     setLocalHiddenFields((prevState: any) => {
       return { ...prevState, [fieldName]: !prevState[fieldName] };
     });
-    levelType === "auto"
+    taskCreationType === "auto"
       ? toggleFieldVisibilityForAllAutoLevels(fieldName)
       : toggleFieldVisibilityForAllManualLevels(fieldName);
   };
@@ -99,20 +99,20 @@ const TaskConstructor = ({
   const w = watch(() => selectAllLevelsHiddenFields(store.getState()));
   store.subscribe(
     w((newVal, oldVal) => {
-      const levelTypeNewVal =
-        levelType === "manual"
+      const taskCreationTypeNewVal =
+        taskCreationType === "manual"
           ? newVal.manualLevelsHiddenFields
           : newVal.autoLevelsHiddenFields;
-      const levelTypeOldVal =
-        levelType === "manual"
+      const taskCreationTypeOldVal =
+        taskCreationType === "manual"
           ? oldVal.manualLevelsHiddenFields
           : oldVal.autoLevelsHiddenFields;
-      for (const key in levelTypeNewVal) {
-        if (levelTypeOldVal[key] !== levelTypeNewVal[key]) {
+      for (const key in taskCreationTypeNewVal) {
+        if (taskCreationTypeOldVal[key] !== taskCreationTypeNewVal[key]) {
           setLocalHiddenFields((prevState: any) => {
             return {
               ...prevState,
-              [key]: levelTypeNewVal[key],
+              [key]: taskCreationTypeNewVal[key],
             };
           });
         }
@@ -133,9 +133,9 @@ const TaskConstructor = ({
 
   const altInputs: ConstructorInputProps[] | ConstructorSelectProps = [
     {
-      name: `tasks[${index}].levelType`,
+      name: `tasks[${index}].taskCreationType`,
       label: "Тип уровня",
-      defaultValue: defaultValue.levelType,
+      defaultValue: defaultValue.taskCreationType,
     },
     {
       name: `tasks[${index}].name`,
@@ -147,8 +147,13 @@ const TaskConstructor = ({
       label: "Стартовое выражение",
       defaultValue: defaultValue.startExpression,
       expressionInput: true,
-      isVisible: (() =>
-        levelType === "manual" && !localHiddenFields.subjectTypes)(),
+      isVisible:
+        taskCreationType === "manual" && !localHiddenFields.subjectTypes,
+    },
+    {
+      name: `tasks[${index}].goalType`,
+      label: "Тип цели",
+      options: goalTypes.map((item) => ({ label: item, value: item })),
     },
   ].map((input: any) => {
     return {
@@ -163,14 +168,14 @@ const TaskConstructor = ({
   });
 
   const inputs: { [key: string]: JSX.Element } = {
-    levelType: (
+    taskCreationType: (
       <div className="form-group">
         <label>Тип уровня</label>
         <input
           type="text"
           className="form-control"
-          name={`tasks[${index}].levelType`}
-          defaultValue={defaultValue.levelType}
+          name={`tasks[${index}].taskCreationType`}
+          defaultValue={defaultValue.taskCreationType}
           ref={register()}
           readOnly
         />
@@ -202,13 +207,13 @@ const TaskConstructor = ({
         className="form-group"
         style={{
           display:
-            levelType === "auto" && localHiddenFields.startExpression
+            taskCreationType === "auto" && localHiddenFields.startExpression
               ? "none"
               : "block",
         }}
       >
         <label>Стартовое выражение</label>
-        {levelType === "auto" && (
+        {taskCreationType === "auto" && (
           <ActionButton
             mdiIconPath={mdiEye}
             size={1.5}
@@ -236,13 +241,13 @@ const TaskConstructor = ({
         className="form-group"
         style={{
           display:
-            levelType === "auto" && localHiddenFields.goalType
+            taskCreationType === "auto" && localHiddenFields.goalType
               ? "none"
               : "block",
         }}
       >
         <label>Тип цели</label>
-        {defaultValue.levelType === "auto" && (
+        {defaultValue.taskCreationType === "auto" && (
           <ActionButton
             mdiIconPath={mdiEye}
             size={1.5}
@@ -271,7 +276,7 @@ const TaskConstructor = ({
           className="form-group"
           style={{
             display:
-              defaultValue.levelType === "auto" &&
+              defaultValue.taskCreationType === "auto" &&
               localHiddenFields.goalExpression
                 ? "none"
                 : goalType === "Сведение к целевому выражению" ||
@@ -281,7 +286,7 @@ const TaskConstructor = ({
           }}
         >
           <label>Конечное выражение</label>
-          {defaultValue.levelType === "auto" && (
+          {defaultValue.taskCreationType === "auto" && (
             <ActionButton
               mdiIconPath={mdiEye}
               size={1.5}
@@ -328,14 +333,14 @@ const TaskConstructor = ({
         className="form-group"
         style={{
           display:
-            defaultValue.levelType === "manual" &&
+            defaultValue.taskCreationType === "manual" &&
             localHiddenFields.subjectTypes
               ? "none"
               : "block",
         }}
       >
         <label>Предметая область</label>
-        {defaultValue.levelType === "manual" && (
+        {defaultValue.taskCreationType === "manual" && (
           <ActionButton
             mdiIconPath={mdiEye}
             size={1.5}
@@ -426,14 +431,14 @@ const TaskConstructor = ({
         className="form-group"
         style={{
           display:
-            defaultValue.levelType === "manual" &&
+            defaultValue.taskCreationType === "manual" &&
             localHiddenFields.expectedTime
               ? "none"
               : "block",
         }}
       >
         <label>Ожидаемое время</label>
-        {defaultValue.levelType === "manual" && (
+        {defaultValue.taskCreationType === "manual" && (
           <ActionButton
             mdiIconPath={mdiEye}
             size={1.5}
@@ -524,14 +529,14 @@ const TaskConstructor = ({
         className="form-group"
         style={{
           display:
-            defaultValue.levelType === "manual" &&
+            defaultValue.taskCreationType === "manual" &&
             localHiddenFields.autoGeneratedLevelsCount
               ? "none"
               : "block",
         }}
       >
         <label>Количество автогенерируемых уровней</label>
-        {defaultValue.levelType === "manual" && (
+        {defaultValue.taskCreationType === "manual" && (
           <ActionButton
             mdiIconPath={mdiEye}
             size={1.5}
@@ -555,13 +560,14 @@ const TaskConstructor = ({
         className="form-group"
         style={{
           display:
-            defaultValue.levelType === "manual" && localHiddenFields.operations
+            defaultValue.taskCreationType === "manual" &&
+            localHiddenFields.operations
               ? "none"
               : "block",
         }}
       >
         <label>Операции</label>
-        {defaultValue.levelType === "manual" && (
+        {defaultValue.taskCreationType === "manual" && (
           <ActionButton
             mdiIconPath={mdiEye}
             size={1.5}
@@ -583,14 +589,14 @@ const TaskConstructor = ({
         className="form-group"
         style={{
           display:
-            defaultValue.levelType === "manual" &&
+            defaultValue.taskCreationType === "manual" &&
             localHiddenFields.stepsCountInterval
               ? "none"
               : "block",
         }}
       >
         <label>Интервал шагов</label>
-        {defaultValue.levelType === "manual" && (
+        {defaultValue.taskCreationType === "manual" && (
           <ActionButton
             mdiIconPath={mdiEye}
             size={1.5}
@@ -614,14 +620,14 @@ const TaskConstructor = ({
         className="form-group"
         style={{
           display:
-            defaultValue.levelType === "manual" &&
+            defaultValue.taskCreationType === "manual" &&
             localHiddenFields.implicitTransformationsCount
               ? "none"
               : "block",
         }}
       >
         <label>Количество неявных преобразований</label>
-        {defaultValue.levelType === "manual" && (
+        {defaultValue.taskCreationType === "manual" && (
           <ActionButton
             mdiIconPath={mdiEye}
             size={1.5}
@@ -699,7 +705,7 @@ const TaskConstructor = ({
       action() {
         append({
           ...getValues().levels[index],
-          levelType: defaultValue.levelType,
+          taskCreationType: defaultValue.taskCreationType,
         });
       },
     },
@@ -794,7 +800,7 @@ const TaskConstructor = ({
       {visualizationMode === VisualizationMode.TABLE && (
         <div className="level-form__level-number">{index + 1}.</div>
       )}
-      {defaultValue.levelType === "auto" ? (
+      {defaultValue.taskCreationType === "auto" ? (
         <>
           {visualizationMode === VisualizationMode.TABLE && (
             <span className="level-form__level-type-icon">
@@ -878,7 +884,7 @@ const TaskConstructor = ({
           </tr>
           {Object.keys(
             (() =>
-              levelType === "auto"
+              taskCreationType === "auto"
                 ? allLevelsHiddenFields.autoLevelsHiddenFields
                 : allLevelsHiddenFields.manualLevelsHiddenFields)()
           ).map((key: string) => {

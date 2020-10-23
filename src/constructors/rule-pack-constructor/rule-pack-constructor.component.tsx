@@ -47,6 +47,10 @@ import {
   updateRulePackJSON,
 } from "../../redux/constructor-jsons/constructor-jsons.actions";
 import { connect, ConnectedProps } from "react-redux";
+import ConstructorForm from "../../components/constructor-form/constructor-form.component";
+import { ActionButtonProps } from "../../components/action-button/action-button.types";
+import { RuleConstructorInputs } from "../rule-constructor/rule-constructor.types";
+import CONSTRUCTOR_JSONS_INITIAL_STATE from "../../redux/constructor-jsons/constructor-jsons.state";
 
 const RulePackConstructor = ({
   rulePackJSON,
@@ -56,24 +60,27 @@ const RulePackConstructor = ({
     mockRulePacks
   );
 
-  if (rulePackToEdit) {
-    updateRulePackJSON(rulePackToEdit);
-  }
+  const defaultValues: RulePackConstructorInputs =
+    rulePackToEdit && rulePackJSON === CONSTRUCTOR_JSONS_INITIAL_STATE.rulePack
+      ? rulePackToEdit
+      : rulePackJSON;
+
+  updateRulePackJSON(defaultValues);
 
   const useFormMethods = useForm<RulePackConstructorInputs>({
-    defaultValues: rulePackToEdit || rulePackJSON,
+    mode: "onSubmit",
+    defaultValues,
   });
   const { register, getValues, control } = useFormMethods;
-  const { fields, append, swap, remove } = useFieldArray({
-    control,
-    name: "rules",
-  });
 
-  const actionButtonsLeft: {
-    mdiIconPath: string;
-    action: (index: number) => any;
-    size: number;
-  }[] = [
+  const { fields, append, swap, remove } = useFieldArray<RuleConstructorInputs>(
+    {
+      control,
+      name: "rules",
+    }
+  );
+
+  const actionButtonsLeft: ActionButtonProps[] = [
     {
       mdiIconPath: mdiContentCopy,
       size: 1.5,
@@ -103,11 +110,7 @@ const RulePackConstructor = ({
     },
   ];
 
-  const actionButtonsRight: {
-    mdiIconPath: string;
-    action: (index: number) => any;
-    size: number;
-  }[] = [
+  const actionButtonsRight: ActionButtonProps[] = [
     {
       mdiIconPath: mdiClose,
       size: 2,
@@ -124,15 +127,11 @@ const RulePackConstructor = ({
       name: "nameEn",
       label: "Название  En",
       type: "text",
-      register,
-      onBlur: () => updateRulePackJSON(getValues()),
     },
     {
       name: "nameRu",
       label: "Название Ru",
       type: "text",
-      register,
-      onBlur: () => updateRulePackJSON(getValues()),
     },
     {
       name: "rulePacks",
@@ -144,9 +143,7 @@ const RulePackConstructor = ({
           label: mockRulePacks[key].nameRu,
         };
       }),
-      register,
-      onBlur: () => updateRulePackJSON(getValues()),
-      control,
+      defaultValue: rulePackToEdit?.rulePacks || rulePackJSON.rulePacks,
     },
   ];
 
@@ -154,21 +151,14 @@ const RulePackConstructor = ({
     <FormProvider {...useFormMethods}>
       <div className="rule-pack-constructor">
         <h2>Создать RulePack</h2>
-        {inputs.map((input: ConstructorInputProps | ConstructorSelectProps) => {
-          if (isSelectInput(input)) {
-            const { label } = input;
-            const inputProps = Object.assign({}, input);
-            delete inputProps.label;
-            return (
-              <div key={input.name}>
-                <label>{label}</label>
-                <Controller as={Select} control={control} {...inputProps} />
-              </div>
-            );
-          } else {
-            return <ConstructorInput key={input.name} {...input} />;
-          }
-        })}
+        <ConstructorForm
+          inputs={inputs}
+          register={register}
+          control={control}
+          onBlur={() => {
+            updateRulePackJSON(getValues());
+          }}
+        />
         <h3>Правила:</h3>
         <div className="rule-pack-constructor__rules">
           {fields.map((field, i) => {
@@ -213,7 +203,18 @@ const RulePackConstructor = ({
             <button
               className="btn u-mr-sm"
               onClick={() => {
-                append({});
+                append({
+                  right: "",
+                  left: "",
+                  matchJumbledAndNested: {
+                    value: true,
+                    label: "да",
+                  },
+                  basedOnTaskContext: {
+                    value: true,
+                    label: "да",
+                  },
+                });
               }}
             >
               <Icon path={mdiPlus} size={1.2} />

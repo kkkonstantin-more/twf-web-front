@@ -19,7 +19,7 @@ const ConstructorForm = ({
   onBlur,
 }: ConstructorFormProps): JSX.Element => {
   return (
-    <div>
+    <>
       {inputs.map(
         (
           input: ConstructorInputProps | ConstructorSelectProps
@@ -47,7 +47,7 @@ const ConstructorForm = ({
           }
         }
       )}
-    </div>
+    </>
   );
 };
 

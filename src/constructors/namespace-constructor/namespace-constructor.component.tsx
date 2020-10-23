@@ -10,6 +10,7 @@ import { selectNamespaceJSON } from "../../redux/constructor-jsons/constructor-j
 import { updateNamespaceJSON } from "../../redux/constructor-jsons/constructor-jsons.actions";
 import { connect, ConnectedProps } from "react-redux";
 import { createStructuredSelector } from "reselect";
+import CONSTRUCTOR_JSONS_INITIAL_STATE from "../../redux/constructor-jsons/constructor-jsons.state";
 // types
 import {
   AllowEditValueOption,
@@ -41,19 +42,24 @@ const NamespaceConstructorComponent = ({
     mockNamespaces
   );
 
-  if (namespaceToEdit) {
-    updateNamespaceJSON(namespaceToEdit);
-  }
+  const defaultValues: NamespaceConstructorInputs =
+    namespaceToEdit &&
+    namespaceJSON === CONSTRUCTOR_JSONS_INITIAL_STATE.namespace
+      ? namespaceToEdit
+      : namespaceJSON;
+
+  updateNamespaceJSON(defaultValues);
 
   const { register, getValues, control, watch } = useForm<
     NamespaceConstructorInputs
   >({
     mode: "onSubmit",
-    defaultValues: namespaceToEdit ? namespaceToEdit : namespaceJSON,
+    defaultValues,
   });
 
-  // making these values dynamic with react-hook-form watch function
-  // in order to render or not render dependent fields
+  // making these values dynamic with react-hook-form's watch function
+  // in order to render or not render dependent fields:
+  // readGrantedUsers, editGrantedUsers
   const allowReadValue: AllowReadValueOption = watch("allowRead");
   const allowEditValue: AllowEditValueOption = watch("allowEdit");
 
@@ -78,15 +84,14 @@ const NamespaceConstructorComponent = ({
       label: "Доступ к чтению",
       isMulti: false,
       options: allowReadOptions,
-      defaultValue: namespaceToEdit?.allowRead || namespaceJSON.allowRead,
+      defaultValue: defaultValues.allowRead,
     },
     {
       name: "readGrantedUsers",
       label: "Пользователи с правом чтения",
       isMulti: true,
       options: usersDemoList,
-      defaultValue:
-        namespaceToEdit?.readGrantedUsers || namespaceJSON.readGrantedUsers,
+      defaultValue: defaultValues.readGrantedUsers,
       isRendered: !allowReadValue.value,
     },
     {
@@ -94,15 +99,14 @@ const NamespaceConstructorComponent = ({
       label: "Доступ к редактированию",
       isMulti: false,
       options: allowEditOptions,
-      defaultValue: namespaceToEdit?.allowEdit || namespaceJSON.allowEdit,
+      defaultValue: defaultValues.allowEdit,
     },
     {
       name: "editGrantedUsers",
       label: "Пользователи с правом редактирования",
       isMulti: true,
       options: usersDemoList,
-      defaultValue:
-        namespaceToEdit?.editGrantedUsers || namespaceJSON.editGrantedUsers,
+      defaultValue: defaultValues.editGrantedUsers,
       isRendered: !allowEditValue.value,
     },
     {
@@ -115,12 +119,12 @@ const NamespaceConstructorComponent = ({
           value: mockTaskSets[key].code,
         };
       }),
-      defaultValue: namespaceToEdit?.taskSetList || namespaceJSON.taskSetList,
+      defaultValue: defaultValues.taskSetList,
     },
   ];
 
   return (
-    <div className="namespace-constructor u-container">
+    <div className="namespace-constructor">
       <h1>Создать Namespace</h1>
       <ConstructorForm
         inputs={inputs}
@@ -137,6 +141,7 @@ const NamespaceConstructorComponent = ({
   );
 };
 
+// connecting redux props
 const mapState = createStructuredSelector<
   RootState,
   { namespaceJSON: NamespaceConstructorInputs }

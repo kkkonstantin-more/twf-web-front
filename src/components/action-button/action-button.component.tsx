@@ -1,18 +1,14 @@
 import React from "react";
 import Icon from "@mdi/react";
 import "./action-button.styles.scss";
+import { ActionButtonProps } from "./action-button.types";
 
 const ActionButton = ({
   action,
   mdiIconPath,
   size,
   margin,
-}: {
-  mdiIconPath: string;
-  size: number;
-  action: () => any;
-  margin?: string;
-}): JSX.Element => {
+}: ActionButtonProps): JSX.Element => {
   return (
     <button
       className="action-button"

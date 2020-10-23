@@ -8,7 +8,7 @@ export interface TaskConstructorInputs {
   code: string;
   goalPattern: string;
   namespace: string;
-  levelType: TaskCreationType;
+  taskCreationType: TaskCreationType;
   startExpression: string;
   goalType: string;
   goalExpression: string;
@@ -28,7 +28,7 @@ export interface TaskConstructorInputs {
 export interface TaskConstructorProps {
   index: number;
   defaultValue: any;
-  levelType: TaskCreationType;
+  taskCreationType: TaskCreationType;
   updateDemo: (index: number) => void;
   visualizationMode: VisualizationMode;
   hidden?: boolean;

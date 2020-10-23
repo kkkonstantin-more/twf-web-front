@@ -1,128 +1,121 @@
 // libs and hooks
-import React, { useEffect, useState } from "react";
+import React, { Dispatch, useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 import useMergedRef from "@react-hook/merged-ref";
 // components
 import Select from "react-select";
 import MixedInput from "../../components/mixed-input/mixed-input";
 // types
-import { RuleConstructorProps } from "./rule-constructor.types";
+import {
+  RuleConstructorInputs,
+  RuleConstructorProps,
+} from "./rule-constructor.types";
 // styles
 import "./rule-constructor.styles.scss";
+import { createStructuredSelector } from "reselect";
+import { RootState } from "../../redux/root-reducer";
+import { NamespaceConstructorInputs } from "../namespace-constructor/namespace-constructor.types";
+import {
+  selectNamespaceJSON,
+  selectRulePackJSON,
+} from "../../redux/constructor-jsons/constructor-jsons.selectors";
+import {
+  UpdateNamespaceJSONAction,
+  UpdateRulePackJSONAction,
+} from "../../redux/constructor-jsons/constructor-jsons.types";
+import {
+  updateNamespaceJSON,
+  updateRulePackJSON,
+} from "../../redux/constructor-jsons/constructor-jsons.actions";
+import { connect, ConnectedProps } from "react-redux";
+import { RulePackConstructorInputs } from "../rule-pack-constructor/rule-pack-constructor.types";
+import { ConstructorInputProps } from "../../components/constructor-input/construcor-input.types";
+import { ConstructorSelectProps } from "../../components/constructor-select/constructor-select.types";
+import ConstructorForm from "../../components/constructor-form/constructor-form.component";
 
-const RuleConstructor = ({ index, defaultValue }: RuleConstructorProps) => {
-  const { register } = useFormContext();
+const RuleConstructor = ({
+  index,
+  defaultValue,
+  rulePackJSON,
+  updateRulePackJSON,
+}: RuleConstructorProps & ConnectedProps<typeof connector>) => {
+  // const [mixedInputWidth, setMixedInputWidth] = useState<number>(0);
+  const { register, getValues, control } = useFormContext();
 
-  const [mixedInputWidth, setMixedInputWidth] = useState<number>(0);
+  const inputs: (ConstructorInputProps | ConstructorSelectProps)[] = [
+    {
+      name: `rules[${index}].left`,
+      label: "Левая часть",
+      type: "text",
+      expressionInput: true,
+      defaultValue: defaultValue.left,
+    },
+    {
+      name: `rules[${index}].right`,
+      label: "Правая часть",
+      type: "text",
+      expressionInput: true,
+      defaultValue: defaultValue.right,
+    },
+    {
+      name: `rules[${index}].basedOnTaskContext`,
+      label: "Based on task context",
+      type: "text",
+      options: [
+        { value: true, label: "да" },
+        { value: false, label: "нет" },
+      ],
+      defaultValue: defaultValue.basedOnTaskContext,
+    },
+    {
+      name: `rules[${index}].matchJumbledAndNested`,
+      label: "Match jumbled and nested",
+      type: "text",
+      options: [
+        { value: true, label: "да" },
+        { value: false, label: "нет" },
+      ],
+      defaultValue: defaultValue.matchJumbledAndNested,
+    },
+  ];
 
-  const leftInputRef: React.RefObject<HTMLInputElement> = React.createRef();
-  const rightInputRef: React.RefObject<HTMLInputElement> = React.createRef();
-
-  const [basedOnTaskContext, setBasedOnTaskContext] = useState<{
-    label: string;
-    value: boolean;
-  }>(
-    defaultValue.basedOnTaskContext !== undefined
-      ? {
-          label: defaultValue.basedOnTaskContext ? "да" : "нет",
-          value: defaultValue.basedOnTaskContext,
-        }
-      : {
-          label: "да",
-          value: true,
-        }
-  );
-
-  const [matchJumbledAndNested, setMatchJumbledAndNested] = useState<{
-    label: string;
-    value: boolean;
-  }>(
-    defaultValue.basedOnTaskContext !== undefined
-      ? {
-          label: defaultValue.matchJumbledAndNested ? "да" : "нет",
-          value: defaultValue.matchJumbledAndNested,
-        }
-      : {
-          label: "да",
-          value: true,
-        }
-  );
-
-  useEffect(() => {
-    if (leftInputRef.current) {
-      const width = window.getComputedStyle(leftInputRef.current, null);
-      setMixedInputWidth(
-        parseFloat(width.getPropertyValue("width").slice(0, -2))
-      );
-    }
-  }, [leftInputRef]);
+  // useEffect(() => {
+  //   if (leftInputRef.current) {
+  //     const width = window.getComputedStyle(leftInputRef.current, null);
+  //     setMixedInputWidth(
+  //       parseFloat(width.getPropertyValue("width").slice(0, -2))
+  //     );
+  //   }
+  // }, [leftInputRef]);
 
   return (
     <div className="rule-constructor">
-      <div className="form-group">
-        <label>Левая часть</label>
-        <input
-          type="text"
-          name={`rules[${index}].left`}
-          ref={useMergedRef(register(), leftInputRef)}
-          defaultValue={defaultValue.left}
-        />
-        <MixedInput
-          value={defaultValue.left}
-          inputRef={leftInputRef}
-          width={mixedInputWidth + "px"}
-        />
-      </div>
-      <div className="form-group">
-        <label>Правая часть</label>
-        <input
-          type="text"
-          name={`rules[${index}].right`}
-          ref={useMergedRef(register(), rightInputRef)}
-          defaultValue={defaultValue.left}
-        />
-        <MixedInput
-          value={defaultValue.right}
-          inputRef={rightInputRef}
-          width={mixedInputWidth + "px"}
-        />
-      </div>
-      <div className="form-group rule-constructor__select">
-        <label>Based on task context</label>
-        <Select
-          value={basedOnTaskContext}
-          name="basedOnTaskContext"
-          options={[
-            { value: true, label: "да" },
-            { value: false, label: "нет" },
-          ]}
-          onChange={() => {
-            setBasedOnTaskContext({
-              value: !basedOnTaskContext.value,
-              label: basedOnTaskContext.label === "да" ? "нет" : "да",
-            });
-          }}
-        />
-      </div>
-      <div className="form-group rule-constructor__select">
-        <label>Match jumbled and nested</label>
-        <Select
-          value={matchJumbledAndNested}
-          name="matchJumbledAndNested"
-          options={[
-            { value: true, label: "да" },
-            { value: false, label: "нет" },
-          ]}
-          onChange={() => {
-            setMatchJumbledAndNested({
-              value: !matchJumbledAndNested.value,
-              label: matchJumbledAndNested.label === "да" ? "нет" : "да",
-            });
-          }}
-        />
-      </div>
+      <ConstructorForm
+        inputs={inputs}
+        // @ts-ignore
+        register={register}
+        onBlur={() => {
+          // @ts-ignore
+          updateRulePackJSON(getValues());
+        }}
+        control={control}
+      />
     </div>
   );
 };
 
-export default RuleConstructor;
+const mapState = createStructuredSelector<
+  RootState,
+  { rulePackJSON: RulePackConstructorInputs }
+>({
+  rulePackJSON: selectRulePackJSON,
+});
+
+const mapDispatch = (dispatch: Dispatch<UpdateRulePackJSONAction>) => ({
+  updateRulePackJSON: (rulePackJSON: RulePackConstructorInputs) =>
+    dispatch(updateRulePackJSON(rulePackJSON)),
+});
+
+const connector = connect(mapState, mapDispatch);
+
+export default connector(RuleConstructor);

@@ -22,7 +22,7 @@ const CONSTRUCTOR_JSONS_INITIAL_STATE: ConstructorJSONs = {
     nameEn: "",
     nameRu: "",
     namespace: "",
-    rulePacks: "",
+    rulePacks: [],
     rules: [],
   },
   taskSet: {

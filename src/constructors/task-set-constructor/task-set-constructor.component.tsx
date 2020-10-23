@@ -51,6 +51,10 @@ import {
   updateTaskSetJSON,
 } from "../../redux/constructor-jsons/constructor-jsons.actions";
 import { connect, ConnectedProps } from "react-redux";
+import CONSTRUCTOR_JSONS_INITIAL_STATE from "../../redux/constructor-jsons/constructor-jsons.state";
+import { ConstructorInputProps } from "../../components/constructor-input/construcor-input.types";
+import { ConstructorSelectProps } from "../../components/constructor-select/constructor-select.types";
+import ConstructorForm from "../../components/constructor-form/constructor-form.component";
 
 export enum VisualizationMode {
   TABLE = "TABLE",
@@ -82,9 +86,12 @@ const TaskSetConstructor = ({
     mockTaskSets
   );
 
-  if (taskSetToEdit) {
-    updateTaskSetJSON(taskSetToEdit);
-  }
+  const defaultValues: TaskSetConstructorInputs =
+    taskSetToEdit && taskSetJSON === CONSTRUCTOR_JSONS_INITIAL_STATE.taskSet
+      ? taskSetToEdit
+      : taskSetJSON;
+
+  updateTaskSetJSON(defaultValues);
 
   // const tasks =
   //   taskSetToEdit?.tasks.map((taskLink: TaskLinkInput) => {
@@ -93,7 +100,7 @@ const TaskSetConstructor = ({
 
   const methods = useForm({
     mode: "onSubmit",
-    defaultValues: taskSetToEdit ? { ...taskSetToEdit } : taskSetJSON,
+    defaultValues,
   });
   const { register, getValues, control, reset } = methods;
   const { fields, append } = useFieldArray({
@@ -167,10 +174,33 @@ const TaskSetConstructor = ({
     }
   }, [mobileHintsRef]);
 
+  const inputs: (ConstructorInputProps | ConstructorSelectProps)[] = [
+    {
+      name: "nameEn",
+      label: "Имя en",
+      type: "text",
+    },
+    {
+      name: "nameRu",
+      label: "Имя ru",
+      type: "text",
+    },
+    {
+      name: "code",
+      label: "Код",
+      type: "text",
+    },
+    {
+      name: "namespace",
+      label: "Namespace",
+      type: "text",
+    },
+  ];
+
   return (
-    <div className="create-game-page">
+    <div className="task-set-constructor">
       <div
-        className="create-game-page__form-container"
+        className="task-set-constructor__form-container"
         style={{
           width:
             !showHintsBlock || isMobile
@@ -178,68 +208,23 @@ const TaskSetConstructor = ({
               : `calc(50% + ${hintsDeltaX}px)`,
         }}
       >
-        <div className="create-game-page__form">
+        <div className="task-set-constructor__form">
           <FormProvider {...methods}>
-            {/*<div className="form-group">*/}
-            {/*  <label>Task Set Space Code</label>*/}
-            {/*  <input*/}
-            {/*    name="taskSetSpaceCode"*/}
-            {/*    type="text"*/}
-            {/*    className="form-control"*/}
-            {/*    ref={register}
-            onBlur=() => updateTaskSetJSON(getValues()*/}
-            {/*    defaultValue={taskSetToEdit?.namespace}*/}
-            {/*  />*/}
-            {/*</div>*/}
-            <div className="form-group">
-              <label>Имя En</label>
-              <input
-                name="nameEn"
-                type="text"
-                className="form-control"
-                ref={register}
-                onBlur={() => updateTaskSetJSON(getValues())}
-                defaultValue={taskSetToEdit?.nameEn}
-              />
-            </div>
-            <div className="form-group">
-              <label>Имя Ru</label>
-              <input
-                name="nameRu"
-                type="text"
-                className="form-control"
-                ref={register}
-                onBlur={() => updateTaskSetJSON(getValues())}
-                defaultValue={taskSetToEdit?.nameRu}
-              />
-            </div>
-            <div className="form-group">
-              <label>Предметные области</label>
-              <Select
-                isMulti
-                name="subjectTypes"
-                defaultValue={filterSubjectTypes(taskSetToEdit?.subjectTypes)}
-                options={filterSubjectTypes(subjectTypes.join(","))}
-                ref={register}
-                onBlur={() => updateTaskSetJSON(getValues())}
-              />
-              {/*<input*/}
-              {/*  name="nameRu"*/}
-              {/*  type="text"*/}
-              {/*  className="form-control"*/}
-              {/*  ref={register}
-              onBlur=() => updateTaskSetJSON(getValues()*/}
-              {/*  defaultValue={taskSetToEdit?.nameRu}*/}
-              {/*/>*/}
-            </div>
-
+            <ConstructorForm
+              inputs={inputs}
+              register={register}
+              control={control}
+              onBlur={() => {
+                updateTaskSetJSON(getValues());
+              }}
+            />
             <div className="u-flex" style={{ alignItems: "center" }}>
               <h3>Уровни</h3>
-              <div className="create-game-page__visualization-mode-switchers">
+              <div className="task-set-constructor__visualization-mode-switchers">
                 <div
-                  className={`create-game-page__visualization-mode-switcher ${
+                  className={`task-set-constructor__visualization-mode-switcher ${
                     visualizationMode === VisualizationMode.LIST &&
-                    "create-game-page__visualization-mode-switcher--active"
+                    "task-set-constructor__visualization-mode-switcher--active"
                   }`}
                   onClick={() => {
                     setVisualizationMode(VisualizationMode.LIST);
@@ -248,9 +233,9 @@ const TaskSetConstructor = ({
                   <Icon path={mdiFormatListBulleted} size={1.5} />
                 </div>
                 <div
-                  className={`create-game-page__visualization-mode-switcher ${
+                  className={`task-set-constructor__visualization-mode-switcher ${
                     visualizationMode === VisualizationMode.TABLE &&
-                    "create-game-page__visualization-mode-switcher--active"
+                    "task-set-constructor__visualization-mode-switcher--active"
                   }`}
                   onClick={() => {
                     setVisualizationMode(VisualizationMode.TABLE);
@@ -281,7 +266,9 @@ const TaskSetConstructor = ({
                       >
                         <Icon
                           path={
-                            field.levelType === "auto" ? mdiRobot : mdiWrench
+                            field.taskCreationType === "auto"
+                              ? mdiRobot
+                              : mdiWrench
                           }
                           size={2}
                           style={{ marginRight: "1rem" }}
@@ -297,7 +284,7 @@ const TaskSetConstructor = ({
                       className="btn form-levels-list__action-button"
                       onClick={() => {
                         append({
-                          levelType: "manual",
+                          taskCreationType: "manual",
                         });
                         setSelectedLevel(fields.length);
                       }}
@@ -311,7 +298,7 @@ const TaskSetConstructor = ({
                       className="btn form-levels-list__action-button"
                       onClick={() => {
                         append({
-                          levelType: "auto",
+                          taskCreationType: "auto",
                         });
                         setSelectedLevel(fields.length);
                       }}
@@ -347,7 +334,7 @@ const TaskSetConstructor = ({
                   return (
                     <TaskConstructor
                       key={index}
-                      levelType={fields[index].levelType}
+                      taskCreationType={fields[index].taskCreationType}
                       index={index}
                       defaultValue={fields[index]}
                       updateDemo={updateDemo}
@@ -367,7 +354,7 @@ const TaskSetConstructor = ({
                     className="btn form-levels-table__action-button"
                     onClick={() => {
                       append({
-                        levelType: "manual",
+                        taskCreationType: "manual",
                       });
                     }}
                   >
@@ -380,7 +367,7 @@ const TaskSetConstructor = ({
                     className="btn form-levels-table__action-button"
                     onClick={() => {
                       append({
-                        levelType: "auto",
+                        taskCreationType: "auto",
                       });
                     }}
                   >
@@ -457,7 +444,7 @@ const TaskSetConstructor = ({
       </div>
       {/*HINTS BLOCK*/}
       <div
-        className="create-game-page__icon"
+        className="task-set-constructor__icon"
         onClick={() => setShowHintsBlock(!showHintsBlock)}
       >
         <Icon
@@ -466,8 +453,8 @@ const TaskSetConstructor = ({
         />
       </div>
       <div
-        className={`create-game-page__hints-desktop ${
-          showHintsBlock && "create-game-page__hints-desktop--visible"
+        className={`task-set-constructor__hints-desktop ${
+          showHintsBlock && "task-set-constructor__hints-desktop--visible"
         }`}
         style={{
           width: showHintsBlock ? `calc(50% - ${hintsDeltaX}px)` : "0",
@@ -479,8 +466,8 @@ const TaskSetConstructor = ({
             x: 0,
             y: 0,
           }}
-          defaultClassName="create-game-page__hints-desktop-dragger"
-          defaultClassNameDragging="create-game-page__hints-desktop-dragger create-game-page__hints-desktop-dragger--dragging"
+          defaultClassName="task-set-constructor__hints-desktop-dragger"
+          defaultClassNameDragging="task-set-constructor__hints-desktop-dragger task-set-constructor__hints-desktop-dragger--dragging"
           onStop={(_, { lastX }) => {
             setHintsDeltaX((prevState) => {
               return prevState + lastX;
@@ -489,7 +476,7 @@ const TaskSetConstructor = ({
         >
           <span />
         </Draggable>
-        <div className="create-game-page__math-quill-hint">
+        <div className="task-set-constructor__math-quill-hint">
           {showHintsBlock && (
             <>
               <h1>Как писать в TEX:</h1>
@@ -511,14 +498,14 @@ const TaskSetConstructor = ({
           />
         </div>
       </div>
-      <div ref={mobileHintsRef} className="create-game-page__hints-phone">
+      <div ref={mobileHintsRef} className="task-set-constructor__hints-phone">
         {isMobile && (
           <AppModal
             isOpen={showHintsBlock}
             close={() => setShowHintsBlock(false)}
           >
             <>
-              <div className="create-game-page__math-quill-hint">
+              <div className="task-set-constructor__math-quill-hint">
                 {showHintsBlock && (
                   <>
                     <h1>Как писать в TEX:</h1>

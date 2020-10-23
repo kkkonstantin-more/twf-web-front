@@ -26,6 +26,7 @@ const ConstructorSelect = ({
           <Controller
             control={control}
             name={name}
+            defaultValue={defaultValue}
             render={({ onChange }) => (
               <Select
                 name={name}

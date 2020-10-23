@@ -1,8 +1,10 @@
+import { SelectOption } from "../../components/constructor-select/constructor-select.types";
+
 export interface RuleConstructorInputs {
   left: string;
   right: string;
-  basedOnTaskContext: { label: "Да" | "Нет"; value: boolean } | boolean;
-  matchJumbledAndNested: { label: "Да" | "Нет"; value: boolean } | boolean;
+  basedOnTaskContext: SelectOption;
+  matchJumbledAndNested: SelectOption;
 }
 
 export interface RuleConstructorProps {

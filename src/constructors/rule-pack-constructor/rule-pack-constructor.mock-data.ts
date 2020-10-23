@@ -8,7 +8,7 @@ export const mockRulePacks: {
     code: "1",
     nameEn: "rule pack 1",
     nameRu: "пакет правил 1",
-    rulePacks: "",
+    rulePacks: [],
     rules: [
       {
         left: "2+2",
@@ -53,7 +53,7 @@ export const mockRulePacks: {
     code: "2",
     nameEn: "rule pack 2",
     nameRu: "пакет правил 2",
-    rulePacks: "",
+    rulePacks: [],
     rules: [
       {
         left: "2+2",
@@ -98,7 +98,7 @@ export const mockRulePacks: {
     code: "3",
     nameEn: "rule pack 3",
     nameRu: "пакет правил 3",
-    rulePacks: "",
+    rulePacks: [],
     rules: [
       {
         left: "2+2",
