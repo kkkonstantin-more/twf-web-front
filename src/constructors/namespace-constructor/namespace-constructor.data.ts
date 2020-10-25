@@ -1,17 +1,14 @@
-import {
-  AllowEditValueOption,
-  AllowReadValueOption,
-} from "./namespace-constructor.types";
+import { LabeledValue } from "antd/es/select";
 
-export const allowReadOptions: AllowReadValueOption[] = [
+export const allowReadOptions: LabeledValue[] = [
   {
-    value: true,
+    value: "true",
     label: "Открытый",
   },
   {
-    value: false,
+    value: "false",
     label: "Закрытый",
   },
 ];
 
-export const allowEditOptions: AllowEditValueOption[] = allowReadOptions;
+export const allowEditOptions: LabeledValue[] = allowReadOptions;

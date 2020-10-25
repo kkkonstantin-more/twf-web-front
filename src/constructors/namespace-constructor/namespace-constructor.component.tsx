@@ -12,16 +12,13 @@ import { connect, ConnectedProps } from "react-redux";
 import { createStructuredSelector } from "reselect";
 import CONSTRUCTOR_JSONS_INITIAL_STATE from "../../redux/constructor-jsons/constructor-jsons.state";
 // types
-import {
-  AllowEditValueOption,
-  AllowReadValueOption,
-  NamespaceConstructorInputs,
-} from "./namespace-constructor.types";
+import { NamespaceConstructorInputs } from "./namespace-constructor.types";
 import { Dispatch } from "react";
 import { ConstructorInputProps } from "../../components/constructor-input/construcor-input.types";
 import { ConstructorSelectProps } from "../../components/constructor-select/constructor-select.types";
 import { RootState } from "../../redux/root-reducer";
 import { UpdateNamespaceJSONAction } from "../../redux/constructor-jsons/constructor-jsons.types";
+import { SelectValue } from "antd/es/select";
 // data
 import {
   allowEditOptions,
@@ -50,7 +47,7 @@ const NamespaceConstructorComponent = ({
 
   updateNamespaceJSON(defaultValues);
 
-  const { register, getValues, control, watch } = useForm<
+  const { register, getValues, setValue, watch } = useForm<
     NamespaceConstructorInputs
   >({
     mode: "onSubmit",
@@ -60,8 +57,10 @@ const NamespaceConstructorComponent = ({
   // making these values dynamic with react-hook-form's watch function
   // in order to render or not render dependent fields:
   // readGrantedUsers, editGrantedUsers
-  const allowReadValue: AllowReadValueOption = watch("allowRead");
-  const allowEditValue: AllowEditValueOption = watch("allowEdit");
+  const allowReadValue: SelectValue = watch("allowRead");
+  const allowEditValue: SelectValue = watch("allowEdit");
+
+  console.log(defaultValues);
 
   const inputs: (ConstructorInputProps | ConstructorSelectProps)[] = [
     {
@@ -92,7 +91,7 @@ const NamespaceConstructorComponent = ({
       isMulti: true,
       options: usersDemoList,
       defaultValue: defaultValues.readGrantedUsers,
-      isRendered: !allowReadValue.value,
+      isRendered: allowReadValue !== "true",
     },
     {
       name: "allowEdit",
@@ -107,7 +106,7 @@ const NamespaceConstructorComponent = ({
       isMulti: true,
       options: usersDemoList,
       defaultValue: defaultValues.editGrantedUsers,
-      isRendered: !allowEditValue.value,
+      isRendered: allowEditValue !== "true",
     },
     {
       name: "taskSetList",
@@ -129,10 +128,8 @@ const NamespaceConstructorComponent = ({
       <ConstructorForm
         inputs={inputs}
         register={register}
-        control={control}
-        onBlur={() => {
-          updateNamespaceJSON(getValues());
-        }}
+        setValue={setValue}
+        updateJSON={() => updateNamespaceJSON(getValues())}
       />
       <button className="btn" onClick={() => console.log(getValues())}>
         Get values

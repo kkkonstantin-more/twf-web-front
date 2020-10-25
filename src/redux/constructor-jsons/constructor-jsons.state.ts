@@ -5,14 +5,8 @@ const CONSTRUCTOR_JSONS_INITIAL_STATE: ConstructorJSONs = {
     nameEn: "",
     nameRu: "",
     code: "",
-    allowEdit: {
-      label: "Закрытый",
-      value: false,
-    },
-    allowRead: {
-      label: "Открытый",
-      value: true,
-    },
+    allowEdit: "false",
+    allowRead: "true",
     editGrantedUsers: [],
     readGrantedUsers: [],
     taskSetList: [],

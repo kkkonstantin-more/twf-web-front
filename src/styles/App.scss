@@ -1,5 +1,6 @@
 @import "~bootstrap/scss/bootstrap";
 @import "overrides/bootstrap-override";
+@import "~antd/dist/antd.compact.min.css";
 
 @import "overrides/small-overrides";
 
@@ -21,6 +22,15 @@
   }
   & > div:nth-child(3) {
     flex-shrink: 0;
+  }
+  // override antdesign style
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: inherit;
   }
 }
 

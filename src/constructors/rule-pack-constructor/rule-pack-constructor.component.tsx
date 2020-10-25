@@ -122,43 +122,43 @@ const RulePackConstructor = ({
     },
   ];
 
-  const inputs: (ConstructorInputProps | ConstructorSelectProps)[] = [
-    {
-      name: "nameEn",
-      label: "Название  En",
-      type: "text",
-    },
-    {
-      name: "nameRu",
-      label: "Название Ru",
-      type: "text",
-    },
-    {
-      name: "rulePacks",
-      label: "Добавить существующие пакеты",
-      isMulti: true,
-      options: Object.keys(mockRulePacks).map((key: string) => {
-        return {
-          value: key,
-          label: mockRulePacks[key].nameRu,
-        };
-      }),
-      defaultValue: rulePackToEdit?.rulePacks || rulePackJSON.rulePacks,
-    },
-  ];
+  // const inputs: (ConstructorInputProps | ConstructorSelectProps)[] = [
+  //   {
+  //     name: "nameEn",
+  //     label: "Название  En",
+  //     type: "text",
+  //   },
+  //   {
+  //     name: "nameRu",
+  //     label: "Название Ru",
+  //     type: "text",
+  //   },
+  //   {
+  //     name: "rulePacks",
+  //     label: "Добавить существующие пакеты",
+  //     isMulti: true,
+  //     options: Object.keys(mockRulePacks).map((key: string) => {
+  //       return {
+  //         value: key,
+  //         label: mockRulePacks[key].nameRu,
+  //       };
+  //     }),
+  //     defaultValue: rulePackToEdit?.rulePacks || rulePackJSON.rulePacks,
+  //   },
+  // ];
 
   return (
     <FormProvider {...useFormMethods}>
       <div className="rule-pack-constructor">
         <h2>Создать RulePack</h2>
-        <ConstructorForm
-          inputs={inputs}
-          register={register}
-          control={control}
-          onBlur={() => {
-            updateRulePackJSON(getValues());
-          }}
-        />
+        {/*<ConstructorForm*/}
+        {/*  inputs={inputs}*/}
+        {/*  register={register}*/}
+        {/*  control={control}*/}
+        {/*  onBlur={() => {*/}
+        {/*    updateRulePackJSON(getValues());*/}
+        {/*  }}*/}
+        {/*/>*/}
         <h3>Правила:</h3>
         <div className="rule-pack-constructor__rules">
           {fields.map((field, i) => {

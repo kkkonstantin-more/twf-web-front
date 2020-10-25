@@ -1,22 +1,29 @@
-import React, { ChangeEvent } from "react";
+import React, { ChangeEvent, useEffect } from "react";
 import { ConstructorInputProps } from "./construcor-input.types";
 import useMergedRef from "@react-hook/merged-ref";
 import MixedInput from "../mixed-input/mixed-input";
 
 const ConstructorInput = ({
-  label,
   name,
   type,
-  onBlur,
   register,
+  setValue,
+  label,
   defaultValue,
   isVisible = true,
   isRendered = true,
   expressionInput = false,
+  updateJSON,
 }: ConstructorInputProps): JSX.Element => {
   const mixedInputRef: React.RefObject<
     HTMLInputElement
   > | null = expressionInput ? React.createRef() : null;
+
+  useEffect(() => {
+    if (register) {
+      register({ name });
+    }
+  }, []);
 
   if (isRendered) {
     return (
@@ -30,9 +37,16 @@ const ConstructorInput = ({
             className="form-control"
             name={name}
             type={type}
-            onBlur={onBlur}
+            onBlur={(event: any) => {
+              if (setValue) {
+                setValue(name, event.target.value);
+              }
+              if (updateJSON) {
+                updateJSON();
+              }
+            }}
             ref={
-              expressionInput
+              expressionInput && register
                 ? // eslint-disable-next-line
                   useMergedRef(register, mixedInputRef)
                 : register
@@ -46,8 +60,11 @@ const ConstructorInput = ({
             inputRef={mixedInputRef}
             width={100 + "px"}
             onChange={() => {
-              if (onBlur) {
-                onBlur();
+              if (setValue) {
+                setValue(name, mixedInputRef?.current?.value);
+              }
+              if (updateJSON) {
+                updateJSON();
               }
             }}
           />

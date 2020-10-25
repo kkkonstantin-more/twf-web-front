@@ -8,15 +8,15 @@ import ConstructorInput from "../constructor-input/constructor-input.component";
 interface ConstructorFormProps {
   inputs: (ConstructorInputProps | ConstructorSelectProps)[];
   register: () => void;
-  control?: any;
-  onBlur?: () => void;
+  setValue: (name: string, value: any) => void;
+  updateJSON: () => void;
 }
 
 const ConstructorForm = ({
   inputs,
   register,
-  control,
-  onBlur,
+  setValue,
+  updateJSON,
 }: ConstructorFormProps): JSX.Element => {
   return (
     <>
@@ -30,8 +30,8 @@ const ConstructorForm = ({
               <ConstructorSelect
                 key={name}
                 register={register}
-                control={control}
-                onBlur={onBlur}
+                setValue={setValue}
+                updateJSON={updateJSON}
                 {...input}
               />
             );
@@ -40,7 +40,8 @@ const ConstructorForm = ({
               <ConstructorInput
                 key={name}
                 register={register}
-                onBlur={onBlur}
+                setValue={setValue}
+                updateJSON={updateJSON}
                 {...input}
               />
             );

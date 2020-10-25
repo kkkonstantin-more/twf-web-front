@@ -210,14 +210,14 @@ const TaskSetConstructor = ({
       >
         <div className="task-set-constructor__form">
           <FormProvider {...methods}>
-            <ConstructorForm
-              inputs={inputs}
-              register={register}
-              control={control}
-              onBlur={() => {
-                updateTaskSetJSON(getValues());
-              }}
-            />
+            {/*<ConstructorForm*/}
+            {/*  inputs={inputs}*/}
+            {/*  register={register}*/}
+            {/*  control={control}*/}
+            {/*  onBlur={() => {*/}
+            {/*    updateTaskSetJSON(getValues());*/}
+            {/*  }}*/}
+            {/*/>*/}
             <div className="u-flex" style={{ alignItems: "center" }}>
               <h3>Уровни</h3>
               <div className="task-set-constructor__visualization-mode-switchers">

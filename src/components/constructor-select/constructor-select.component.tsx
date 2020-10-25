@@ -1,7 +1,10 @@
-import React, { useState } from "react";
-import Select from "react-select";
+import React, { useEffect } from "react";
 import { ConstructorSelectProps } from "./constructor-select.types";
-import { Controller } from "react-hook-form";
+import { Select } from "antd";
+import { SelectValue } from "antd/lib/select";
+import { LabeledValue } from "antd/es/select";
+
+const { Option } = Select;
 
 const ConstructorSelect = ({
   name,
@@ -10,40 +13,59 @@ const ConstructorSelect = ({
   isMulti,
   defaultValue,
   register,
-  control,
-  onBlur,
+  setValue,
+  updateJSON,
   isRendered = true,
   isVisible = true,
 }: ConstructorSelectProps): JSX.Element => {
+  useEffect(() => {
+    register({ name });
+  }, []);
+
+  // const parseBool = (value: string | boolean) => {
+  //   switch (value) {
+  //     case "true":
+  //       return true;
+  //     case "false":
+  //       return false;
+  //     case true:
+  //       return "true";
+  //     case false:
+  //       return "false";
+  //     default:
+  //       return value;
+  //   }
+  // };
+
   if (isRendered) {
     return (
       <div
-        className="constructor-select-input"
+        className="constructor-select-input u-mb-sm"
         style={{ display: isVisible ? "block" : "none" }}
       >
-        <div className="form-group">
-          <label>{label}</label>
-          <Controller
-            control={control}
-            name={name}
-            defaultValue={defaultValue}
-            render={({ onChange }) => (
-              <Select
-                name={name}
-                options={options}
-                ref={register}
-                onChange={(e: any) => {
-                  onChange(e);
-                  if (onBlur) {
-                    onBlur();
-                  }
-                }}
-                isMulti={isMulti}
-                defaultValue={defaultValue}
-              />
-            )}
-          />
-        </div>
+        <h4>{label}</h4>
+        <Select
+          mode={isMulti ? "multiple" : undefined}
+          defaultValue={defaultValue}
+          style={{ width: "100%" }}
+          placeholder={label}
+          onChange={(value: SelectValue) => {
+            if (setValue) {
+              setValue(name, value);
+            }
+            if (updateJSON) {
+              updateJSON();
+            }
+          }}
+        >
+          {options.map((option: LabeledValue, i: number) => {
+            return (
+              <Option key={i} value={option.value.toString()}>
+                {option.label}
+              </Option>
+            );
+          })}
+        </Select>
       </div>
     );
   } else {

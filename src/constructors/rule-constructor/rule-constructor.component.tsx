@@ -42,42 +42,42 @@ const RuleConstructor = ({
   // const [mixedInputWidth, setMixedInputWidth] = useState<number>(0);
   const { register, getValues, control } = useFormContext();
 
-  const inputs: (ConstructorInputProps | ConstructorSelectProps)[] = [
-    {
-      name: `rules[${index}].left`,
-      label: "Левая часть",
-      type: "text",
-      expressionInput: true,
-      defaultValue: defaultValue.left,
-    },
-    {
-      name: `rules[${index}].right`,
-      label: "Правая часть",
-      type: "text",
-      expressionInput: true,
-      defaultValue: defaultValue.right,
-    },
-    {
-      name: `rules[${index}].basedOnTaskContext`,
-      label: "Based on task context",
-      type: "text",
-      options: [
-        { value: true, label: "да" },
-        { value: false, label: "нет" },
-      ],
-      defaultValue: defaultValue.basedOnTaskContext,
-    },
-    {
-      name: `rules[${index}].matchJumbledAndNested`,
-      label: "Match jumbled and nested",
-      type: "text",
-      options: [
-        { value: true, label: "да" },
-        { value: false, label: "нет" },
-      ],
-      defaultValue: defaultValue.matchJumbledAndNested,
-    },
-  ];
+  // const inputs: (ConstructorInputProps | ConstructorSelectProps)[] = [
+  //   {
+  //     name: `rules[${index}].left`,
+  //     label: "Левая часть",
+  //     type: "text",
+  //     expressionInput: true,
+  //     defaultValue: defaultValue.left,
+  //   },
+  //   {
+  //     name: `rules[${index}].right`,
+  //     label: "Правая часть",
+  //     type: "text",
+  //     expressionInput: true,
+  //     defaultValue: defaultValue.right,
+  //   },
+  //   {
+  //     name: `rules[${index}].basedOnTaskContext`,
+  //     label: "Based on task context",
+  //     type: "text",
+  //     options: [
+  //       { value: true, label: "да" },
+  //       { value: false, label: "нет" },
+  //     ],
+  //     defaultValue: defaultValue.basedOnTaskContext,
+  //   },
+  //   {
+  //     name: `rules[${index}].matchJumbledAndNested`,
+  //     label: "Match jumbled and nested",
+  //     type: "text",
+  //     options: [
+  //       { value: true, label: "да" },
+  //       { value: false, label: "нет" },
+  //     ],
+  //     defaultValue: defaultValue.matchJumbledAndNested,
+  //   },
+  // ];
 
   // useEffect(() => {
   //   if (leftInputRef.current) {
@@ -90,16 +90,16 @@ const RuleConstructor = ({
 
   return (
     <div className="rule-constructor">
-      <ConstructorForm
-        inputs={inputs}
-        // @ts-ignore
-        register={register}
-        onBlur={() => {
-          // @ts-ignore
-          updateRulePackJSON(getValues());
-        }}
-        control={control}
-      />
+      {/*<ConstructorForm*/}
+      {/*  inputs={inputs}*/}
+      {/*  // @ts-ignore*/}
+      {/*  register={register}*/}
+      {/*  onBlur={() => {*/}
+      {/*    // @ts-ignore*/}
+      {/*    updateRulePackJSON(getValues());*/}
+      {/*  }}*/}
+      {/*  control={control}*/}
+      {/*/>*/}
     </div>
   );
 };
