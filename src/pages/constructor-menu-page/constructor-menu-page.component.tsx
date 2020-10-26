@@ -268,7 +268,7 @@ const ConstructorMenuPageComponent: React.FC = () => {
       options: [
         {
           name: "С нуля",
-          action: () => history.push("/rule-pack-constructor"),
+          action: () => history.push("constructor/rule-pack"),
         },
         {
           name: "На основе уже существующего",
@@ -282,7 +282,7 @@ const ConstructorMenuPageComponent: React.FC = () => {
                   name: nameRu,
                   namespace,
                   onSelect: (): void => {
-                    history.push("/rule-pack-constructor/" + code);
+                    history.push("constructor/rule-pack/" + code);
                   },
                 };
               })

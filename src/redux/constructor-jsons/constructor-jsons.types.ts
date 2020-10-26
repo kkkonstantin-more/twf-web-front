@@ -7,10 +7,12 @@ export interface ConstructorJSONs {
   taskSet: TaskSetConstructorInputs;
   rulePack: RulePackConstructorInputs;
 }
+
 export type ConstructorInputs =
   | NamespaceConstructorInputs
   | TaskSetConstructorInputs
   | RulePackConstructorInputs;
+
 // actions
 export const UPDATE_NAMESPACE_JSON = "UPDATE_NAMESPACE_JSON";
 export const UPDATE_TASK_SET_JSON = "UPDATE_TASK_SET_JSON";

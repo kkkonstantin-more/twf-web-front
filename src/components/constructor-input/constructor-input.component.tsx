@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useEffect } from "react";
+import React, { useEffect } from "react";
 import { ConstructorInputProps } from "./construcor-input.types";
 import useMergedRef from "@react-hook/merged-ref";
 import MixedInput from "../mixed-input/mixed-input";
@@ -31,7 +31,10 @@ const ConstructorInput = ({
         className="constructor-input"
         style={{ display: isVisible ? "block" : "none" }}
       >
-        <div className="form-group">
+        <div
+          className="form-group"
+          style={{ marginBottom: expressionInput ? "0" : undefined }}
+        >
           <label>{label}</label>
           <input
             className="form-control"
@@ -58,7 +61,7 @@ const ConstructorInput = ({
           <MixedInput
             value={defaultValue}
             inputRef={mixedInputRef}
-            width={100 + "px"}
+            width={300 + "px"}
             onChange={() => {
               if (setValue) {
                 setValue(name, mixedInputRef?.current?.value);

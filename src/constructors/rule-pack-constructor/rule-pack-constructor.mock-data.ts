@@ -13,38 +13,20 @@ export const mockRulePacks: {
       {
         left: "2+2",
         right: "4",
-        basedOnTaskContext: {
-          value: true,
-          label: "Да",
-        },
-        matchJumbledAndNested: {
-          value: true,
-          label: "Да",
-        },
+        basedOnTaskContext: "true",
+        matchJumbledAndNested: "true",
       },
       {
         left: "3+3",
         right: "6",
-        basedOnTaskContext: {
-          value: true,
-          label: "Да",
-        },
-        matchJumbledAndNested: {
-          value: true,
-          label: "Да",
-        },
+        basedOnTaskContext: "true",
+        matchJumbledAndNested: "true",
       },
       {
         left: "5+5",
         right: "10",
-        basedOnTaskContext: {
-          value: true,
-          label: "Да",
-        },
-        matchJumbledAndNested: {
-          value: true,
-          label: "Да",
-        },
+        basedOnTaskContext: "true",
+        matchJumbledAndNested: "true",
       },
     ],
   },
@@ -58,38 +40,20 @@ export const mockRulePacks: {
       {
         left: "2+2",
         right: "4",
-        basedOnTaskContext: {
-          value: true,
-          label: "Да",
-        },
-        matchJumbledAndNested: {
-          value: true,
-          label: "Да",
-        },
+        basedOnTaskContext: "true",
+        matchJumbledAndNested: "true",
       },
       {
         left: "3+3",
         right: "6",
-        basedOnTaskContext: {
-          value: true,
-          label: "Да",
-        },
-        matchJumbledAndNested: {
-          value: true,
-          label: "Да",
-        },
+        basedOnTaskContext: "true",
+        matchJumbledAndNested: "true",
       },
       {
         left: "5+5",
         right: "10",
-        basedOnTaskContext: {
-          value: true,
-          label: "Да",
-        },
-        matchJumbledAndNested: {
-          value: true,
-          label: "Да",
-        },
+        basedOnTaskContext: "true",
+        matchJumbledAndNested: "true",
       },
     ],
   },
@@ -103,38 +67,20 @@ export const mockRulePacks: {
       {
         left: "2+2",
         right: "4",
-        basedOnTaskContext: {
-          value: true,
-          label: "Да",
-        },
-        matchJumbledAndNested: {
-          value: true,
-          label: "Да",
-        },
+        basedOnTaskContext: "true",
+        matchJumbledAndNested: "true",
       },
       {
         left: "3+3",
         right: "6",
-        basedOnTaskContext: {
-          value: true,
-          label: "Да",
-        },
-        matchJumbledAndNested: {
-          value: true,
-          label: "Да",
-        },
+        basedOnTaskContext: "true",
+        matchJumbledAndNested: "true",
       },
       {
         left: "5+5",
         right: "10",
-        basedOnTaskContext: {
-          value: true,
-          label: "Да",
-        },
-        matchJumbledAndNested: {
-          value: true,
-          label: "Да",
-        },
+        basedOnTaskContext: "true",
+        matchJumbledAndNested: "true",
       },
     ],
   },

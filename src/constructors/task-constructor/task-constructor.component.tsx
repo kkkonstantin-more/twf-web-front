@@ -52,6 +52,7 @@ import { updateTaskSetJSON } from "../../redux/constructor-jsons/constructor-jso
 import { ConstructorInputProps } from "../../components/constructor-input/construcor-input.types";
 import ConstructorInput from "../../components/constructor-input/constructor-input.component";
 import { ConstructorSelectProps } from "../../components/constructor-select/constructor-select.types";
+import ConstructorForm from "../../components/constructor-form/constructor-form.component";
 
 const TaskConstructor = ({
   index,
@@ -67,11 +68,19 @@ const TaskConstructor = ({
   taskSetJSON,
   updateTaskSetJSON,
 }: TaskConstructorProps & ConnectedProps<typeof connector>) => {
-  const { register, getValues, control } = useFormContext();
+  const { register, getValues, control, setValue } = useFormContext();
   const { append, swap, remove } = useFieldArray({
     name: "tasks",
     control,
   });
+
+  useEffect(() => {
+    const taskDefaultValues = { ...defaultValue };
+    delete taskDefaultValues.id;
+    setValue(`tasks[${index}]`, taskDefaultValues);
+    // @ts-ignore
+    updateTaskSetJSON(getValues());
+  }, []);
 
   const [goalType, setGoalType] = useState(
     defaultValue.goalType || "Сведение к целевому выражению"
@@ -131,41 +140,40 @@ const TaskConstructor = ({
     }
   }, [inputRef]);
 
-  const altInputs: ConstructorInputProps[] | ConstructorSelectProps = [
-    {
-      name: `tasks[${index}].taskCreationType`,
-      label: "Тип уровня",
-      defaultValue: defaultValue.taskCreationType,
-    },
+  const altInputs: (ConstructorInputProps | ConstructorSelectProps)[] = [
+    // {
+    //   name: `tasks[${index}].taskCreationType`,
+    //   label: "Тип уровня",
+    //   type: "text",
+    // },
     {
       name: `tasks[${index}].name`,
       label: "Имя",
-      defaultValue: defaultValue.name,
+      type: "text",
+      defaultValue: defaultValue?.name,
     },
     {
       name: `tasks[${index}].startExpression`,
       label: "Стартовое выражение",
-      defaultValue: defaultValue.startExpression,
+      type: "text",
       expressionInput: true,
-      isVisible:
-        taskCreationType === "manual" && !localHiddenFields.subjectTypes,
+      defaultValue: defaultValue?.startExpression,
     },
     {
       name: `tasks[${index}].goalType`,
       label: "Тип цели",
-      options: goalTypes.map((item) => ({ label: item, value: item })),
-    },
-  ].map((input: any) => {
-    return {
-      ...input,
-      register: register,
       type: "text",
-      onBlur: () => {
-        // @ts-ignore
-        updateTaskSetJSON(getValues());
-      },
-    };
-  });
+      options: goalTypes.map((item: string) => ({ label: item, value: item })),
+      defaultValue: defaultValue?.goalType,
+    },
+    {
+      name: `tasks[${index}].goalExpression`,
+      label: "Целевое выражение",
+      type: "text",
+      expressionInput: true,
+      defaultValue: defaultValue?.goalExpression,
+    },
+  ];
 
   const inputs: { [key: string]: JSX.Element } = {
     taskCreationType: (
@@ -807,9 +815,16 @@ const TaskConstructor = ({
               <Icon path={mdiRobot} size={2} />
             </span>
           )}
-          {altInputs.map((level: ConstructorInputProps, i: number) => {
-            return <ConstructorInput key={i} {...level} />;
-          })}
+          <ConstructorForm
+            inputs={altInputs}
+            register={register}
+            setValue={setValue}
+            // @ts-ignore
+            updateJSON={() => updateTaskSetJSON(getValues())}
+          />
+          {/*{altInputs.map((level: ConstructorInputProps, i: number) => {*/}
+          {/*  return <ConstructorInput key={i} {...level} />;*/}
+          {/*})}*/}
           {autoLevelAdditionalInputs.map((level: JSX.Element, i: number) => {
             return (
               <div
@@ -828,9 +843,16 @@ const TaskConstructor = ({
               <Icon path={mdiWrench} size={2} />
             </span>
           )}
-          {altInputs.map((level: ConstructorInputProps, i: number) => {
-            return <ConstructorInput key={i} {...level} />;
-          })}
+          <ConstructorForm
+            inputs={altInputs}
+            register={register}
+            setValue={setValue}
+            // @ts-ignore
+            updateJSON={() => updateTaskSetJSON(getValues())}
+          />
+          {/*{altInputs.map((level: ConstructorInputProps, i: number) => {*/}
+          {/*  return <ConstructorInput key={i} {...level} />;*/}
+          {/*})}*/}
           {manualLevelAdditionalInputs.map((level: JSX.Element, i: number) => {
             return (
               <div

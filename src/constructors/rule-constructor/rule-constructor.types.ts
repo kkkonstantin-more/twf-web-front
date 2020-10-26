@@ -1,13 +1,13 @@
-import { SelectOption } from "../../components/constructor-select/constructor-select.types";
+import { ArrayField } from "react-hook-form";
 
 export interface RuleConstructorInputs {
   left: string;
   right: string;
-  basedOnTaskContext: SelectOption;
-  matchJumbledAndNested: SelectOption;
+  basedOnTaskContext: string;
+  matchJumbledAndNested: string;
 }
 
 export interface RuleConstructorProps {
   index: number;
-  defaultValue?: any;
+  defaultValue?: Partial<ArrayField<RuleConstructorInputs, "id">>;
 }

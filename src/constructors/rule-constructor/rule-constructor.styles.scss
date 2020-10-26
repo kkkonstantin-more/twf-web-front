@@ -1,7 +1,10 @@
 .rule-constructor {
   display: flex;
   align-items: center;
-  & > .form-group:not(:last-child) {
+  &:not(:last-child) {
+    margin-bottom: 2rem;
+  }
+  & > *:not(:last-child) {
     margin-right: 2rem;
   }
   &__select {

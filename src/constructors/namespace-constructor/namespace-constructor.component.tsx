@@ -54,13 +54,11 @@ const NamespaceConstructorComponent = ({
     defaultValues,
   });
 
-  // making these values dynamic with react-hook-form's watch function
-  // in order to render or not render dependent fields:
-  // readGrantedUsers, editGrantedUsers
+  /* making these values dynamic with react-hook-form's watch function
+  in order to conditionally render dependent fields:
+  readGrantedUsers, editGrantedUsers */
   const allowReadValue: SelectValue = watch("allowRead");
   const allowEditValue: SelectValue = watch("allowEdit");
-
-  console.log(defaultValues);
 
   const inputs: (ConstructorInputProps | ConstructorSelectProps)[] = [
     {

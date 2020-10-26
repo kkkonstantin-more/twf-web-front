@@ -102,7 +102,7 @@ const TaskSetConstructor = ({
     mode: "onSubmit",
     defaultValues,
   });
-  const { register, getValues, control, reset } = methods;
+  const { register, getValues, control, setValue } = methods;
   const { fields, append } = useFieldArray({
     control,
     name: "tasks",
@@ -210,14 +210,12 @@ const TaskSetConstructor = ({
       >
         <div className="task-set-constructor__form">
           <FormProvider {...methods}>
-            {/*<ConstructorForm*/}
-            {/*  inputs={inputs}*/}
-            {/*  register={register}*/}
-            {/*  control={control}*/}
-            {/*  onBlur={() => {*/}
-            {/*    updateTaskSetJSON(getValues());*/}
-            {/*  }}*/}
-            {/*/>*/}
+            <ConstructorForm
+              inputs={inputs}
+              register={register}
+              updateJSON={() => updateTaskSetJSON(getValues())}
+              setValue={setValue}
+            />
             <div className="u-flex" style={{ alignItems: "center" }}>
               <h3>Уровни</h3>
               <div className="task-set-constructor__visualization-mode-switchers">
@@ -354,6 +352,7 @@ const TaskSetConstructor = ({
                     className="btn form-levels-table__action-button"
                     onClick={() => {
                       append({
+                        name: "",
                         taskCreationType: "manual",
                       });
                     }}
