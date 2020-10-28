@@ -7,16 +7,16 @@ const CONSTRUCTOR_JSONS_INITIAL_STATE: ConstructorJSONs = {
     code: "",
     allowEdit: "false",
     allowRead: "true",
-    editGrantedUsers: [],
-    readGrantedUsers: [],
-    taskSetList: [],
+    editGrantedUsers: "",
+    readGrantedUsers: "",
+    taskSetList: "",
   },
   rulePack: {
     code: "",
     nameEn: "",
     nameRu: "",
     namespace: "",
-    rulePacks: [],
+    rulePacks: "",
     rules: [],
   },
   taskSet: {
@@ -24,7 +24,6 @@ const CONSTRUCTOR_JSONS_INITIAL_STATE: ConstructorJSONs = {
     nameEn: "",
     nameRu: "",
     namespace: "",
-    subjectTypes: "",
     tasks: [],
   },
 };

@@ -20,7 +20,10 @@ import {
 // data
 import { mockTasks } from "../task-constructor/task-constructor.mock-data";
 import { mockTaskSets } from "./task-set-constructor.mock-data";
-import { subjectTypes } from "./task-set-constructor.data";
+import {
+  subjectTypes,
+  taskConstructorDefaultValues,
+} from "./task-set-constructor.data";
 // icons
 import Icon from "@mdi/react";
 import {
@@ -55,22 +58,12 @@ import CONSTRUCTOR_JSONS_INITIAL_STATE from "../../redux/constructor-jsons/const
 import { ConstructorInputProps } from "../../components/constructor-input/construcor-input.types";
 import { ConstructorSelectProps } from "../../components/constructor-select/constructor-select.types";
 import ConstructorForm from "../../components/constructor-form/constructor-form.component";
+import { TaskConstructorInputs } from "../task-constructor/task-constructor.types";
 
 export enum VisualizationMode {
   TABLE = "TABLE",
   LIST = "LIST",
 }
-
-const filterSubjectTypes = (
-  str: string | undefined
-):
-  | {
-      label: string;
-      value: string;
-    }[]
-  | undefined => {
-  return str ? str.split(",").map((e) => ({ label: e, value: e })) : undefined;
-};
 
 const TaskSetConstructor = ({
   taskSetJSON,
@@ -91,19 +84,14 @@ const TaskSetConstructor = ({
       ? taskSetToEdit
       : taskSetJSON;
 
-  updateTaskSetJSON(defaultValues);
-
-  // const tasks =
-  //   taskSetToEdit?.tasks.map((taskLink: TaskLinkInput) => {
-  //     return mockTasks[taskLink.taskCode];
-  //   }) || [];
+  // updateTaskSetJSON(defaultValues);
 
   const methods = useForm({
     mode: "onSubmit",
     defaultValues,
   });
   const { register, getValues, control, setValue } = methods;
-  const { fields, append } = useFieldArray({
+  const { fields, append } = useFieldArray<TaskConstructorInputs>({
     control,
     name: "tasks",
   });
@@ -144,18 +132,18 @@ const TaskSetConstructor = ({
   };
 
   // update names due to changes of fields
-  useEffect(() => {
-    if (fields && getValues().tasks) {
-      setLevelNames(
-        fields.map((field, i) => {
-          return getValues().tasks[i].nameRu;
-        })
-      );
-    }
-  }, [fields]);
+  // useEffect(() => {
+  //   if (fields && getValues().tasks) {
+  //     setLevelNames(
+  //       fields.map((field, i) => {
+  //         return getValues().tasks[i].nameRu;
+  //       })
+  //     );
+  //   }
+  // }, [fields]);
 
-  const [visualizationMode, setVisualizationMode] = useState<VisualizationMode>(
-    VisualizationMode.LIST
+  const [visualizationMode, setVisualizationMode] = useState<"table" | "list">(
+    "list"
   );
 
   const [selectedLevel, setSelectedLevel] = useState<number | null>(null);
@@ -221,22 +209,22 @@ const TaskSetConstructor = ({
               <div className="task-set-constructor__visualization-mode-switchers">
                 <div
                   className={`task-set-constructor__visualization-mode-switcher ${
-                    visualizationMode === VisualizationMode.LIST &&
+                    visualizationMode === "list" &&
                     "task-set-constructor__visualization-mode-switcher--active"
                   }`}
                   onClick={() => {
-                    setVisualizationMode(VisualizationMode.LIST);
+                    setVisualizationMode("list");
                   }}
                 >
                   <Icon path={mdiFormatListBulleted} size={1.5} />
                 </div>
                 <div
                   className={`task-set-constructor__visualization-mode-switcher ${
-                    visualizationMode === VisualizationMode.TABLE &&
+                    visualizationMode === "table" &&
                     "task-set-constructor__visualization-mode-switcher--active"
                   }`}
                   onClick={() => {
-                    setVisualizationMode(VisualizationMode.TABLE);
+                    setVisualizationMode("table");
                   }}
                 >
                   <Icon path={mdiTableLarge} size={1.5} />
@@ -245,12 +233,12 @@ const TaskSetConstructor = ({
             </div>
             <div
               className={`${
-                visualizationMode === VisualizationMode.TABLE
+                visualizationMode === "table"
                   ? "form-levels-table"
                   : "form-levels-list"
               }`}
             >
-              {visualizationMode === VisualizationMode.LIST && (
+              {visualizationMode === "list" && (
                 <div className="form-levels-list__select">
                   {fields.map((field, index) => {
                     return (
@@ -283,6 +271,7 @@ const TaskSetConstructor = ({
                       onClick={() => {
                         append({
                           taskCreationType: "manual",
+                          ...taskConstructorDefaultValues,
                         });
                         setSelectedLevel(fields.length);
                       }}
@@ -297,6 +286,7 @@ const TaskSetConstructor = ({
                       onClick={() => {
                         append({
                           taskCreationType: "auto",
+                          ...taskConstructorDefaultValues,
                         });
                         setSelectedLevel(fields.length);
                       }}
@@ -324,7 +314,7 @@ const TaskSetConstructor = ({
               )}
               <div
                 className={`${
-                  visualizationMode === VisualizationMode.LIST &&
+                  visualizationMode === "list" &&
                   "form-levels-list__selected-level"
                 }`}
               >
@@ -332,28 +322,31 @@ const TaskSetConstructor = ({
                   return (
                     <TaskConstructor
                       key={index}
-                      taskCreationType={fields[index].taskCreationType}
+                      taskCreationType={
+                        fields[index].taskCreationType !== "auto"
+                          ? "auto"
+                          : "manual"
+                      }
                       index={index}
                       defaultValue={fields[index]}
                       updateDemo={updateDemo}
                       visualizationMode={visualizationMode}
                       hidden={
-                        visualizationMode === VisualizationMode.LIST &&
-                        index !== selectedLevel
+                        visualizationMode === "list" && index !== selectedLevel
                       }
                       updateName={updateName}
                     />
                   );
                 })}
               </div>
-              {visualizationMode === VisualizationMode.TABLE && (
+              {visualizationMode === "table" && (
                 <div className="form-levels-table__action-buttons">
                   <button
                     className="btn form-levels-table__action-button"
                     onClick={() => {
                       append({
-                        name: "",
                         taskCreationType: "manual",
+                        ...taskConstructorDefaultValues,
                       });
                     }}
                   >
@@ -367,6 +360,7 @@ const TaskSetConstructor = ({
                     onClick={() => {
                       append({
                         taskCreationType: "auto",
+                        ...taskConstructorDefaultValues,
                       });
                     }}
                   >

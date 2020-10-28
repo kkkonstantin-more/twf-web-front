@@ -3,8 +3,8 @@ import { ArrayField } from "react-hook-form";
 export interface RuleConstructorInputs {
   left: string;
   right: string;
-  basedOnTaskContext: string;
-  matchJumbledAndNested: string;
+  basedOnTaskContext: boolean;
+  matchJumbledAndNested: boolean;
 }
 
 export interface RuleConstructorProps {

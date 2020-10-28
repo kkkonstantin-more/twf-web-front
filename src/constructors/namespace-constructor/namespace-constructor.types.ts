@@ -4,7 +4,7 @@ export interface NamespaceConstructorInputs {
   code: string;
   allowRead: string;
   allowEdit: string;
-  readGrantedUsers: string[];
-  editGrantedUsers: string[];
-  taskSetList: string[];
+  readGrantedUsers: string;
+  editGrantedUsers: string;
+  taskSetList: string;
 }

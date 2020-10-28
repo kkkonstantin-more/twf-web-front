@@ -1,34 +1,37 @@
 // libs and hooks
 import React, { RefObject, useEffect, useState } from "react";
 import { useFieldArray, useFormContext } from "react-hook-form";
-import useMergedRef from "@react-hook/merged-ref";
 // redux
-import { connect, ConnectedProps, MapDispatchToProps } from "react-redux";
+import { connect, ConnectedProps } from "react-redux";
+import { selectTaskSetJSON } from "../../redux/constructor-jsons/constructor-jsons.selectors";
+import { updateTaskSetJSON } from "../../redux/constructor-jsons/constructor-jsons.actions";
 import { selectAllLevelsHiddenFields } from "../../redux/levels-hidden-fields/levels-hidden-fields.selectors";
 import { createStructuredSelector } from "reselect";
+import reduxWatch from "redux-watch";
+import store from "../../redux/store";
 import {
   toggleFieldVisibilityForAllAutoLevels,
   toggleFieldVisibilityForAllManualLevels,
 } from "../../redux/levels-hidden-fields/levels-hidden-fields.actions";
-import watch from "redux-watch";
-import store from "../../redux/store";
 // components
-import Icon from "@mdi/react";
 import AppModalComponent from "../../components/app-modal/app-modal.component";
-import MixedInput from "../../components/mixed-input/mixed-input";
 import ActionButton from "../../components/action-button/action-button.component";
+import ConstructorForm from "../../components/constructor-form/constructor-form.component";
 // types
 import { AllLevelsHiddenFields } from "../../redux/levels-hidden-fields/levels-hidden-fields.types";
 import { VisualizationMode } from "../task-set-constructor/task-set-constructor.component";
+import { TaskSetConstructorInputs } from "../task-set-constructor/task-set-constructor.types";
+import { ConstructorInputProps } from "../../components/constructor-input/construcor-input.types";
+import { ConstructorSelectProps } from "../../components/constructor-select/constructor-select.types";
+import { RootState } from "../../redux/root-reducer";
 import {
   TaskConstructorInputs,
   TaskConstructorProps,
 } from "./task-constructor.types";
 // data
-import { goalTypes } from "./task-constructor.data";
-// styles
-import "./task-constructor.styles.scss";
+import { goalTypes, rulePacks, subjectTypes } from "./task-constructor.data";
 // icons
+import Icon from "@mdi/react";
 import {
   mdiArrowDown,
   mdiArrowExpandDown,
@@ -45,14 +48,8 @@ import {
   mdiRobot,
   mdiWrench,
 } from "@mdi/js";
-import { RootState } from "../../redux/root-reducer";
-import { TaskSetConstructorInputs } from "../task-set-constructor/task-set-constructor.types";
-import { selectTaskSetJSON } from "../../redux/constructor-jsons/constructor-jsons.selectors";
-import { updateTaskSetJSON } from "../../redux/constructor-jsons/constructor-jsons.actions";
-import { ConstructorInputProps } from "../../components/constructor-input/construcor-input.types";
-import ConstructorInput from "../../components/constructor-input/constructor-input.component";
-import { ConstructorSelectProps } from "../../components/constructor-select/constructor-select.types";
-import ConstructorForm from "../../components/constructor-form/constructor-form.component";
+// styles
+import "./task-constructor.styles.scss";
 
 const TaskConstructor = ({
   index,
@@ -67,9 +64,9 @@ const TaskConstructor = ({
   updateName,
   taskSetJSON,
   updateTaskSetJSON,
-}: TaskConstructorProps & ConnectedProps<typeof connector>) => {
-  const { register, getValues, control, setValue } = useFormContext();
-  const { append, swap, remove } = useFieldArray({
+}: TaskConstructorProps & ConnectedProps<typeof connector>): JSX.Element => {
+  const { register, getValues, control, setValue, watch } = useFormContext();
+  const { append, swap, remove } = useFieldArray<TaskConstructorInputs>({
     name: "tasks",
     control,
   });
@@ -81,12 +78,6 @@ const TaskConstructor = ({
     // @ts-ignore
     updateTaskSetJSON(getValues());
   }, []);
-
-  const [goalType, setGoalType] = useState(
-    defaultValue.goalType || "Сведение к целевому выражению"
-  );
-  const startExpressionRef: RefObject<HTMLInputElement> = React.createRef();
-  const goalExpressionRef: RefObject<HTMLInputElement> = React.createRef();
 
   const [localHiddenFields, setLocalHiddenFields] = useState<any>(
     (() =>
@@ -105,7 +96,7 @@ const TaskConstructor = ({
       : toggleFieldVisibilityForAllManualLevels(fieldName);
   };
 
-  const w = watch(() => selectAllLevelsHiddenFields(store.getState()));
+  const w = reduxWatch(() => selectAllLevelsHiddenFields(store.getState()));
   store.subscribe(
     w((newVal, oldVal) => {
       const taskCreationTypeNewVal =
@@ -140,567 +131,232 @@ const TaskConstructor = ({
     }
   }, [inputRef]);
 
-  const altInputs: (ConstructorInputProps | ConstructorSelectProps)[] = [
-    // {
-    //   name: `tasks[${index}].taskCreationType`,
-    //   label: "Тип уровня",
-    //   type: "text",
-    // },
+  /* making these values dynamic with react-hook-form's watch function
+  in order to conditionally render dependent fields:
+  goalExpression, goalNaturalNumber, goalPattern */
+  const goalTypeValue: string = watch(`tasks[${index}].goalType`);
+
+  const allInputs: (ConstructorInputProps | ConstructorSelectProps)[] = [
     {
-      name: `tasks[${index}].name`,
-      label: "Имя",
+      name: `tasks[${index}].nameEn`,
+      label: "Имя En",
       type: "text",
-      defaultValue: defaultValue?.name,
+      defaultValue: defaultValue.nameEn,
+    },
+    {
+      name: `tasks[${index}].nameRu`,
+      label: "Имя Ru",
+      type: "text",
+      defaultValue: defaultValue.nameRu,
+    },
+    {
+      name: `tasks[${index}].code`,
+      label: "Код",
+      type: "text",
+      defaultValue: defaultValue.code,
+    },
+    {
+      name: `tasks[${index}].namespace`,
+      label: "Namespace",
+      type: "text",
+      defaultValue: defaultValue.namespace,
+    },
+    {
+      name: `tasks[${index}].subjectTypes`,
+      label: "Предметные области",
+      type: "text",
+      options: subjectTypes.map((item: string) => ({
+        label: item,
+        value: item,
+      })),
+      isMulti: true,
+      defaultValue: defaultValue.subjectTypes,
     },
     {
       name: `tasks[${index}].startExpression`,
       label: "Стартовое выражение",
       type: "text",
       expressionInput: true,
-      defaultValue: defaultValue?.startExpression,
+      defaultValue: defaultValue.startExpression,
     },
     {
       name: `tasks[${index}].goalType`,
       label: "Тип цели",
       type: "text",
       options: goalTypes.map((item: string) => ({ label: item, value: item })),
-      defaultValue: defaultValue?.goalType,
+      defaultValue: defaultValue.goalType,
     },
     {
       name: `tasks[${index}].goalExpression`,
       label: "Целевое выражение",
       type: "text",
       expressionInput: true,
-      defaultValue: defaultValue?.goalExpression,
+      defaultValue: defaultValue.goalExpression,
+      isVisible: goalTypeValue === "Сведение к целевому выражению",
+    },
+    {
+      name: `tasks[${index}].goalNumberProperty`,
+      label: "Целевое числовое значение",
+      type: "number",
+      defaultValue: defaultValue.goalNumberProperty,
+      isVisible:
+        goalTypeValue === "Сведение к КНФ" ||
+        goalTypeValue === "Сведение к ДНФ",
+    },
+    {
+      name: `tasks[${index}].goalPattern`,
+      label: "Патерн цели",
+      type: "text",
+      defaultValue: defaultValue.goalPattern,
+      isVisible:
+        goalTypeValue !== "Сведение к целевому выражению" &&
+        goalTypeValue !== "Сведение к КНФ" &&
+        goalTypeValue !== "Сведение к ДНФ",
+    },
+    {
+      name: `tasks[${index}].rulePacks`,
+      label: "Пакеты правил",
+      type: "text",
+      isMulti: true,
+      options: rulePacks.map((item: string) => ({ label: item, value: item })),
+      defaultValue: defaultValue.rulePacks,
+    },
+    {
+      name: `tasks[${index}].stepsNumber`,
+      label: "Количество шагов",
+      type: "number",
+      defaultValue: defaultValue.stepsNumber,
+    },
+    {
+      name: `tasks[${index}].time`,
+      label: "Время",
+      type: "number",
+      defaultValue: defaultValue.time,
+    },
+    {
+      name: `tasks[${index}].difficulty`,
+      label: "Сложность",
+      type: "number",
+      defaultValue: defaultValue.difficulty,
+    },
+    {
+      name: `tasks[${index}].solution`,
+      label: "Решение",
+      type: "text",
+      expressionInput: true,
+      defaultValue: defaultValue.solution,
+    },
+    {
+      name: `tasks[${index}].countOfAutoGeneratedTasks`,
+      label: "Количество автогенерируемых подуровней",
+      type: "number",
+      defaultValue: defaultValue.countOfAutoGeneratedTasks,
+    },
+    {
+      name: `tasks[${index}].operations`,
+      label: "Операции",
+      type: "text",
+      defaultValue: defaultValue.operations,
+    },
+    {
+      name: `tasks[${index}].stepsCountInterval`,
+      label: "Количество шагов",
+      type: "number",
+      defaultValue: defaultValue.stepsCountInterval,
+    },
+    {
+      name: `tasks[${index}].implicitTransformationsCount`,
+      label: "Нетривиальных правил на шаг",
+      type: "number",
+      defaultValue: defaultValue.implicitTransformationsCount,
+    },
+    {
+      name: `tasks[${index}].autoGeneratedRulePacks`,
+      label: "Пакеты правил для автогенерации",
+      type: "text",
+      isMulti: true,
+      options: rulePacks.map((item: string) => ({ label: item, value: item })),
+      defaultValue: defaultValue.autoGenerationRulePacks,
+    },
+    {
+      name: `tasks[${index}].lightWeightOperations`,
+      label: "lightWeightOperations",
+      type: "text",
+      defaultValue: defaultValue.lightWeightOperations,
+    },
+    {
+      name: `tasks[${index}].nullWeightOperations`,
+      label: "nullWeightOperations",
+      type: "text",
+      defaultValue: defaultValue.nullWeightOperations,
+    },
+    {
+      name: `tasks[${index}].startTime`,
+      label: "Дата запуска",
+      type: "text",
+      defaultValue: defaultValue.startTime,
+    },
+    {
+      name: `tasks[${index}].endTime`,
+      label: "Дата закрытия",
+      type: "text",
+      defaultValue: defaultValue.endTime,
     },
   ];
 
-  const inputs: { [key: string]: JSX.Element } = {
-    taskCreationType: (
-      <div className="form-group">
-        <label>Тип уровня</label>
-        <input
-          type="text"
-          className="form-control"
-          name={`tasks[${index}].taskCreationType`}
-          defaultValue={defaultValue.taskCreationType}
-          ref={register()}
-          readOnly
-        />
-      </div>
-    ),
-    name: (
-      <div className="form-group">
-        <label>Имя</label>
-        <input
-          type="text"
-          className="form-control"
-          name={`tasks[${index}].name`}
-          defaultValue={defaultValue.name}
-          ref={useMergedRef(register(), inputRef)}
-          onChange={(e): void => {
-            if (updateName) {
-              updateName(index, e.target.value);
-            }
-          }}
-          onBlur={() => {
-            // @ts-ignore
-            updateTaskSetJSON(getValues());
-          }}
-        />
-      </div>
-    ),
-    startExpression: (
-      <div
-        className="form-group"
-        style={{
-          display:
-            taskCreationType === "auto" && localHiddenFields.startExpression
-              ? "none"
-              : "block",
-        }}
-      >
-        <label>Стартовое выражение</label>
-        {taskCreationType === "auto" && (
-          <ActionButton
-            mdiIconPath={mdiEye}
-            size={1.5}
-            action={() => toggleFieldVisibilityForAllLevels("startExpression")}
-            margin="0 0 0 0.5rem"
-          />
-        )}
-        <input
-          name={`tasks[${index}].startExpression`}
-          // className="form-control"
-          type="text"
-          // eslint-disable-next-line
-          ref={useMergedRef(register(), startExpressionRef)}
-          defaultValue={defaultValue.startExpression}
-        />
-        <MixedInput
-          value={defaultValue.startExpression}
-          inputRef={startExpressionRef}
-          width={mixedInputWidth + "px"}
-        />
-      </div>
-    ),
-    goalType: (
-      <div
-        className="form-group"
-        style={{
-          display:
-            taskCreationType === "auto" && localHiddenFields.goalType
-              ? "none"
-              : "block",
-        }}
-      >
-        <label>Тип цели</label>
-        {defaultValue.taskCreationType === "auto" && (
-          <ActionButton
-            mdiIconPath={mdiEye}
-            size={1.5}
-            action={() => toggleFieldVisibilityForAllLevels("goalType")}
-            margin="0 0 0 0.5rem"
-          />
-        )}
-        <select
-          name={`tasks[${index}].goalType`}
-          className="form-control"
-          ref={register()}
-          value={goalType}
-          onChange={(event: any) => {
-            setGoalType(event.target.value);
-          }}
-        >
-          {goalTypes.map((type: string, i) => {
-            return <option key={i}>{type}</option>;
-          })}
-        </select>
-      </div>
-    ),
-    goalDetails: (
-      <>
-        <div
-          className="form-group"
-          style={{
-            display:
-              defaultValue.taskCreationType === "auto" &&
-              localHiddenFields.goalExpression
-                ? "none"
-                : goalType === "Сведение к целевому выражению" ||
-                  goalType === "Упрощение"
-                ? "block"
-                : "none",
-          }}
-        >
-          <label>Конечное выражение</label>
-          {defaultValue.taskCreationType === "auto" && (
-            <ActionButton
-              mdiIconPath={mdiEye}
-              size={1.5}
-              action={() => toggleFieldVisibilityForAllLevels("goalExpression")}
-              margin="0 0 0 0.5rem"
-            />
-          )}
-          <input
-            name={`tasks[${index}].goalExpression`}
-            className="form-control"
-            type="text"
-            // eslint-disable-next-line
-            ref={useMergedRef(register(), goalExpressionRef)}
-            defaultValue={defaultValue.goalExpression}
-          />
-          <MixedInput
-            inputRef={goalExpressionRef}
-            width={mixedInputWidth + "px"}
-            value={defaultValue.goalExpression}
-          />
-        </div>
-        <div
-          className="form-group"
-          style={{
-            display:
-              goalType === "Сведение к КНФ" || goalType === "Сведение к ДНФ"
-                ? "block"
-                : "none",
-          }}
-        >
-          <label>Натуральное число</label>
-          <input
-            name={`tasks[${index}].goalNaturalNumber`}
-            className="form-control"
-            type="number"
-            ref={register()}
-            defaultValue={defaultValue.goalNaturalNumber}
-          />
-        </div>
-      </>
-    ),
-    subjectTypes: (
-      <div
-        className="form-group"
-        style={{
-          display:
-            defaultValue.taskCreationType === "manual" &&
-            localHiddenFields.subjectTypes
-              ? "none"
-              : "block",
-        }}
-      >
-        <label>Предметая область</label>
-        {defaultValue.taskCreationType === "manual" && (
-          <ActionButton
-            mdiIconPath={mdiEye}
-            size={1.5}
-            action={() => toggleFieldVisibilityForAllLevels("subjectTypes")}
-            margin="0 0 0 0.5rem"
-          />
-        )}
-        <input
-          name={`tasks[${index}].subjectTypes`}
-          className="form-control"
-          type="text"
-          ref={register()}
-          defaultValue={defaultValue.subjectTypes}
-        />
-      </div>
-    ),
-    additionalPacks: (
-      <div
-        className="form-group"
-        style={{
-          display: localHiddenFields.additionalPacks ? "none" : "block",
-        }}
-      >
-        <label>Дополнительные пакеты правил</label>
-        <ActionButton
-          mdiIconPath={mdiEye}
-          size={1.5}
-          action={() => toggleFieldVisibilityForAllLevels("additionalPacks")}
-          margin="0 0 0 0.5rem"
-        />
-        <input
-          name={`tasks[${index}].additionalPacks`}
-          className="form-control"
-          type="text"
-          ref={register()}
-          defaultValue={defaultValue.additionalPacks}
-        />
-      </div>
-    ),
-    customLevelPack: (
-      <div
-        className="form-group"
-        style={{
-          display: localHiddenFields.customLevelPack ? "none" : "block",
-        }}
-      >
-        <label>Свой пакет правил</label>
-        <ActionButton
-          mdiIconPath={mdiEye}
-          size={1.5}
-          action={() => toggleFieldVisibilityForAllLevels("customLevelPack")}
-          margin="0 0 0 0.5rem"
-        />
-        <input
-          name={`tasks[${index}].customLevelPack`}
-          className="form-control"
-          type="text"
-          ref={register()}
-          defaultValue={defaultValue.customLevelPack}
-        />
-      </div>
-    ),
-    expectedSteps: (
-      <div
-        className="form-group"
-        style={{
-          display: localHiddenFields.expectedSteps ? "none" : "block",
-        }}
-      >
-        <label>Ожидаемое число шагов</label>
-        <ActionButton
-          mdiIconPath={mdiEye}
-          size={1.5}
-          action={() => toggleFieldVisibilityForAllLevels("expectedSteps")}
-          margin="0 0 0 0.5rem"
-        />
-        <input
-          name={`tasks[${index}].expectedSteps`}
-          className="form-control"
-          type="text"
-          ref={register()}
-          defaultValue={defaultValue.expectedSteps}
-        />
-      </div>
-    ),
-    expectedTime: (
-      <div
-        className="form-group"
-        style={{
-          display:
-            defaultValue.taskCreationType === "manual" &&
-            localHiddenFields.expectedTime
-              ? "none"
-              : "block",
-        }}
-      >
-        <label>Ожидаемое время</label>
-        {defaultValue.taskCreationType === "manual" && (
-          <ActionButton
-            mdiIconPath={mdiEye}
-            size={1.5}
-            action={() => toggleFieldVisibilityForAllLevels("expectedTime")}
-            margin="0 0 0 0.5rem"
-          />
-        )}
-        <input
-          name={`tasks[${index}].expectedTime`}
-          className="form-control"
-          type="text"
-          ref={register()}
-          defaultValue={defaultValue.expectedTime}
-        />
-      </div>
-    ),
-    levelNameEn: (
-      <div
-        className="form-group"
-        style={{
-          display: localHiddenFields.levelNameEn ? "none" : "block",
-        }}
-      >
-        <label>Имя на английском</label>
-        <ActionButton
-          mdiIconPath={mdiEye}
-          size={1.5}
-          action={() => toggleFieldVisibilityForAllLevels("levelNameEn")}
-          margin="0 0 0 0.5rem"
-        />
-        <input
-          name={`tasks[${index}].levelNameEn`}
-          className="form-control"
-          type="text"
-          ref={register()}
-          defaultValue={defaultValue.nameEn}
-        />
-      </div>
-    ),
-    levelNameRu: (
-      <div
-        className="form-group"
-        style={{
-          display: localHiddenFields.levelNameRu ? "none" : "block",
-        }}
-      >
-        <label>Имя на русском</label>
-        <ActionButton
-          mdiIconPath={mdiEye}
-          size={1.5}
-          action={() => toggleFieldVisibilityForAllLevels("levelNameRu")}
-          margin="0 0 0 0.5rem"
-        />
-        <input
-          name={`tasks[${index}].levelNameRu`}
-          className="form-control"
-          type="text"
-          ref={register()}
-          defaultValue={defaultValue.levelNameRu}
-        />
-      </div>
-    ),
-    levelCode: (
-      <div
-        className="form-group"
-        style={{
-          display: localHiddenFields.levelCode ? "none" : "block",
-        }}
-      >
-        <label>Код уровня</label>
-        <ActionButton
-          mdiIconPath={mdiEye}
-          size={1.5}
-          action={() => toggleFieldVisibilityForAllLevels("levelCode")}
-          margin="0 0 0 0.5rem"
-        />
-        <input
-          name={`tasks[${index}].levelCode`}
-          className="form-control"
-          type="text"
-          ref={register()}
-          defaultValue={defaultValue.levelCode}
-        />
-      </div>
-    ),
-    autoGeneratedLevelsCount: (
-      <div
-        className="form-group"
-        style={{
-          display:
-            defaultValue.taskCreationType === "manual" &&
-            localHiddenFields.autoGeneratedLevelsCount
-              ? "none"
-              : "block",
-        }}
-      >
-        <label>Количество автогенерируемых уровней</label>
-        {defaultValue.taskCreationType === "manual" && (
-          <ActionButton
-            mdiIconPath={mdiEye}
-            size={1.5}
-            action={() =>
-              toggleFieldVisibilityForAllLevels("autoGeneratedLevelsCount")
-            }
-            margin="0 0 0 0.5rem"
-          />
-        )}
-        <input
-          name={`tasks[${index}].autoGeneratedLevelsCount`}
-          className="form-control"
-          type="text"
-          ref={register()}
-          defaultValue={defaultValue.autoGeneratedLevelsCount}
-        />
-      </div>
-    ),
-    operations: (
-      <div
-        className="form-group"
-        style={{
-          display:
-            defaultValue.taskCreationType === "manual" &&
-            localHiddenFields.operations
-              ? "none"
-              : "block",
-        }}
-      >
-        <label>Операции</label>
-        {defaultValue.taskCreationType === "manual" && (
-          <ActionButton
-            mdiIconPath={mdiEye}
-            size={1.5}
-            action={() => toggleFieldVisibilityForAllLevels("operations")}
-            margin="0 0 0 0.5rem"
-          />
-        )}
-        <input
-          name={`tasks[${index}].operations`}
-          className="form-control"
-          type="text"
-          ref={register()}
-          defaultValue={defaultValue.operations}
-        />
-      </div>
-    ),
-    stepsCountInterval: (
-      <div
-        className="form-group"
-        style={{
-          display:
-            defaultValue.taskCreationType === "manual" &&
-            localHiddenFields.stepsCountInterval
-              ? "none"
-              : "block",
-        }}
-      >
-        <label>Интервал шагов</label>
-        {defaultValue.taskCreationType === "manual" && (
-          <ActionButton
-            mdiIconPath={mdiEye}
-            size={1.5}
-            action={() =>
-              toggleFieldVisibilityForAllLevels("stepsCountInterval")
-            }
-            margin="0 0 0 0.5rem"
-          />
-        )}
-        <input
-          name={`tasks[${index}].stepsCountInterval`}
-          className="form-control"
-          type="text"
-          ref={register()}
-          defaultValue={defaultValue.stepsCountInterval}
-        />
-      </div>
-    ),
-    implicitTransformationsCount: (
-      <div
-        className="form-group"
-        style={{
-          display:
-            defaultValue.taskCreationType === "manual" &&
-            localHiddenFields.implicitTransformationsCount
-              ? "none"
-              : "block",
-        }}
-      >
-        <label>Количество неявных преобразований</label>
-        {defaultValue.taskCreationType === "manual" && (
-          <ActionButton
-            mdiIconPath={mdiEye}
-            size={1.5}
-            action={() =>
-              toggleFieldVisibilityForAllLevels("implicitTransformationsCount")
-            }
-            margin="0 0 0 0.5rem"
-          />
-        )}
-        <input
-          name={`tasks[${index}].implicitTransformationsCount`}
-          className="form-control"
-          type="text"
-          ref={register()}
-          defaultValue={defaultValue.implicitTransformationsCount}
-        />
-      </div>
-    ),
-  };
-
   const [showAddFields, setShowAddFields] = useState(false);
 
-  const manualLevelBasicInputs = [
-    inputs.name,
-    inputs.startExpression,
-    inputs.goalType,
-    inputs.goalDetails,
+  const manualTaskInputsNames = [
+    "nameEn",
+    "nameRu",
+    "startExpression",
+    "goalType",
+    "goalExpression",
+    "goalNaturalNumber",
+    "goalPattern",
   ];
 
-  const manualLevelAdditionalInputs = [
-    inputs.subjectTypes,
-    inputs.additionalPacks,
-    inputs.customLevelPack,
-    inputs.expectedSteps,
-    inputs.expectedTime,
-    inputs.levelNameEn,
-    inputs.levelNameRu,
-    inputs.levelCode,
-    inputs.autoGeneratedLevelsCount,
-    inputs.operations,
-    inputs.stepsCountInterval,
-    inputs.implicitTransformationsCount,
+  const autoTaskInputsNames = [
+    "nameEn",
+    "nameRu",
+    "operations",
+    "subjectTypes",
+    "stepsCountInterval",
+    "implicitTransformationsCount",
+    "autoGeneratedRulePacks",
   ];
 
-  const autoLevelBasicInputs = [
-    inputs.name,
-    inputs.operations,
-    inputs.subjectTypes,
-    inputs.stepsCountInterval,
-    inputs.implicitTransformationsCount,
-    inputs.autoGeneratedLevelsCount,
-  ];
+  const manualTaskBasicInputs = allInputs.filter(
+    (input: ConstructorInputProps | ConstructorSelectProps) => {
+      const { name } = input;
+      const prefix = `tasks[${index}].`;
+      return manualTaskInputsNames.some(
+        (inputName: string) => prefix + inputName === name
+      );
+    }
+  );
 
-  const autoLevelAdditionalInputs = [
-    inputs.expectedTime,
-    inputs.startExpression,
-    inputs.additionalPacks,
-    inputs.customLevelPack,
-    inputs.goalType,
-    inputs.goalDetails,
-    inputs.expectedSteps,
-    inputs.levelNameEn,
-    inputs.levelNameRu,
-    inputs.levelCode,
-  ];
+  const manualTasksAdditionalInputs = allInputs.filter(
+    (input: ConstructorInputProps | ConstructorSelectProps) => {
+      return !manualTaskBasicInputs.includes(input);
+    }
+  );
+
+  const autoTaskBasicInputs = allInputs.filter(
+    (input: ConstructorInputProps | ConstructorSelectProps) => {
+      const { name } = input;
+      const prefix = `tasks[${index}].`;
+      return autoTaskInputsNames.some(
+        (inputName: string) => prefix + inputName === name
+      );
+    }
+  );
+
+  const autoTasksAdditionalInputs = allInputs.filter(
+    (input: ConstructorInputProps | ConstructorSelectProps) => {
+      return !autoTaskBasicInputs.includes(input);
+    }
+  );
 
   const tableActionButtonsLeft: {
     mdiIconPath: string;
@@ -712,7 +368,7 @@ const TaskConstructor = ({
       size: 1.5,
       action() {
         append({
-          ...getValues().levels[index],
+          ...getValues().tasks[index],
           taskCreationType: defaultValue.taskCreationType,
         });
       },
@@ -730,7 +386,7 @@ const TaskConstructor = ({
       mdiIconPath: mdiArrowDown,
       size: 1.5,
       action() {
-        if (index !== getValues().levels.length - 1) {
+        if (index !== getValues().tasks.length - 1) {
           swap(index, index + 1);
         }
       },
@@ -778,22 +434,20 @@ const TaskConstructor = ({
   return (
     <div
       className={`level-form ${
-        visualizationMode === VisualizationMode.TABLE
-          ? "level-form--table"
-          : "level-form--list"
+        visualizationMode === "table" ? "level-form--table" : "level-form--list"
       }`}
       style={{
         display: `${hidden ? "none" : "flex"}`,
       }}
     >
-      {visualizationMode === VisualizationMode.LIST && (
+      {visualizationMode === "list" && (
         <div className="level-form__list-action-buttons">
           {listActionButtons.map((button, i) => {
             return <ActionButton key={i} {...button} />;
           })}
         </div>
       )}
-      {visualizationMode === VisualizationMode.TABLE &&
+      {visualizationMode === "table" &&
         tableActionButtonsLeft.map((button, i) => {
           const { size, action, mdiIconPath } = button;
           return (
@@ -805,74 +459,74 @@ const TaskConstructor = ({
             />
           );
         })}
-      {visualizationMode === VisualizationMode.TABLE && (
+      {visualizationMode === "table" && (
         <div className="level-form__level-number">{index + 1}.</div>
       )}
       {defaultValue.taskCreationType === "auto" ? (
         <>
-          {visualizationMode === VisualizationMode.TABLE && (
+          {visualizationMode === "table" && (
             <span className="level-form__level-type-icon">
               <Icon path={mdiRobot} size={2} />
             </span>
           )}
           <ConstructorForm
-            inputs={altInputs}
+            inputs={autoTaskBasicInputs}
             register={register}
             setValue={setValue}
             // @ts-ignore
             updateJSON={() => updateTaskSetJSON(getValues())}
           />
-          {/*{altInputs.map((level: ConstructorInputProps, i: number) => {*/}
-          {/*  return <ConstructorInput key={i} {...level} />;*/}
-          {/*})}*/}
-          {autoLevelAdditionalInputs.map((level: JSX.Element, i: number) => {
-            return (
-              <div
-                key={i}
-                style={{ display: showAddFields ? "block" : "none" }}
-              >
-                {level}
-              </div>
-            );
-          })}
+          <div
+            style={{
+              display: showAddFields ? "block" : "none",
+            }}
+          >
+            <ConstructorForm
+              inputs={autoTasksAdditionalInputs}
+              register={register}
+              setValue={setValue}
+              // @ts-ignore
+              updateJSON={() => updateTaskSetJSON(getValues())}
+            />
+          </div>
         </>
       ) : (
         <>
-          {visualizationMode === VisualizationMode.TABLE && (
+          {visualizationMode === "table" && (
             <span className="level-form__level-type-icon">
               <Icon path={mdiWrench} size={2} />
             </span>
           )}
           <ConstructorForm
-            inputs={altInputs}
+            inputs={manualTaskBasicInputs}
             register={register}
             setValue={setValue}
             // @ts-ignore
             updateJSON={() => updateTaskSetJSON(getValues())}
           />
-          {/*{altInputs.map((level: ConstructorInputProps, i: number) => {*/}
-          {/*  return <ConstructorInput key={i} {...level} />;*/}
-          {/*})}*/}
-          {manualLevelAdditionalInputs.map((level: JSX.Element, i: number) => {
-            return (
-              <div
-                key={i}
-                style={{ display: showAddFields ? "block" : "none" }}
-              >
-                {level}
-              </div>
-            );
-          })}
+          <div
+            style={{
+              display: showAddFields ? "block" : "none",
+            }}
+          >
+            <ConstructorForm
+              inputs={manualTasksAdditionalInputs}
+              register={register}
+              setValue={setValue}
+              // @ts-ignore
+              updateJSON={() => updateTaskSetJSON(getValues())}
+            />
+          </div>
         </>
       )}
-      {visualizationMode === VisualizationMode.LIST && (
+      {visualizationMode === "list" && (
         <ActionButton
           mdiIconPath={showAddFields ? mdiArrowExpandUp : mdiArrowExpandDown}
           size={2}
           action={() => setShowAddFields(!showAddFields)}
         />
       )}
-      {visualizationMode === VisualizationMode.TABLE && (
+      {visualizationMode === "table" && (
         <>
           <ActionButton
             mdiIconPath={

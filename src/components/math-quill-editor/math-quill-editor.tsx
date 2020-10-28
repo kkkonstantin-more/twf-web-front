@@ -14,7 +14,7 @@ interface MathQuillEditorProps {
   startingLatexExpression?: string;
   enableOutput?: boolean;
   showOperationTab?: boolean;
-  updateValue?: React.Dispatch<string>;
+  updateValue?: (value: string) => void;
   isInvalid?: boolean;
 }
 

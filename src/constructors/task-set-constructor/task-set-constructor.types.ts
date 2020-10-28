@@ -6,10 +6,9 @@ export interface TaskLinkInput {
 }
 
 export interface TaskSetConstructorInputs {
-  namespace: string;
-  code: string;
   nameEn: string;
   nameRu: string;
-  subjectTypes: string;
+  code: string;
+  namespace: string;
   tasks: TaskConstructorInputs[];
 }

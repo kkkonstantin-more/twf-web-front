@@ -1,7 +1,7 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { ConstructorInputProps } from "./construcor-input.types";
 import useMergedRef from "@react-hook/merged-ref";
-import MixedInput from "../mixed-input/mixed-input";
+import MixedInput from "../mixed-input/mixed-input.component";
 
 const ConstructorInput = ({
   name,
@@ -19,21 +19,40 @@ const ConstructorInput = ({
     HTMLInputElement
   > | null = expressionInput ? React.createRef() : null;
 
+  const inputWrapperRef: React.RefObject<HTMLDivElement> = React.createRef();
+
+  const [mixedInputWidth, setMixedInputWidth] = useState<number>(100);
+
   useEffect(() => {
     if (register) {
       register({ name });
     }
   }, []);
 
+  useEffect(() => {
+    if (inputWrapperRef.current) {
+      const width = window.getComputedStyle(inputWrapperRef.current, null);
+      setMixedInputWidth(
+        parseFloat(width.getPropertyValue("width").slice(0, -2))
+      );
+    }
+  }, [mixedInputRef]);
+
   if (isRendered) {
     return (
       <div
         className="constructor-input"
-        style={{ display: isVisible ? "block" : "none" }}
+        style={{
+          display: isVisible ? "block" : "none",
+          marginBottom: expressionInput ? "2rem" : undefined,
+        }}
+        ref={inputWrapperRef}
       >
         <div
           className="form-group"
-          style={{ marginBottom: expressionInput ? "0" : undefined }}
+          style={{
+            marginBottom: expressionInput ? "0" : undefined,
+          }}
         >
           <label>{label}</label>
           <input
@@ -61,7 +80,7 @@ const ConstructorInput = ({
           <MixedInput
             value={defaultValue}
             inputRef={mixedInputRef}
-            width={300 + "px"}
+            width={mixedInputWidth + "px"}
             onChange={() => {
               if (setValue) {
                 setValue(name, mixedInputRef?.current?.value);

@@ -199,8 +199,8 @@ const RulePackConstructor = ({
                 append({
                   left: "",
                   right: "",
-                  matchJumbledAndNested: "true",
-                  basedOnTaskContext: "true",
+                  matchJumbledAndNested: true,
+                  basedOnTaskContext: true,
                 });
               }}
             >

@@ -5,6 +5,6 @@ export interface RulePackConstructorInputs {
   code: string;
   nameEn: string;
   nameRu: string;
-  rulePacks: string[];
+  rulePacks: string;
   rules: RuleConstructorInputs[];
 }
