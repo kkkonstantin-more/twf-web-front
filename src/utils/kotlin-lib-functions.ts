@@ -33,7 +33,7 @@ export const convertMathInput = (
   from: MathInputFormat,
   to: MathInputFormat,
   expression: string
-) => {
+): string => {
   const expressionInLibFormat: any = (() => {
     if (from === MathInputFormat.PLAIN_TEXT) {
       return stringToExpression(expression);

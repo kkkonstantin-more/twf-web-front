@@ -16,6 +16,7 @@ interface MathQuillEditorProps {
   showOperationTab?: boolean;
   updateValue?: (value: string) => void;
   isInvalid?: boolean;
+  onBlur?: () => void;
 }
 
 const MathQuillEditor: React.FC<MathQuillEditorProps> = ({
@@ -27,6 +28,7 @@ const MathQuillEditor: React.FC<MathQuillEditorProps> = ({
   maxWidth,
   updateValue,
   isInvalid,
+  onBlur,
 }: MathQuillEditorProps) => {
   if (inputRef.current) {
     inputRef.current.style.display = "none";
@@ -37,6 +39,9 @@ const MathQuillEditor: React.FC<MathQuillEditorProps> = ({
 
   useEffect(() => {
     const htmlElement = document.getElementById(id);
+    if (htmlElement && onBlur) {
+      htmlElement.firstChild?.addEventListener("focusout", onBlur);
+    }
     // @ts-ignore
     const MQ = window.MathQuill.getInterface(2);
     const mathField = config
@@ -90,7 +95,9 @@ const MathQuillEditor: React.FC<MathQuillEditorProps> = ({
       });
     }
 
-    if (startingLatexExpression) mathField.latex(startingLatexExpression);
+    if (startingLatexExpression) {
+      mathField.latex(startingLatexExpression);
+    }
 
     setEditor(mathField);
   }, [inputRef]);

@@ -1,5 +1,5 @@
 // libs and hooks
-import React, { useEffect, useState } from "react";
+import React, { ChangeEvent, useEffect, useState } from "react";
 // components
 import MathQuillEditor from "../math-quill-editor/math-quill-editor";
 // twf lib functions
@@ -41,6 +41,44 @@ const MixedInput = ({ inputRef, width, value, onChange }: MixedInputProps) => {
     }
   };
 
+  const onSelectMode = (format: MathInputFormat): void => {
+    if (error === null) {
+      setCurrentVisibleFormat(format);
+    }
+  };
+
+  const onChangeInputValue = (value: string, format: MathInputFormat): void => {
+    if (currentInputFormat !== format) {
+      changeInputMode(format);
+    }
+    setCurrentValue(value);
+  };
+
+  const onBlur = (format: MathInputFormat): void => {
+    setError(getErrorFromMathInput(format, currentValue));
+  };
+
+  const getVisibleInputValue = (format: MathInputFormat): string => {
+    return currentInputFormat === format
+      ? currentValue
+      : convertMathInput(currentInputFormat, format, currentValue);
+  };
+
+  const modeTabs: { label: string; format: MathInputFormat }[] = [
+    {
+      label: "TEX",
+      format: MathInputFormat.TEX,
+    },
+    {
+      label: "Plain Text",
+      format: MathInputFormat.PLAIN_TEXT,
+    },
+    {
+      label: "Structure string",
+      format: MathInputFormat.STRUCTURE_STRING,
+    },
+  ];
+
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.value = currentValue;
@@ -53,62 +91,32 @@ const MixedInput = ({ inputRef, width, value, onChange }: MixedInputProps) => {
   return (
     <div className="mixed-input" style={{ width }}>
       <div className="mixed-input__mode-tabs">
-        <div
-          className={`mixed-input__mode-tab ${
-            currentVisibleFormat === MathInputFormat.TEX &&
-            "mixed-input__mode-tab--active"
-          }`}
-          onClick={() => {
-            setCurrentVisibleFormat(MathInputFormat.TEX);
-            // changeInputMode(MathInputFormat.TEX);
-          }}
-        >
-          <span>TEX</span>
-        </div>
-        <div
-          className={`mixed-input__mode-tab ${
-            currentVisibleFormat === MathInputFormat.PLAIN_TEXT &&
-            "mixed-input__mode-tab--active"
-          }`}
-          onClick={(): void => {
-            setCurrentVisibleFormat(MathInputFormat.PLAIN_TEXT);
-          }}
-        >
-          <span>Plain Text</span>
-        </div>
-        <div
-          className={`mixed-input__mode-tab ${
-            currentVisibleFormat === MathInputFormat.STRUCTURE_STRING &&
-            "mixed-input__mode-tab--active"
-          }`}
-          onClick={(): void => {
-            setCurrentVisibleFormat(MathInputFormat.STRUCTURE_STRING);
-          }}
-        >
-          <span>Structure String</span>
-        </div>
+        {modeTabs.map((tab: { label: string; format: MathInputFormat }) => {
+          const { label, format } = tab;
+          return (
+            <div
+              key={label}
+              className={`mixed-input__mode-tab ${
+                currentVisibleFormat === format &&
+                "mixed-input__mode-tab--active"
+              }`}
+              onClick={(): void => onSelectMode(format)}
+            >
+              <span>{label}</span>
+            </div>
+          );
+        })}
       </div>
       {currentVisibleFormat === MathInputFormat.TEX && (
         <MathQuillEditor
-          startingLatexExpression={
-            currentInputFormat === MathInputFormat.TEX
-              ? currentValue
-              : convertMathInput(
-                  currentInputFormat,
-                  MathInputFormat.TEX,
-                  currentValue
-                )
-          }
+          startingLatexExpression={getVisibleInputValue(MathInputFormat.TEX)}
           inputRef={inputRef}
           showOperationTab={false}
           updateValue={(value: string) => {
-            if (currentInputFormat !== MathInputFormat.TEX) {
-              changeInputMode(MathInputFormat.TEX);
-            }
-            setCurrentValue(value);
+            onChangeInputValue(value, MathInputFormat.TEX);
           }}
+          onBlur={() => onBlur(MathInputFormat.TEX)}
           width={width}
-          // isInvalid={!!error}
         />
       )}
       {currentVisibleFormat === MathInputFormat.PLAIN_TEXT && (
@@ -118,26 +126,11 @@ const MixedInput = ({ inputRef, width, value, onChange }: MixedInputProps) => {
           className={`mixed-input__input form-control ${
             error !== null && "is-invalid"
           }`}
-          value={
-            currentInputFormat === MathInputFormat.PLAIN_TEXT
-              ? currentValue
-              : convertMathInput(
-                  currentInputFormat,
-                  MathInputFormat.PLAIN_TEXT,
-                  currentValue
-                )
-          }
-          onChange={(event) => {
-            if (currentInputFormat !== MathInputFormat.PLAIN_TEXT) {
-              changeInputMode(MathInputFormat.PLAIN_TEXT);
-            }
-            setCurrentValue(event.target.value);
+          value={getVisibleInputValue(MathInputFormat.PLAIN_TEXT)}
+          onChange={(event: ChangeEvent<HTMLInputElement>) => {
+            onChangeInputValue(event.target.value, MathInputFormat.PLAIN_TEXT);
           }}
-          onBlur={() => {
-            setError(
-              getErrorFromMathInput(MathInputFormat.PLAIN_TEXT, currentValue)
-            );
-          }}
+          onBlur={() => onBlur(MathInputFormat.PLAIN_TEXT)}
         />
       )}
       {currentVisibleFormat === MathInputFormat.STRUCTURE_STRING && (
@@ -147,29 +140,14 @@ const MixedInput = ({ inputRef, width, value, onChange }: MixedInputProps) => {
           className={`mixed-input__input form-control ${
             error !== null && "is-invalid"
           }`}
-          value={
-            currentInputFormat === MathInputFormat.STRUCTURE_STRING
-              ? currentValue
-              : convertMathInput(
-                  currentInputFormat,
-                  MathInputFormat.STRUCTURE_STRING,
-                  currentValue
-                )
-          }
-          onChange={(event) => {
-            if (currentInputFormat !== MathInputFormat.STRUCTURE_STRING) {
-              changeInputMode(MathInputFormat.STRUCTURE_STRING);
-            }
-            setCurrentValue(event.target.value);
-          }}
-          onBlur={() => {
-            setError(
-              getErrorFromMathInput(
-                MathInputFormat.STRUCTURE_STRING,
-                currentValue
-              )
+          value={getVisibleInputValue(MathInputFormat.STRUCTURE_STRING)}
+          onChange={(event: ChangeEvent<HTMLInputElement>) => {
+            onChangeInputValue(
+              event.target.value,
+              MathInputFormat.STRUCTURE_STRING
             );
           }}
+          onBlur={() => onBlur(MathInputFormat.STRUCTURE_STRING)}
         />
       )}
       {error !== null && (
