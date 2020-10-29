@@ -81,7 +81,7 @@ const ConstructorInput = ({
             value={defaultValue}
             inputRef={mixedInputRef}
             width={mixedInputWidth + "px"}
-            onChange={() => {
+            onBlur={() => {
               if (setValue) {
                 setValue(name, mixedInputRef?.current?.value);
               }

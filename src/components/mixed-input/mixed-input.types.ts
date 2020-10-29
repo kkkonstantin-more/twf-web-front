@@ -5,4 +5,5 @@ export interface MixedInputProps {
   width?: string;
   value?: string;
   onChange?: () => void;
+  onBlur?: () => void;
 }

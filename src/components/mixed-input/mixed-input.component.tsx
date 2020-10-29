@@ -13,7 +13,13 @@ import { MixedInputProps } from "./mixed-input.types";
 // styles
 import "./mixed-input.styles.scss";
 
-const MixedInput = ({ inputRef, width, value, onChange }: MixedInputProps) => {
+const MixedInput = ({
+  inputRef,
+  width,
+  value,
+  onChange,
+  onBlur,
+}: MixedInputProps) => {
   const [currentInputFormat, setCurrentInputFormat] = useState<MathInputFormat>(
     MathInputFormat.TEX
   );
@@ -54,8 +60,11 @@ const MixedInput = ({ inputRef, width, value, onChange }: MixedInputProps) => {
     setCurrentValue(value);
   };
 
-  const onBlur = (format: MathInputFormat): void => {
+  const onBlurInput = (format: MathInputFormat): void => {
     setError(getErrorFromMathInput(format, currentValue));
+    if (onBlur) {
+      onBlur();
+    }
   };
 
   const getVisibleInputValue = (format: MathInputFormat): string => {
@@ -115,7 +124,7 @@ const MixedInput = ({ inputRef, width, value, onChange }: MixedInputProps) => {
           updateValue={(value: string) => {
             onChangeInputValue(value, MathInputFormat.TEX);
           }}
-          onBlur={() => onBlur(MathInputFormat.TEX)}
+          onBlur={() => onBlurInput(MathInputFormat.TEX)}
           width={width}
         />
       )}
@@ -130,7 +139,7 @@ const MixedInput = ({ inputRef, width, value, onChange }: MixedInputProps) => {
           onChange={(event: ChangeEvent<HTMLInputElement>) => {
             onChangeInputValue(event.target.value, MathInputFormat.PLAIN_TEXT);
           }}
-          onBlur={() => onBlur(MathInputFormat.PLAIN_TEXT)}
+          onBlur={() => onBlurInput(MathInputFormat.PLAIN_TEXT)}
         />
       )}
       {currentVisibleFormat === MathInputFormat.STRUCTURE_STRING && (
@@ -147,7 +156,7 @@ const MixedInput = ({ inputRef, width, value, onChange }: MixedInputProps) => {
               MathInputFormat.STRUCTURE_STRING
             );
           }}
-          onBlur={() => onBlur(MathInputFormat.STRUCTURE_STRING)}
+          onBlur={() => onBlurInput(MathInputFormat.STRUCTURE_STRING)}
         />
       )}
       {error !== null && (
