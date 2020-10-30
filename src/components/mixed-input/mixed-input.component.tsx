@@ -13,16 +13,12 @@ import { MixedInputProps } from "./mixed-input.types";
 // styles
 import "./mixed-input.styles.scss";
 
-const MixedInput = ({
-  inputRef,
-  width,
-  value,
-  onChange,
-  onBlur,
-}: MixedInputProps) => {
+const MixedInput = ({ width, value, onChange, onBlur }: MixedInputProps) => {
+  // last format in which user changed expression
   const [currentInputFormat, setCurrentInputFormat] = useState<MathInputFormat>(
     MathInputFormat.TEX
   );
+  // currently visible format
   const [currentVisibleFormat, setCurrentVisibleFormat] = useState<
     MathInputFormat
   >(MathInputFormat.TEX);
@@ -60,10 +56,10 @@ const MixedInput = ({
     setCurrentValue(value);
   };
 
-  const onBlurInput = (format: MathInputFormat): void => {
-    setError(getErrorFromMathInput(format, currentValue));
+  const onBlurInput = (format: MathInputFormat, value: string): void => {
+    setError(getErrorFromMathInput(format, value));
     if (onBlur) {
-      onBlur();
+      onBlur(value);
     }
   };
 
@@ -89,11 +85,8 @@ const MixedInput = ({
   ];
 
   useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.value = currentValue;
-    }
     if (onChange) {
-      onChange();
+      onChange(currentValue);
     }
   }, [currentValue]);
 
@@ -119,12 +112,13 @@ const MixedInput = ({
       {currentVisibleFormat === MathInputFormat.TEX && (
         <MathQuillEditor
           startingLatexExpression={getVisibleInputValue(MathInputFormat.TEX)}
-          inputRef={inputRef}
           showOperationTab={false}
           updateValue={(value: string) => {
             onChangeInputValue(value, MathInputFormat.TEX);
           }}
-          onBlur={() => onBlurInput(MathInputFormat.TEX)}
+          onBlur={(value: string) => {
+            onBlurInput(MathInputFormat.TEX, value);
+          }}
           width={width}
         />
       )}
@@ -139,7 +133,9 @@ const MixedInput = ({
           onChange={(event: ChangeEvent<HTMLInputElement>) => {
             onChangeInputValue(event.target.value, MathInputFormat.PLAIN_TEXT);
           }}
-          onBlur={() => onBlurInput(MathInputFormat.PLAIN_TEXT)}
+          onBlur={() => {
+            onBlurInput(MathInputFormat.PLAIN_TEXT, currentValue);
+          }}
         />
       )}
       {currentVisibleFormat === MathInputFormat.STRUCTURE_STRING && (
@@ -156,7 +152,9 @@ const MixedInput = ({
               MathInputFormat.STRUCTURE_STRING
             );
           }}
-          onBlur={() => onBlurInput(MathInputFormat.STRUCTURE_STRING)}
+          onBlur={() => {
+            onBlurInput(MathInputFormat.STRUCTURE_STRING, currentValue);
+          }}
         />
       )}
       {error !== null && (

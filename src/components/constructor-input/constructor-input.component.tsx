@@ -36,7 +36,7 @@ const ConstructorInput = ({
         parseFloat(width.getPropertyValue("width").slice(0, -2))
       );
     }
-  }, [mixedInputRef]);
+  }, [inputWrapperRef]);
 
   if (isRendered) {
     return (
@@ -55,42 +55,36 @@ const ConstructorInput = ({
           }}
         >
           <label>{label}</label>
-          <input
-            className="form-control"
-            name={name}
-            type={type}
-            onBlur={(event: any) => {
-              if (setValue) {
-                setValue(name, event.target.value);
-              }
-              if (updateJSON) {
-                updateJSON();
-              }
-            }}
-            ref={
-              expressionInput && register
-                ? // eslint-disable-next-line
-                  useMergedRef(register, mixedInputRef)
-                : register
-            }
-            defaultValue={defaultValue}
-          />
+          {expressionInput ? (
+            <MixedInput
+              value={defaultValue}
+              width={mixedInputWidth + "px"}
+              onBlur={(value: string) => {
+                if (setValue) {
+                  setValue(name, value);
+                }
+                if (updateJSON) {
+                  updateJSON();
+                }
+              }}
+            />
+          ) : (
+            <input
+              className="form-control"
+              name={name}
+              type={type}
+              onBlur={(event: any) => {
+                if (setValue) {
+                  setValue(name, event.target.value);
+                }
+                if (updateJSON) {
+                  updateJSON();
+                }
+              }}
+              defaultValue={defaultValue}
+            />
+          )}
         </div>
-        {mixedInputRef !== null && (
-          <MixedInput
-            value={defaultValue}
-            inputRef={mixedInputRef}
-            width={mixedInputWidth + "px"}
-            onBlur={() => {
-              if (setValue) {
-                setValue(name, mixedInputRef?.current?.value);
-              }
-              if (updateJSON) {
-                updateJSON();
-              }
-            }}
-          />
-        )}
       </div>
     );
   } else {

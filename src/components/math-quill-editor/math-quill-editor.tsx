@@ -7,7 +7,7 @@ import "mathquill/build/mathquill.css";
 import "./math-quill-editor.scss";
 
 interface MathQuillEditorProps {
-  inputRef: RefObject<HTMLInputElement>;
+  inputRef?: RefObject<HTMLInputElement>;
   config?: any;
   width?: string;
   maxWidth?: string;
@@ -16,7 +16,7 @@ interface MathQuillEditorProps {
   showOperationTab?: boolean;
   updateValue?: (value: string) => void;
   isInvalid?: boolean;
-  onBlur?: () => void;
+  onBlur?: (value: string) => void;
 }
 
 const MathQuillEditor: React.FC<MathQuillEditorProps> = ({
@@ -30,7 +30,7 @@ const MathQuillEditor: React.FC<MathQuillEditorProps> = ({
   isInvalid,
   onBlur,
 }: MathQuillEditorProps) => {
-  if (inputRef.current) {
+  if (inputRef && inputRef.current) {
     inputRef.current.style.display = "none";
   }
   const [editor, setEditor] = useState<any>();
@@ -39,68 +39,88 @@ const MathQuillEditor: React.FC<MathQuillEditorProps> = ({
 
   useEffect(() => {
     const htmlElement = document.getElementById(id);
-    if (htmlElement && onBlur) {
-      htmlElement.firstChild?.addEventListener("focusout", onBlur);
-    }
+
     // @ts-ignore
     const MQ = window.MathQuill.getInterface(2);
     const mathField = config
       ? MQ.MathField(htmlElement, config)
       : MQ.MathField(htmlElement);
 
-    if (config && config.handlers) {
-      mathField.config({
-        ...config,
-        handlers: {
-          ...config.handlers,
-          edit: function () {
-            // edit function initialized for the first time
-            if (config.handlers.fns && config.handlers.fns.edit) {
-              config.handlers.fns.edit();
-            }
-            // edit function is already initialized
-            // if (config.handlers.edit) {
-            //   config.handlers.edit();
-            // }
-            if (inputRef.current) {
-              inputRef.current.value = mathField.latex();
-            }
-          },
+    // if (config && config.handlers) {
+    //   mathField.config({
+    //     ...config,
+    //     handlers: {
+    //       ...config.handlers,
+    //       edit: function () {
+    //         // edit function initialized for the first time
+    //         if (config.handlers.fns && config.handlers.fns.edit) {
+    //           config.handlers.fns.edit();
+    //         }
+    //         // edit function is already initialized
+    //         // if (config.handlers.edit) {
+    //         //   config.handlers.edit();
+    //         // }
+    //         if (inputRef.current) {
+    //           inputRef.current.value = mathField.latex();
+    //         }
+    //       },
+    //     },
+    //   });
+    // } else if (config) {
+    //   mathField.config({
+    //     ...config,
+    //     handlers: {
+    //       edit: function () {
+    //         if (inputRef.current) {
+    //           inputRef.current.value = mathField.latex();
+    //         }
+    //       },
+    //     },
+    //   });
+    // } else {
+    //   mathField.config({
+    //     spaceBehavesLikeTab: true,
+    //     handlers: {
+    //       edit: function () {
+    //         if (inputRef.current) {
+    //           inputRef.current.value = mathField.latex();
+    //         }
+    //         if (updateValue) {
+    //           updateValue(mathField.latex());
+    //         }
+    //       },
+    //     },
+    //   });
+    // }
+
+    mathField.config({
+      ...config,
+      spaceBehavesLikeTab: true,
+      handlers: {
+        edit: function () {
+          if (inputRef && inputRef.current) {
+            inputRef.current.value = mathField.latex();
+          }
+          if (updateValue) {
+            updateValue(mathField.latex());
+          }
         },
-      });
-    } else if (config) {
-      mathField.config({
-        ...config,
-        handlers: {
-          edit: function () {
-            if (inputRef.current) {
-              inputRef.current.value = mathField.latex();
-            }
-          },
-        },
-      });
-    } else {
-      mathField.config({
-        spaceBehavesLikeTab: true,
-        handlers: {
-          edit: function () {
-            if (inputRef.current) {
-              inputRef.current.value = mathField.latex();
-            }
-            if (updateValue) {
-              updateValue(mathField.latex());
-            }
-          },
-        },
-      });
-    }
+      },
+    });
 
     if (startingLatexExpression) {
       mathField.latex(startingLatexExpression);
     }
 
     setEditor(mathField);
-  }, [inputRef]);
+
+    if (htmlElement && onBlur) {
+      htmlElement.firstChild?.addEventListener("focusout", () => {
+        onBlur(mathField.latex());
+        // onBlur();
+      });
+    }
+  }, []);
 
   const actions: { iconUrl: string; latexCmd: string }[] = [
     {

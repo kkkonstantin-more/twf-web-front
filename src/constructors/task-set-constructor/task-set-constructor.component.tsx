@@ -84,7 +84,12 @@ const TaskSetConstructor = ({
       ? taskSetToEdit
       : taskSetJSON;
 
-  // updateTaskSetJSON(defaultValues);
+  if (
+    taskSetToEdit &&
+    taskSetJSON === CONSTRUCTOR_JSONS_INITIAL_STATE.taskSet
+  ) {
+    updateTaskSetJSON(defaultValues);
+  }
 
   const methods = useForm({
     mode: "onSubmit",
