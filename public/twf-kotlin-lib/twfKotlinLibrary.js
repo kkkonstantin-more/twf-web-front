@@ -5,11 +5,12 @@ if (typeof kotlin === "undefined") {
 }
 var twfKotlinLibrary = (function (_, Kotlin) {
   "use strict";
+  var setOf = Kotlin.kotlin.collections.setOf_mh5how$;
+  var setOf_0 = Kotlin.kotlin.collections.setOf_i5x0yv$;
   var split = Kotlin.kotlin.text.split_ip8yn$;
   var toSet = Kotlin.kotlin.collections.toSet_7wnvza$;
   var ArrayList_init = Kotlin.kotlin.collections.ArrayList_init_287e2$;
-  var setOf = Kotlin.kotlin.collections.setOf_mh5how$;
-  var setOf_0 = Kotlin.kotlin.collections.setOf_i5x0yv$;
+  var endsWith = Kotlin.kotlin.text.endsWith_sgbm27$;
   var first = Kotlin.kotlin.collections.first_2p1efm$;
   var last = Kotlin.kotlin.collections.last_2p1efm$;
   var joinToString = Kotlin.kotlin.collections.joinToString_fmv235$;
@@ -24,6 +25,7 @@ var twfKotlinLibrary = (function (_, Kotlin) {
   var Math_0 = Math;
   var intersect = Kotlin.kotlin.collections.intersect_q4559j$;
   var Kind_CLASS = Kotlin.Kind.CLASS;
+  var emptyList = Kotlin.kotlin.collections.emptyList_287e2$;
   var Enum = Kotlin.kotlin.Enum;
   var throwISE = Kotlin.throwISE;
   var rangeTo = Kotlin.kotlin.ranges.rangeTo_38ydlf$;
@@ -95,13 +97,11 @@ var twfKotlinLibrary = (function (_, Kotlin) {
   var throwUPAE = Kotlin.throwUPAE;
   var isNaN_0 = Kotlin.kotlin.isNaN_yrwdxr$;
   var isFinite = Kotlin.kotlin.isFinite_yrwdxr$;
-  var emptyList = Kotlin.kotlin.collections.emptyList_287e2$;
   var first_0 = Kotlin.kotlin.text.first_gw00vp$;
   var last_0 = Kotlin.kotlin.text.last_gw00vp$;
   var get_lastIndex_0 = Kotlin.kotlin.text.get_lastIndex_gw00vp$;
   var repeat = Kotlin.kotlin.text.repeat_94bcnn$;
   var max = Kotlin.kotlin.collections.max_exjks8$;
-  var contains_0 = Kotlin.kotlin.text.contains_sgbm27$;
   var unboxChar = Kotlin.unboxChar;
   var StringBuilder = Kotlin.kotlin.text.StringBuilder;
   var sortWith = Kotlin.kotlin.collections.sortWith_nqfjgj$;
@@ -112,18 +112,18 @@ var twfKotlinLibrary = (function (_, Kotlin) {
   var replace = Kotlin.kotlin.text.replace_680rmw$;
   var firstOrNull_0 = Kotlin.kotlin.collections.firstOrNull_2p1efm$;
   var isWhitespace = Kotlin.kotlin.text.isWhitespace_myv2d0$;
+  var contains_0 = Kotlin.kotlin.text.contains_sgbm27$;
   var firstOrNull_1 = Kotlin.kotlin.text.firstOrNull_gw00vp$;
   var Array_0 = Array;
   var startsWith_0 = Kotlin.kotlin.text.startsWith_sgbm27$;
   var substringBefore = Kotlin.kotlin.text.substringBefore_8cymmc$;
-  var endsWith = Kotlin.kotlin.text.endsWith_7epoxm$;
+  var endsWith_0 = Kotlin.kotlin.text.endsWith_7epoxm$;
   var lastIndexOfAny = Kotlin.kotlin.text.lastIndexOfAny_7utkvz$;
   var removeSuffix = Kotlin.kotlin.text.removeSuffix_gsj5wt$;
   var startsWith_1 = Kotlin.kotlin.text.startsWith_li3zpu$;
   var trim = Kotlin.kotlin.text.trim_gw00vp$;
   var sum = Kotlin.kotlin.collections.sum_l63kqw$;
   var first_1 = Kotlin.kotlin.collections.first_7wnvza$;
-  var endsWith_0 = Kotlin.kotlin.text.endsWith_sgbm27$;
   var dropLast = Kotlin.kotlin.text.dropLast_94bcnn$;
   var checkCountOverflow = Kotlin.kotlin.collections.checkCountOverflow_za3lpa$;
   var binarySearch = Kotlin.kotlin.collections.binarySearch_jhx6be$;
@@ -193,43 +193,6 @@ var twfKotlinLibrary = (function (_, Kotlin) {
   MessageType.prototype.constructor = MessageType;
   Form.prototype = Object.create(Enum.prototype);
   Form.prototype.constructor = Form;
-  function stringToExpression(
-    string,
-    scope,
-    isMathMl,
-    functionConfiguration,
-    compiledConfiguration
-  ) {
-    if (scope === void 0) scope = "";
-    if (isMathMl === void 0) isMathMl = false;
-    if (functionConfiguration === void 0) {
-      var $receiver = split(scope, [";"]);
-      var destination = ArrayList_init();
-      var tmp$;
-      tmp$ = $receiver.iterator();
-      while (tmp$.hasNext()) {
-        var element = tmp$.next();
-        if (element.length > 0) destination.add_11rb$(element);
-      }
-      functionConfiguration = new FunctionConfiguration(toSet(destination));
-    }
-    if (compiledConfiguration === void 0)
-      compiledConfiguration = new CompiledConfiguration(
-        void 0,
-        functionConfiguration
-      );
-    return stringToExpression_0(
-      string,
-      scope,
-      isMathMl,
-      functionConfiguration,
-      compiledConfiguration
-    );
-  }
-  function expressionToTexString(expressionNode, characterEscapingDepth) {
-    if (characterEscapingDepth === void 0) characterEscapingDepth = 1;
-    return expressionToTexString_0(expressionNode, characterEscapingDepth);
-  }
   function compareWithoutSubstitutions(
     left,
     right,
@@ -299,14 +262,8 @@ var twfKotlinLibrary = (function (_, Kotlin) {
         functionConfiguration
       );
     return compareWithoutSubstitutions(
-      stringToExpression_0(left, void 0, void 0, void 0, compiledConfiguration),
-      stringToExpression_0(
-        right,
-        void 0,
-        void 0,
-        void 0,
-        compiledConfiguration
-      ),
+      stringToExpression(left, void 0, void 0, void 0, compiledConfiguration),
+      stringToExpression(right, void 0, void 0, void 0, compiledConfiguration),
       void 0,
       void 0,
       void 0,
@@ -353,7 +310,7 @@ var twfKotlinLibrary = (function (_, Kotlin) {
         functionConfiguration
       );
     return compareByPattern(
-      stringToExpression_0(
+      stringToExpression(
         expression,
         void 0,
         void 0,
@@ -411,7 +368,7 @@ var twfKotlinLibrary = (function (_, Kotlin) {
       compiledConfiguration
     );
   }
-  function stringToExpression_0(
+  function stringToExpression(
     string,
     scope,
     isMathMl,
@@ -453,7 +410,7 @@ var twfKotlinLibrary = (function (_, Kotlin) {
       characterEscapingDepth
     );
   }
-  function expressionToTexString_0(expressionNode, characterEscapingDepth) {
+  function expressionToTexString(expressionNode, characterEscapingDepth) {
     if (characterEscapingDepth === void 0) characterEscapingDepth = 1;
     return escapeCharacters(
       expressionNode.toTexView_odr8sm$(),
@@ -514,7 +471,7 @@ var twfKotlinLibrary = (function (_, Kotlin) {
         functionConfiguration
       );
     return expressionToStructureString(
-      stringToExpression_0(
+      stringToExpression(
         string,
         scope,
         isMathMl,
@@ -542,6 +499,12 @@ var twfKotlinLibrary = (function (_, Kotlin) {
     }
     var expressionStructureConditionConstructor = new ExpressionStructureConditionConstructor();
     return expressionStructureConditionConstructor.parse_61zpoe$(string);
+  }
+  function investigateIfExpressionFormIsStructureString(expression) {
+    if (!endsWith(expression, 41)) {
+      return false;
+    }
+    return true;
   }
   function generateTask(
     expressionSubstitutions,
@@ -655,7 +618,7 @@ var twfKotlinLibrary = (function (_, Kotlin) {
     while (tmp$_2.hasNext()) {
       var item_0 = tmp$_2.next();
       destination_1.add_11rb$(
-        stringToExpression_0(
+        stringToExpression(
           item_0,
           void 0,
           void 0,
@@ -808,7 +771,7 @@ var twfKotlinLibrary = (function (_, Kotlin) {
     while (tmp$_2.hasNext()) {
       var item_0 = tmp$_2.next();
       destination_1.add_11rb$(
-        stringToExpression_0(
+        stringToExpression(
           item_0,
           void 0,
           void 0,
@@ -1029,14 +992,8 @@ var twfKotlinLibrary = (function (_, Kotlin) {
         functionConfiguration
       );
     return new ExpressionSubstitution(
-      stringToExpression_0(left, void 0, void 0, void 0, compiledConfiguration),
-      stringToExpression_0(
-        right,
-        void 0,
-        void 0,
-        void 0,
-        compiledConfiguration
-      ),
+      stringToExpression(left, void 0, void 0, void 0, compiledConfiguration),
+      stringToExpression(right, void 0, void 0, void 0, compiledConfiguration),
       void 0,
       basedOnTaskContext,
       void 0,
@@ -1243,7 +1200,7 @@ var twfKotlinLibrary = (function (_, Kotlin) {
         functionConfiguration
       );
     var substitutionPlaces = findSubstitutionPlacesInExpression(
-      stringToExpression_0(
+      stringToExpression(
         expression,
         void 0,
         void 0,
@@ -1324,7 +1281,7 @@ var twfKotlinLibrary = (function (_, Kotlin) {
         functionConfiguration
       );
     var substitutionPlaces = findSubstitutionPlacesInExpression(
-      stringToExpression_0(
+      stringToExpression(
         expression,
         void 0,
         void 0,
@@ -1403,7 +1360,7 @@ var twfKotlinLibrary = (function (_, Kotlin) {
         functionConfiguration
       );
     var tmp$_0;
-    var actualExpression = stringToExpression_0(
+    var actualExpression = stringToExpression(
       expression,
       void 0,
       void 0,
@@ -1487,7 +1444,7 @@ var twfKotlinLibrary = (function (_, Kotlin) {
         functionConfiguration
       );
     var tmp$_0;
-    var actualExpression = stringToExpression_0(
+    var actualExpression = stringToExpression(
       expression,
       void 0,
       void 0,
@@ -1531,6 +1488,75 @@ var twfKotlinLibrary = (function (_, Kotlin) {
     }
     var result = tmp$_0;
     return escapeCharacters(expressionToString(result), characterEscapingDepth);
+  }
+  function checkSolutionInTex(
+    originalTexSolution,
+    startExpressionIdentifier,
+    targetFactPattern,
+    additionalFactsIdentifiers,
+    endExpressionIdentifier,
+    targetFactIdentifier,
+    wellKnownFunctions,
+    wellKnownFunctionsString,
+    unlimitedWellKnownFunctions,
+    unlimitedWellKnownFunctionsString,
+    expressionTransformationRules,
+    expressionTransformationRulesString,
+    taskContextExpressionTransformationRules,
+    maxExpressionTransformationWeight,
+    maxDistBetweenDiffSteps,
+    scopeFilter,
+    shortErrorDescription
+  ) {
+    if (startExpressionIdentifier === void 0) startExpressionIdentifier = "";
+    if (targetFactPattern === void 0) targetFactPattern = "";
+    if (additionalFactsIdentifiers === void 0) additionalFactsIdentifiers = "";
+    if (endExpressionIdentifier === void 0) endExpressionIdentifier = "";
+    if (targetFactIdentifier === void 0) targetFactIdentifier = "";
+    if (wellKnownFunctions === void 0) {
+      wellKnownFunctions = emptyList();
+    }
+    if (wellKnownFunctionsString === void 0)
+      wellKnownFunctionsString = "+;;;-1;;;-;;;-1;;;*;;;-1;;;/;;;-1";
+    if (unlimitedWellKnownFunctions === void 0)
+      unlimitedWellKnownFunctions = wellKnownFunctions;
+    if (unlimitedWellKnownFunctionsString === void 0)
+      unlimitedWellKnownFunctionsString = wellKnownFunctionsString;
+    if (expressionTransformationRules === void 0) {
+      expressionTransformationRules = emptyList();
+    }
+    if (expressionTransformationRulesString === void 0)
+      expressionTransformationRulesString =
+        "S(i, a, a, f(i));;;f(a);;;S(i, a, b, f(i));;;S(i, a, b-1, f(i)) + f(b)";
+    if (taskContextExpressionTransformationRules === void 0)
+      taskContextExpressionTransformationRules = "";
+    if (maxExpressionTransformationWeight === void 0)
+      maxExpressionTransformationWeight = "1.0";
+    if (maxDistBetweenDiffSteps === void 0) maxDistBetweenDiffSteps = "";
+    if (scopeFilter === void 0) scopeFilter = "";
+    if (shortErrorDescription === void 0) shortErrorDescription = "0";
+    var compiledConfiguration = compiledConfigurationBySettings(
+      wellKnownFunctionsString,
+      expressionTransformationRulesString,
+      maxExpressionTransformationWeight,
+      unlimitedWellKnownFunctionsString,
+      taskContextExpressionTransformationRules,
+      maxDistBetweenDiffSteps,
+      scopeFilter,
+      wellKnownFunctions,
+      unlimitedWellKnownFunctions,
+      expressionTransformationRules
+    );
+    return checkFactsInTex(
+      originalTexSolution,
+      startExpressionIdentifier,
+      endExpressionIdentifier,
+      targetFactIdentifier,
+      targetFactPattern,
+      additionalFactsIdentifiers,
+      shortErrorDescription,
+      compiledConfiguration
+    );
   }
   function BaseNumber(number) {
     this.number = number;
@@ -10568,28 +10594,8 @@ var twfKotlinLibrary = (function (_, Kotlin) {
         void 0,
         2147483647
       ),
-      new FunctionProperties(
-        "sin",
-        "sin",
-        5.0,
-        1,
-        void 0,
-        void 0,
-        void 0,
-        void 0,
-        "\\sin"
-      ),
-      new FunctionProperties(
-        "cos",
-        "cos",
-        5.0,
-        1,
-        void 0,
-        void 0,
-        void 0,
-        void 0,
-        "\\cos"
-      ),
+      new FunctionProperties("sin", "sin", 5.0, 1),
+      new FunctionProperties("cos", "cos", 5.0, 1),
       new FunctionProperties("sh", "sh", 5.0, 1),
       new FunctionProperties("ch", "ch", 5.0, 1),
       new FunctionProperties("sec", "sec", 5.0, 1),
@@ -10637,7 +10643,7 @@ var twfKotlinLibrary = (function (_, Kotlin) {
       new FunctionProperties(
         "and",
         "and",
-        0.5,
+        0.7,
         -1,
         true,
         void 0,
@@ -10649,7 +10655,7 @@ var twfKotlinLibrary = (function (_, Kotlin) {
       new FunctionProperties(
         "or",
         "or",
-        0.5,
+        0.6,
         -1,
         true,
         void 0,
@@ -10661,7 +10667,7 @@ var twfKotlinLibrary = (function (_, Kotlin) {
       new FunctionProperties(
         "xor",
         "xor",
-        0.5,
+        0.6,
         -1,
         true,
         void 0,
@@ -10673,7 +10679,7 @@ var twfKotlinLibrary = (function (_, Kotlin) {
       new FunctionProperties(
         "alleq",
         "alleq",
-        0.5,
+        0.4,
         -1,
         true,
         void 0,
@@ -10718,7 +10724,19 @@ var twfKotlinLibrary = (function (_, Kotlin) {
         "\\setminus",
         StringDefinitionType$BINARY_OPERATION_getInstance()
       ),
-      new FunctionProperties("sqrt", "sqrt", 5.0, 1),
+      new FunctionProperties(
+        "sqrt",
+        "sqrt",
+        5.0,
+        1,
+        void 0,
+        void 0,
+        void 0,
+        void 0,
+        void 0,
+        void 0,
+        StringDefinitionType$BINARY_OPERATION_getInstance()
+      ),
       new FunctionProperties("root", "root", 5.0, 2),
       new FunctionProperties("mfenced", "mfenced", 5.0, 1),
       new FunctionProperties("U", "U", 5.0, 2),
@@ -14567,34 +14585,25 @@ var twfKotlinLibrary = (function (_, Kotlin) {
       identifier = first(this.children).toTexViewRec_0(functionConfiguration);
     } else {
       var $receiver = functionConfiguration.functionProperties;
-      var destination = ArrayList_init();
-      var tmp$_7;
-      tmp$_7 = $receiver.iterator();
-      while (tmp$_7.hasNext()) {
-        var element = tmp$_7.next();
-        if (
-          equals(element.function, this.value) &&
-          element.texStringDefinitionType !==
-            StringDefinitionType$FUNCTION_getInstance()
-        )
-          destination.add_11rb$(element);
-      }
-      if (!destination.isEmpty()) {
-        var $receiver_0 = functionConfiguration.functionProperties;
-        var firstOrNull$result;
-        firstOrNull$break: do {
-          var tmp$_8;
-          tmp$_8 = $receiver_0.iterator();
-          while (tmp$_8.hasNext()) {
-            var element_0 = tmp$_8.next();
-            if (equals(element_0.function, this.value)) {
-              firstOrNull$result = element_0;
-              break firstOrNull$break;
-            }
+      var firstOrNull$result;
+      firstOrNull$break: do {
+        var tmp$_7;
+        tmp$_7 = $receiver.iterator();
+        while (tmp$_7.hasNext()) {
+          var element = tmp$_7.next();
+          if (equals(element.function, this.value)) {
+            firstOrNull$result = element;
+            break firstOrNull$break;
           }
-          firstOrNull$result = null;
-        } while (false);
-        var functionIdentifier = ensureNotNull(firstOrNull$result);
+        }
+        firstOrNull$result = null;
+      } while (false);
+      var functionIdentifier = firstOrNull$result;
+      if (
+        functionIdentifier != null &&
+        functionIdentifier.texStringDefinitionType !==
+          StringDefinitionType$FUNCTION_getInstance()
+      ) {
         switch (functionIdentifier.texStringDefinitionType.name) {
           case "BINARY_OPERATION":
             if (this.binaryOperationNeedBrackets_0()) {
@@ -14614,6 +14623,11 @@ var twfKotlinLibrary = (function (_, Kotlin) {
                 "}{" +
                 first(this.children).toTexViewRec_0(functionConfiguration) +
                 "}";
+            } else if (equals(this.value, "sqrt") && this.children.size === 1) {
+              identifier +=
+                "\\sqrt{" +
+                first(this.children).toTexViewRec_0(functionConfiguration) +
+                "}";
             } else if (equals(this.value, "^") && this.children.size >= 2) {
               tmp$ = this.children.iterator();
               while (tmp$.hasNext()) {
@@ -14621,10 +14635,10 @@ var twfKotlinLibrary = (function (_, Kotlin) {
                 identifier +=
                   "{" + child.toTexViewRec_0(functionConfiguration) + "^";
               }
-              var $receiver_1 = identifier;
+              var $receiver_0 = identifier;
               var endIndex = (identifier.length - 1) | 0;
               identifier =
-                $receiver_1.substring(0, endIndex) +
+                $receiver_0.substring(0, endIndex) +
                 repeat("}", this.children.size);
             } else {
               tmp$_0 = this.children.iterator();
@@ -14649,12 +14663,12 @@ var twfKotlinLibrary = (function (_, Kotlin) {
                   )
                 ) {
                   if (identifier.length > 6) {
-                    var $receiver_2 = identifier;
+                    var $receiver_1 = identifier;
                     var endIndex_0 =
                       (identifier.length -
                         (functionIdentifier.texRepresentation.length + 2)) |
                       0;
-                    identifier = $receiver_2.substring(0, endIndex_0);
+                    identifier = $receiver_1.substring(0, endIndex_0);
                   }
                   identifier += ensureNotNull(
                     functionConfiguration.functionPropertiesByName.get_11rb$(
@@ -14673,12 +14687,12 @@ var twfKotlinLibrary = (function (_, Kotlin) {
                 }
               }
               if (this.children.size > 0) {
-                var $receiver_3 = identifier;
+                var $receiver_2 = identifier;
                 var endIndex_1 =
                   (identifier.length -
                     (functionIdentifier.texRepresentation.length + 2)) |
                   0;
-                identifier = $receiver_3.substring(0, endIndex_1);
+                identifier = $receiver_2.substring(0, endIndex_1);
               }
             }
 
@@ -14721,9 +14735,9 @@ var twfKotlinLibrary = (function (_, Kotlin) {
           identifier += child_1.toTexViewRec_0() + ",";
         }
         if (this.children.size > 0) {
-          var $receiver_4 = identifier;
+          var $receiver_3 = identifier;
           var endIndex_2 = (identifier.length - 1) | 0;
-          identifier = $receiver_4.substring(0, endIndex_2);
+          identifier = $receiver_3.substring(0, endIndex_2);
         }
         identifier += texCloseBracket;
       }
@@ -15741,24 +15755,61 @@ var twfKotlinLibrary = (function (_, Kotlin) {
   ExpressionNodeConstructor.prototype.construct_61zpoe$ = function (
     identifier
   ) {
+    var tmp$;
+    if (first_0(identifier) === 40 && last_0(identifier) === 41) {
+      var endIndex = get_lastIndex_0(identifier);
+      tmp$ = this.constructRecursive_0(identifier.substring(1, endIndex), 1);
+    } else {
+      tmp$ = this.constructRecursive_0(identifier, 0);
+    }
+    var child = tmp$;
+    if (child.nodeType === NodeType$ERROR_getInstance()) {
+      return child;
+    }
+    var newNode = new ExpressionNode(
+      NodeType$FUNCTION_getInstance(),
+      "",
+      void 0,
+      void 0,
+      void 0,
+      void 0,
+      void 0,
+      identifier
+    );
+    newNode.addChild_6718cy$(child);
+    return newNode;
+  };
+  ExpressionNodeConstructor.prototype.constructRecursive_0 = function (
+    identifier,
+    startPosition
+  ) {
+    if (startPosition === void 0) startPosition = 0;
     var tmp$, tmp$_0;
-    if (contains_0(identifier, 40)) {
-      var indexOfFirst$result;
-      indexOfFirst$break: do {
-        var tmp$_1, tmp$_0_0, tmp$_1_0, tmp$_2;
-        tmp$_1 = get_indices(identifier);
-        tmp$_0_0 = tmp$_1.first;
-        tmp$_1_0 = tmp$_1.last;
-        tmp$_2 = tmp$_1.step;
-        for (var index = tmp$_0_0; index <= tmp$_1_0; index += tmp$_2) {
-          if (unboxChar(toBoxedChar(identifier.charCodeAt(index))) === 40) {
-            indexOfFirst$result = index;
-            break indexOfFirst$break;
-          }
+    if (identifier.length === 0) {
+      return new ExpressionNode(
+        NodeType$ERROR_getInstance(),
+        "Something expected",
+        startPosition,
+        (startPosition + 1) | 0
+      );
+    }
+    var indexOfFirst$result;
+    indexOfFirst$break: do {
+      var tmp$_1, tmp$_0_0, tmp$_1_0, tmp$_2;
+      tmp$_1 = get_indices(identifier);
+      tmp$_0_0 = tmp$_1.first;
+      tmp$_1_0 = tmp$_1.last;
+      tmp$_2 = tmp$_1.step;
+      for (var index = tmp$_0_0; index <= tmp$_1_0; index += tmp$_2) {
+        if (unboxChar(toBoxedChar(identifier.charCodeAt(index))) === 40) {
+          indexOfFirst$result = index;
+          break indexOfFirst$break;
         }
-        indexOfFirst$result = -1;
-      } while (false);
-      var openBracketIndex = indexOfFirst$result;
+      }
+      indexOfFirst$result = -1;
+    } while (false);
+    var openBracketIndex = indexOfFirst$result;
+    if (openBracketIndex >= 0) {
       var newNode = new ExpressionNode(
         NodeType$FUNCTION_getInstance(),
         identifier.substring(0, openBracketIndex),
@@ -15777,24 +15828,91 @@ var twfKotlinLibrary = (function (_, Kotlin) {
           openBracketCount === 0 &&
           (identifier.charCodeAt(i) === 59 || identifier.charCodeAt(i) === 41)
         ) {
-          newNode.addChild_6718cy$(
-            this.construct_61zpoe$(currentChildIdentifier.toString())
+          var child = this.constructRecursive_0(
+            currentChildIdentifier.toString(),
+            (startPosition + i - currentChildIdentifier.length) | 0
           );
+          if (child.nodeType === NodeType$ERROR_getInstance()) {
+            return child;
+          }
+          newNode.addChild_6718cy$(child);
           currentChildIdentifier = new StringBuilder("");
         } else {
           currentChildIdentifier.append_s8itvh$(identifier.charCodeAt(i));
-          if (identifier.charCodeAt(i) === 40) {
-            openBracketCount = (openBracketCount + 1) | 0;
-          } else if (identifier.charCodeAt(i) === 41)
-            (tmp$_0 = openBracketCount), (openBracketCount = (tmp$_0 - 1) | 0);
+        }
+        if (identifier.charCodeAt(i) === 40) {
+          openBracketCount = (openBracketCount + 1) | 0;
+        } else if (identifier.charCodeAt(i) === 41)
+          (tmp$_0 = openBracketCount), (openBracketCount = (tmp$_0 - 1) | 0);
+        if (openBracketCount < -1) {
+          return new ExpressionNode(
+            NodeType$ERROR_getInstance(),
+            "Unexpected ')'",
+            (startPosition + i) | 0,
+            (startPosition + i + 1) | 0
+          );
         }
       }
-      newNode.functionStringDefinition = this.functionConfiguration.fastFindStringDefinitionByNameAndNumberOfArguments_bm4lxs$(
-        newNode.value,
-        newNode.children.size
-      );
+      if (openBracketCount >= 0) {
+        return new ExpressionNode(
+          NodeType$ERROR_getInstance(),
+          "closing bracket missing",
+          (startPosition + identifier.length - 1) | 0,
+          (startPosition + identifier.length) | 0
+        );
+      }
+      if (newNode.value.length > 0 || newNode.children.size > 1) {
+        newNode.functionStringDefinition = this.functionConfiguration.fastFindStringDefinitionByNameAndNumberOfArguments_bm4lxs$(
+          newNode.value,
+          newNode.children.size
+        );
+        if (newNode.functionStringDefinition == null) {
+          return new ExpressionNode(
+            NodeType$ERROR_getInstance(),
+            "Unknown function: '" +
+              newNode.value +
+              "' with '" +
+              toString(newNode.children.size) +
+              "' arguments",
+            startPosition,
+            (startPosition + openBracketIndex) | 0
+          );
+        }
+      }
       return newNode;
     } else {
+      var indexOfFirst$result_0;
+      indexOfFirst$break: do {
+        var tmp$_3, tmp$_0_1, tmp$_1_1, tmp$_2_0;
+        tmp$_3 = get_indices(identifier);
+        tmp$_0_1 = tmp$_3.first;
+        tmp$_1_1 = tmp$_3.last;
+        tmp$_2_0 = tmp$_3.step;
+        for (var index_0 = tmp$_0_1; index_0 <= tmp$_1_1; index_0 += tmp$_2_0) {
+          if (
+            !isNameOrNaturalNumberPart(
+              unboxChar(toBoxedChar(identifier.charCodeAt(index_0)))
+            )
+          ) {
+            indexOfFirst$result_0 = index_0;
+            break indexOfFirst$break;
+          }
+        }
+        indexOfFirst$result_0 = -1;
+      } while (false);
+      var notDigitVariableSymbolIndex = indexOfFirst$result_0;
+      if (notDigitVariableSymbolIndex >= 0) {
+        return new ExpressionNode(
+          NodeType$ERROR_getInstance(),
+          "Wrong variable symbol '" +
+            String.fromCharCode(
+              identifier.charCodeAt(notDigitVariableSymbolIndex)
+            ) +
+            "'",
+          (startPosition + notDigitVariableSymbolIndex) | 0,
+          (startPosition + notDigitVariableSymbolIndex + 1) | 0
+        );
+      }
       var newValue = this.compiledImmediateVariableReplacements.get_11rb$(
         identifier
       );
@@ -20200,7 +20318,7 @@ var twfKotlinLibrary = (function (_, Kotlin) {
       );
       if (!tmp$_0) {
         var tmp$_1;
-        tmp$_0 = endsWith(
+        tmp$_0 = endsWith_0(
           trim(
             Kotlin.isCharSequence((tmp$_1 = originalExpression))
               ? tmp$_1
@@ -20670,9 +20788,9 @@ var twfKotlinLibrary = (function (_, Kotlin) {
               if (
                 last(actualParent.children).type ===
                   MathMlTagTreeNode$Type$EXPRESSION_PART_STRING_getInstance() &&
-                (endsWith(last(actualParent.children).value, "</mi>") ||
-                  endsWith(last(actualParent.children).value, "</mn>") ||
-                  endsWith(last(actualParent.children).value, "</mo>")) &&
+                (endsWith_0(last(actualParent.children).value, "</mi>") ||
+                  endsWith_0(last(actualParent.children).value, "</mn>") ||
+                  endsWith_0(last(actualParent.children).value, "</mo>")) &&
                 lastIndexOfAny(
                   last(actualParent.children).value,
                   listOf(["<mi>", "<mo>", "<mn>"])
@@ -21049,6 +21167,12 @@ var twfKotlinLibrary = (function (_, Kotlin) {
             continue;
           }
           if (
+            remainingExpressionStartsWith("\\text", node.value, currentPosition)
+          ) {
+            currentPosition = (currentPosition + 5) | 0;
+            continue;
+          }
+          if (
             this.isMathML &&
             node.value.charCodeAt(currentPosition) === 60 &&
             !this.isComplicatedTag_0(node.value, currentPosition)
@@ -21291,11 +21415,17 @@ var twfKotlinLibrary = (function (_, Kotlin) {
               }
             }
           } else if (
-            isNameOrNumberPart(node.value.charCodeAt(currentPosition)) ||
+            isLetterOrDigitOrUnderscore(
+              node.value.charCodeAt(currentPosition)
+            ) ||
             (node.value.charCodeAt(currentPosition) === 38 && this.isMathML)
           ) {
             state = ExpressionTreeParser$ParserState$NUMBER_READ_getInstance();
-            if (isNameOrNumberPart(node.value.charCodeAt(currentPosition))) {
+            if (
+              isLetterOrDigitOrUnderscore(
+                node.value.charCodeAt(currentPosition)
+              )
+            ) {
               value += String.fromCharCode(
                 node.value.charCodeAt(currentPosition)
               );
@@ -21325,7 +21455,9 @@ var twfKotlinLibrary = (function (_, Kotlin) {
                 continue;
               }
               if (
-                isNameOrNumberPart(node.value.charCodeAt(currentPosition)) ||
+                isLetterOrDigitOrUnderscore(
+                  node.value.charCodeAt(currentPosition)
+                ) ||
                 node.value.charCodeAt(currentPosition) === 46 ||
                 (node.value.charCodeAt(currentPosition) === 38 && this.isMathML)
               ) {
@@ -24319,6 +24451,9 @@ var twfKotlinLibrary = (function (_, Kotlin) {
       this.parent_70ee6d$_0 = parent;
     },
   });
+  Expression.prototype.getLastExpression = function () {
+    return this;
+  };
   Expression.prototype.isSolutionWithoutFunctions_cbql57$ = function (
     forbidden,
     targetExpression,
@@ -25782,6 +25917,9 @@ var twfKotlinLibrary = (function (_, Kotlin) {
       this.identifier_54c48h$_0 = identifier;
     },
   });
+  ExpressionComparison.prototype.getLastExpression = function () {
+    return this.rightExpression.getLastExpression();
+  };
   ExpressionComparison.prototype.isSolutionWithoutFunctions_cbql57$ = function (
     forbidden,
     targetExpression,
@@ -26558,6 +26696,9 @@ var twfKotlinLibrary = (function (_, Kotlin) {
   ) {
     return null;
   };
+  RulePointer.prototype.getLastExpression = function () {
+    return null;
+  };
   RulePointer.$metadata$ = {
     kind: Kind_CLASS,
     simpleName: "RulePointer",
@@ -26866,6 +27007,9 @@ var twfKotlinLibrary = (function (_, Kotlin) {
     targetExpression,
     factComporator
   ) {
+    return null;
+  };
+  Rule.prototype.getLastExpression = function () {
     return null;
   };
   Rule.$metadata$ = {
@@ -28476,6 +28620,9 @@ var twfKotlinLibrary = (function (_, Kotlin) {
       this.identifier_ybd3r0$_0 = identifier;
     },
   });
+  MainLineAndNode.prototype.getLastExpression = function () {
+    return last(this.outFacts).getLastExpression();
+  };
   MainLineAndNode.prototype.isSolutionForVariables_axkv0l$$default = function (
     targetVariables,
     left,
@@ -29619,6 +29766,9 @@ var twfKotlinLibrary = (function (_, Kotlin) {
       this.identifier_g6vyv4$_0 = identifier;
     },
   });
+  MainLineOrNode.prototype.getLastExpression = function () {
+    return last(this.outFacts).getLastExpression();
+  };
   MainLineOrNode.prototype.isSolutionForVariables_axkv0l$$default = function (
     targetVariables,
     left,
@@ -30610,7 +30760,7 @@ var twfKotlinLibrary = (function (_, Kotlin) {
           );
           result.append_61zpoe$(this.mainLineNodePartSuffix);
         }
-        if (endsWith_0(result, 123)) {
+        if (endsWith(result, 123)) {
           tmp$_0 = result.toString() + "}";
         } else {
           tmp$_0 =
@@ -36448,7 +36598,7 @@ var twfKotlinLibrary = (function (_, Kotlin) {
         );
         if (
           startsWith(partString_0, "<mtext>") &&
-          endsWith(partString_0, "</mtext>")
+          endsWith_0(partString_0, "</mtext>")
         ) {
           var endIndex_5 = (partString_0.length - 9) | 0;
           var ruleNameLink = partString_0.substring(7, endIndex_5);
@@ -36468,7 +36618,7 @@ var twfKotlinLibrary = (function (_, Kotlin) {
           );
         } else if (
           startsWith(partString_0, "<mo>[</mo>") &&
-          endsWith(partString_0, "<mo>]</mo>")
+          endsWith_0(partString_0, "<mo>]</mo>")
         ) {
           log_1.addMessage_bda5c9$(
             TransformationChainParser$parseExpressionComparisonOrExpressionChainFromTransformationChain$lambda_30,
@@ -36483,7 +36633,7 @@ var twfKotlinLibrary = (function (_, Kotlin) {
           );
         } else if (
           startsWith(partString_0, '<mfenced open="[" close="]">') &&
-          endsWith(partString_0, "</mfenced>")
+          endsWith_0(partString_0, "</mfenced>")
         ) {
           log_1.addMessage_bda5c9$(
             TransformationChainParser$parseExpressionComparisonOrExpressionChainFromTransformationChain$lambda_31,
@@ -36638,7 +36788,7 @@ var twfKotlinLibrary = (function (_, Kotlin) {
     if (actualTag != null) {
       var tagData = getTagAttributes(actualTag);
       if (
-        endsWith(
+        endsWith_0(
           significantPart,
           "</" + toString(tagData.get_11rb$("name")) + ">"
         ) &&
@@ -37685,12 +37835,9 @@ var twfKotlinLibrary = (function (_, Kotlin) {
     return "parsed input transformations: ";
   }
   function checkFactsInMathML$lambda_4() {
-    return "solution with task target joined: ";
-  }
-  function checkFactsInMathML$lambda_5() {
     return "input transformations checking started";
   }
-  function checkFactsInMathML$lambda_6(closure$checkingResult) {
+  function checkFactsInMathML$lambda_5(closure$checkingResult) {
     return function () {
       return (
         "input transformations checking result: '" +
@@ -37701,11 +37848,16 @@ var twfKotlinLibrary = (function (_, Kotlin) {
       );
     };
   }
-  function checkFactsInMathML$lambda_7(closure$result) {
+  function checkFactsInMathML$lambda_6(closure$result) {
     return function () {
       return (
         "transformations in mathML after brushing: '''" + closure$result + "'''"
       );
+    };
+  }
+  function checkFactsInMathML$lambda_7(closure$error) {
+    return function () {
+      return closure$error.description;
     };
   }
   function checkFactsInMathML$lambda_8(closure$error) {
@@ -37713,14 +37865,14 @@ var twfKotlinLibrary = (function (_, Kotlin) {
       return closure$error.description;
     };
   }
-  function checkFactsInMathML$lambda_9(closure$error) {
-    return function () {
-      return closure$error.description;
-    };
-  }
-  function checkFactsInMathML$lambda_10(closure$variable) {
+  function checkFactsInMathML$lambda_9(closure$variable) {
     return function () {
       return "variable '" + closure$variable + "' is not expressed";
+    };
+  }
+  function checkFactsInMathML$lambda_10(closure$error) {
+    return function () {
+      return closure$error.description;
     };
   }
   function checkFactsInMathML$lambda_11(closure$error) {
@@ -37728,12 +37880,7 @@ var twfKotlinLibrary = (function (_, Kotlin) {
       return closure$error.description;
     };
   }
-  function checkFactsInMathML$lambda_12(closure$error) {
-    return function () {
-      return closure$error.description;
-    };
-  }
-  function checkFactsInMathML$lambda_13() {
+  function checkFactsInMathML$lambda_12() {
     return "Answer checked successfully";
   }
   function checkFactsInMathML(
@@ -37777,7 +37924,7 @@ var twfKotlinLibrary = (function (_, Kotlin) {
     if (maxDistBetweenDiffSteps === void 0) maxDistBetweenDiffSteps = "";
     if (forbiddenFunctions === void 0) forbiddenFunctions = "";
     if (scopeFilter === void 0) scopeFilter = "";
-    var tmp$, tmp$_0, tmp$_1, tmp$_2, tmp$_3, tmp$_4, tmp$_5;
+    var tmp$, tmp$_0, tmp$_1, tmp$_2, tmp$_3, tmp$_4;
     log_1.clear();
     var compiledConfiguration = compiledConfigurationBySettings(
       wellKnownFunctions,
@@ -37796,16 +37943,18 @@ var twfKotlinLibrary = (function (_, Kotlin) {
       void 0,
       0
     );
-    var mathMLWithoutUnexpectedCodes = replaceAliases(brushedMathML);
+    var mathMLWithoutUnexpectedCodes = replaceSpaceMathMLAliases(brushedMathML);
     var mathMLWithoutSuffix = deleteErrorStringFromMathMLSolution(
       mathMLWithoutUnexpectedCodes,
       listOf([errorPrefix, syntaxErrorPrefix])
     );
-    var mathMLWithoutBrushing = dropPerformedBrushing(mathMLWithoutSuffix);
-    var mathMLWithoutSupportingTags = deleteUnsupportedTags(
+    var mathMLWithoutBrushing = dropPerformedMathMLBrushing(
+      mathMLWithoutSuffix
+    );
+    var mathMLWithoutSupportingTags = deleteUnsupportedMathMLTags(
       mathMLWithoutBrushing
     );
-    var mathMLAfterSpecificSystemReplacements = specificSystemReplacements(
+    var mathMLAfterSpecificSystemReplacements = specificMathMlSystemReplacements(
       mathMLWithoutSupportingTags
     );
     var mathML = correctMathMlTagsAccordingToBracketsFromEnd(
@@ -37842,57 +37991,28 @@ var twfKotlinLibrary = (function (_, Kotlin) {
         MessageType$USER_getInstance()
       );
       var factComporator = compiledConfiguration.factComporator;
-      if (contains(targetFactIdentifier, "}{=}{")) {
-        var taskTargetFact = log_1.factConstructorViewer.constructFactByIdentifier_7q4i4t$(
-          targetFactIdentifier
-        );
-        var taskTargetRoot =
-          taskTargetFact.type() === transformationChainParser.root.type()
-            ? taskTargetFact
-            : new MainLineAndNode(
-                void 0,
-                void 0,
-                void 0,
-                void 0,
-                mutableListOf([taskTargetFact])
-              );
-        var newRoot = new MainLineAndNode(
-          void 0,
-          void 0,
-          void 0,
-          mutableListOf([
-            new MainChain(
-              mutableListOf([transformationChainParser.root, taskTargetRoot])
-            ),
-          ])
-        );
-        log_1.addMessageWithFactDetail_5zaetr$(
-          checkFactsInMathML$lambda_4,
-          newRoot,
-          MessageType$USER_getInstance()
-        );
-        tmp$ = newRoot;
-      } else {
-        tmp$ = transformationChainParser.root;
-      }
-      var solutionRoot = tmp$;
+      var solutionRoot = combineSolutionRoot(
+        targetFactIdentifier,
+        transformationChainParser,
+        compiledConfiguration
+      );
       log_1.addMessage_bda5c9$(
-        checkFactsInMathML$lambda_5,
+        checkFactsInMathML$lambda_4,
         MessageType$USER_getInstance(),
         0
       );
       var checkingResult = solutionRoot.check_l8pk6u$(
         factComporator,
         false,
-        compiledConfiguration.compiledFactTreeTransformationRules,
-        compiledConfiguration.compiledExpressionTreeTransformationRules,
+        emptyList(),
+        emptyList(),
         additionalFactsFromItsIdentifiers(
           log_1.factConstructorViewer,
           additionalFactsIdentifiers
         )
       );
       log_1.addMessage_bda5c9$(
-        checkFactsInMathML$lambda_6(checkingResult),
+        checkFactsInMathML$lambda_5(checkingResult),
         MessageType$USER_getInstance(),
         0
       );
@@ -37905,24 +38025,24 @@ var twfKotlinLibrary = (function (_, Kotlin) {
         compiledConfiguration.checkedFactAccentuation.checkedFactColor
           .checkedFactBackgroundColor
       );
-      log_1.addMessage_bda5c9$(checkFactsInMathML$lambda_7(result), void 0, 0);
+      log_1.addMessage_bda5c9$(checkFactsInMathML$lambda_6(result), void 0, 0);
       if (!checkingResult.isCorrect) {
         if (!startsWith(brushedMathML, "<")) {
           return errorPrefix + ": " + checkingResult.description;
         }
         if (equals(shortErrorDescription, "1")) {
-          tmp$_0 = addErrorStringToMathMLSolution(
+          tmp$ = addErrorStringToMathMLSolution(
             result,
             "Unclear transformation or incomplete solution. Try to fix errors or to write more details.",
             errorPrefix
           );
         } else
-          tmp$_0 = addErrorStringToMathMLSolution(
+          tmp$ = addErrorStringToMathMLSolution(
             result,
             checkingResult.description,
             errorPrefix
           );
-        return tmp$_0;
+        return tmp$;
       }
       if (!isBlank(minNumberOfMultipliersInAnswer)) {
         var minNumberOfMultipliers = toInt(minNumberOfMultipliersInAnswer);
@@ -37930,25 +38050,25 @@ var twfKotlinLibrary = (function (_, Kotlin) {
         var destination = ArrayList_init_0(
           collectionSizeOrDefault($receiver, 10)
         );
-        var tmp$_6;
-        tmp$_6 = $receiver.iterator();
-        while (tmp$_6.hasNext()) {
-          var item = tmp$_6.next();
-          var tmp$_7;
+        var tmp$_5;
+        tmp$_5 = $receiver.iterator();
+        while (tmp$_5.hasNext()) {
+          var item = tmp$_5.next();
+          var tmp$_6;
           destination.add_11rb$(
             trim(
-              Kotlin.isCharSequence((tmp$_7 = item)) ? tmp$_7 : throwCCE()
+              Kotlin.isCharSequence((tmp$_6 = item)) ? tmp$_6 : throwCCE()
             ).toString()
           );
         }
         var targetVariables = toSet(destination);
         var targetExpression = (Kotlin.isType(
-          (tmp$_1 = log_1.factConstructorViewer.constructFactByIdentifier_7q4i4t$(
+          (tmp$_0 = log_1.factConstructorViewer.constructFactByIdentifier_7q4i4t$(
             targetFactIdentifier
           )),
           Expression
         )
-          ? tmp$_1
+          ? tmp$_0
           : throwCCE()
         ).data;
         var error_0 = solutionRoot.isFactorizationForVariables_3b7jn6$(
@@ -37959,7 +38079,7 @@ var twfKotlinLibrary = (function (_, Kotlin) {
         );
         if (error_0 != null) {
           log_1.addMessage_bda5c9$(
-            checkFactsInMathML$lambda_8(error_0),
+            checkFactsInMathML$lambda_7(error_0),
             MessageType$USER_getInstance(),
             0
           );
@@ -37973,12 +38093,12 @@ var twfKotlinLibrary = (function (_, Kotlin) {
         if (!isBlank(maxNumberOfDivisionsInAnswer)) {
           var maxNumberOfDivisions = toInt(maxNumberOfDivisionsInAnswer);
           var targetExpression_0 = (Kotlin.isType(
-            (tmp$_2 = log_1.factConstructorViewer.constructFactByIdentifier_7q4i4t$(
+            (tmp$_1 = log_1.factConstructorViewer.constructFactByIdentifier_7q4i4t$(
               targetFactIdentifier
             )),
             Expression
           )
-            ? tmp$_2
+            ? tmp$_1
             : throwCCE()
           ).data;
           var error_1 = solutionRoot.hasNoFractions_5ah4l7$(
@@ -37988,7 +38108,7 @@ var twfKotlinLibrary = (function (_, Kotlin) {
           );
           if (error_1 != null) {
             log_1.addMessage_bda5c9$(
-              checkFactsInMathML$lambda_9(error_1),
+              checkFactsInMathML$lambda_8(error_1),
               MessageType$USER_getInstance(),
               0
             );
@@ -38004,16 +38124,16 @@ var twfKotlinLibrary = (function (_, Kotlin) {
             var destination_0 = ArrayList_init_0(
               collectionSizeOrDefault($receiver_0, 10)
             );
-            var tmp$_8;
-            tmp$_8 = $receiver_0.iterator();
-            while (tmp$_8.hasNext()) {
-              var item_0 = tmp$_8.next();
-              var tmp$_9;
+            var tmp$_7;
+            tmp$_7 = $receiver_0.iterator();
+            while (tmp$_7.hasNext()) {
+              var item_0 = tmp$_7.next();
+              var tmp$_8;
               destination_0.add_11rb$(
                 new Pair(
                   trim(
-                    Kotlin.isCharSequence((tmp$_9 = item_0))
-                      ? tmp$_9
+                    Kotlin.isCharSequence((tmp$_8 = item_0))
+                      ? tmp$_8
                       : throwCCE()
                   ).toString(),
                   false
@@ -38026,37 +38146,37 @@ var twfKotlinLibrary = (function (_, Kotlin) {
               var destination_1 = ArrayList_init_0(
                 collectionSizeOrDefault($receiver_1, 10)
               );
-              var tmp$_10;
-              tmp$_10 = $receiver_1.iterator();
-              while (tmp$_10.hasNext()) {
-                var item_1 = tmp$_10.next();
-                var tmp$_11;
+              var tmp$_9;
+              tmp$_9 = $receiver_1.iterator();
+              while (tmp$_9.hasNext()) {
+                var item_1 = tmp$_9.next();
+                var tmp$_10;
                 destination_1.add_11rb$(
                   trim(
-                    Kotlin.isCharSequence((tmp$_11 = item_1))
-                      ? tmp$_11
+                    Kotlin.isCharSequence((tmp$_10 = item_1))
+                      ? tmp$_10
                       : throwCCE()
                   ).toString()
                 );
               }
-              tmp$_3 = toSet(destination_1);
+              tmp$_2 = toSet(destination_1);
             } else {
-              tmp$_3 = emptySet();
+              tmp$_2 = emptySet();
             }
-            var allowedVariables = tmp$_3;
+            var allowedVariables = tmp$_2;
             var error_2 = solutionRoot.isSolutionForVariables_axkv0l$(
               targetVariables_0,
               void 0,
               allowedVariables
             );
-            tmp$_4 = targetVariables_0.entries.iterator();
-            while (tmp$_4.hasNext()) {
-              var tmp$_12 = tmp$_4.next();
-              var variable = tmp$_12.key;
-              var expressed = tmp$_12.value;
+            tmp$_3 = targetVariables_0.entries.iterator();
+            while (tmp$_3.hasNext()) {
+              var tmp$_11 = tmp$_3.next();
+              var variable = tmp$_11.key;
+              var expressed = tmp$_11.value;
               if (!expressed) {
                 log_1.addMessage_bda5c9$(
-                  checkFactsInMathML$lambda_10(variable),
+                  checkFactsInMathML$lambda_9(variable),
                   MessageType$USER_getInstance(),
                   0
                 );
@@ -38069,7 +38189,7 @@ var twfKotlinLibrary = (function (_, Kotlin) {
             }
             if (error_2 != null) {
               log_1.addMessage_bda5c9$(
-                checkFactsInMathML$lambda_11(error_2),
+                checkFactsInMathML$lambda_10(error_2),
                 MessageType$USER_getInstance(),
                 0
               );
@@ -38083,12 +38203,12 @@ var twfKotlinLibrary = (function (_, Kotlin) {
           if (!isBlank(forbiddenFunctions)) {
             var forbidden = pairsStringIntFromString(forbiddenFunctions);
             var targetExpression_1 = (Kotlin.isType(
-              (tmp$_5 = log_1.factConstructorViewer.constructFactByIdentifier_7q4i4t$(
+              (tmp$_4 = log_1.factConstructorViewer.constructFactByIdentifier_7q4i4t$(
                 targetFactIdentifier
               )),
               Expression
             )
-              ? tmp$_5
+              ? tmp$_4
               : throwCCE()
             ).data;
             var error_3 = solutionRoot.isSolutionWithoutFunctions_cbql57$(
@@ -38098,7 +38218,7 @@ var twfKotlinLibrary = (function (_, Kotlin) {
             );
             if (error_3 != null) {
               log_1.addMessage_bda5c9$(
-                checkFactsInMathML$lambda_12(error_3),
+                checkFactsInMathML$lambda_11(error_3),
                 MessageType$USER_getInstance(),
                 0
               );
@@ -38110,7 +38230,7 @@ var twfKotlinLibrary = (function (_, Kotlin) {
             }
           }
           log_1.addMessage_bda5c9$(
-            checkFactsInMathML$lambda_13,
+            checkFactsInMathML$lambda_12,
             MessageType$USER_getInstance(),
             0
           );
@@ -38140,11 +38260,11 @@ var twfKotlinLibrary = (function (_, Kotlin) {
     );
     var positions = selectPlacesForColoringByFragment(mathML, start, end);
     var endIndex = positions.first;
-    var tmp$ = mathML.substring(0, endIndex) + underliningStart;
+    var tmp$ = mathML.substring(0, endIndex) + underliningStartMathML;
     var startIndex = positions.first;
     var endIndex_0 = positions.second;
     var tmp$_0 =
-      tmp$ + mathML.substring(startIndex, endIndex_0) + underliningEnd;
+      tmp$ + mathML.substring(startIndex, endIndex_0) + underliningEndMathML;
     var startIndex_0 = positions.second;
     var endIndex_1 = mathML.length;
     var result = tmp$_0 + mathML.substring(startIndex_0, endIndex_1);
@@ -38154,206 +38274,18 @@ var twfKotlinLibrary = (function (_, Kotlin) {
       "Syntax&#xA0;error&#xA0;(underlined)"
     );
   }
-  function compiledConfigurationBySettings(
-    wellKnownFunctions,
-    expressionTransformationRules,
-    maxExpressionTransformationWeight,
-    unlimitedWellKnownFunctions,
-    taskContextExpressionTransformationRules,
-    maxDistBetweenDiffSteps,
-    scopeFilter
-  ) {
-    if (taskContextExpressionTransformationRules === void 0)
-      taskContextExpressionTransformationRules = "";
-    if (maxDistBetweenDiffSteps === void 0) maxDistBetweenDiffSteps = "";
-    if (scopeFilter === void 0) scopeFilter = "";
-    var $receiver = split(scopeFilter, [configSeparator]);
-    var destination = ArrayList_init_0(collectionSizeOrDefault($receiver, 10));
-    var tmp$;
-    tmp$ = $receiver.iterator();
-    while (tmp$.hasNext()) {
-      var item = tmp$.next();
-      var tmp$_0;
-      destination.add_11rb$(
-        trim(
-          Kotlin.isCharSequence((tmp$_0 = item)) ? tmp$_0 : throwCCE()
-        ).toString()
-      );
-    }
-    var functionConfiguration = new FunctionConfiguration(toSet(destination));
-    if (!isBlank(wellKnownFunctions)) {
-      var pairs = pairsFromString(wellKnownFunctions);
-      var destination_0 = ArrayList_init_0(collectionSizeOrDefault(pairs, 10));
-      var tmp$_1;
-      tmp$_1 = pairs.iterator();
-      while (tmp$_1.hasNext()) {
-        var item_0 = tmp$_1.next();
-        destination_0.add_11rb$(
-          new FunctionIdentifier(item_0.first, toInt(item_0.second))
-        );
-      }
-      functionConfiguration.notChangesOnVariablesInComparisonFunction = toMutableList(
-        destination_0
-      );
-    }
-    if (!isBlank(unlimitedWellKnownFunctions)) {
-      var pairs_0 = pairsFromString(unlimitedWellKnownFunctions);
-      var destination_1 = ArrayList_init_0(
-        collectionSizeOrDefault(pairs_0, 10)
-      );
-      var tmp$_2;
-      tmp$_2 = pairs_0.iterator();
-      while (tmp$_2.hasNext()) {
-        var item_1 = tmp$_2.next();
-        destination_1.add_11rb$(
-          new FunctionIdentifier(item_1.first, toInt(item_1.second))
-        );
-      }
-      functionConfiguration.notChangesOnVariablesInComparisonFunctionWithoutTransformations = toMutableList(
-        destination_1
-      );
-    }
-    if (expressionTransformationRules.length > 0) {
-      var $receiver_0 = functionConfiguration.treeTransformationRules;
-      var destination_2 = ArrayList_init();
-      var tmp$_3;
-      tmp$_3 = $receiver_0.iterator();
-      while (tmp$_3.hasNext()) {
-        var element = tmp$_3.next();
-        if (element.isImmediate === true) destination_2.add_11rb$(element);
-      }
-      functionConfiguration.treeTransformationRules = toMutableList(
-        destination_2
-      );
-      var pairs_1 = pairsFromString(expressionTransformationRules);
-      var tmp$_4 = functionConfiguration.treeTransformationRules;
-      var destination_3 = ArrayList_init_0(
-        collectionSizeOrDefault(pairs_1, 10)
-      );
-      var tmp$_5;
-      tmp$_5 = pairs_1.iterator();
-      while (tmp$_5.hasNext()) {
-        var item_2 = tmp$_5.next();
-        destination_3.add_11rb$(
-          new TreeTransformationRule(item_2.first, item_2.second)
-        );
-      }
-      tmp$_4.addAll_brywnq$(destination_3);
-    }
-    if (taskContextExpressionTransformationRules.length > 0) {
-      var $receiver_1 =
-        functionConfiguration.taskContextTreeTransformationRules;
-      var destination_4 = ArrayList_init();
-      var tmp$_6;
-      tmp$_6 = $receiver_1.iterator();
-      while (tmp$_6.hasNext()) {
-        var element_0 = tmp$_6.next();
-        if (element_0.isImmediate === true) destination_4.add_11rb$(element_0);
-      }
-      functionConfiguration.taskContextTreeTransformationRules = toMutableList(
-        destination_4
-      );
-      var pairs_2 = pairsFromString(taskContextExpressionTransformationRules);
-      var tmp$_7 = functionConfiguration.taskContextTreeTransformationRules;
-      var destination_5 = ArrayList_init_0(
-        collectionSizeOrDefault(pairs_2, 10)
-      );
-      var tmp$_8;
-      tmp$_8 = pairs_2.iterator();
-      while (tmp$_8.hasNext()) {
-        var item_3 = tmp$_8.next();
-        destination_5.add_11rb$(
-          new TreeTransformationRule(item_3.first, item_3.second)
-        );
-      }
-      tmp$_7.addAll_brywnq$(destination_5);
-    }
-    var compiledConfiguration = new CompiledConfiguration(
-      void 0,
-      functionConfiguration
-    );
-    if (!isBlank(maxExpressionTransformationWeight)) {
-      compiledConfiguration.comparisonSettings.maxExpressionTransformationWeight = toDouble(
-        maxExpressionTransformationWeight
-      );
-    }
-    if (!isBlank(maxDistBetweenDiffSteps)) {
-      compiledConfiguration.comparisonSettings.maxDistBetweenDiffSteps = toDouble(
-        maxDistBetweenDiffSteps
-      );
-    }
-    return compiledConfiguration;
-  }
-  function replaceAliases(string) {
+  function replaceSpaceMathMLAliases(string) {
     var result = spaceRegex.replace_x2uqeu$(string, "&#xA0;");
     return result;
   }
   var spaceRegex;
-  function pairsFromString(data) {
-    var result = ArrayList_init();
-    var tmp$;
-    var $receiver = split(
-      trim(Kotlin.isCharSequence((tmp$ = data)) ? tmp$ : throwCCE()).toString(),
-      [configSeparator]
-    );
-    var destination = ArrayList_init_0(collectionSizeOrDefault($receiver, 10));
-    var tmp$_0;
-    tmp$_0 = $receiver.iterator();
-    while (tmp$_0.hasNext()) {
-      var item = tmp$_0.next();
-      var tmp$_1;
-      destination.add_11rb$(
-        trim(
-          Kotlin.isCharSequence((tmp$_1 = item)) ? tmp$_1 : throwCCE()
-        ).toString()
-      );
-    }
-    var parts = destination;
-    var i = 1;
-    while (i < parts.size) {
-      result.add_11rb$(
-        new Pair(parts.get_za3lpa$((i - 1) | 0), parts.get_za3lpa$(i))
-      );
-      i = (i + 2) | 0;
-    }
-    return result;
-  }
-  function pairsStringIntFromString(data) {
-    var result = ArrayList_init();
-    var tmp$;
-    var $receiver = split(
-      trim(Kotlin.isCharSequence((tmp$ = data)) ? tmp$ : throwCCE()).toString(),
-      [configSeparator]
-    );
-    var destination = ArrayList_init_0(collectionSizeOrDefault($receiver, 10));
-    var tmp$_0;
-    tmp$_0 = $receiver.iterator();
-    while (tmp$_0.hasNext()) {
-      var item = tmp$_0.next();
-      var tmp$_1;
-      destination.add_11rb$(
-        trim(
-          Kotlin.isCharSequence((tmp$_1 = item)) ? tmp$_1 : throwCCE()
-        ).toString()
-      );
-    }
-    var parts = destination;
-    var i = 1;
-    while (i < parts.size) {
-      result.add_11rb$(
-        new Pair(parts.get_za3lpa$((i - 1) | 0), toInt(parts.get_za3lpa$(i)))
-      );
-      i = (i + 2) | 0;
-    }
-    return result;
-  }
-  function deleteUnsupportedTags(string) {
+  function deleteUnsupportedMathMLTags(string) {
     var tmp$;
     var result = StringBuilder_init();
     var pos = 0;
     while (pos < string.length) {
       var toWhile = false;
-      tmp$ = unsupportedTagList.iterator();
+      tmp$ = unsupportedTagListMathML.iterator();
       while (tmp$.hasNext()) {
         var tag = tmp$.next();
         if (remainingExpressionStartsWith("</" + tag + ">", string, pos)) {
@@ -38451,7 +38383,7 @@ var twfKotlinLibrary = (function (_, Kotlin) {
     }
     return result.reverse().toString();
   }
-  function specificSystemReplacements(mathML) {
+  function specificMathMlSystemReplacements(mathML) {
     return replace(
       replace(
         replace(
@@ -38490,7 +38422,7 @@ var twfKotlinLibrary = (function (_, Kotlin) {
   }
   function deleteErrorStringFromMathMLSolution(mathML, errorPrefix) {
     var tmp$;
-    if (endsWith(mathML, "</mtext></math>")) {
+    if (endsWith_0(mathML, "</mtext></math>")) {
       var errorMessage = substringAfterLast(
         mathML,
         '<mspace linebreak="newline"/><mtext mathvariant="bold" mathcolor="#FF0000">'
@@ -38508,6 +38440,640 @@ var twfKotlinLibrary = (function (_, Kotlin) {
       }
     }
     return mathML;
+  }
+  var unsupportedTagListMathML;
+  var underliningStartMathML;
+  var underliningEndMathML;
+  function TexVerificationResult(validatedSolution, errorMessage) {
+    this.validatedSolution = validatedSolution;
+    this.errorMessage = errorMessage;
+  }
+  TexVerificationResult.$metadata$ = {
+    kind: Kind_CLASS,
+    simpleName: "TexVerificationResult",
+    interfaces: [],
+  };
+  TexVerificationResult.prototype.component1 = function () {
+    return this.validatedSolution;
+  };
+  TexVerificationResult.prototype.component2 = function () {
+    return this.errorMessage;
+  };
+  TexVerificationResult.prototype.copy_puj7f4$ = function (
+    validatedSolution,
+    errorMessage
+  ) {
+    return new TexVerificationResult(
+      validatedSolution === void 0 ? this.validatedSolution : validatedSolution,
+      errorMessage === void 0 ? this.errorMessage : errorMessage
+    );
+  };
+  TexVerificationResult.prototype.toString = function () {
+    return (
+      "TexVerificationResult(validatedSolution=" +
+      Kotlin.toString(this.validatedSolution) +
+      (", errorMessage=" + Kotlin.toString(this.errorMessage)) +
+      ")"
+    );
+  };
+  TexVerificationResult.prototype.hashCode = function () {
+    var result = 0;
+    result = (result * 31 + Kotlin.hashCode(this.validatedSolution)) | 0;
+    result = (result * 31 + Kotlin.hashCode(this.errorMessage)) | 0;
+    return result;
+  };
+  TexVerificationResult.prototype.equals = function (other) {
+    return (
+      this === other ||
+      (other !== null &&
+        typeof other === "object" &&
+        Object.getPrototypeOf(this) === Object.getPrototypeOf(other) &&
+        Kotlin.equals(this.validatedSolution, other.validatedSolution) &&
+        Kotlin.equals(this.errorMessage, other.errorMessage))
+    );
+  };
+  function checkFactsInTex$lambda(closure$originalTexSolution) {
+    return function () {
+      return (
+        "input transformations in TEX: '''" +
+        closure$originalTexSolution +
+        "'''"
+      );
+    };
+  }
+  function checkFactsInTex$lambda_0(closure$texSolution) {
+    return function () {
+      return (
+        "input transformations in TEX without brushing: '''" +
+        closure$texSolution +
+        "'''"
+      );
+    };
+  }
+  function checkFactsInTex$lambda_1() {
+    return "input transformations parsing started";
+  }
+  function checkFactsInTex$lambda_2() {
+    return "input transformations are parsed successfully";
+  }
+  function checkFactsInTex$lambda_3() {
+    return "parsed input transformations: ";
+  }
+  function checkFactsInTex$lambda_4() {
+    return "input transformations checking started";
+  }
+  function checkFactsInTex$lambda_5(closure$checkingResult) {
+    return function () {
+      return (
+        "input transformations checking result: '" +
+        (closure$checkingResult.isCorrect
+          ? "correct"
+          : "incorrect - " + closure$checkingResult.description) +
+        "'"
+      );
+    };
+  }
+  function checkFactsInTex$lambda_6(closure$result) {
+    return function () {
+      return (
+        "transformations in tex after brushing: '''" + closure$result + "'''"
+      );
+    };
+  }
+  function checkFactsInTex$lambda_7() {
+    return "input transformations checked successfully; answer checking started";
+  }
+  function checkFactsInTex$lambda_8(closure$patternNode) {
+    return function () {
+      return "parsed answer pattern: '''" + closure$patternNode + "'''";
+    };
+  }
+  function checkFactsInTex$lambda_9() {
+    return "Full solution checked successfully";
+  }
+  function checkFactsInTex(
+    originalTexSolution,
+    startExpressionIdentifier,
+    endExpressionIdentifier,
+    targetFactIdentifier,
+    targetFactPattern,
+    additionalFactsIdentifiers,
+    shortErrorDescription,
+    compiledConfiguration
+  ) {
+    if (startExpressionIdentifier === void 0) startExpressionIdentifier = "";
+    if (endExpressionIdentifier === void 0) endExpressionIdentifier = "";
+    if (targetFactIdentifier === void 0) targetFactIdentifier = "";
+    if (targetFactPattern === void 0) targetFactPattern = "";
+    if (additionalFactsIdentifiers === void 0) additionalFactsIdentifiers = "";
+    if (shortErrorDescription === void 0) shortErrorDescription = "0";
+    var tmp$;
+    log_1.clear();
+    log_1.factConstructorViewer = new FactConstructorViewer(
+      compiledConfiguration
+    );
+    log_1.addMessage_bda5c9$(
+      checkFactsInTex$lambda(originalTexSolution),
+      void 0,
+      0
+    );
+    var texSolution = dropPerformedTexBrushing(originalTexSolution);
+    log_1.addMessage_bda5c9$(checkFactsInTex$lambda_0(texSolution), void 0, 0);
+    var transformationChainParser = new TransformationChainParser(
+      texSolution,
+      false,
+      compiledConfiguration.functionConfiguration,
+      compiledConfiguration.factsLogicConfiguration,
+      compiledConfiguration.compiledImmediateVariableReplacements
+    );
+    log_1.addMessage_bda5c9$(
+      checkFactsInTex$lambda_1,
+      MessageType$USER_getInstance(),
+      0
+    );
+    var error = transformationChainParser.parse();
+    if (error != null) {
+      return new TexVerificationResult(
+        returnParsingError_1(error, texSolution),
+        "Syntax error (underlined): " + error.description
+      );
+    } else {
+      log_1.addMessage_bda5c9$(
+        checkFactsInTex$lambda_2,
+        MessageType$USER_getInstance(),
+        0
+      );
+      log_1.addMessageWithFactDetail_5zaetr$(
+        checkFactsInTex$lambda_3,
+        transformationChainParser.root,
+        MessageType$USER_getInstance()
+      );
+      var factComporator = compiledConfiguration.factComporator;
+      var solutionRoot = combineSolutionRoot(
+        targetFactIdentifier,
+        transformationChainParser,
+        compiledConfiguration,
+        startExpressionIdentifier,
+        endExpressionIdentifier
+      );
+      log_1.addMessage_bda5c9$(
+        checkFactsInTex$lambda_4,
+        MessageType$USER_getInstance(),
+        0
+      );
+      var checkingResult = solutionRoot.check_l8pk6u$(
+        factComporator,
+        false,
+        emptyList(),
+        emptyList(),
+        additionalFactsFromItsIdentifiers(
+          log_1.factConstructorViewer,
+          additionalFactsIdentifiers
+        )
+      );
+      log_1.addMessage_bda5c9$(
+        checkFactsInTex$lambda_5(checkingResult),
+        MessageType$USER_getInstance(),
+        0
+      );
+      var tmp$_0 = transformationChainParser.originalTransformationChain;
+      var $receiver = checkingResult.coloringTasks;
+      var destination = ArrayList_init();
+      var tmp$_1;
+      tmp$_1 = $receiver.iterator();
+      while (tmp$_1.hasNext()) {
+        var element = tmp$_1.next();
+        if (element.startPosition > 0 || element.endPosition > 0)
+          destination.add_11rb$(element);
+      }
+      var resultWithColoredTasks = brushTex(tmp$_0, destination);
+      var result = setBackgroundColorTex(resultWithColoredTasks, "purple");
+      log_1.addMessage_bda5c9$(checkFactsInTex$lambda_6(result), void 0, 0);
+      if (!checkingResult.isCorrect) {
+        if (equals(shortErrorDescription, "1")) {
+          tmp$ = new TexVerificationResult(
+            result,
+            "Error: Unclear transformation or incomplete solution. Try to fix errors or to write more details"
+          );
+        } else
+          tmp$ = new TexVerificationResult(
+            result,
+            errorPrefix + ": " + checkingResult.description
+          );
+        return tmp$;
+      }
+      if (!isBlank(targetFactPattern)) {
+        log_1.addMessage_bda5c9$(
+          checkFactsInTex$lambda_7,
+          MessageType$USER_getInstance(),
+          0
+        );
+        var resultExpression = solutionRoot.getLastExpression();
+        if (
+          resultExpression == null ||
+          resultExpression.data.children.isEmpty()
+        ) {
+          return new TexVerificationResult(result, "Error: answer is empty");
+        }
+        var expressionStructureConditionConstructor = new ExpressionStructureConditionConstructor(
+          compiledConfiguration.functionConfiguration
+        );
+        var patternNode = expressionStructureConditionConstructor.parse_61zpoe$(
+          targetFactPattern
+        );
+        log_1.addMessage_bda5c9$(
+          checkFactsInTex$lambda_8(patternNode),
+          void 0,
+          0
+        );
+        if (!checkExpressionStructure(resultExpression.data, patternNode)) {
+          return new TexVerificationResult(
+            result,
+            "Error: answer does not match given condition"
+          );
+        }
+      }
+      log_1.addMessage_bda5c9$(
+        checkFactsInTex$lambda_9,
+        MessageType$USER_getInstance(),
+        0
+      );
+      return new TexVerificationResult(result, "");
+    }
+  }
+  function returnParsingError_1(error, mathML) {
+    return returnParsingError_2(
+      error.description,
+      error.position,
+      error.endPosition,
+      mathML
+    );
+  }
+  function returnParsingError$lambda_0(closure$description) {
+    return function () {
+      return "transformations parsing error: '" + closure$description + "'";
+    };
+  }
+  function returnParsingError_2(description, start, end, tex) {
+    log_1.addMessage_bda5c9$(
+      returnParsingError$lambda_0(description),
+      MessageType$USER_getInstance(),
+      0
+    );
+    var endPosition = findClosestPlaceToTargetOnTheSameLevel(tex, start, end);
+    var tmp$ =
+      tex.substring(0, start) +
+      "\\underline{" +
+      tex.substring(start, endPosition) +
+      "}";
+    var endIndex = tex.length;
+    var result = tmp$ + tex.substring(endPosition, endIndex);
+    return result;
+  }
+  function deleteUnsupportedTags(string) {
+    var tmp$;
+    var result = StringBuilder_init();
+    var pos = 0;
+    while (pos < string.length) {
+      var toWhile = false;
+      tmp$ = unsupportedTagListMathML.iterator();
+      while (tmp$.hasNext()) {
+        var tag = tmp$.next();
+        if (remainingExpressionStartsWith("</" + tag + ">", string, pos)) {
+          pos = (pos + ("</" + tag + ">").length) | 0;
+          toWhile = true;
+          result.append_61zpoe$("</mrow>");
+        } else if (remainingExpressionStartsWith("<" + tag, string, pos)) {
+          var actualTag = readOpenTagStringIfItPresent(string, pos);
+          pos = (pos + ensureNotNull(actualTag).length) | 0;
+          toWhile = true;
+          result.append_61zpoe$("<mrow>");
+        }
+        if (toWhile) {
+          break;
+        }
+      }
+      if (toWhile) {
+        continue;
+      }
+      result.append_s8itvh$(string.charCodeAt(pos));
+      pos = (pos + 1) | 0;
+    }
+    return result.toString();
+  }
+  function compiledConfigurationBySettings(
+    wellKnownFunctionsString,
+    expressionTransformationRulesString,
+    maxExpressionTransformationWeightString,
+    unlimitedWellKnownFunctionsString,
+    taskContextExpressionTransformationRulesString,
+    maxDistBetweenDiffStepsString,
+    scopeFilterString,
+    wellKnownFunctions,
+    unlimitedWellKnownFunctions,
+    expressionTransformationRules
+  ) {
+    if (wellKnownFunctionsString === void 0) wellKnownFunctionsString = "";
+    if (expressionTransformationRulesString === void 0)
+      expressionTransformationRulesString = "";
+    if (maxExpressionTransformationWeightString === void 0)
+      maxExpressionTransformationWeightString = "";
+    if (unlimitedWellKnownFunctionsString === void 0)
+      unlimitedWellKnownFunctionsString = "";
+    if (taskContextExpressionTransformationRulesString === void 0)
+      taskContextExpressionTransformationRulesString = "";
+    if (maxDistBetweenDiffStepsString === void 0)
+      maxDistBetweenDiffStepsString = "";
+    if (scopeFilterString === void 0) scopeFilterString = "";
+    if (wellKnownFunctions === void 0) {
+      wellKnownFunctions = emptyList();
+    }
+    if (unlimitedWellKnownFunctions === void 0) {
+      unlimitedWellKnownFunctions = emptyList();
+    }
+    if (expressionTransformationRules === void 0) {
+      expressionTransformationRules = emptyList();
+    }
+    var $receiver = split(scopeFilterString, [configSeparator]);
+    var destination = ArrayList_init_0(collectionSizeOrDefault($receiver, 10));
+    var tmp$;
+    tmp$ = $receiver.iterator();
+    while (tmp$.hasNext()) {
+      var item = tmp$.next();
+      var tmp$_0;
+      destination.add_11rb$(
+        trim(
+          Kotlin.isCharSequence((tmp$_0 = item)) ? tmp$_0 : throwCCE()
+        ).toString()
+      );
+    }
+    var functionConfiguration = new FunctionConfiguration(toSet(destination));
+    if (!wellKnownFunctions.isEmpty()) {
+      functionConfiguration.notChangesOnVariablesInComparisonFunction = wellKnownFunctions;
+    } else {
+      if (!isBlank(wellKnownFunctionsString)) {
+        var pairs = pairsFromString(wellKnownFunctionsString);
+        var destination_0 = ArrayList_init_0(
+          collectionSizeOrDefault(pairs, 10)
+        );
+        var tmp$_1;
+        tmp$_1 = pairs.iterator();
+        while (tmp$_1.hasNext()) {
+          var item_0 = tmp$_1.next();
+          destination_0.add_11rb$(
+            new FunctionIdentifier(item_0.first, toInt(item_0.second))
+          );
+        }
+        functionConfiguration.notChangesOnVariablesInComparisonFunction = toMutableList(
+          destination_0
+        );
+      }
+    }
+    if (!unlimitedWellKnownFunctions.isEmpty()) {
+      functionConfiguration.notChangesOnVariablesInComparisonFunctionWithoutTransformations = unlimitedWellKnownFunctions;
+    } else {
+      if (!isBlank(unlimitedWellKnownFunctionsString)) {
+        var pairs_0 = pairsFromString(unlimitedWellKnownFunctionsString);
+        var destination_1 = ArrayList_init_0(
+          collectionSizeOrDefault(pairs_0, 10)
+        );
+        var tmp$_2;
+        tmp$_2 = pairs_0.iterator();
+        while (tmp$_2.hasNext()) {
+          var item_1 = tmp$_2.next();
+          destination_1.add_11rb$(
+            new FunctionIdentifier(item_1.first, toInt(item_1.second))
+          );
+        }
+        functionConfiguration.notChangesOnVariablesInComparisonFunctionWithoutTransformations = toMutableList(
+          destination_1
+        );
+      }
+    }
+    if (expressionTransformationRulesString.length > 0) {
+      var $receiver_0 = functionConfiguration.treeTransformationRules;
+      var destination_2 = ArrayList_init();
+      var tmp$_3;
+      tmp$_3 = $receiver_0.iterator();
+      while (tmp$_3.hasNext()) {
+        var element = tmp$_3.next();
+        if (element.isImmediate === true) destination_2.add_11rb$(element);
+      }
+      functionConfiguration.treeTransformationRules = toMutableList(
+        destination_2
+      );
+      var pairs_1 = pairsFromString(expressionTransformationRulesString);
+      var tmp$_4 = functionConfiguration.treeTransformationRules;
+      var destination_3 = ArrayList_init_0(
+        collectionSizeOrDefault(pairs_1, 10)
+      );
+      var tmp$_5;
+      tmp$_5 = pairs_1.iterator();
+      while (tmp$_5.hasNext()) {
+        var item_2 = tmp$_5.next();
+        destination_3.add_11rb$(
+          new TreeTransformationRule(item_2.first, item_2.second)
+        );
+      }
+      tmp$_4.addAll_brywnq$(destination_3);
+    }
+    if (taskContextExpressionTransformationRulesString.length > 0) {
+      var $receiver_1 =
+        functionConfiguration.taskContextTreeTransformationRules;
+      var destination_4 = ArrayList_init();
+      var tmp$_6;
+      tmp$_6 = $receiver_1.iterator();
+      while (tmp$_6.hasNext()) {
+        var element_0 = tmp$_6.next();
+        if (element_0.isImmediate === true) destination_4.add_11rb$(element_0);
+      }
+      functionConfiguration.taskContextTreeTransformationRules = toMutableList(
+        destination_4
+      );
+      var pairs_2 = pairsFromString(
+        taskContextExpressionTransformationRulesString
+      );
+      var tmp$_7 = functionConfiguration.taskContextTreeTransformationRules;
+      var destination_5 = ArrayList_init_0(
+        collectionSizeOrDefault(pairs_2, 10)
+      );
+      var tmp$_8;
+      tmp$_8 = pairs_2.iterator();
+      while (tmp$_8.hasNext()) {
+        var item_3 = tmp$_8.next();
+        destination_5.add_11rb$(
+          new TreeTransformationRule(item_3.first, item_3.second)
+        );
+      }
+      tmp$_7.addAll_brywnq$(destination_5);
+    }
+    var compiledConfiguration = new CompiledConfiguration(
+      void 0,
+      functionConfiguration
+    );
+    if (!expressionTransformationRules.isEmpty()) {
+      compiledConfiguration.compiledExpressionTreeTransformationRules.clear();
+      compiledConfiguration.compiledExpressionTreeTransformationRules.addAll_brywnq$(
+        expressionTransformationRules
+      );
+    }
+    if (!isBlank(maxExpressionTransformationWeightString)) {
+      compiledConfiguration.comparisonSettings.maxExpressionTransformationWeight = toDouble(
+        maxExpressionTransformationWeightString
+      );
+    }
+    if (!isBlank(maxDistBetweenDiffStepsString)) {
+      compiledConfiguration.comparisonSettings.maxDistBetweenDiffSteps = toDouble(
+        maxDistBetweenDiffStepsString
+      );
+    }
+    return compiledConfiguration;
+  }
+  function combineSolutionRoot$lambda() {
+    return "solution with task target joined: ";
+  }
+  function combineSolutionRoot(
+    targetFactIdentifier,
+    transformationChainParser,
+    compiledConfiguration,
+    startExpressionIdentifier,
+    endExpressionIdentifier
+  ) {
+    if (startExpressionIdentifier === void 0) startExpressionIdentifier = "";
+    if (endExpressionIdentifier === void 0) endExpressionIdentifier = "";
+    var tmp$;
+    if (
+      !isBlank(startExpressionIdentifier) &&
+      transformationChainParser.root.factTransformationChains.isEmpty() &&
+      transformationChainParser.root.expressionTransformationChains.size === 1
+    ) {
+      var expressionNodeConstructor = new ExpressionNodeConstructor(
+        compiledConfiguration.functionConfiguration
+      );
+      var startExpression = expressionNodeConstructor.construct_61zpoe$(
+        startExpressionIdentifier
+      );
+      first(
+        transformationChainParser.root.expressionTransformationChains
+      ).chain.add_wxm5ur$(
+        0,
+        new Expression(
+          void 0,
+          void 0,
+          startExpression,
+          void 0,
+          transformationChainParser.root
+        )
+      );
+      if (!isBlank(endExpressionIdentifier)) {
+        var endExpression = expressionNodeConstructor.construct_61zpoe$(
+          endExpressionIdentifier
+        );
+        first(
+          transformationChainParser.root.expressionTransformationChains
+        ).chain.add_11rb$(
+          new Expression(
+            void 0,
+            void 0,
+            endExpression,
+            void 0,
+            transformationChainParser.root
+          )
+        );
+      }
+    }
+    if (contains(targetFactIdentifier, "}{=}{")) {
+      var taskTargetFact = log_1.factConstructorViewer.constructFactByIdentifier_7q4i4t$(
+        targetFactIdentifier
+      );
+      var taskTargetRoot =
+        taskTargetFact.type() === transformationChainParser.root.type()
+          ? taskTargetFact
+          : new MainLineAndNode(
+              void 0,
+              void 0,
+              void 0,
+              void 0,
+              mutableListOf([taskTargetFact])
+            );
+      var newRoot = new MainLineAndNode(
+        void 0,
+        void 0,
+        void 0,
+        mutableListOf([
+          new MainChain(
+            mutableListOf([transformationChainParser.root, taskTargetRoot])
+          ),
+        ])
+      );
+      log_1.addMessageWithFactDetail_5zaetr$(
+        combineSolutionRoot$lambda,
+        newRoot,
+        MessageType$USER_getInstance()
+      );
+      tmp$ = newRoot;
+    } else {
+      tmp$ = transformationChainParser.root;
+    }
+    return tmp$;
+  }
+  function pairsFromString(data) {
+    var result = ArrayList_init();
+    var tmp$;
+    var $receiver = split(
+      trim(Kotlin.isCharSequence((tmp$ = data)) ? tmp$ : throwCCE()).toString(),
+      [configSeparator]
+    );
+    var destination = ArrayList_init_0(collectionSizeOrDefault($receiver, 10));
+    var tmp$_0;
+    tmp$_0 = $receiver.iterator();
+    while (tmp$_0.hasNext()) {
+      var item = tmp$_0.next();
+      var tmp$_1;
+      destination.add_11rb$(
+        trim(
+          Kotlin.isCharSequence((tmp$_1 = item)) ? tmp$_1 : throwCCE()
+        ).toString()
+      );
+    }
+    var parts = destination;
+    var i = 1;
+    while (i < parts.size) {
+      result.add_11rb$(
+        new Pair(parts.get_za3lpa$((i - 1) | 0), parts.get_za3lpa$(i))
+      );
+      i = (i + 2) | 0;
+    }
+    return result;
+  }
+  function pairsStringIntFromString(data) {
+    var result = ArrayList_init();
+    var tmp$;
+    var $receiver = split(
+      trim(Kotlin.isCharSequence((tmp$ = data)) ? tmp$ : throwCCE()).toString(),
+      [configSeparator]
+    );
+    var destination = ArrayList_init_0(collectionSizeOrDefault($receiver, 10));
+    var tmp$_0;
+    tmp$_0 = $receiver.iterator();
+    while (tmp$_0.hasNext()) {
+      var item = tmp$_0.next();
+      var tmp$_1;
+      destination.add_11rb$(
+        trim(
+          Kotlin.isCharSequence((tmp$_1 = item)) ? tmp$_1 : throwCCE()
+        ).toString()
+      );
+    }
+    var parts = destination;
+    var i = 1;
+    while (i < parts.size) {
+      result.add_11rb$(
+        new Pair(parts.get_za3lpa$((i - 1) | 0), toInt(parts.get_za3lpa$(i)))
+      );
+      i = (i + 2) | 0;
+    }
+    return result;
   }
   function additionalFactsFromItsIdentifiers(
     $receiver,
@@ -38552,9 +39118,6 @@ var twfKotlinLibrary = (function (_, Kotlin) {
   var configSeparator;
   var errorPrefix;
   var syntaxErrorPrefix;
-  var unsupportedTagList;
-  var underliningStart;
-  var underliningEnd;
   function CageHolder(minPoint, maxPoint) {
     CageHolder$Companion_getInstance();
     this.minPoint_0 = minPoint;
@@ -39529,8 +40092,8 @@ var twfKotlinLibrary = (function (_, Kotlin) {
   function isLetterOrDigitOrUnderscore($receiver) {
     return isLetterOrDigit($receiver) || $receiver === 95;
   }
-  function isNameOrNumberPart($receiver) {
-    return isLetterOrDigitOrUnderscore($receiver) || $receiver === 39;
+  function isNameOrNaturalNumberPart($receiver) {
+    return isLetterOrDigitOrUnderscore($receiver) || $receiver === 46;
   }
   function isNumberPart($receiver) {
     return isDigit($receiver) || $receiver === 46;
@@ -39792,17 +40355,19 @@ var twfKotlinLibrary = (function (_, Kotlin) {
   function findClosestPlaceToTargetOnTheSameLevel(
     string,
     startPosition,
-    targetEndPosition
+    targetEndPosition,
+    isMathML
   ) {
+    if (isMathML === void 0) isMathML = true;
     var tmp$;
     var pos = startPosition;
     var openTagsCount = 0;
     var minDist = (targetEndPosition - pos) | 0;
     var currentResultPos = pos;
     while (pos < string.length) {
-      if (remainingExpressionStartsWith("</", string, pos)) {
+      if (isMathML && remainingExpressionStartsWith("</", string, pos)) {
         openTagsCount = (openTagsCount - 1) | 0;
-      } else if (string.charCodeAt(pos) === 60) {
+      } else if (isMathML && string.charCodeAt(pos) === 60) {
         openTagsCount = (openTagsCount + 1) | 0;
       } else if (isOpenBracket(string.charCodeAt(pos))) {
         openTagsCount = (openTagsCount + 1) | 0;
@@ -40023,7 +40588,7 @@ var twfKotlinLibrary = (function (_, Kotlin) {
         var actualTag = readOpenTagStringIfItPresent(expression, pos);
         if (actualTag != null) {
           pos = (pos + actualTag.length) | 0;
-          if (!endsWith(actualTag, "/>")) {
+          if (!endsWith_0(actualTag, "/>")) {
             var tagName = ensureNotNull(
               getTagAttributes(actualTag).get_11rb$("name")
             );
@@ -40276,6 +40841,20 @@ var twfKotlinLibrary = (function (_, Kotlin) {
     this.endPosition = endPosition;
     this.color = color;
   }
+  ColoringTask.prototype.texColor = function () {
+    switch (this.color) {
+      case "7F00FF":
+        return "purple";
+      case "007F00":
+        return "green";
+      case "FF00FF":
+        return "yellow";
+      case "FF0000":
+        return "red";
+      default:
+        return "black";
+    }
+  };
   ColoringTask.$metadata$ = {
     kind: Kind_CLASS,
     simpleName: "ColoringTask",
@@ -40406,17 +40985,17 @@ var twfKotlinLibrary = (function (_, Kotlin) {
     result.append_61zpoe$(string.substring(startIndex_1));
     return result.toString();
   }
-  function dropPerformedBrushing(string) {
-    var result = dropPerformedBrushingInternal(string);
+  function dropPerformedMathMLBrushing(string) {
+    var result = dropPerformedMathMLBrushingInternal(string);
     var resultLast = string;
     while (!equals(result, resultLast)) {
-      var newResult = dropPerformedBrushingInternal(result);
+      var newResult = dropPerformedMathMLBrushingInternal(result);
       resultLast = result;
       result = newResult;
     }
     return result;
   }
-  function dropPerformedBrushingInternal(string) {
+  function dropPerformedMathMLBrushingInternal(string) {
     var result = StringBuilder_init();
     var currentPosition = 0;
     while (currentPosition < string.length) {
@@ -40540,21 +41119,147 @@ var twfKotlinLibrary = (function (_, Kotlin) {
   function transformationPartsToLog_2(transformation) {
     return transformation.computeIdentifier_6taknv$(false);
   }
-  _.stringToExpression = stringToExpression;
-  _.expressionToTextString = expressionToTexString;
+  function Comparator$ObjectLiteral_3(closure$comparison) {
+    this.closure$comparison = closure$comparison;
+  }
+  Comparator$ObjectLiteral_3.prototype.compare = function (a, b) {
+    return this.closure$comparison(a, b);
+  };
+  Comparator$ObjectLiteral_3.$metadata$ = {
+    kind: Kind_CLASS,
+    interfaces: [Comparator],
+  };
+  var compareBy$lambda_2 = wrapFunction(function () {
+    var compareValues = Kotlin.kotlin.comparisons.compareValues_s00gnj$;
+    return function (closure$selector) {
+      return function (a, b) {
+        var selector = closure$selector;
+        return compareValues(selector(a), selector(b));
+      };
+    };
+  });
+  function setBackgroundColorTex(string, color) {
+    return "\\" + "textcolor{" + color + "}{" + string + "}";
+  }
+  function brushTex$lambda(it) {
+    return it.startPosition;
+  }
+  function brushTex(string, coloringTasks) {
+    var tmp$;
+    var result = StringBuilder_init();
+    var lastHandledPosition = 0;
+    var destination = ArrayList_init();
+    var tmp$_0;
+    tmp$_0 = coloringTasks.iterator();
+    while (tmp$_0.hasNext()) {
+      var element = tmp$_0.next();
+      if (element.startPosition <= element.endPosition)
+        destination.add_11rb$(element);
+    }
+    var sortedColoringTasks = sortedWith(
+      destination,
+      new Comparator$ObjectLiteral_3(compareBy$lambda_2(brushTex$lambda))
+    );
+    tmp$ = sortedColoringTasks.iterator();
+    while (tmp$.hasNext()) {
+      var task = tmp$.next();
+      if (task.startPosition >= get_lastIndex_0(string)) {
+        var startIndex = lastHandledPosition;
+        var endIndex = get_lastIndex_0(string);
+        result.append_61zpoe$(string.substring(startIndex, endIndex));
+        result.append_61zpoe$("\\" + "textcolor{" + task.texColor() + "}{.}");
+      } else {
+        var startIndex_0 = lastHandledPosition;
+        var endIndex_0 = task.startPosition;
+        result.append_61zpoe$(string.substring(startIndex_0, endIndex_0));
+        if (
+          task.startPosition === task.endPosition ||
+          task.startPosition >= get_lastIndex_0(string)
+        ) {
+          result.append_61zpoe$("\\" + "textcolor{" + task.texColor() + "}{.}");
+          lastHandledPosition = task.startPosition;
+        } else {
+          var endPosition = findClosestPlaceToTargetOnTheSameLevel(
+            string,
+            task.startPosition,
+            task.endPosition
+          );
+          result.append_61zpoe$("\\" + "textcolor{" + task.texColor() + "}{");
+          var startIndex_1 = task.startPosition;
+          result.append_61zpoe$(string.substring(startIndex_1, endPosition));
+          result.append_61zpoe$("}");
+          lastHandledPosition = endPosition;
+        }
+      }
+    }
+    var startIndex_2 = lastHandledPosition;
+    result.append_61zpoe$(string.substring(startIndex_2));
+    return result.toString();
+  }
+  function dropPerformedTexBrushing(string) {
+    var result = dropPerformedTexBrushingInternal(string);
+    var resultLast = string;
+    while (!equals(result, resultLast)) {
+      var newResult = dropPerformedTexBrushingInternal(result);
+      resultLast = result;
+      result = newResult;
+    }
+    return result;
+  }
+  function dropPerformedTexBrushingInternal$lambda(it) {
+    return unboxChar(it) !== 125;
+  }
+  function dropPerformedTexBrushingInternal(string) {
+    var result = StringBuilder_init();
+    var currentPosition = 0;
+    while (currentPosition < string.length) {
+      var index = findAnyOf(string, listOf_0("\\textcolor{"), currentPosition);
+      if (index != null) {
+        var startIndex = currentPosition;
+        var endIndex = index.first;
+        result.append_61zpoe$(string.substring(startIndex, endIndex));
+        currentPosition = (index.first + index.second.length) | 0;
+        currentPosition =
+          (skipFromRemainingExpressionWhile(
+            dropPerformedTexBrushingInternal$lambda,
+            string,
+            currentPosition
+          ) +
+            1) |
+          0;
+        var newCurrentPosition = skipFromRemainingExpressionWhileClosingBracketNotFound(
+          "}",
+          "{",
+          string,
+          currentPosition
+        );
+        var startIndex_0 = currentPosition;
+        result.append_61zpoe$(
+          string.substring(startIndex_0, newCurrentPosition)
+        );
+        currentPosition = (newCurrentPosition + 1) | 0;
+      } else {
+        var startIndex_1 = currentPosition;
+        result.append_61zpoe$(string.substring(startIndex_1));
+        break;
+      }
+    }
+    return result.toString();
+  }
   var package$api = _.api || (_.api = {});
   package$api.compareWithoutSubstitutions_ic33gh$ = compareWithoutSubstitutions;
   package$api.compareByPattern_fxceps$ = compareByPattern;
   package$api.compareWithoutSubstitutions_atx8px$ = compareWithoutSubstitutions_0;
   package$api.compareByPattern_atx8px$ = compareByPattern_0;
   package$api.compareWithoutSubstitutionsStructureStrings_atx8px$ = compareWithoutSubstitutionsStructureStrings;
-  package$api.stringToExpression_y630ta$ = stringToExpression_0;
+  package$api.stringToExpression_y630ta$ = stringToExpression;
   package$api.expressionToString_tvfpvg$ = expressionToString;
-  package$api.expressionToTexString_tvfpvg$ = expressionToTexString_0;
+  package$api.expressionToTexString_tvfpvg$ = expressionToTexString;
   package$api.structureStringToExpression_69c2cy$ = structureStringToExpression;
   package$api.expressionToStructureString_6718cy$ = expressionToStructureString;
   package$api.stringToStructureString_y630ta$ = stringToStructureString;
   package$api.stringToExpressionStructurePattern_69c2cy$ = stringToExpressionStructurePattern;
+  package$api.investigateIfExpressionFormIsStructureString_61zpoe$ = investigateIfExpressionFormIsStructureString;
   package$api.generateTask_ufm96r$ = generateTask;
   package$api.generateTaskInJSON_ny8vwh$ = generateTaskInJSON;
   package$api.generateTaskByStructureStringsSubstitutionsInJSON_ny8vwh$ = generateTaskByStructureStringsSubstitutionsInJSON;
@@ -40568,6 +41273,7 @@ var twfKotlinLibrary = (function (_, Kotlin) {
   package$api.findStructureStringsSubstitutionPlacesCoordinatesInExpressionJSON_yb6h17$ = findStructureStringsSubstitutionPlacesCoordinatesInExpressionJSON;
   package$api.applyExpressionBySubstitutionPlaceCoordinates_wumftt$ = applyExpressionBySubstitutionPlaceCoordinates;
   package$api.applyExpressionByStructureStringsSubstitutionPlaceCoordinates_wumftt$ = applyExpressionByStructureStringsSubstitutionPlaceCoordinates;
+  package$api.checkSolutionInTex_1yhbkg$ = checkSolutionInTex;
   var package$baseoperations = _.baseoperations || (_.baseoperations = {});
   package$baseoperations.BaseNumber = BaseNumber;
   package$baseoperations.BaseOperationDefinitionWithDomain = BaseOperationDefinitionWithDomain;
@@ -40710,6 +41416,7 @@ var twfKotlinLibrary = (function (_, Kotlin) {
       return unlimitedWeight;
     },
   });
+  package$expressiontree.buildDiffNode_ca8hlw$ = buildDiffNode;
   package$expressiontree.calcSinCosDomain_e779oy$ = calcSinCosDomain;
   Object.defineProperty(package$expressiontree, "knownOps", {
     get: function () {
@@ -40992,20 +41699,39 @@ var twfKotlinLibrary = (function (_, Kotlin) {
   });
   var package$mainpoints = _.mainpoints || (_.mainpoints = {});
   package$mainpoints.checkFactsInMathML_flvft8$ = checkFactsInMathML;
-  package$mainpoints.compiledConfigurationBySettings_blz5pm$ = compiledConfigurationBySettings;
-  package$mainpoints.replaceAliases_61zpoe$ = replaceAliases;
+  package$mainpoints.replaceSpaceMathMLAliases_61zpoe$ = replaceSpaceMathMLAliases;
   Object.defineProperty(package$mainpoints, "spaceRegex", {
     get: function () {
       return spaceRegex;
     },
   });
-  package$mainpoints.pairsFromString_61zpoe$ = pairsFromString;
-  package$mainpoints.pairsStringIntFromString_61zpoe$ = pairsStringIntFromString;
-  package$mainpoints.deleteUnsupportedTags_61zpoe$ = deleteUnsupportedTags;
+  package$mainpoints.deleteUnsupportedMathMLTags_61zpoe$ = deleteUnsupportedMathMLTags;
   package$mainpoints.correctMathMlTagsAccordingToBracketsFromEnd_61zpoe$ = correctMathMlTagsAccordingToBracketsFromEnd;
-  package$mainpoints.specificSystemReplacements_61zpoe$ = specificSystemReplacements;
+  package$mainpoints.specificMathMlSystemReplacements_61zpoe$ = specificMathMlSystemReplacements;
   package$mainpoints.addErrorStringToMathMLSolution_6hosri$ = addErrorStringToMathMLSolution;
   package$mainpoints.deleteErrorStringFromMathMLSolution_kwv3np$ = deleteErrorStringFromMathMLSolution;
+  Object.defineProperty(package$mainpoints, "unsupportedTagListMathML", {
+    get: function () {
+      return unsupportedTagListMathML;
+    },
+  });
+  Object.defineProperty(package$mainpoints, "underliningStartMathML", {
+    get: function () {
+      return underliningStartMathML;
+    },
+  });
+  Object.defineProperty(package$mainpoints, "underliningEndMathML", {
+    get: function () {
+      return underliningEndMathML;
+    },
+  });
+  package$mainpoints.TexVerificationResult = TexVerificationResult;
+  package$mainpoints.checkFactsInTex_58f4d7$ = checkFactsInTex;
+  package$mainpoints.deleteUnsupportedTags_61zpoe$ = deleteUnsupportedTags;
+  package$mainpoints.compiledConfigurationBySettings_oxdwhe$ = compiledConfigurationBySettings;
+  package$mainpoints.combineSolutionRoot_5lze7j$ = combineSolutionRoot;
+  package$mainpoints.pairsFromString_61zpoe$ = pairsFromString;
+  package$mainpoints.pairsStringIntFromString_61zpoe$ = pairsStringIntFromString;
   package$mainpoints.additionalFactsFromItsIdentifiers_9qfmsk$ = additionalFactsFromItsIdentifiers;
   Object.defineProperty(package$mainpoints, "configSeparator", {
     get: function () {
@@ -41020,21 +41746,6 @@ var twfKotlinLibrary = (function (_, Kotlin) {
   Object.defineProperty(package$mainpoints, "syntaxErrorPrefix", {
     get: function () {
       return syntaxErrorPrefix;
-    },
-  });
-  Object.defineProperty(package$mainpoints, "unsupportedTagList", {
-    get: function () {
-      return unsupportedTagList;
-    },
-  });
-  Object.defineProperty(package$mainpoints, "underliningStart", {
-    get: function () {
-      return underliningStart;
-    },
-  });
-  Object.defineProperty(package$mainpoints, "underliningEnd", {
-    get: function () {
-      return underliningEnd;
     },
   });
   Object.defineProperty(CageHolder, "Companion", {
@@ -41097,7 +41808,7 @@ var twfKotlinLibrary = (function (_, Kotlin) {
   package$standartlibextensions.isDigit_myv2d0$ = isDigit;
   package$standartlibextensions.isLetterOrDigit_myv2d0$ = isLetterOrDigit;
   package$standartlibextensions.isLetterOrDigitOrUnderscore_myv2d0$ = isLetterOrDigitOrUnderscore;
-  package$standartlibextensions.isNameOrNumberPart_myv2d0$ = isNameOrNumberPart;
+  package$standartlibextensions.isNameOrNaturalNumberPart_myv2d0$ = isNameOrNaturalNumberPart;
   package$standartlibextensions.isNumberPart_myv2d0$ = isNumberPart;
   package$standartlibextensions.isOpenBracket_myv2d0$ = isOpenBracket;
   package$standartlibextensions.isCloseBracket_myv2d0$ = isCloseBracket;
@@ -41115,7 +41826,7 @@ var twfKotlinLibrary = (function (_, Kotlin) {
   package$standartlibextensions.findFirstNotInTagNotInMtext_bm4lxs$ = findFirstNotInTagNotInMtext;
   package$standartlibextensions.skipClosingTags_bm4lxs$ = skipClosingTags;
   package$standartlibextensions.selectPlacesForColoringByFragment_3m52m6$ = selectPlacesForColoringByFragment;
-  package$standartlibextensions.findClosestPlaceToTargetOnTheSameLevel_3m52m6$ = findClosestPlaceToTargetOnTheSameLevel;
+  package$standartlibextensions.findClosestPlaceToTargetOnTheSameLevel_yib5kn$ = findClosestPlaceToTargetOnTheSameLevel;
   package$standartlibextensions.skipFromRemainingExpressionWhileClosingBracketNotFound_ibifho$ = skipFromRemainingExpressionWhileClosingBracketNotFound;
   package$standartlibextensions.getIndexOfFirstBracketsValueEnd_cdtk8u$ = getIndexOfFirstBracketsValueEnd;
   package$standartlibextensions.NamedList = NamedList;
@@ -41203,12 +41914,16 @@ var twfKotlinLibrary = (function (_, Kotlin) {
   package$visualization.ColoringTask = ColoringTask;
   package$visualization.setBackgroundColorMathMl_puj7f4$ = setBackgroundColorMathMl;
   package$visualization.brushMathMl_hk0giz$ = brushMathMl;
-  package$visualization.dropPerformedBrushing_61zpoe$ = dropPerformedBrushing;
-  package$visualization.dropPerformedBrushingInternal_61zpoe$ = dropPerformedBrushingInternal;
+  package$visualization.dropPerformedMathMLBrushing_61zpoe$ = dropPerformedMathMLBrushing;
+  package$visualization.dropPerformedMathMLBrushingInternal_61zpoe$ = dropPerformedMathMLBrushingInternal;
   package$visualization.transformationPartsToLog_dviugo$ = transformationPartsToLog;
   package$visualization.transformationPartsToLog_gypy7n$ = transformationPartsToLog_0;
   package$visualization.transformationPartsToLog_7nna50$ = transformationPartsToLog_1;
   package$visualization.transformationPartsToLog_qlr0df$ = transformationPartsToLog_2;
+  package$visualization.setBackgroundColorTex_puj7f4$ = setBackgroundColorTex;
+  package$visualization.brushTex_hk0giz$ = brushTex;
+  package$visualization.dropPerformedTexBrushing_61zpoe$ = dropPerformedTexBrushing;
+  package$visualization.dropPerformedTexBrushingInternal_61zpoe$ = dropPerformedTexBrushingInternal;
   MainLineNode.prototype.isSolutionForVariables_axkv0l$ =
     MainChainPart.prototype.isSolutionForVariables_axkv0l$;
   Expression.prototype.isSolutionForVariables_axkv0l$ =
@@ -41298,12 +42013,12 @@ var twfKotlinLibrary = (function (_, Kotlin) {
   simpleComputationRuleParamsDefault = new SimpleComputationRuleParams(true);
   log_1 = new LazyLog();
   spaceRegex = Regex_init("&#x200\\d;");
+  unsupportedTagListMathML = listOf(["mstyle", "menclose", "mpadded"]);
+  underliningStartMathML = '<menclose mathcolor="#7F0000" notation="bottom">';
+  underliningEndMathML = "</menclose>";
   configSeparator = ";;;";
   errorPrefix = "Error";
   syntaxErrorPrefix = "Syntax";
-  unsupportedTagList = listOf(["mstyle", "menclose", "mpadded"]);
-  underliningStart = '<menclose mathcolor="#7F0000" notation="bottom">';
-  underliningEnd = "</menclose>";
   random = Random.Default;
   mtable = "mtable";
   mfenced = "mfenced";

@@ -6,7 +6,7 @@
 const stringToExpression = window.twfKotlinLibrary.stringToExpression;
 const structureStringToExpression =
   window.twfKotlinLibrary.api.structureStringToExpression_69c2cy$;
-const texToExpression = window.twfKotlinLibrary.stringToExpression;
+const texToExpression = window.twfKotlinLibrary.api.stringToExpression_y630ta$;
 
 // expression -> format
 const expressionToTexString =
