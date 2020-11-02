@@ -13,7 +13,13 @@ import { MixedInputProps } from "./mixed-input.types";
 // styles
 import "./mixed-input.styles.scss";
 
-const MixedInput = ({ width, value, onChange, onBlur }: MixedInputProps) => {
+const MixedInput = ({
+  width,
+  value,
+  onChange,
+  onBlur,
+  inputRef,
+}: MixedInputProps) => {
   // last format in which user changed expression
   const [currentInputFormat, setCurrentInputFormat] = useState<MathInputFormat>(
     MathInputFormat.TEX
@@ -25,6 +31,13 @@ const MixedInput = ({ width, value, onChange, onBlur }: MixedInputProps) => {
 
   const [currentValue, setCurrentValue] = useState<string>(value ? value : "");
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (inputRef && inputRef.current) {
+      // @ts-ignore
+      inputRef.current.value = currentValue;
+    }
+  }, [currentValue]);
 
   const changeInputMode = (toFormat: MathInputFormat): void => {
     // validation of empty string leads to error

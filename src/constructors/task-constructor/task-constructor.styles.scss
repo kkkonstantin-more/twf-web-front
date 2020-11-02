@@ -1,43 +1,33 @@
-@import "../../styles/abstracts/variables";
-
-$margin-top: 2rem;
-
-.level-form {
-  &--table {
-    display: flex;
-    align-items: center;
-  }
-  &--list {
-    display: flex;
-    flex-direction: column;
-  }
-  &__list-action-buttons {
-    display: flex;
-    & > * {
-      margin-top: 0 !important;
-      margin-bottom: 1rem;
-      &:not(:last-child) {
-        margin-right: 1rem;
-      }
-    }
-  }
-  & > *:not(:last-child) {
+.task-constructor-table {
+  display: flex;
+  align-items: flex-end;
+  margin-bottom: 2rem;
+  & > * {
+    min-width: 20rem !important;
     margin-right: 1.5rem;
-    min-width: fit-content;
+    margin-bottom: 0 !important;
   }
-  &__level-number {
-    font-size: $bg-font-size;
-    margin-top: $margin-top;
+  &__icon {
+    min-width: 2rem !important;
+    width: 2rem !important;
   }
-  &__level-type-icon {
-    margin-top: $margin-top;
-  }
+}
+
+.task-constructor-list {
+  display: flex;
+  flex-direction: column;
+  &__manual-fields,
   &__add-fields {
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    & > * {
+      margin-bottom: 1.5rem !important;
+    }
+  }
+  &__top-action-buttons {
+    margin-bottom: 1rem;
     & > *:not(:last-child) {
-      margin-right: 1.5rem;
-      min-width: fit-content;
+      margin-right: 1rem;
     }
   }
 }

@@ -8,5 +8,4 @@ export interface ConstructorInputProps {
   defaultValue?: any;
   expressionInput?: boolean;
   updateJSON?: () => void;
-  setValue?: (name: string, value: any) => void;
 }

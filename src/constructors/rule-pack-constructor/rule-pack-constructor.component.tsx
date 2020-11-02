@@ -141,7 +141,6 @@ const RulePackConstructor = ({
           inputs={inputs}
           register={register}
           updateJSON={() => updateRulePackJSON(getValues())}
-          setValue={setValue}
         />
         <h3>Правила:</h3>
         <div className="rule-pack-constructor__rules">
@@ -199,8 +198,8 @@ const RulePackConstructor = ({
                 append({
                   left: "",
                   right: "",
-                  matchJumbledAndNested: true,
-                  basedOnTaskContext: true,
+                  matchJumbledAndNested: "true",
+                  basedOnTaskContext: "true",
                 });
               }}
             >

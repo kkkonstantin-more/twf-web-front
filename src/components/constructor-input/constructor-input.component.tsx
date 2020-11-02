@@ -1,13 +1,16 @@
+// libs and hooks
 import React, { useEffect, useState } from "react";
-import { ConstructorInputProps } from "./construcor-input.types";
 import useMergedRef from "@react-hook/merged-ref";
+// custom components
 import MixedInput from "../mixed-input/mixed-input.component";
+// types
+import { ChangeEvent } from "react";
+import { ConstructorInputProps } from "./construcor-input.types";
 
 const ConstructorInput = ({
   name,
   type,
   register,
-  setValue,
   label,
   defaultValue,
   isVisible = true,
@@ -15,19 +18,15 @@ const ConstructorInput = ({
   expressionInput = false,
   updateJSON,
 }: ConstructorInputProps): JSX.Element => {
-  const mixedInputRef: React.RefObject<
-    HTMLInputElement
-  > | null = expressionInput ? React.createRef() : null;
+  const mixedInputRef:
+    | React.RefObject<HTMLInputElement>
+    | undefined = expressionInput ? React.createRef() : undefined;
 
   const inputWrapperRef: React.RefObject<HTMLDivElement> = React.createRef();
 
-  const [mixedInputWidth, setMixedInputWidth] = useState<number>(100);
+  const [inputValue, setInputValue] = useState(defaultValue);
 
-  useEffect(() => {
-    if (register) {
-      register({ name });
-    }
-  }, []);
+  const [mixedInputWidth, setMixedInputWidth] = useState<number>(100);
 
   useEffect(() => {
     if (inputWrapperRef.current) {
@@ -49,41 +48,52 @@ const ConstructorInput = ({
         ref={inputWrapperRef}
       >
         <div
-          className="form-group"
           style={{
             marginBottom: expressionInput ? "0" : undefined,
           }}
         >
           <label>{label}</label>
-          {expressionInput ? (
+          {expressionInput && (
             <MixedInput
               value={defaultValue}
               width={mixedInputWidth + "px"}
-              onBlur={(value: string) => {
-                if (setValue) {
-                  setValue(name, value);
-                }
+              onBlur={() => {
                 if (updateJSON) {
                   updateJSON();
                 }
               }}
-            />
-          ) : (
-            <input
-              className="form-control"
-              name={name}
-              type={type}
-              onBlur={(event: any) => {
-                if (setValue) {
-                  setValue(name, event.target.value);
-                }
-                if (updateJSON) {
-                  updateJSON();
-                }
-              }}
-              defaultValue={defaultValue}
+              inputRef={mixedInputRef}
             />
           )}
+          <input
+            className="form-control"
+            style={{
+              display: expressionInput ? "none" : "block",
+            }}
+            name={name}
+            type={type}
+            onBlur={() => {
+              if (updateJSON) {
+                updateJSON();
+              }
+            }}
+            onChange={(event: ChangeEvent<HTMLInputElement>) => {
+              setInputValue(event.target.value);
+            }}
+            ref={
+              expressionInput
+                ? // eslint-disable-next-line react-hooks/rules-of-hooks
+                  useMergedRef(
+                    // @ts-ignore
+                    register(),
+                    mixedInputRef
+                  )
+                : // @ts-ignore
+                  // @ts-ignore
+                  register()
+            }
+            defaultValue={inputValue}
+          />
         </div>
       </div>
     );

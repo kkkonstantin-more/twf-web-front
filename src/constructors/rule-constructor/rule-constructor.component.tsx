@@ -81,7 +81,6 @@ const RuleConstructor = ({
       <ConstructorForm
         inputs={inputs}
         register={register}
-        setValue={setValue}
         // @ts-ignore
         updateJSON={() => updateRulePackJSON(getValues())}
       />

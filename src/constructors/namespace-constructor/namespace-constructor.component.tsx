@@ -47,9 +47,7 @@ const NamespaceConstructorComponent = ({
 
   updateNamespaceJSON(defaultValues);
 
-  const { register, getValues, setValue, watch } = useForm<
-    NamespaceConstructorInputs
-  >({
+  const { register, getValues, watch } = useForm<NamespaceConstructorInputs>({
     mode: "onSubmit",
     defaultValues,
   });
@@ -126,7 +124,6 @@ const NamespaceConstructorComponent = ({
       <ConstructorForm
         inputs={inputs}
         register={register}
-        setValue={setValue}
         updateJSON={() => updateNamespaceJSON(getValues())}
       />
       <button className="btn" onClick={() => console.log(getValues())}>

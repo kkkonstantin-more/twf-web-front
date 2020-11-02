@@ -19,6 +19,8 @@ interface MathQuillEditorProps {
   onBlur?: (value: string) => void;
 }
 
+// TODO: add support for edit function
+
 const MathQuillEditor: React.FC<MathQuillEditorProps> = ({
   config,
   startingLatexExpression,
@@ -117,7 +119,6 @@ const MathQuillEditor: React.FC<MathQuillEditorProps> = ({
     if (htmlElement && onBlur) {
       htmlElement.firstChild?.addEventListener("focusout", () => {
         onBlur(mathField.latex());
-        // onBlur();
       });
     }
   }, []);

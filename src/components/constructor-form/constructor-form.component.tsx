@@ -8,14 +8,12 @@ import ConstructorInput from "../constructor-input/constructor-input.component";
 interface ConstructorFormProps {
   inputs: (ConstructorInputProps | ConstructorSelectProps)[];
   register: () => void;
-  setValue: (name: string, value: any) => void;
   updateJSON: () => void;
 }
 
 const ConstructorForm = ({
   inputs,
   register,
-  setValue,
   updateJSON,
 }: ConstructorFormProps): JSX.Element => {
   return (
@@ -30,7 +28,6 @@ const ConstructorForm = ({
               <ConstructorSelect
                 key={name}
                 register={register}
-                setValue={setValue}
                 updateJSON={updateJSON}
                 {...input}
               />
@@ -40,7 +37,6 @@ const ConstructorForm = ({
               <ConstructorInput
                 key={name}
                 register={register}
-                setValue={setValue}
                 updateJSON={updateJSON}
                 {...input}
               />

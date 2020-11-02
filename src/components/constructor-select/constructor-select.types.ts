@@ -15,6 +15,5 @@ export interface ConstructorSelectProps {
   isMulti: boolean;
   isRendered?: boolean;
   isVisible?: boolean;
-  setValue?: any;
   updateJSON?: () => void;
 }

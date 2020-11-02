@@ -1,8 +1,12 @@
-import React, { useEffect } from "react";
-import { ConstructorSelectProps } from "./constructor-select.types";
-import { ConfigProvider, Select } from "antd";
-import { LabeledValue } from "antd/es/select";
+// libs and hooks
+import React from "react";
+import useMergedRef from "@react-hook/merged-ref";
+// lib components
 import ruRu from "antd/lib/locale/ru_RU";
+import { ConfigProvider, Select } from "antd";
+// types
+import { ConstructorSelectProps } from "./constructor-select.types";
+import { LabeledValue } from "antd/es/select";
 
 const { Option } = Select;
 
@@ -13,35 +17,14 @@ const ConstructorSelect = ({
   isMulti,
   defaultValue,
   register,
-  setValue,
   updateJSON,
   isRendered = true,
   isVisible = true,
 }: ConstructorSelectProps): JSX.Element => {
-  useEffect(() => {
-    register({ name });
-  }, []);
-
-  const parseBool = (value: any) => {
-    switch (value) {
-      case "true":
-        return true;
-      case "false":
-        return false;
-      case true:
-        return "true";
-      case false:
-        return "false";
-      default:
-        return value;
-    }
-  };
-
   const parseValue = (
     value: string | number | string[] | undefined,
     isMulti: boolean
   ) => {
-    value = parseBool(value);
     if (typeof value === "undefined") {
       return isMulti ? [] : "";
     }
@@ -57,6 +40,8 @@ const ConstructorSelect = ({
     return value;
   };
 
+  const mixedInputRef: React.RefObject<HTMLInputElement> = React.createRef();
+
   if (isRendered) {
     return (
       <ConfigProvider locale={ruRu}>
@@ -65,14 +50,21 @@ const ConstructorSelect = ({
           style={{ display: isVisible ? "block" : "none" }}
         >
           <h4>{label}</h4>
+          <input
+            defaultValue={defaultValue}
+            name={name}
+            // eslint-disable-next-line react-hooks/rules-of-hooks
+            ref={useMergedRef(register(), mixedInputRef)}
+            style={{ display: "none" }}
+          />
           <Select
             mode={isMulti ? "multiple" : undefined}
             defaultValue={parseValue(defaultValue, isMulti)}
             style={{ width: "100%" }}
             placeholder={label}
             onChange={(value: any) => {
-              if (setValue) {
-                setValue(name, parseValue(value, isMulti));
+              if (mixedInputRef.current) {
+                mixedInputRef.current.value = value;
               }
               if (updateJSON) {
                 updateJSON();
