@@ -1,13 +1,17 @@
-import React, { RefObject, useEffect, useState } from "react";
+// libs and hooks
+import React, { useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-
-import "mathquill/build/mathquill";
-import "mathquill/build/mathquill.css";
-
+// @ts-ignore
+import jQuery from "jquery";
+//@ts-ignore
+import MQ from "../../local-libs/math-quill";
+// style
 import "./math-quill-editor.scss";
+// @ts-ignore
+window.jQuery = jQuery;
 
 interface MathQuillEditorProps {
-  inputRef?: RefObject<HTMLInputElement>;
+  inputRef?: React.RefObject<HTMLInputElement>;
   config?: any;
   width?: string;
   maxWidth?: string;
@@ -41,12 +45,12 @@ const MathQuillEditor: React.FC<MathQuillEditorProps> = ({
 
   useEffect(() => {
     const htmlElement = document.getElementById(id);
-
+    MQ();
     // @ts-ignore
-    const MQ = window.MathQuill.getInterface(2);
+    const MathQuill = window.MathQuill.getInterface(2);
     const mathField = config
-      ? MQ.MathField(htmlElement, config)
-      : MQ.MathField(htmlElement);
+      ? MathQuill.MathField(htmlElement, config)
+      : MathQuill.MathField(htmlElement);
 
     // if (config && config.handlers) {
     //   mathField.config({

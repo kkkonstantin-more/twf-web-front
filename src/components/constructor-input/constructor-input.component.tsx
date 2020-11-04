@@ -6,6 +6,9 @@ import MixedInput from "../mixed-input/mixed-input.component";
 // types
 import { ChangeEvent } from "react";
 import { ConstructorInputProps } from "./construcor-input.types";
+import { MathInputFormat } from "../../utils/kotlin-lib-functions";
+
+// TODO: fix typescript and eslint errors
 
 const ConstructorInput = ({
   name,
@@ -19,6 +22,9 @@ const ConstructorInput = ({
   updateJSON,
 }: ConstructorInputProps): JSX.Element => {
   const mixedInputRef:
+    | React.RefObject<HTMLInputElement>
+    | undefined = expressionInput ? React.createRef() : undefined;
+  const expressionFormatRef:
     | React.RefObject<HTMLInputElement>
     | undefined = expressionInput ? React.createRef() : undefined;
 
@@ -54,23 +60,38 @@ const ConstructorInput = ({
         >
           <label>{label}</label>
           {expressionInput && (
-            <MixedInput
-              value={defaultValue}
-              width={mixedInputWidth + "px"}
-              onBlur={() => {
-                if (updateJSON) {
-                  updateJSON();
-                }
-              }}
-              inputRef={mixedInputRef}
-            />
+            <>
+              <input
+                type="text"
+                name={name + ".format"}
+                defaultValue={defaultValue.format}
+                // eslint-disable-next-line react-hooks/rules-of-hooks
+                ref={useMergedRef(
+                  // @ts-ignore
+                  register(),
+                  expressionFormatRef
+                )}
+              />
+              <MixedInput
+                value={defaultValue.expression}
+                width={mixedInputWidth + "px"}
+                onBlur={() => {
+                  if (updateJSON) {
+                    updateJSON();
+                  }
+                }}
+                inputRef={mixedInputRef}
+                formatRef={expressionFormatRef}
+                initialFormat={defaultValue.format}
+              />
+            </>
           )}
           <input
             className="form-control"
             style={{
               display: expressionInput ? "none" : "block",
             }}
-            name={name}
+            name={expressionInput ? name + ".expression" : name}
             type={type}
             onBlur={() => {
               if (updateJSON) {
@@ -95,6 +116,10 @@ const ConstructorInput = ({
             defaultValue={inputValue}
           />
         </div>
+        <MixedInput
+          value={""}
+          initialFormat={MathInputFormat.STRUCTURE_STRING}
+        />
       </div>
     );
   } else {

@@ -85,11 +85,11 @@ const TaskSetConstructor = ({
 
   const [levelNames, setLevelNames] = useState<string[]>([]);
   const currentEditedLevelRef: React.RefObject<HTMLInputElement> = React.createRef();
-  const updateDemo = (index: number) => {
-    setStartExpressionHint(getValues().tasks[index].startExpression);
-    setGoalExpressionHint(getValues().tasks[index].goalExpression);
-    if (!showHintsBlock) setShowHintsBlock(true);
-  };
+  // const updateDemo = (index: number) => {
+  //   setStartExpressionHint(getValues().tasks[index].startExpression);
+  //   setGoalExpressionHint(getValues().tasks[index].goalExpression);
+  //   if (!showHintsBlock) setShowHintsBlock(true);
+  // };
 
   const updateName = (index: number, newName: string): void => {
     setLevelNames((prevState: string[]) => {
@@ -295,14 +295,9 @@ const TaskSetConstructor = ({
                     return (
                       <TaskConstructor
                         key={field.id}
-                        taskCreationType={
-                          fields[index].taskCreationType === "auto"
-                            ? "auto"
-                            : "manual"
-                        }
                         index={index}
                         defaultValue={fields[index]}
-                        updateDemo={updateDemo}
+                        updateDemo={() => {}}
                         visualizationMode={visualizationMode}
                         hidden={
                           visualizationMode === "list" &&

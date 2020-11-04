@@ -19,15 +19,17 @@ const MixedInput = ({
   onChange,
   onBlur,
   inputRef,
+  formatRef,
+  initialFormat,
 }: MixedInputProps) => {
   // last format in which user changed expression
   const [currentInputFormat, setCurrentInputFormat] = useState<MathInputFormat>(
-    MathInputFormat.TEX
+    initialFormat || MathInputFormat.TEX
   );
   // currently visible format
   const [currentVisibleFormat, setCurrentVisibleFormat] = useState<
     MathInputFormat
-  >(MathInputFormat.TEX);
+  >(initialFormat || MathInputFormat.TEX);
 
   const [currentValue, setCurrentValue] = useState<string>(value ? value : "");
   const [error, setError] = useState<string | null>(null);
@@ -47,6 +49,9 @@ const MixedInput = ({
           convertMathInput(currentInputFormat, toFormat, currentValue)
         );
         setCurrentInputFormat(toFormat);
+        if (formatRef?.current) {
+          formatRef.current.value = toFormat;
+        }
         setError(null);
       } catch ({ message }) {
         setError(message);
@@ -59,6 +64,11 @@ const MixedInput = ({
   const onSelectMode = (format: MathInputFormat): void => {
     if (error === null) {
       setCurrentVisibleFormat(format);
+    }
+    if (currentValue === "") {
+      if (formatRef?.current) {
+        formatRef.current.value = format;
+      }
     }
   };
 

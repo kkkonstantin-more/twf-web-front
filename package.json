@@ -41,7 +41,6 @@
     "mathquill": "^0.10.1-a",
     "react": "^16.13.1",
     "react-ace": "^9.1.1",
-    "react-bootstrap": "^1.0.1",
     "react-dom": "^16.13.1",
     "react-draggable": "^4.4.3",
     "react-google-login": "^5.1.10",

@@ -86,9 +86,9 @@ const deleteTokenFromReactSelect = (
 };
 
 describe("FilterableSelectList", () => {
-  it("matches snapshot", () => {
-    expect(renderFilterableSelectList()).toMatchSnapshot();
-  });
+  // it("matches snapshot", () => {
+  //   expect(renderFilterableSelectList()).toMatchSnapshot();
+  // });
 
   it("search field finds expected items with 'all' search key", () => {
     const { getByTestId, getAllByTestId } = renderFilterableSelectList();

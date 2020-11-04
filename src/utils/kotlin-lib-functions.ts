@@ -1,23 +1,23 @@
 // @ts-nocheck
-// disable ts checks to be able to work with window obj
+import twfKotlinLibrary from "../local-libs/twf-kotlin-lib";
 
 // LIB API FUNCTIONS
 // format -> expression
-const stringToExpression = window.twfKotlinLibrary.stringToExpression;
+export const stringToExpression =
+  twfKotlinLibrary.api.stringToExpression_y630ta$;
 const structureStringToExpression =
-  window.twfKotlinLibrary.api.structureStringToExpression_69c2cy$;
-const texToExpression = window.twfKotlinLibrary.api.stringToExpression_y630ta$;
+  twfKotlinLibrary.api.structureStringToExpression_69c2cy$;
+const texToExpression = twfKotlinLibrary.api.stringToExpression_y630ta$;
 
 // expression -> format
 const expressionToTexString =
-  window.twfKotlinLibrary.api.expressionToTexString_tvfpvg$;
+  twfKotlinLibrary.api.expressionToTexString_tvfpvg$;
 const expressionToStructureString =
-  window.twfKotlinLibrary.api.expressionToStructureString_6718cy$;
-const expressionToString =
-  window.twfKotlinLibrary.api.expressionToString_tvfpvg$;
+  twfKotlinLibrary.api.expressionToStructureString_6718cy$;
+const expressionToString = twfKotlinLibrary.api.expressionToString_tvfpvg$;
 
 class MathInputConvertingError extends Error {
-  constructor(message) {
+  constructor(message: any) {
     super(message);
     this.name = "MathInputConvertingError";
   }

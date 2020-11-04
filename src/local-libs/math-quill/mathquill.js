@@ -1,3 +1,4 @@
+/* eslint-disable */
 /**
  * MathQuill v0.10.1               http://mathquill.com
  * by Han, Jeanine, and Mary  maintainers@mathquill.com
@@ -8,7 +9,7 @@
  * one at http://mozilla.org/MPL/2.0/.
  */
 
-(function () {
+const MQ = function () {
   var jQuery = window.jQuery,
     undefined,
     mqCmdId = "mathquill-command-id",
@@ -5723,4 +5724,6 @@ case '!':
         MathQuill[key].prototype = val.prototype;
       } else MathQuill[key] = val;
     })(key, MQ1[key]);
-})();
+};
+
+export default MQ;

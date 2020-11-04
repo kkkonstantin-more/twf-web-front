@@ -1,3 +1,6 @@
+/* eslint-disable */
+const kotlin = require("./lib/kotlin");
+
 if (typeof kotlin === "undefined") {
   throw new Error(
     "Error loading module 'twfKotlinLibrary'. Its dependency 'kotlin' was not found. Please, check whether 'kotlin' is loaded prior to 'twfKotlinLibrary'."
@@ -42086,3 +42089,5 @@ var twfKotlinLibrary = (function (_, Kotlin) {
   Kotlin.defineModule("twfKotlinLibrary", _);
   return _;
 })(typeof twfKotlinLibrary === "undefined" ? {} : twfKotlinLibrary, kotlin);
+
+export default twfKotlinLibrary;
