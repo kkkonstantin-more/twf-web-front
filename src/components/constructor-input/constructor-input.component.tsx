@@ -116,10 +116,6 @@ const ConstructorInput = ({
             defaultValue={inputValue}
           />
         </div>
-        <MixedInput
-          value={""}
-          initialFormat={MathInputFormat.STRUCTURE_STRING}
-        />
       </div>
     );
   } else {
