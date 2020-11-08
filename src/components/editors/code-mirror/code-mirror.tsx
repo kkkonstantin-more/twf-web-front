@@ -1,7 +1,8 @@
 // libs and hooks
 import React, { useEffect, useRef, useState } from "react";
-import CodeMirror from "codemirror";
+import CodeMirror, { Position, TextMarker } from "codemirror";
 // redux
+import CONSTRUCTOR_JSONS_INITIAL_STATE from "../../../redux/constructor-jsons/constructor-jsons.state";
 import { connect, ConnectedProps } from "react-redux";
 import { createStructuredSelector } from "reselect";
 import {
@@ -47,7 +48,7 @@ import { TaskSetConstructorInputs } from "../../../constructors/task-set-constru
 // styles
 import "./code-mirror.scss";
 
-// codemirror config
+// jsonlint config
 const jsonlint = require("jsonlint-mod");
 // @ts-ignore
 window["jsonlint"] = jsonlint;
@@ -66,11 +67,10 @@ const CodeMirrorEditor = ({
   updateTaskSetJSON,
 }: CodeMirrorProps & ConnectedProps<typeof connector>): JSX.Element => {
   const [editor, setEditor] = useState<any>(null);
-  const [inputValue, setInputValue] = useState<string>("");
 
   const entryPoint: React.Ref<any> = useRef();
 
-  const currentJSON = (() => {
+  const currentReduxJSON = (() => {
     switch (constructorType) {
       case "namespace":
         return namespaceJSON;
@@ -81,7 +81,18 @@ const CodeMirrorEditor = ({
     }
   })();
 
-  const updateCurrentJSON = (() => {
+  const initialReduxJSON = (() => {
+    switch (constructorType) {
+      case "namespace":
+        return CONSTRUCTOR_JSONS_INITIAL_STATE.namespace;
+      case "rulePack":
+        return CONSTRUCTOR_JSONS_INITIAL_STATE.rulePack;
+      case "taskSet":
+        return CONSTRUCTOR_JSONS_INITIAL_STATE.taskSet;
+    }
+  })();
+
+  const updateCurrentReduxJSON = (() => {
     switch (constructorType) {
       case "namespace":
         return updateNamespaceJSON;
@@ -92,47 +103,114 @@ const CodeMirrorEditor = ({
     }
   })();
 
+  const getWordPosition = (
+    editor: CodeMirror.Editor,
+    word: string
+  ): {
+    from: Position;
+    to: Position;
+  } => {
+    // getSearchCursor method exists but not declared in CodeMirror types
+    // @ts-ignore
+    const cursor = editor.getSearchCursor(
+      word,
+      CodeMirror.Pos(editor.firstLine(), 0),
+      {
+        caseFold: true,
+        multiline: true,
+      }
+    );
+    cursor.find(false);
+    return {
+      from: cursor.from(),
+      to: cursor.to(),
+    };
+  };
+
+  // TODO: refactor function, remove inner function, make it clean
+  const getExcessiveProps = (doc: string): string[] => {
+    try {
+      JSON.parse(doc);
+    } catch {
+      return [];
+    }
+    const excessiveProps: string[] = [];
+    const addExcessiveProps = (editorValue: any, initialValue: any) => {
+      const editorProps = Object.keys(editorValue);
+      const allowedProps = Object.keys(initialValue);
+      editorProps.forEach((prop: string) => {
+        if (!allowedProps.includes(prop)) {
+          excessiveProps.push(prop);
+        } else if (
+          Array.isArray(editorValue[prop]) &&
+          Array.isArray(initialValue[prop]) &&
+          editorValue[prop].length !== 0 &&
+          initialValue[prop].length !== 0
+        ) {
+          editorValue[prop].forEach((value: any) => {
+            addExcessiveProps(value, initialValue[prop][0]);
+          });
+        } else if (typeof editorValue[prop] === "object") {
+          addExcessiveProps(editorValue[prop], initialValue[prop]);
+        }
+      });
+    };
+    addExcessiveProps(JSON.parse(doc), initialReduxJSON);
+    return excessiveProps;
+  };
+
+  const setErrorLineAndGutter = (
+    editor: CodeMirror.Editor,
+    from: Position,
+    to: Position,
+    msg: string
+  ): void => {
+    editor.markText(from, to, {
+      className: "CodeMirror-lint-mark-error",
+      title: msg,
+    });
+    const marker: HTMLDivElement = document.createElement("div");
+    marker.setAttribute("class", "CodeMirror-lint-marker-error");
+    marker.setAttribute("data-toggle", "tooltip");
+    marker.setAttribute("data-placement", "right");
+    marker.setAttribute("title", msg);
+    editor.setGutterMarker(from.line, "gutter-error", marker);
+  };
+
+  const destroyAllErrors = (editor: CodeMirror.Editor): void => {
+    editor.clearGutter("gutter-error");
+    editor.getAllMarks().forEach((mark: TextMarker) => {
+      mark.clear();
+    });
+  };
+
   useEffect(() => {
-    const entryPoint = document.getElementById("entry-point");
-    if (entryPoint) {
-      const editor = CodeMirror(entryPoint, {
-        value: JSON.stringify(currentJSON, null, 2),
+    if (entryPoint.current) {
+      const editor = CodeMirror(entryPoint.current, {
+        value: JSON.stringify(currentReduxJSON, null, 2),
         mode: "application/ld+json",
         lineNumbers: true,
         tabSize: 2,
         gutters: ["CodeMirror-lint-markers", "gutter-error"],
         showHint: true,
         lint: true,
-        // extraKeys: {
-        //   ["Esc"]: "undo",
-        // },
         matchBrackets: true,
         lineWrapping: true,
         autoCloseBrackets: true,
       });
-      // editor.markText(
-      //   { line: 5, ch: 5 },
-      //   { line: 7, ch: 15 },
-      //   {
-      //     className: "CodeMirror-lint-mark-error",
-      //     title: "custom error",
-      //   }
-      // );
       editor.on("change", () => {
-        updateCurrentJSON(JSON.parse(editor.getValue()));
+        try {
+          updateCurrentReduxJSON(JSON.parse(editor.getValue()));
+        } catch {}
+        destroyAllErrors(editor);
+        getExcessiveProps(editor.getValue()).forEach((prop: string) => {
+          const { from, to } = getWordPosition(editor, prop);
+          if (from && to) {
+            setErrorLineAndGutter(editor, from, to, "Unexpected property");
+          }
+        });
       });
       setEditor(editor);
-      //   var marker = document.getElementById("myError");
-      //   if (marker) {
-      //     marker.setAttribute("class", "CodeMirror-lint-marker-error");
-      //     marker.setAttribute("data-toggle", "tooltip");
-      //     marker.setAttribute("data-placement", "right");
-      //     marker.setAttribute("title", "Error!");
-      //     marker.setAttribute("id", "myError");
-      //     editor.setGutterMarker(6, "gutter-error", marker);
-      //     setEditor(editor);
-      //     //document.getElementById("myError");
-      //   }
     }
   }, []);
 
@@ -143,65 +221,6 @@ const CodeMirrorEditor = ({
         ref={entryPoint}
         id="entry-point"
       />
-      {/*<div id="myError" />*/}
-      {/*<div className="code-mirror__actions">*/}
-      {/*  <h1>actions</h1>*/}
-      {/*  /!*<button className="btn" onClick={() => editor.undo()}>*!/*/}
-      {/*  /!*  undo (cmd + z)*!/*/}
-      {/*  /!*</button>*!/*/}
-      {/*  /!*<button className="btn" onClick={() => editor.redo()}>*!/*/}
-      {/*  /!*  redo (cmd + shift+ z)*!/*/}
-      {/*  /!*</button>*!/*/}
-      {/*  /!*<button*!/*/}
-      {/*  /!*  className="btn"*!/*/}
-      {/*  /!*  onClick={() => editor.execCommand("autocomplete")}*!/*/}
-      {/*  /!*>*!/*/}
-      {/*  /!*  autocomplete*!/*/}
-      {/*  /!*</button>*!/*/}
-      {/*  /!*<button className="btn" onClick={() => editor.execCommand("find")}>*!/*/}
-      {/*  /!*  find*!/*/}
-      {/*  /!*</button>*!/*/}
-      {/*  <button onClick={() => editor.setValue(JSON.stringify(namespaceJSON))}>*/}
-      {/*    update text*/}
-      {/*  </button>*/}
-      {/*  <button onClick={() => console.log(editor.doc.getHistory())}>*/}
-      {/*    log history*/}
-      {/*  </button>*/}
-      {/*  <button*/}
-      {/*    onClick={() => {*/}
-      {/*      editor.replaceRange("lalal", { line: 1, ch: 5 });*/}
-      {/*    }}*/}
-      {/*  >*/}
-      {/*    change line*/}
-      {/*  </button>*/}
-      {/*  <button*/}
-      {/*    onClick={() => {*/}
-      {/*      console.log(editor.getSearchCursor("game").replace("12"));*/}
-      {/*    }}*/}
-      {/*  >*/}
-      {/*    find gameSpace*/}
-      {/*  </button>*/}
-      {/*  <hr />*/}
-      {/*  <input*/}
-      {/*    type="text"*/}
-      {/*    value={inputValue}*/}
-      {/*    onChange={(e) => {*/}
-      {/*      setInputValue(e.target.value);*/}
-      {/*      const { start, end } = editor.getLineTokens(1)[4];*/}
-      {/*      editor.replaceRange(*/}
-      {/*        `"${e.target.value}"`,*/}
-      {/*        {*/}
-      {/*          line: 1,*/}
-      {/*          ch: start,*/}
-      {/*        },*/}
-      {/*        {*/}
-      {/*          line: 1,*/}
-      {/*          ch: end,*/}
-      {/*        }*/}
-      {/*      );*/}
-      {/*    }}*/}
-      {/*  />*/}
-      {/*</div>*/}
     </div>
   );
 };

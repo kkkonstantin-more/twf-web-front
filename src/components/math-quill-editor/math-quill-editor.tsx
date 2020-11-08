@@ -1,6 +1,6 @@
 // libs and hooks
 import React, { useEffect, useState } from "react";
-import { v4 as uuidv4 } from "uuid";
+import { v4 as uidv4 } from "uuid";
 // @ts-ignore
 import jQuery from "jquery";
 //@ts-ignore
@@ -41,7 +41,7 @@ const MathQuillEditor: React.FC<MathQuillEditorProps> = ({
   }
   const [editor, setEditor] = useState<any>();
   // generating unique id by uuid library
-  const id = uuidv4();
+  const id = uidv4();
 
   useEffect(() => {
     const htmlElement = document.getElementById(id);
