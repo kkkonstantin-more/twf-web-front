@@ -240,8 +240,8 @@ const TaskSetConstructor = ({
                         className="btn form-levels-list__action-button"
                         onClick={() => {
                           append({
-                            taskCreationType: "manual",
                             ...taskConstructorDefaultValues,
+                            taskCreationType: "manual",
                           });
                           setSelectedLevel(fields.length);
 
@@ -257,8 +257,8 @@ const TaskSetConstructor = ({
                         className="btn form-levels-list__action-button"
                         onClick={() => {
                           append({
-                            taskCreationType: "auto",
                             ...taskConstructorDefaultValues,
+                            taskCreationType: "auto",
                           });
                           setSelectedLevel(fields.length);
                         }}
@@ -314,8 +314,8 @@ const TaskSetConstructor = ({
                       className="btn form-levels-table__action-button"
                       onClick={() => {
                         append({
-                          taskCreationType: "manual",
                           ...taskConstructorDefaultValues,
+                          taskCreationType: "manual",
                         });
                       }}
                     >
@@ -328,8 +328,8 @@ const TaskSetConstructor = ({
                       className="btn form-levels-table__action-button"
                       onClick={() => {
                         append({
-                          taskCreationType: "auto",
                           ...taskConstructorDefaultValues,
+                          taskCreationType: "auto",
                         });
                       }}
                     >

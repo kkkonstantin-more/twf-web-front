@@ -101,6 +101,7 @@ const ConstructorInput = ({
             onChange={(event: ChangeEvent<HTMLInputElement>) => {
               setInputValue(event.target.value);
             }}
+            // @ts-ignore
             ref={
               expressionInput
                 ? // eslint-disable-next-line react-hooks/rules-of-hooks

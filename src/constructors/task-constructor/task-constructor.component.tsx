@@ -64,6 +64,7 @@ const TaskConstructor = ({
   updateTaskSetJSON,
 }: TaskConstructorProps & ConnectedProps<typeof connector>): JSX.Element => {
   const { register, getValues, watch } = useFormContext();
+  // @ts-ignore
   const { append, swap, remove } = React.useContext(
     TasksFieldArrayActionsContext
   );

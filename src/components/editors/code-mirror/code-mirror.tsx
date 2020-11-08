@@ -1,37 +1,8 @@
-import React, { createRef, Dispatch, useEffect, useRef, useState } from "react";
-
-// import "codemirror/lib/codemirror";
-import "codemirror/mode/javascript/javascript";
-
+// libs and hooks
+import React, { useEffect, useRef, useState } from "react";
 import CodeMirror from "codemirror";
-
-import "codemirror/addon/hint/show-hint.css";
-
-import "codemirror/lib/codemirror.css";
-import "codemirror/addon/lint/json-lint";
-import "codemirror/addon/lint/lint.css";
-import "codemirror/addon/lint/lint";
-import "codemirror/addon/search/search";
-import "codemirror/addon/search/matchesonscrollbar.css";
-import "codemirror/addon/edit/matchbrackets";
-import "codemirror/addon/edit/closebrackets";
-// import "codemirror/addon/search/searchcursor.css";
-// import "codemirror/addon/search/match-highlighter.css";
-// import "codemirror/addon/search/matchesonscrollbar.css";
-import "codemirror/addon/dialog/dialog";
-import "codemirror/addon/dialog/dialog.css";
-
-//hints
-import "codemirror/addon/hint/javascript-hint";
-import "codemirror/addon/hint/show-hint";
-
-import "./code-mirror.scss";
-import {
-  ConstructorJSONsActionTypes,
-  UpdateNamespaceJSONAction,
-} from "../../../redux/constructor-jsons/constructor-jsons.types";
-import { NamespaceConstructorInputs } from "../../../constructors/namespace-constructor/namespace-constructor.types";
-import { connect, ConnectedProps, MapDispatchToProps } from "react-redux";
+// redux
+import { connect, ConnectedProps } from "react-redux";
 import { createStructuredSelector } from "reselect";
 import {
   selectNamespaceJSON,
@@ -43,11 +14,40 @@ import {
   updateRulePackJSON,
   updateTaskSetJSON,
 } from "../../../redux/constructor-jsons/constructor-jsons.actions";
+// codemirror core addons
+import "codemirror/mode/javascript/javascript";
+import "codemirror/lib/codemirror.css";
+import "codemirror/addon/search/search";
+import "codemirror/addon/dialog/dialog";
+import "codemirror/addon/dialog/dialog.css";
+import "codemirror/addon/edit/matchbrackets";
+import "codemirror/addon/edit/closebrackets";
+import "codemirror/addon/search/matchesonscrollbar";
+import "codemirror/addon/search/matchesonscrollbar.css";
+import "codemirror/addon/display/panel";
+// codemirror third-party addons
+import "codemirror-find-and-replace-dialog/dist/search.js";
+import "codemirror-find-and-replace-dialog/dist/dialog.js";
+import "codemirror-find-and-replace-dialog/dist/dialog.css";
+// codemirror hints/lints
+import "codemirror/addon/hint/javascript-hint";
+import "codemirror/addon/hint/show-hint";
+import "codemirror/addon/hint/show-hint.css";
+import "codemirror/addon/lint/json-lint";
+import "codemirror/addon/lint/lint";
+import "codemirror/addon/lint/lint.css";
+// types
+import { Dispatch } from "react";
+import { ConstructorJSONsActionTypes } from "../../../redux/constructor-jsons/constructor-jsons.types";
+import { NamespaceConstructorInputs } from "../../../constructors/namespace-constructor/namespace-constructor.types";
 import { ConstructorType } from "../../../pages/constructor-page/constructor-page.types";
 import { RootState } from "../../../redux/root-reducer";
 import { RulePackConstructorInputs } from "../../../constructors/rule-pack-constructor/rule-pack-constructor.types";
 import { TaskSetConstructorInputs } from "../../../constructors/task-set-constructor/task-set-constructor.types";
+// styles
+import "./code-mirror.scss";
 
+// codemirror config
 const jsonlint = require("jsonlint-mod");
 // @ts-ignore
 window["jsonlint"] = jsonlint;
@@ -103,9 +103,9 @@ const CodeMirrorEditor = ({
         gutters: ["CodeMirror-lint-markers", "gutter-error"],
         showHint: true,
         lint: true,
-        extraKeys: {
-          ["Esc"]: "undo",
-        },
+        // extraKeys: {
+        //   ["Esc"]: "undo",
+        // },
         matchBrackets: true,
         lineWrapping: true,
         autoCloseBrackets: true,
@@ -121,6 +121,7 @@ const CodeMirrorEditor = ({
       editor.on("change", () => {
         updateCurrentJSON(JSON.parse(editor.getValue()));
       });
+      setEditor(editor);
       //   var marker = document.getElementById("myError");
       //   if (marker) {
       //     marker.setAttribute("class", "CodeMirror-lint-marker-error");
@@ -172,13 +173,6 @@ const CodeMirrorEditor = ({
       {/*    }}*/}
       {/*  >*/}
       {/*    change line*/}
-      {/*  </button>*/}
-      {/*  <button*/}
-      {/*    onClick={() => {*/}
-      {/*      console.log(editor.getLineTokens(1)[4].start);*/}
-      {/*    }}*/}
-      {/*  >*/}
-      {/*    tokens*/}
       {/*  </button>*/}
       {/*  <button*/}
       {/*    onClick={() => {*/}
