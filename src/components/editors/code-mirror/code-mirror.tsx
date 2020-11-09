@@ -47,6 +47,7 @@ import { RulePackConstructorInputs } from "../../../constructors/rule-pack-const
 import { TaskSetConstructorInputs } from "../../../constructors/task-set-constructor/task-set-constructor.types";
 // styles
 import "./code-mirror.scss";
+import { edit } from "ace-builds";
 
 // jsonlint config
 const jsonlint = require("jsonlint-mod");
@@ -55,6 +56,11 @@ window["jsonlint"] = jsonlint;
 
 export interface CodeMirrorProps {
   constructorType: ConstructorType;
+}
+
+export interface CodeMirrorWordPosition {
+  from: Position;
+  to: Position;
 }
 
 const CodeMirrorEditor = ({
@@ -103,28 +109,30 @@ const CodeMirrorEditor = ({
     }
   })();
 
-  const getWordPosition = (
+  const getWordPositions = (
     editor: CodeMirror.Editor,
     word: string
-  ): {
-    from: Position;
-    to: Position;
-  } => {
-    // getSearchCursor method exists but not declared in CodeMirror types
-    // @ts-ignore
+  ): CodeMirrorWordPosition[] => {
+    // initializing cursor at the start of the document
+    // @ts-ignore *getSearchCursor method is an addon and not type checked in original CodeMirror
     const cursor = editor.getSearchCursor(
       word,
-      CodeMirror.Pos(editor.firstLine(), 0),
+      { line: 0, ch: 0 },
       {
         caseFold: true,
         multiline: true,
       }
     );
-    cursor.find(false);
-    return {
-      from: cursor.from(),
-      to: cursor.to(),
-    };
+    const wordPositions: CodeMirrorWordPosition[] = [];
+    cursor.find();
+    while (cursor.from() && cursor.to()) {
+      wordPositions.push({
+        from: cursor.from(),
+        to: cursor.to(),
+      });
+      cursor.findNext();
+    }
+    return wordPositions;
   };
 
   // TODO: refactor function, remove inner function, make it clean
@@ -203,12 +211,21 @@ const CodeMirrorEditor = ({
           updateCurrentReduxJSON(JSON.parse(editor.getValue()));
         } catch {}
         destroyAllErrors(editor);
-        getExcessiveProps(editor.getValue()).forEach((prop: string) => {
-          const { from, to } = getWordPosition(editor, prop);
-          if (from && to) {
-            setErrorLineAndGutter(editor, from, to, "Unexpected property");
+        // set excessive props errors
+        getExcessiveProps(editor.getValue()).forEach(
+          (excessiveProp: string) => {
+            getWordPositions(editor, excessiveProp).forEach(
+              (foundPosition: CodeMirrorWordPosition) => {
+                setErrorLineAndGutter(
+                  editor,
+                  foundPosition.from,
+                  foundPosition.to,
+                  "Unexpected property"
+                );
+              }
+            );
           }
-        });
+        );
       });
       setEditor(editor);
     }
