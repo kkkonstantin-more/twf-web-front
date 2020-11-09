@@ -48,6 +48,10 @@ import { TaskSetConstructorInputs } from "../../../constructors/task-set-constru
 // styles
 import "./code-mirror.scss";
 import { edit } from "ace-builds";
+import {
+  getErrorFromMathInput,
+  MathInputFormat,
+} from "../../../utils/kotlin-lib-functions";
 
 // jsonlint config
 const jsonlint = require("jsonlint-mod");
@@ -192,6 +196,42 @@ const CodeMirrorEditor = ({
     });
   };
 
+  // TODO: refactor function, remove inner function, make it clean
+  const getAllExpressions = (
+    editor: CodeMirror.Editor
+  ): { format: string; expression: string }[] => {
+    const editorObj = JSON.parse(editor.getValue());
+    const expressions: { format: string; expression: string }[] = [];
+    const getExpression = (obj: any) => {
+      if (typeof obj === "object") {
+        if (obj.hasOwnProperty("format") && obj.hasOwnProperty("expression")) {
+          expressions.push({
+            format: obj.format,
+            expression: obj.expression,
+          });
+        } else {
+          Object.keys(obj).forEach((prop: string) => {
+            if (typeof obj[prop] === "object") {
+              if (
+                obj[prop].hasOwnProperty("format") &&
+                obj[prop].hasOwnProperty("expression")
+              ) {
+                expressions.push({
+                  format: obj[prop].format,
+                  expression: obj[prop].expression,
+                });
+              } else {
+                getExpression(obj[prop]);
+              }
+            }
+          });
+        }
+      }
+    };
+    getExpression(editorObj);
+    return expressions;
+  };
+
   useEffect(() => {
     if (entryPoint.current) {
       const editor = CodeMirror(entryPoint.current, {
@@ -226,6 +266,41 @@ const CodeMirrorEditor = ({
             );
           }
         );
+        getAllExpressions(editor).forEach((expression) => {
+          if (
+            expression.format !== MathInputFormat.TEX &&
+            expression.format !== MathInputFormat.PLAIN_TEXT &&
+            expression.format !== MathInputFormat.STRUCTURE_STRING
+          ) {
+            getWordPositions(editor, expression.format).forEach(
+              (foundPosition: CodeMirrorWordPosition) => {
+                setErrorLineAndGutter(
+                  editor,
+                  foundPosition.from,
+                  foundPosition.to,
+                  "Invalid expression format"
+                );
+              }
+            );
+          } else {
+            getWordPositions(editor, expression.expression).forEach(
+              (foundPosition: CodeMirrorWordPosition) => {
+                const error = getErrorFromMathInput(
+                  expression.format as MathInputFormat,
+                  expression.expression
+                );
+                if (error) {
+                  setErrorLineAndGutter(
+                    editor,
+                    foundPosition.from,
+                    foundPosition.to,
+                    error
+                  );
+                }
+              }
+            );
+          }
+        });
       });
       setEditor(editor);
     }
