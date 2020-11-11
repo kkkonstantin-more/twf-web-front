@@ -1,5 +1,24 @@
+@import "../../styles/abstracts/variables";
+
 .action-button {
   border: none;
   background-color: inherit;
-  //margin-top: 2rem;
+  position: relative;
+  &:hover {
+    .action-button__tooltip {
+      opacity: 1;
+    }
+  }
+  &__tooltip {
+    position: absolute;
+    opacity: 0;
+    transition: opacity 0.3s;
+    padding: 0.5rem;
+    border-radius: 5px;
+    background-color: $color-primary-light;
+    font-size: $sm-font-size;
+    color: $color-primary-dark;
+    z-index: 999;
+    width: 15rem;
+  }
 }

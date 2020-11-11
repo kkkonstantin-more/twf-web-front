@@ -52,6 +52,9 @@ import {
   getErrorFromMathInput,
   MathInputFormat,
 } from "../../../utils/kotlin-lib-functions";
+import ActionButton from "../../action-button/action-button.component";
+import { mdiFindReplace, mdiMagnify } from "@mdi/js";
+import { ActionButtonProps } from "../../action-button/action-button.types";
 
 // jsonlint config
 const jsonlint = require("jsonlint-mod");
@@ -202,7 +205,7 @@ const CodeMirrorEditor = ({
   ): { format: string; expression: string }[] => {
     const editorObj = JSON.parse(editor.getValue());
     const expressions: { format: string; expression: string }[] = [];
-    const getExpression = (obj: any) => {
+    const appendExpressions = (obj: any) => {
       if (typeof obj === "object") {
         if (obj.hasOwnProperty("format") && obj.hasOwnProperty("expression")) {
           expressions.push({
@@ -221,14 +224,14 @@ const CodeMirrorEditor = ({
                   expression: obj[prop].expression,
                 });
               } else {
-                getExpression(obj[prop]);
+                appendExpressions(obj[prop]);
               }
             }
           });
         }
       }
     };
-    getExpression(editorObj);
+    appendExpressions(editorObj);
     return expressions;
   };
 
@@ -306,13 +309,39 @@ const CodeMirrorEditor = ({
     }
   }, []);
 
+  const actionButtons: ActionButtonProps[] = [
+    {
+      size: 2,
+      action: (editor: CodeMirror.Editor): void => {
+        editor.execCommand("find");
+      },
+      mdiIconPath: mdiMagnify,
+      tooltip: "Найти (cmd + f)",
+    },
+    {
+      size: 2,
+      action: (editor: CodeMirror.Editor): void => {
+        editor.execCommand("replace");
+      },
+      mdiIconPath: mdiFindReplace,
+      tooltip: "Найти и заменить (cmd + option + f)",
+    },
+  ];
+
   return (
     <div className="code-mirror">
-      <div
-        style={{ height: "70vh", width: "100%", marginLeft: "2rem" }}
-        ref={entryPoint}
-        id="entry-point"
-      />
+      <div className="code-mirror__action-buttons">
+        {actionButtons.map((button: ActionButtonProps, i: number) => {
+          return (
+            <ActionButton
+              key={i}
+              {...button}
+              action={() => button.action(editor)}
+            />
+          );
+        })}
+      </div>
+      <div className="code-mirror__editor-entry-point" ref={entryPoint} />
     </div>
   );
 };

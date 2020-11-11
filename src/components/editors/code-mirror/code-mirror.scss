@@ -1,7 +1,23 @@
 @import "../../../styles/abstracts/variables";
 
 .code-mirror {
+  margin: 0 2rem;
   display: flex;
+  flex-direction: column;
+  &__action-buttons {
+    display: flex;
+    padding: 1rem;
+    background-color: $color-primary-dark;
+    & > * {
+      color: $color-primary-light;
+      &:not(:last-child) {
+        margin-right: 1rem;
+      }
+    }
+  }
+  &__editor-entry-point {
+    height: 100%;
+  }
 }
 
 .CodeMirror {

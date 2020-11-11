@@ -3,4 +3,5 @@ export interface ActionButtonProps {
   size: number;
   action: (...args: any[]) => void;
   margin?: string;
+  tooltip?: string;
 }
