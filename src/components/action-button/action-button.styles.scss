@@ -4,15 +4,19 @@
   border: none;
   background-color: inherit;
   position: relative;
-  &:hover {
-    .action-button__tooltip {
-      opacity: 1;
+  &__icon {
+    &:hover {
+      .action-button__tooltip {
+        opacity: 1;
+        visibility: visible;
+      }
     }
   }
   &__tooltip {
     position: absolute;
     opacity: 0;
-    transition: opacity 0.3s;
+    visibility: hidden;
+    transition: opacity 0.5s;
     padding: 0.5rem;
     border-radius: 5px;
     background-color: $color-primary-light;

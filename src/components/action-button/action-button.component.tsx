@@ -22,15 +22,17 @@ const ActionButton = ({
         action();
       }}
     >
-      {tooltip && (
-        <span
-          className="action-button__tooltip"
-          style={{ top: size + 1 + "rem" }}
-        >
-          {tooltip}
-        </span>
-      )}
-      <Icon path={mdiIconPath} size={size} />
+      <div className="action-button__icon">
+        <Icon path={mdiIconPath} size={size} />
+        {tooltip && (
+          <span
+            className="action-button__tooltip"
+            style={{ top: size + 1 + "rem" }}
+          >
+            {tooltip}
+          </span>
+        )}
+      </div>
     </button>
   );
 };

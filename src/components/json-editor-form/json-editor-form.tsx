@@ -1,6 +1,6 @@
 import React, { createRef, useEffect, useState } from "react";
 
-// import "@json-editor/json-editor/dist/jsoneditor";
+// import "@json-editor/json-editor/find-and-replace-dialog/jsoneditor";
 // @ts-ignore
 import { JSONEditor } from "@json-editor/json-editor/dist/nonmin/jsoneditor";
 

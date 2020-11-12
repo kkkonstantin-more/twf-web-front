@@ -2,19 +2,19 @@
 import React, { useEffect, useRef, useState } from "react";
 import CodeMirror, { Position, TextMarker } from "codemirror";
 // redux
-import CONSTRUCTOR_JSONS_INITIAL_STATE from "../../../redux/constructor-jsons/constructor-jsons.state";
+import CONSTRUCTOR_JSONS_INITIAL_STATE from "../../redux/constructor-jsons/constructor-jsons.state";
 import { connect, ConnectedProps } from "react-redux";
 import { createStructuredSelector } from "reselect";
 import {
   selectNamespaceJSON,
   selectRulePackJSON,
   selectTaskSetJSON,
-} from "../../../redux/constructor-jsons/constructor-jsons.selectors";
+} from "../../redux/constructor-jsons/constructor-jsons.selectors";
 import {
   updateNamespaceJSON,
   updateRulePackJSON,
   updateTaskSetJSON,
-} from "../../../redux/constructor-jsons/constructor-jsons.actions";
+} from "../../redux/constructor-jsons/constructor-jsons.actions";
 // codemirror core addons
 import "codemirror/mode/javascript/javascript";
 import "codemirror/lib/codemirror.css";
@@ -27,9 +27,9 @@ import "codemirror/addon/search/matchesonscrollbar";
 import "codemirror/addon/search/matchesonscrollbar.css";
 import "codemirror/addon/display/panel";
 // codemirror third-party addons
-import "codemirror-find-and-replace-dialog/dist/search.js";
-import "codemirror-find-and-replace-dialog/dist/dialog.js";
-import "codemirror-find-and-replace-dialog/dist/dialog.css";
+import "./overrides/find-and-replace-dialog/search.js";
+import "./overrides/find-and-replace-dialog/dialog.js";
+import "./overrides/find-and-replace-dialog/dialog.css";
 // codemirror hints/lints
 import "codemirror/addon/hint/javascript-hint";
 import "codemirror/addon/hint/show-hint";
@@ -39,22 +39,22 @@ import "codemirror/addon/lint/lint";
 import "codemirror/addon/lint/lint.css";
 // types
 import { Dispatch } from "react";
-import { ConstructorJSONsActionTypes } from "../../../redux/constructor-jsons/constructor-jsons.types";
-import { NamespaceConstructorInputs } from "../../../constructors/namespace-constructor/namespace-constructor.types";
-import { ConstructorType } from "../../../pages/constructor-page/constructor-page.types";
-import { RootState } from "../../../redux/root-reducer";
-import { RulePackConstructorInputs } from "../../../constructors/rule-pack-constructor/rule-pack-constructor.types";
-import { TaskSetConstructorInputs } from "../../../constructors/task-set-constructor/task-set-constructor.types";
+import { ConstructorJSONsActionTypes } from "../../redux/constructor-jsons/constructor-jsons.types";
+import { NamespaceConstructorInputs } from "../../constructors/namespace-constructor/namespace-constructor.types";
+import { ConstructorType } from "../../pages/constructor-page/constructor-page.types";
+import { RootState } from "../../redux/root-reducer";
+import { RulePackConstructorInputs } from "../../constructors/rule-pack-constructor/rule-pack-constructor.types";
+import { TaskSetConstructorInputs } from "../../constructors/task-set-constructor/task-set-constructor.types";
 // styles
 import "./code-mirror.scss";
 import { edit } from "ace-builds";
 import {
   getErrorFromMathInput,
   MathInputFormat,
-} from "../../../utils/kotlin-lib-functions";
-import ActionButton from "../../action-button/action-button.component";
+} from "../../utils/kotlin-lib-functions";
+import ActionButton from "../action-button/action-button.component";
 import { mdiFindReplace, mdiMagnify } from "@mdi/js";
-import { ActionButtonProps } from "../../action-button/action-button.types";
+import { ActionButtonProps } from "../action-button/action-button.types";
 
 // jsonlint config
 const jsonlint = require("jsonlint-mod");
@@ -306,6 +306,9 @@ const CodeMirrorEditor = ({
         });
       });
       setEditor(editor);
+      editor.on("find", () => {
+        alert(1);
+      });
     }
   }, []);
 
@@ -316,7 +319,7 @@ const CodeMirrorEditor = ({
         editor.execCommand("find");
       },
       mdiIconPath: mdiMagnify,
-      tooltip: "Найти (cmd + f)",
+      tooltip: "Найти (ctrl + f / cmd + f)",
     },
     {
       size: 2,
@@ -324,7 +327,7 @@ const CodeMirrorEditor = ({
         editor.execCommand("replace");
       },
       mdiIconPath: mdiFindReplace,
-      tooltip: "Найти и заменить (cmd + option + f)",
+      tooltip: "Найти и заменить (ctrl + shift + f / cmd + opt + f)",
     },
   ];
 

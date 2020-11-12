@@ -5,7 +5,7 @@ import { Route, Switch, useRouteMatch } from "react-router-dom";
 import TaskSetConstructor from "../../constructors/task-set-constructor/task-set-constructor.component";
 import NamespaceConstructor from "../../constructors/namespace-constructor/namespace-constructor.component";
 import RulePackConstructor from "../../constructors/rule-pack-constructor/rule-pack-constructor.component";
-import CodeMirrorEditor from "../../components/editors/code-mirror/code-mirror";
+import CodeMirrorEditor from "../../components/code-mirror/code-mirror";
 // types
 import { ConstructorType, EditingMode } from "./constructor-page.types";
 // styles
