@@ -1,6 +1,7 @@
 // libs and hooks
 import React, { useEffect, useRef, useState } from "react";
 import CodeMirror, { Position, TextMarker } from "codemirror";
+import { v4 as uidv4 } from "uuid";
 // redux
 import CONSTRUCTOR_JSONS_INITIAL_STATE from "../../redux/constructor-jsons/constructor-jsons.state";
 import { connect, ConnectedProps } from "react-redux";
@@ -70,6 +71,12 @@ export interface CodeMirrorWordPosition {
   to: Position;
 }
 
+interface CMError {
+  errorType: "excessive prop" | "wrong exp format" | "invalid exp";
+  position: CodeMirrorWordPosition;
+  gutterId: string;
+}
+
 const CodeMirrorEditor = ({
   constructorType,
   rulePackJSON,
@@ -80,6 +87,38 @@ const CodeMirrorEditor = ({
   updateTaskSetJSON,
 }: CodeMirrorProps & ConnectedProps<typeof connector>): JSX.Element => {
   const [editor, setEditor] = useState<any>(null);
+  let errors: CMError[] = [];
+
+  // const checkErrors = (editor: CodeMirror.Editor) => {
+  //   errors.forEach((error: CMError) => {
+  //     if (error.errorType === "excessive prop") {
+  //       const excessiveProps = getExcessiveProps(editor.getValue());
+  //       if (excessiveProps.length === 0) {
+  //         destroyError(error);
+  //       } else {
+  //         excessiveProps.forEach((excessiveProp: string) => {
+  //           console.log(excessiveProp);
+  //           if (
+  //             getWordPositions(editor, excessiveProp, error.position.from.line)
+  //               .length === 0
+  //           ) {
+  //             console.log("error should be destroyed", error);
+  //             destroyError(error);
+  //           } else {
+  //             console.log(
+  //               "found error",
+  //               getWordPositions(
+  //                 editor,
+  //                 excessiveProp,
+  //                 error.position.from.line
+  //               )
+  //             );
+  //           }
+  //         });
+  //       }
+  //     }
+  //   });
+  // };
 
   const entryPoint: React.Ref<any> = useRef();
 
@@ -118,13 +157,15 @@ const CodeMirrorEditor = ({
 
   const getWordPositions = (
     editor: CodeMirror.Editor,
-    word: string
+    word: string,
+    line: number = 0,
+    withParentheses: boolean = false
   ): CodeMirrorWordPosition[] => {
     // initializing cursor at the start of the document
     // @ts-ignore *getSearchCursor method is an addon and not type checked in original CodeMirror
     const cursor = editor.getSearchCursor(
-      word,
-      { line: 0, ch: 0 },
+      withParentheses ? `"${word}"` : word,
+      { line, ch: 0 },
       {
         caseFold: true,
         multiline: true,
@@ -137,7 +178,11 @@ const CodeMirrorEditor = ({
         from: cursor.from(),
         to: cursor.to(),
       });
-      cursor.findNext();
+      if (!line) {
+        cursor.findNext();
+      } else {
+        break;
+      }
     }
     return wordPositions;
   };
@@ -176,10 +221,10 @@ const CodeMirrorEditor = ({
 
   const setErrorLineAndGutter = (
     editor: CodeMirror.Editor,
-    from: Position,
-    to: Position,
+    wordPosition: CodeMirrorWordPosition,
     msg: string
   ): void => {
+    const { from, to } = wordPosition;
     editor.markText(from, to, {
       className: "CodeMirror-lint-mark-error",
       title: msg,
@@ -189,7 +234,32 @@ const CodeMirrorEditor = ({
     marker.setAttribute("data-toggle", "tooltip");
     marker.setAttribute("data-placement", "right");
     marker.setAttribute("title", msg);
+    const id = uidv4();
+    marker.setAttribute("id", id);
     editor.setGutterMarker(from.line, "gutter-error", marker);
+    errors = [
+      ...errors.filter((error: CMError) => {
+        return (
+          error.position.from.line !== from.line &&
+          error.position.to.line !== to.line
+        );
+      }),
+      {
+        errorType: "excessive prop",
+        gutterId: id,
+        position: wordPosition,
+      },
+    ];
+    // setErrors((prevState: CMError[]) => [
+    //   ...prevState.filter((error: CMError) => {
+    //     return error.line !== from.line;
+    //   }),
+    //   {
+    //     errorType: "excessive prop",
+    //     gutterId: id,
+    //     line: from.line,
+    //   },
+    // ]);
   };
 
   const destroyAllErrors = (editor: CodeMirror.Editor): void => {
@@ -235,6 +305,29 @@ const CodeMirrorEditor = ({
     return expressions;
   };
 
+  const destroyError = (error: CMError, editor: CodeMirror.Editor) => {
+    const marker = document.getElementById(error.gutterId);
+    marker?.parentNode?.removeChild(marker);
+    editor.getAllMarks().forEach((mark: TextMarker) => {
+      if (
+        // @ts-ignore
+        mark.lines[0].lineNo() === error.position.from.line &&
+        // @ts-ignore
+        mark.lines[0].markedSpans[0].from === error.position.from.ch
+      ) {
+        mark.clear();
+      }
+    });
+    errors = errors.filter((prevStateError: CMError) => {
+      return prevStateError.position.from.line !== error.position.from.line;
+    });
+    // setErrors((prevState) =>
+    //   prevState.filter((prevStateError: CMError) => {
+    //     return prevStateError.gutterId !== error.gutterId;
+    //   })
+    // );
+  };
+
   useEffect(() => {
     if (entryPoint.current) {
       const editor = CodeMirror(entryPoint.current, {
@@ -250,65 +343,85 @@ const CodeMirrorEditor = ({
         autoCloseBrackets: true,
       });
       editor.on("change", () => {
+        console.log(editor.getAllMarks());
         try {
           updateCurrentReduxJSON(JSON.parse(editor.getValue()));
         } catch {}
-        destroyAllErrors(editor);
+        // destroyAllErrors(editor);
         // set excessive props errors
+        if (errors.length !== 0) {
+          const excessiveProps = getExcessiveProps(editor.getValue());
+          errors.forEach((error: CMError) => {
+            if (
+              excessiveProps.every((prop: string) => {
+                return (
+                  getWordPositions(editor, prop, error.position.from.line, true)
+                    .length === 0
+                );
+              })
+            ) {
+              destroyError(error, editor);
+            }
+          });
+        }
         getExcessiveProps(editor.getValue()).forEach(
           (excessiveProp: string) => {
-            getWordPositions(editor, excessiveProp).forEach(
-              (foundPosition: CodeMirrorWordPosition) => {
-                setErrorLineAndGutter(
-                  editor,
-                  foundPosition.from,
-                  foundPosition.to,
-                  "Unexpected property"
-                );
-              }
-            );
+            getWordPositions(
+              editor,
+              excessiveProp,
+              editor.getCursor().line,
+              true
+            ).forEach((foundPosition: CodeMirrorWordPosition) => {
+              setErrorLineAndGutter(
+                editor,
+                foundPosition,
+                "Unexpected property"
+              );
+            });
           }
         );
-        getAllExpressions(editor).forEach((expression) => {
-          if (
-            expression.format !== MathInputFormat.TEX &&
-            expression.format !== MathInputFormat.PLAIN_TEXT &&
-            expression.format !== MathInputFormat.STRUCTURE_STRING
-          ) {
-            getWordPositions(editor, expression.format).forEach(
-              (foundPosition: CodeMirrorWordPosition) => {
-                setErrorLineAndGutter(
-                  editor,
-                  foundPosition.from,
-                  foundPosition.to,
-                  "Invalid expression format"
-                );
-              }
-            );
-          } else {
-            getWordPositions(editor, expression.expression).forEach(
-              (foundPosition: CodeMirrorWordPosition) => {
-                const error = getErrorFromMathInput(
-                  expression.format as MathInputFormat,
-                  expression.expression
-                );
-                if (error) {
-                  setErrorLineAndGutter(
-                    editor,
-                    foundPosition.from,
-                    foundPosition.to,
-                    error
-                  );
-                }
-              }
-            );
-          }
-        });
+
+        // checkErrors(editor);
+        // getAllExpressions(editor).forEach((expression, i) => {
+        //   if (
+        //     expression.format !== MathInputFormat.TEX &&
+        //     expression.format !== MathInputFormat.PLAIN_TEXT &&
+        //     expression.format !== MathInputFormat.STRUCTURE_STRING
+        //   ) {
+        //     getWordPositions(
+        //       editor,
+        //       expression.format,
+        //       editor.getCursor().line
+        //     ).forEach((foundPosition: CodeMirrorWordPosition) => {
+        //       setErrorLineAndGutter(
+        //         editor,
+        //         foundPosition.from,
+        //         foundPosition.to,
+        //         "Invalid expression format"
+        //       );
+        //     });
+        //   } else {
+        //     getWordPositions(editor, expression.expression).forEach(
+        //       (foundPosition: CodeMirrorWordPosition) => {
+        //         const error = getErrorFromMathInput(
+        //           expression.format as MathInputFormat,
+        //           expression.expression
+        //         );
+        //         if (error) {
+        //           setErrorLineAndGutter(
+        //             editor,
+        //             foundPosition.from,
+        //             foundPosition.to,
+        //             error
+        //           );
+        //         }
+        //       }
+        //     );
+        //   }
+        //   checkErrors(editor);
+        // });
       });
       setEditor(editor);
-      editor.on("find", () => {
-        alert(1);
-      });
     }
   }, []);
 
