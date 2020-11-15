@@ -47,7 +47,7 @@ import { RootState } from "../../redux/root-reducer";
 import { RulePackConstructorInputs } from "../../constructors/rule-pack-constructor/rule-pack-constructor.types";
 import { TaskSetConstructorInputs } from "../../constructors/task-set-constructor/task-set-constructor.types";
 // styles
-import "./code-mirror.scss";
+import "./code-mirror.styles.scss";
 import { edit } from "ace-builds";
 import {
   getErrorFromMathInput,
@@ -71,8 +71,14 @@ export interface CodeMirrorWordPosition {
   to: Position;
 }
 
+enum CMErrorType {
+  EXCESSIVE_PROP = "excessive prop",
+  INVALID_EXP = "invalid expression",
+  WRONG_EXP_FORMAT = "wrong expression format",
+}
+
 interface CMError {
-  errorType: "excessive prop" | "wrong exp format" | "invalid exp";
+  type: CMErrorType;
   position: CodeMirrorWordPosition;
   gutterId: string;
 }
@@ -88,37 +94,6 @@ const CodeMirrorEditor = ({
 }: CodeMirrorProps & ConnectedProps<typeof connector>): JSX.Element => {
   const [editor, setEditor] = useState<any>(null);
   let errors: CMError[] = [];
-
-  // const checkErrors = (editor: CodeMirror.Editor) => {
-  //   errors.forEach((error: CMError) => {
-  //     if (error.errorType === "excessive prop") {
-  //       const excessiveProps = getExcessiveProps(editor.getValue());
-  //       if (excessiveProps.length === 0) {
-  //         destroyError(error);
-  //       } else {
-  //         excessiveProps.forEach((excessiveProp: string) => {
-  //           console.log(excessiveProp);
-  //           if (
-  //             getWordPositions(editor, excessiveProp, error.position.from.line)
-  //               .length === 0
-  //           ) {
-  //             console.log("error should be destroyed", error);
-  //             destroyError(error);
-  //           } else {
-  //             console.log(
-  //               "found error",
-  //               getWordPositions(
-  //                 editor,
-  //                 excessiveProp,
-  //                 error.position.from.line
-  //               )
-  //             );
-  //           }
-  //         });
-  //       }
-  //     }
-  //   });
-  // };
 
   const entryPoint: React.Ref<any> = useRef();
 
@@ -158,14 +133,15 @@ const CodeMirrorEditor = ({
   const getWordPositions = (
     editor: CodeMirror.Editor,
     word: string,
-    line: number = 0,
+    findOne?: boolean,
+    specificLine?: number,
     withParentheses: boolean = false
-  ): CodeMirrorWordPosition[] => {
+  ): CodeMirrorWordPosition[] | CodeMirrorWordPosition | undefined => {
     // initializing cursor at the start of the document
     // @ts-ignore *getSearchCursor method is an addon and not type checked in original CodeMirror
     const cursor = editor.getSearchCursor(
       withParentheses ? `"${word}"` : word,
-      { line, ch: 0 },
+      { line: specificLine ? specificLine : 0, ch: 0 },
       {
         caseFold: true,
         multiline: true,
@@ -174,15 +150,22 @@ const CodeMirrorEditor = ({
     const wordPositions: CodeMirrorWordPosition[] = [];
     cursor.find();
     while (cursor.from() && cursor.to()) {
-      wordPositions.push({
-        from: cursor.from(),
-        to: cursor.to(),
-      });
-      if (!line) {
-        cursor.findNext();
+      if (specificLine) {
+        if (cursor.from().line === specificLine) {
+          return {
+            from: cursor.from(),
+            to: cursor.to(),
+          };
+        } else {
+          return;
+        }
       } else {
-        break;
+        wordPositions.push({
+          from: cursor.from(),
+          to: cursor.to(),
+        });
       }
+      cursor.findNext();
     }
     return wordPositions;
   };
@@ -222,7 +205,8 @@ const CodeMirrorEditor = ({
   const setErrorLineAndGutter = (
     editor: CodeMirror.Editor,
     wordPosition: CodeMirrorWordPosition,
-    msg: string
+    msg: string,
+    errorType: CMErrorType
   ): void => {
     const { from, to } = wordPosition;
     editor.markText(from, to, {
@@ -237,6 +221,7 @@ const CodeMirrorEditor = ({
     const id = uidv4();
     marker.setAttribute("id", id);
     editor.setGutterMarker(from.line, "gutter-error", marker);
+
     errors = [
       ...errors.filter((error: CMError) => {
         return (
@@ -245,21 +230,11 @@ const CodeMirrorEditor = ({
         );
       }),
       {
-        errorType: "excessive prop",
+        type: errorType,
         gutterId: id,
         position: wordPosition,
       },
     ];
-    // setErrors((prevState: CMError[]) => [
-    //   ...prevState.filter((error: CMError) => {
-    //     return error.line !== from.line;
-    //   }),
-    //   {
-    //     errorType: "excessive prop",
-    //     gutterId: id,
-    //     line: from.line,
-    //   },
-    // ]);
   };
 
   const destroyAllErrors = (editor: CodeMirror.Editor): void => {
@@ -319,7 +294,12 @@ const CodeMirrorEditor = ({
       }
     });
     errors = errors.filter((prevStateError: CMError) => {
-      return prevStateError.position.from.line !== error.position.from.line;
+      return (
+        prevStateError.position.from.line !== error.position.from.line &&
+        prevStateError.position.from.ch !== error.position.from.ch &&
+        prevStateError.position.to.line !== error.position.to.line &&
+        prevStateError.position.to.ch !== error.position.to.ch
+      );
     });
     // setErrors((prevState) =>
     //   prevState.filter((prevStateError: CMError) => {
@@ -343,43 +323,155 @@ const CodeMirrorEditor = ({
         autoCloseBrackets: true,
       });
       editor.on("change", () => {
-        console.log(editor.getAllMarks());
         try {
           updateCurrentReduxJSON(JSON.parse(editor.getValue()));
         } catch {}
-        // destroyAllErrors(editor);
-        // set excessive props errors
+        // excessive props check
+        getExcessiveProps(editor.getValue()).forEach(
+          (excessiveProp: string) => {
+            const excessivePropOnCurrentLinePos = getWordPositions(
+              editor,
+              excessiveProp,
+              true,
+              editor.getCursor().line,
+              true
+            );
+            if (
+              excessivePropOnCurrentLinePos &&
+              !Array.isArray(excessivePropOnCurrentLinePos)
+            ) {
+              setErrorLineAndGutter(
+                editor,
+                excessivePropOnCurrentLinePos,
+                "unexpected property",
+                CMErrorType.EXCESSIVE_PROP
+              );
+            }
+          }
+        );
+        // invalid expressions and expression formats check
+        getAllExpressions(editor).forEach((expression) => {
+          // check formats
+          const formatOnCurrentLinePos = getWordPositions(
+            editor,
+            expression.format,
+            true,
+            editor.getCursor().line,
+            true
+          ) as CodeMirrorWordPosition | undefined;
+          if (
+            formatOnCurrentLinePos &&
+            expression.format !== MathInputFormat.STRUCTURE_STRING &&
+            expression.format !== MathInputFormat.PLAIN_TEXT &&
+            expression.format !== MathInputFormat.TEX
+          ) {
+            setErrorLineAndGutter(
+              editor,
+              formatOnCurrentLinePos,
+              "invalid format",
+              CMErrorType.WRONG_EXP_FORMAT
+            );
+          } else {
+            // check expressions
+            const expressionOnCurrentLine = getWordPositions(
+              editor,
+              expression.expression,
+              true,
+              editor.getCursor().line,
+              true
+            );
+            const errorMsg: string | null = getErrorFromMathInput(
+              expression.format as MathInputFormat,
+              expression.expression
+            );
+            if (
+              expressionOnCurrentLine &&
+              !Array.isArray(expressionOnCurrentLine) &&
+              errorMsg !== null
+            ) {
+              setErrorLineAndGutter(
+                editor,
+                expressionOnCurrentLine,
+                errorMsg,
+                CMErrorType.INVALID_EXP
+              );
+            }
+          }
+        });
+        // active errors checking
         if (errors.length !== 0) {
           const excessiveProps = getExcessiveProps(editor.getValue());
+          const expressions = getAllExpressions(editor);
           errors.forEach((error: CMError) => {
-            if (
-              excessiveProps.every((prop: string) => {
-                return (
-                  getWordPositions(editor, prop, error.position.from.line, true)
-                    .length === 0
-                );
-              })
-            ) {
-              destroyError(error, editor);
+            if (error.type === CMErrorType.EXCESSIVE_PROP) {
+              if (
+                excessiveProps.every((excessiveProp: string) => {
+                  const excessivePropOnCurrentLine = getWordPositions(
+                    editor,
+                    excessiveProp,
+                    true,
+                    error.position.from.line,
+                    true
+                  );
+                  return (
+                    !excessivePropOnCurrentLine &&
+                    !Array.isArray(excessivePropOnCurrentLine)
+                  );
+                })
+              ) {
+                destroyError(error, editor);
+              }
+            } else if (error.type === CMErrorType.WRONG_EXP_FORMAT) {
+              if (
+                expressions.every((expression) => {
+                  const formatOnCurrentLine = getWordPositions(
+                    editor,
+                    expression.format,
+                    true,
+                    error.position.from.line,
+                    true
+                  );
+                  return (
+                    formatOnCurrentLine === undefined ||
+                    expression.format === MathInputFormat.PLAIN_TEXT ||
+                    expression.format === MathInputFormat.STRUCTURE_STRING ||
+                    expression.format === MathInputFormat.TEX
+                  );
+                })
+              ) {
+                destroyError(error, editor);
+              }
+            } else if (error.type === CMErrorType.INVALID_EXP) {
+              if (
+                expressions.every((expression) => {
+                  const expressionOnCurrentLine = getWordPositions(
+                    editor,
+                    expression.expression,
+                    true,
+                    error.position.from.line,
+                    true
+                  );
+                  if (expressionOnCurrentLine === undefined) {
+                    return true;
+                  } else {
+                    return (
+                      (expression.format === MathInputFormat.PLAIN_TEXT ||
+                        expression.format ===
+                          MathInputFormat.STRUCTURE_STRING ||
+                        expression.format === MathInputFormat.TEX) &&
+                      getErrorFromMathInput(
+                        expression.format as MathInputFormat,
+                        expression.expression
+                      ) === null
+                    );
+                  }
+                })
+              ) {
+                destroyError(error, editor);
+              }
             }
           });
         }
-        getExcessiveProps(editor.getValue()).forEach(
-          (excessiveProp: string) => {
-            getWordPositions(
-              editor,
-              excessiveProp,
-              editor.getCursor().line,
-              true
-            ).forEach((foundPosition: CodeMirrorWordPosition) => {
-              setErrorLineAndGutter(
-                editor,
-                foundPosition,
-                "Unexpected property"
-              );
-            });
-          }
-        );
 
         // checkErrors(editor);
         // getAllExpressions(editor).forEach((expression, i) => {
