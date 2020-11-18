@@ -168,6 +168,7 @@ const CodeMirrorEditor = ({
       }
       cursor.findNext();
     }
+    if (wordPositions.length === 0) return undefined;
     return wordPositions;
   };
 
@@ -236,7 +237,6 @@ const CodeMirrorEditor = ({
         position: wordPosition,
       },
     ];
-
     setDynamicErrors(errors);
   };
 
@@ -323,13 +323,14 @@ const CodeMirrorEditor = ({
                 error.position.from.line,
                 true
               );
-              return (
-                !excessivePropOnCurrentLine &&
-                !Array.isArray(excessivePropOnCurrentLine)
-              );
+              console.log(error, excessivePropOnCurrentLine);
+              return !excessivePropOnCurrentLine;
             })
           ) {
+            console.log("Error destroyed");
             destroyError(error, editor);
+          } else {
+            console.log("ERROR FOUND");
           }
         } else if (error.type === CMErrorType.WRONG_EXP_FORMAT) {
           if (
@@ -394,7 +395,6 @@ const CodeMirrorEditor = ({
           return error.gutterId === element.id;
         })
       ) {
-        console.log("OLD ERROR");
         element?.parentNode?.removeChild(element);
       }
     });
@@ -442,43 +442,27 @@ const CodeMirrorEditor = ({
         autoCloseBrackets: true,
       });
       editor.on("changes", (editor, changes) => {
-        changes.forEach((change: any) => {
-          checkExcessivePropInLine(
-            editor,
-            getExcessiveProps(editor.getValue()),
-            change.from.line
-          );
-        });
+        // console.log(editor);
+        // changes.forEach((change: any) => {
+        //   checkExcessivePropInLine(
+        //     editor,
+        //     getExcessiveProps(editor.getValue()),
+        //     change.from.line
+        //   );
+        // });
       });
-      editor.on("change", () => {
+      editor.on("change", (editor, changeObject) => {
+        console.log(changeObject);
         // console.log(editor.getCursor());
         try {
           updateCurrentReduxJSON(JSON.parse(editor.getValue()));
         } catch {}
         // excessive props check
-        getExcessiveProps(editor.getValue()).forEach(
-          (excessiveProp: string) => {
-            const excessivePropOnCurrentLinePos = getWordPositions(
-              editor,
-              excessiveProp,
-              true,
-              editor.getCursor().line,
-              true
-            );
-            if (
-              excessivePropOnCurrentLinePos &&
-              !Array.isArray(excessivePropOnCurrentLinePos)
-            ) {
-              setErrorLineAndGutter(
-                editor,
-                excessivePropOnCurrentLinePos,
-                "unexpected property",
-                CMErrorType.EXCESSIVE_PROP
-              );
-            }
-          }
+        checkExcessivePropInLine(
+          editor,
+          getExcessiveProps(editor.getValue()),
+          editor.getCursor().line
         );
-        // invalid expressions and expression formats check
         getAllExpressions(editor).forEach((expression) => {
           // check formats
           const formatOnCurrentLinePos = getWordPositions(
@@ -527,8 +511,9 @@ const CodeMirrorEditor = ({
             }
           }
         });
+        console.log("ERRORS:", errors);
         checkActiveErrors(editor);
-        removeNotActualGutters(errors);
+        // removeNotActualGutters(errors);
       });
       setEditor(editor);
     }
@@ -581,6 +566,16 @@ const CodeMirrorEditor = ({
         })}
       </div>
       <div className="code-mirror__editor-entry-point" ref={entryPoint} />
+      <button
+        onClick={() => {
+          if (editor) {
+            console.log(editor.getOption("gutters"));
+            // editor.setOption("gutters", []);
+          }
+        }}
+      >
+        clear errors
+      </button>
     </div>
   );
 };
