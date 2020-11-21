@@ -6,6 +6,7 @@ import levelTabsReducer from "./level-tabs/level-tabs.reducer";
 import userTabsReducer from "./user-tabs/user-tabs.reducer";
 import levelsHiddenFieldsReducer from "./levels-hidden-fields/levels-hidden-fields.reducer";
 import constructorJSONsReducer from "./constructor-jsons/constructor-jsons.reducer";
+import constructorHistoryReducer from "./constructor-history/constructor-history.reducer";
 
 const rootReducer = combineReducers({
   hiddenFields: hiddenFieldsReducer,
@@ -14,6 +15,7 @@ const rootReducer = combineReducers({
   levelTabs: levelTabsReducer,
   userTabs: userTabsReducer,
   constructorJSONS: constructorJSONsReducer,
+  constructorHistory: constructorHistoryReducer,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;

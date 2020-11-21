@@ -1,5 +1,5 @@
 // libs and hooks
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 // redux
 import { connect, ConnectedProps } from "react-redux";
@@ -49,6 +49,13 @@ import {
 } from "@mdi/js";
 // styles
 import "./task-constructor.styles.scss";
+import { addItemToTaskSetHistory } from "../../redux/constructor-history/constructor-history.actions";
+import { ConstructorHistoryItem } from "../../redux/constructor-history/constructor-history.types";
+
+export interface HistoryItem {
+  propertyPath: string;
+  value: string;
+}
 
 const TaskConstructor = ({
   index,
@@ -62,6 +69,7 @@ const TaskConstructor = ({
   updateName,
   taskSetJSON,
   updateTaskSetJSON,
+  addToHistory,
 }: TaskConstructorProps & ConnectedProps<typeof connector>): JSX.Element => {
   const { register, getValues, watch } = useFormContext();
   // @ts-ignore
@@ -117,6 +125,22 @@ const TaskConstructor = ({
       }
     })
   );
+
+  // const watchConstructorChanges = reduxWatch(() => {
+  //   return selectTaskSetJSON(store.getState());
+  // });
+  //
+  // store.subscribe(
+  //   watchConstructorChanges((newVal, oldVal, objectPath) => {
+  //     let changedPath: string;
+  //     let newValue: string;
+  //     Object.keys(newVal).forEach((key: string) => {
+  //       if (newVal[key] !== oldVal[key]) {
+  //         console.log(key);
+  //       }
+  //     });
+  //   })
+  // );
 
   /* making these values dynamic with react-hook-form's watch function
   in order to conditionally render dependent fields:
@@ -465,6 +489,13 @@ const TaskConstructor = ({
         register={register}
         // @ts-ignore
         updateJSON={() => updateTaskSetJSON(getValues())}
+        addToHistory={(
+          oldVal: ConstructorHistoryItem,
+          newVal: ConstructorHistoryItem
+        ) => {
+          console.log(newVal);
+          addToHistory(oldVal, newVal);
+        }}
       />
       {isTable() ? (
         <>
@@ -526,6 +557,10 @@ const mapDispatchToProps = (dispatch: any) => ({
   updateTaskSetJSON: (taskSetJSON: TaskSetConstructorInputs) => {
     return dispatch(updateTaskSetJSON(taskSetJSON));
   },
+  addToHistory: (
+    oldVal: ConstructorHistoryItem,
+    newVal: ConstructorHistoryItem
+  ) => dispatch(addItemToTaskSetHistory({ oldVal, newVal })),
 });
 
 const connector = connect(mapStateToProps, mapDispatchToProps);

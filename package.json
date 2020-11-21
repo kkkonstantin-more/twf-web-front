@@ -34,6 +34,7 @@
     "bootstrap": "^4.4.1",
     "codemirror": "^5.56.0",
     "codemirror-find-and-replace-dialog": "^1.1.4",
+    "fast-deep-equal": "^3.1.3",
     "jquery": "^3.5.1",
     "jshint": "^2.11.1",
     "jsoneditor": "^9.0.3",

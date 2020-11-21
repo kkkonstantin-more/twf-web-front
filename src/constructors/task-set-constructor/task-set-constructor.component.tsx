@@ -1,6 +1,7 @@
 // libs and hooks
 import React, { Dispatch, useEffect, useState } from "react";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
+import deepEqual from "fast-deep-equal/es6";
 // redux
 import { createStructuredSelector } from "reselect";
 import { selectTaskSetJSON } from "../../redux/constructor-jsons/constructor-jsons.selectors";
@@ -13,7 +14,9 @@ import useMockConstructorToEdit from "../hooks/use-mock-constructor-to-edit";
 import Draggable from "react-draggable";
 // custom components
 import MathQuillEditor from "../../components/math-quill-editor/math-quill-editor";
-import TaskConstructor from "../task-constructor/task-constructor.component";
+import TaskConstructor, {
+  HistoryItem,
+} from "../task-constructor/task-constructor.component";
 import AppModal from "../../components/app-modal/app-modal.component";
 import SelectConstructorItemList from "../../components/filterable-select-list/filterable-select-list.component";
 import ConstructorForm from "../../components/constructor-form/constructor-form.component";
@@ -42,6 +45,24 @@ import {
 } from "@mdi/js";
 // styles
 import "./task-set-constructor.styles.scss";
+import {
+  AddItemToTaskSetHistoryAction,
+  ConstructorHistoryItem,
+  RedoTaskSetHistoryAction,
+  UndoTaskSetHistoryAction,
+  UpdateTaskSetHistoryIndexAction,
+} from "../../redux/constructor-history/constructor-history.types";
+import {
+  selectCurrentTaskSetHistoryChange,
+  selectTaskSetHistory,
+  selectTaskSetHistoryIndex,
+} from "../../redux/constructor-history/constructor-history.selectors";
+import {
+  addItemToTaskSetHistory,
+  redoTaskSetHistory,
+  undoTaskSetHistory,
+  updateTaskSetHistoryIndex,
+} from "../../redux/constructor-history/constructor-history.actions";
 
 // @ts-ignore
 export const TasksFieldArrayActionsContext = React.createContext();
@@ -49,7 +70,14 @@ export const TasksFieldArrayActionsContext = React.createContext();
 const TaskSetConstructor = ({
   taskSetJSON,
   updateTaskSetJSON,
-}: ConnectedProps<typeof connector>): JSX.Element => {
+  history,
+  historyIdx,
+  addItemToHistory,
+  undo,
+  redo,
+  currentHistoryChange,
+}: // updateHistoryIdx,
+ConnectedProps<typeof connector>): JSX.Element => {
   const [showHintsBlock, setShowHintsBlock] = useState(false);
   const [startExpressionHint, setStartExpressionHint] = useState("");
   const [goalExpressionHint, setGoalExpressionHint] = useState("");
@@ -128,6 +156,20 @@ const TaskSetConstructor = ({
     }
   }, []);
 
+  useEffect(() => {
+    console.log(history);
+  }, [history]);
+
+  useEffect(() => {
+    console.log(historyIdx);
+  }, [historyIdx]);
+
+  useEffect(() => {
+    if (currentHistoryChange?.propertyPath) {
+      setValue(currentHistoryChange.propertyPath, currentHistoryChange.value);
+    }
+  });
+
   const inputs: (ConstructorInputProps | ConstructorSelectProps)[] = [
     {
       name: "nameEn",
@@ -166,6 +208,20 @@ const TaskSetConstructor = ({
               : `calc(50% + ${hintsDeltaX}px)`,
         }}
       >
+        <button
+          onClick={() => {
+            undo();
+          }}
+        >
+          Назад
+        </button>
+        <button
+          onClick={() => {
+            redo();
+          }}
+        >
+          Вперед
+        </button>
         <div className="task-set-constructor__form">
           <FormProvider {...methods}>
             <TasksFieldArrayActionsContext.Provider value={fieldArrayMethods}>
@@ -173,6 +229,12 @@ const TaskSetConstructor = ({
                 inputs={inputs}
                 register={register}
                 updateJSON={() => updateTaskSetJSON(getValues())}
+                addToHistory={(
+                  oldVal: ConstructorHistoryItem,
+                  newVal: ConstructorHistoryItem
+                ) => {
+                  addItemToHistory(oldVal, newVal);
+                }}
               />
               <div className="u-flex" style={{ alignItems: "center" }}>
                 <h3>Уровни</h3>
@@ -509,14 +571,36 @@ const TaskSetConstructor = ({
 
 const mapState = createStructuredSelector<
   RootState,
-  { taskSetJSON: TaskSetConstructorInputs }
+  {
+    taskSetJSON: TaskSetConstructorInputs;
+    history: ConstructorHistoryItem[];
+    historyIdx: number;
+    currentHistoryChange: ConstructorHistoryItem | undefined;
+  }
 >({
   taskSetJSON: selectTaskSetJSON,
+  history: selectTaskSetHistory,
+  historyIdx: selectTaskSetHistoryIndex,
+  currentHistoryChange: selectCurrentTaskSetHistoryChange,
 });
 
-const mapDispatch = (dispatch: Dispatch<UpdateTaskSetJSONAction>) => ({
+const mapDispatch = (
+  dispatch: Dispatch<
+    | UpdateTaskSetJSONAction
+    | AddItemToTaskSetHistoryAction
+    | UpdateTaskSetHistoryIndexAction
+    | RedoTaskSetHistoryAction
+    | UndoTaskSetHistoryAction
+  >
+) => ({
   updateTaskSetJSON: (taskSetJSON: TaskSetConstructorInputs) =>
     dispatch(updateTaskSetJSON(taskSetJSON)),
+  addItemToHistory: (
+    oldVal: ConstructorHistoryItem,
+    newVal: ConstructorHistoryItem
+  ) => dispatch(addItemToTaskSetHistory({ oldVal, newVal })),
+  undo: () => dispatch(undoTaskSetHistory()),
+  redo: () => dispatch(redoTaskSetHistory()),
 });
 
 const connector = connect(mapState, mapDispatch);

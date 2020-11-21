@@ -7,6 +7,7 @@ import MixedInput from "../mixed-input/mixed-input.component";
 import { ChangeEvent } from "react";
 import { ConstructorInputProps } from "./construcor-input.types";
 import { MathInputFormat } from "../../utils/kotlin-lib-functions";
+import { HistoryItem } from "../../constructors/task-constructor/task-constructor.component";
 
 // TODO: fix typescript and eslint errors
 
@@ -20,6 +21,7 @@ const ConstructorInput = ({
   isRendered = true,
   expressionInput = false,
   updateJSON,
+  addToHistory,
 }: ConstructorInputProps): JSX.Element => {
   const mixedInputRef:
     | React.RefObject<HTMLInputElement>
@@ -42,6 +44,12 @@ const ConstructorInput = ({
       );
     }
   }, [inputWrapperRef]);
+
+  useEffect(() => {
+    if (updateJSON) {
+      updateJSON();
+    }
+  }, [inputValue]);
 
   if (isRendered) {
     return (
@@ -93,12 +101,24 @@ const ConstructorInput = ({
             }}
             name={expressionInput ? name + ".expression" : name}
             type={type}
-            onBlur={() => {
-              if (updateJSON) {
-                updateJSON();
-              }
-            }}
+            // onBlur={() => {
+            //   if (updateJSON) {
+            //     updateJSON();
+            //   }
+            // }}
             onChange={(event: ChangeEvent<HTMLInputElement>) => {
+              if (addToHistory) {
+                addToHistory(
+                  {
+                    propertyPath: name,
+                    value: inputValue,
+                  },
+                  {
+                    propertyPath: name,
+                    value: event.target.value,
+                  }
+                );
+              }
               setInputValue(event.target.value);
             }}
             // @ts-ignore
