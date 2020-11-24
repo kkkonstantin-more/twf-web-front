@@ -21,6 +21,7 @@ import { sorterRu } from "./components/sorter";
 import { appTabRu } from "./components/app-tab";
 import { playerInfoPageRu } from "./pages/player-info-page";
 import { levelInfoPageRu } from "./pages/level-info-page";
+import { sampleUserPageRu } from "./pages/sample-user-page";
 import { filterRu } from "./components/filter";
 import { appTabHeaderRu } from "./components/app-tab-header";
 import { fetchErrorMessageRu } from "./components/fetch-error-message";
@@ -49,6 +50,7 @@ export default {
     ...appTabRu,
     ...playerInfoPageRu,
     ...levelInfoPageRu,
+    ...sampleUserPageRu,
     ...filterRu,
     ...appTabHeaderRu,
     ...fetchErrorMessageRu,

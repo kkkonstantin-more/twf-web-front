@@ -21,6 +21,7 @@ import { sorterEn } from "./components/sorter";
 import { appTabEn } from "./components/app-tab";
 import { playerInfoPageEn } from "./pages/player-info-page";
 import { levelInfoPageEn } from "./pages/level-info-page";
+import { sampleUserPageEn } from "./pages/sample-user-page";
 import { filterEn } from "./components/filter";
 import { appTabHeaderEn } from "./components/app-tab-header";
 import { fetchErrorMessageEn } from "./components/fetch-error-message";
@@ -49,6 +50,7 @@ export default {
     ...appTabEn,
     ...playerInfoPageEn,
     ...levelInfoPageEn,
+    ...sampleUserPageEn,
     ...filterEn,
     ...appTabHeaderEn,
     ...fetchErrorMessageEn,
