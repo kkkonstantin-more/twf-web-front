@@ -8,13 +8,21 @@
   }
 }
 
+.sample-user-page-left-side {
+  display: flex;
+  float: left;
+  margin-right: 3rem;
+  border-right: 0.01rem gray solid;
+}
+
+
 .user-info {
   display: block;
   padding: 0;
   float: left;
   list-style: none;
   margin-top: 2rem;
-  margin-right: 10rem;
+  margin-right: initial;
 }
 
 .user-photo {
@@ -35,13 +43,20 @@
   margin-bottom: 1rem;
 }
 
+.user-main-container-1 {
+  position: relative;
+  float: left;
+  border-bottom: 0.01rem gray solid;
+  padding-bottom: 10rem;
+}
+
 .user-rating-and-xp {
   display: block;
   padding: 0;
   float: right;
   list-style: none;
   margin-top: 9rem;
-  margin-left: 3rem;
+  margin-left: 2rem;
 }
 
 .user-rating-icon {
@@ -54,14 +69,12 @@
 
 $arrow-width: 50rem;
 $arrow-height: 3rem;
-$proc: 72%;
 
 .arrow-progress-bar {
   text-indent: $arrow-height;
   width: $arrow-width;
   height: $arrow-height;
   position: relative;
-  background: linear-gradient(135deg, #28a745 $proc, #cfd8dc $proc);
   margin-top: 11rem;
   float: left;
   border-bottom-right-radius: $arrow-height / 2;
@@ -121,16 +134,14 @@ $proc: 72%;
 
 .user-rank-number-container:before {
   content: "";
-  -webkit-transform: rotate(30deg);
-  -moz-transform: rotate(30deg);
-  -ms-transform: rotate(30deg);
-  -o-transform: rotate(30deg);
+  transform: rotate(30deg);
 }
 
 .user-rank-number-container:after {
   content: "103";
-  -webkit-transform: rotate(60deg);
-  -moz-transform: rotate(60deg);
-  -ms-transform: rotate(60deg);
-  -o-transform: rotate(60deg);
+  transform: rotate(60deg);
+}
+
+.link-to-rating {
+  color: black;
 }

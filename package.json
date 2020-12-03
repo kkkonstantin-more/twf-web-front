@@ -46,6 +46,7 @@
     "react-bootstrap": "^1.4.0",
     "react-dom": "^16.13.1",
     "react-draggable": "^4.4.3",
+    "react-edit-button": "^1.0.2",
     "react-google-login": "^5.1.10",
     "react-graph-vis": "^1.0.5",
     "react-hook-form": "^6.3.1",
