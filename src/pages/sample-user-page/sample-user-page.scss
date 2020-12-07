@@ -12,7 +12,6 @@
   display: flex;
   float: left;
   margin-right: 3rem;
-  border-right: 0.01rem gray solid;
 }
 
 
@@ -45,8 +44,7 @@
 
 .user-main-container-1 {
   position: relative;
-  float: left;
-  border-bottom: 0.01rem gray solid;
+  float: right;
   padding-bottom: 10rem;
 }
 
@@ -56,7 +54,7 @@
   float: right;
   list-style: none;
   margin-top: 9rem;
-  margin-left: 2rem;
+  margin-left: 25rem;
 }
 
 .user-rating-icon {

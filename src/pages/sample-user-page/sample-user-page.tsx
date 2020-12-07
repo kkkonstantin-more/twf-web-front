@@ -18,8 +18,10 @@ class EditLoginButton extends Component {
     }
     render () {
         const EditButtonProps = {
-            onAccept: this.onAccept,
-            hoverToShowEditButton: true
+            editButtonProps: {
+                text: ' '
+            },
+            onAccept: this.onAccept
         }
         return (
             <div>
@@ -39,8 +41,10 @@ class EditNameButton extends Component {
     }
     render () {
         const EditButtonProps = {
-            onAccept: this.onAccept,
-            hoverToShowEditButton: true
+            editButtonProps: {
+                text: ' '
+            },
+            onAccept: this.onAccept
         }
         return (
             <div>
