@@ -27,7 +27,10 @@ import { RootState } from "../../redux/root-reducer";
 import { ConstructorInputProps } from "../../components/constructor-input/construcor-input.types";
 import { ConstructorSelectProps } from "../../components/constructor-select/constructor-select.types";
 import { TaskConstructorInputs } from "../task-constructor/task-constructor.types";
-import { UpdateTaskSetJSONAction } from "../../redux/constructor-jsons/constructor-jsons.types";
+import {
+  ConstructorJSONsTypes,
+  UpdateTaskSetJSONAction,
+} from "../../redux/constructor-jsons/constructor-jsons.types";
 // data
 import { mockTasks } from "../task-constructor/task-constructor.mock-data";
 import { mockTaskSets } from "./task-set-constructor.mock-data";
@@ -157,18 +160,11 @@ ConnectedProps<typeof connector>): JSX.Element => {
   }, []);
 
   useEffect(() => {
-    console.log(history);
-  }, [history]);
-
-  useEffect(() => {
-    console.log(historyIdx);
-  }, [historyIdx]);
-
-  useEffect(() => {
     if (currentHistoryChange?.propertyPath) {
       setValue(currentHistoryChange.propertyPath, currentHistoryChange.value);
+      updateTaskSetJSON(getValues());
     }
-  });
+  }, [currentHistoryChange]);
 
   const inputs: (ConstructorInputProps | ConstructorSelectProps)[] = [
     {
@@ -235,6 +231,7 @@ ConnectedProps<typeof connector>): JSX.Element => {
                 ) => {
                   addItemToHistory(oldVal, newVal);
                 }}
+                constructorType={ConstructorJSONsTypes.TASK_SET}
               />
               <div className="u-flex" style={{ alignItems: "center" }}>
                 <h3>Уровни</h3>
@@ -569,6 +566,7 @@ ConnectedProps<typeof connector>): JSX.Element => {
   );
 };
 
+// connecting redux
 const mapState = createStructuredSelector<
   RootState,
   {

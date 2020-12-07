@@ -7,6 +7,7 @@ import { ConfigProvider, Select } from "antd";
 // types
 import { ConstructorSelectProps } from "./constructor-select.types";
 import { LabeledValue } from "antd/es/select";
+import { useFormContext } from "react-hook-form";
 
 const { Option } = Select;
 
@@ -16,11 +17,11 @@ const ConstructorSelect = ({
   options,
   isMulti,
   defaultValue,
-  register,
   updateJSON,
   isRendered = true,
   isVisible = true,
 }: ConstructorSelectProps): JSX.Element => {
+  const { register, getValues, watch } = useFormContext();
   const parseValue = (
     value: string | number | string[] | undefined,
     isMulti: boolean

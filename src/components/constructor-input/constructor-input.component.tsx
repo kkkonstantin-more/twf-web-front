@@ -1,5 +1,5 @@
 // libs and hooks
-import React, { useEffect, useState } from "react";
+import React, { Dispatch, useEffect, useState } from "react";
 import useMergedRef from "@react-hook/merged-ref";
 // custom components
 import MixedInput from "../mixed-input/mixed-input.component";
@@ -8,21 +8,60 @@ import { ChangeEvent } from "react";
 import { ConstructorInputProps } from "./construcor-input.types";
 import { MathInputFormat } from "../../utils/kotlin-lib-functions";
 import { HistoryItem } from "../../constructors/task-constructor/task-constructor.component";
+import { createStructuredSelector } from "reselect";
+import { RootState } from "../../redux/root-reducer";
+import { TaskSetConstructorInputs } from "../../constructors/task-set-constructor/task-set-constructor.types";
+import {
+  AddItemToTaskSetHistoryAction,
+  ConstructorHistoryItem,
+  RedoTaskSetHistoryAction,
+  UndoTaskSetHistoryAction,
+  UpdateTaskSetHistoryIndexAction,
+} from "../../redux/constructor-history/constructor-history.types";
+import { selectTaskSetJSON } from "../../redux/constructor-jsons/constructor-jsons.selectors";
+import {
+  selectCurrentTaskSetHistoryChange,
+  selectTaskSetHistory,
+  selectTaskSetHistoryIndex,
+} from "../../redux/constructor-history/constructor-history.selectors";
+import {
+  ConstructorInputs,
+  ConstructorJSONsTypes,
+  UpdateNamespaceJSONAction,
+  UpdateRulePackJSONAction,
+  UpdateTaskSetJSONAction,
+} from "../../redux/constructor-jsons/constructor-jsons.types";
+import {
+  updateConstructorJSON,
+  updateNamespaceJSON,
+  updateRulePackJSON,
+  updateTaskSetJSON,
+} from "../../redux/constructor-jsons/constructor-jsons.actions";
+import {
+  addItemToTaskSetHistory,
+  redoTaskSetHistory,
+  undoTaskSetHistory,
+} from "../../redux/constructor-history/constructor-history.actions";
+import { connect, ConnectedProps } from "react-redux";
+import { NamespaceConstructorInputs } from "../../constructors/namespace-constructor/namespace-constructor.types";
+import { RulePackConstructorInputs } from "../../constructors/rule-pack-constructor/rule-pack-constructor.types";
+import { useFormContext } from "react-hook-form";
 
 // TODO: fix typescript and eslint errors
 
 const ConstructorInput = ({
   name,
   type,
-  register,
   label,
   defaultValue,
   isVisible = true,
   isRendered = true,
   expressionInput = false,
+  constructorType,
   updateJSON,
-  addToHistory,
-}: ConstructorInputProps): JSX.Element => {
+  addItemToHistory,
+}: ConstructorInputProps & ConnectedProps<typeof connector>): JSX.Element => {
+  const { register, getValues } = useFormContext();
   const mixedInputRef:
     | React.RefObject<HTMLInputElement>
     | undefined = expressionInput ? React.createRef() : undefined;
@@ -44,12 +83,6 @@ const ConstructorInput = ({
       );
     }
   }, [inputWrapperRef]);
-
-  useEffect(() => {
-    if (updateJSON) {
-      updateJSON();
-    }
-  }, [inputValue]);
 
   if (isRendered) {
     return (
@@ -77,17 +110,18 @@ const ConstructorInput = ({
                 ref={useMergedRef(
                   // @ts-ignore
                   register(),
+                  // @ts-ignore
                   expressionFormatRef
                 )}
               />
               <MixedInput
                 value={defaultValue.expression}
                 width={mixedInputWidth + "px"}
-                onBlur={() => {
-                  if (updateJSON) {
-                    updateJSON();
-                  }
-                }}
+                // onBlur={() => {
+                //   if (updateJSON) {
+                //     updateJSON();
+                //   }
+                // }}
                 inputRef={mixedInputRef}
                 formatRef={expressionFormatRef}
                 initialFormat={defaultValue.format}
@@ -101,14 +135,9 @@ const ConstructorInput = ({
             }}
             name={expressionInput ? name + ".expression" : name}
             type={type}
-            // onBlur={() => {
-            //   if (updateJSON) {
-            //     updateJSON();
-            //   }
-            // }}
             onChange={(event: ChangeEvent<HTMLInputElement>) => {
-              if (addToHistory) {
-                addToHistory(
+              if (updateJSON && constructorType) {
+                addItemToHistory(
                   {
                     propertyPath: name,
                     value: inputValue,
@@ -120,6 +149,8 @@ const ConstructorInput = ({
                 );
               }
               setInputValue(event.target.value);
+              // @ts-ignore
+              updateJSON(constructorType, getValues());
             }}
             // @ts-ignore
             ref={
@@ -128,13 +159,14 @@ const ConstructorInput = ({
                   useMergedRef(
                     // @ts-ignore
                     register(),
+                    // @ts-ignore
                     mixedInputRef
                   )
                 : // @ts-ignore
                   // @ts-ignore
                   register()
             }
-            defaultValue={inputValue}
+            // defaultValue={inputValue}
           />
         </div>
       </div>
@@ -144,4 +176,32 @@ const ConstructorInput = ({
   }
 };
 
-export default ConstructorInput;
+const mapState = createStructuredSelector<
+  RootState,
+  {
+    taskSetJSON: TaskSetConstructorInputs;
+    history: ConstructorHistoryItem[];
+    historyIdx: number;
+    currentHistoryChange: ConstructorHistoryItem | undefined;
+  }
+>({
+  taskSetJSON: selectTaskSetJSON,
+  history: selectTaskSetHistory,
+  historyIdx: selectTaskSetHistoryIndex,
+  currentHistoryChange: selectCurrentTaskSetHistoryChange,
+});
+
+const mapDispatch = (dispatch: Dispatch<any>) => ({
+  updateJSON: (
+    constructorType: ConstructorJSONsTypes,
+    JSON: ConstructorInputs
+  ) => dispatch(updateConstructorJSON(constructorType, JSON)),
+  addItemToHistory: (
+    oldVal: ConstructorHistoryItem,
+    newVal: ConstructorHistoryItem
+  ) => dispatch(addItemToTaskSetHistory({ oldVal, newVal })),
+});
+
+const connector = connect(mapState, mapDispatch);
+
+export default connector(ConstructorInput);

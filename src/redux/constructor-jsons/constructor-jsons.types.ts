@@ -8,6 +8,12 @@ export interface ConstructorJSONs {
   rulePack: RulePackConstructorInputs;
 }
 
+export enum ConstructorJSONsTypes {
+  NAMESPACE = "NAMESPACE",
+  TASK_SET = "TASK_SET",
+  RULE_PACK = "RULE_PACK",
+}
+
 export type ConstructorInputs =
   | NamespaceConstructorInputs
   | TaskSetConstructorInputs

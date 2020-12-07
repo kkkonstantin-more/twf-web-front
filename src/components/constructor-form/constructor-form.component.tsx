@@ -5,15 +5,18 @@ import { isSelectInput } from "../../constructors/utils";
 import ConstructorSelect from "../constructor-select/constructor-select.component";
 import ConstructorInput from "../constructor-input/constructor-input.component";
 import { ConstructorHistoryItem } from "../../redux/constructor-history/constructor-history.types";
+import { ConstructorType } from "../../pages/constructor-page/constructor-page.types";
+import { ConstructorJSONsTypes } from "../../redux/constructor-jsons/constructor-jsons.types";
 
 interface ConstructorFormProps {
   inputs: (ConstructorInputProps | ConstructorSelectProps)[];
-  register: () => void;
-  updateJSON: () => void;
+  register?: () => void;
+  updateJSON?: () => void;
   addToHistory?: (
     oldVal: ConstructorHistoryItem,
     newVal: ConstructorHistoryItem
   ) => void;
+  constructorType?: ConstructorJSONsTypes;
 }
 
 const ConstructorForm = ({
@@ -21,6 +24,7 @@ const ConstructorForm = ({
   register,
   updateJSON,
   addToHistory,
+  constructorType,
 }: ConstructorFormProps): JSX.Element => {
   return (
     <>
@@ -33,7 +37,6 @@ const ConstructorForm = ({
             return (
               <ConstructorSelect
                 key={name}
-                register={register}
                 updateJSON={updateJSON}
                 {...input}
               />
@@ -42,9 +45,8 @@ const ConstructorForm = ({
             return (
               <ConstructorInput
                 key={name}
-                register={register}
-                updateJSON={updateJSON}
                 addToHistory={addToHistory}
+                constructorType={constructorType}
                 {...input}
               />
             );

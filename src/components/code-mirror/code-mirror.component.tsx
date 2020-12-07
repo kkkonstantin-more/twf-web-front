@@ -56,6 +56,13 @@ import {
 import ActionButton from "../action-button/action-button.component";
 import { mdiFindReplace, mdiMagnify } from "@mdi/js";
 import { ActionButtonProps } from "../action-button/action-button.types";
+import {
+  addItemToTaskSetHistory,
+  redoTaskSetHistory,
+  undoTaskSetHistory,
+} from "../../redux/constructor-history/constructor-history.actions";
+import { ConstructorHistoryItem } from "../../redux/constructor-history/constructor-history.types";
+import { selectCurrentTaskSetHistoryChange } from "../../redux/constructor-history/constructor-history.selectors";
 
 // jsonlint config
 const jsonlint = require("jsonlint-mod");
@@ -91,6 +98,10 @@ const CodeMirrorEditor = ({
   updateNamespaceJSON,
   updateRulePackJSON,
   updateTaskSetJSON,
+  currentHistoryChange,
+  undo,
+  redo,
+  addItemToHistory,
 }: CodeMirrorProps & ConnectedProps<typeof connector>): JSX.Element => {
   const [editor, setEditor] = useState<any>(null);
   const [dynamicErrors, setDynamicErrors] = useState<CMError[]>([]);
@@ -428,6 +439,23 @@ const CodeMirrorEditor = ({
   };
 
   useEffect(() => {
+    if (editor && currentHistoryChange) {
+      const cursorPos = editor.getCursor();
+      editor.setValue(
+        JSON.stringify(
+          {
+            ...JSON.parse(editor.getValue()),
+            [currentHistoryChange.propertyPath]: currentHistoryChange.value,
+          },
+          null,
+          2
+        )
+      );
+      editor.setCursor(cursorPos);
+    }
+  }, [currentHistoryChange]);
+
+  useEffect(() => {
     if (entryPoint.current) {
       const editor = CodeMirror(entryPoint.current, {
         value: JSON.stringify(currentReduxJSON, null, 2),
@@ -451,12 +479,57 @@ const CodeMirrorEditor = ({
         //   );
         // });
       });
+      // editor.on("")
+      editor.undo = () => {
+        undo();
+      };
+
+      editor.redo = () => {
+        redo();
+      };
+
       editor.on("change", (editor, changeObject) => {
-        console.log(changeObject);
-        // console.log(editor.getCursor());
-        try {
+        if (changeObject.origin === "+input") {
+          const [oldExp, oldVal] = (
+            editor
+              .getLine(changeObject.from.line)
+              .slice(0, changeObject.from.ch) +
+            editor.getLine(changeObject.from.line).slice(changeObject.to.ch + 1)
+          )
+            .split(":")
+            .map((item: string) => {
+              return item.replace(/\"|\,/g, "").trim();
+            });
+
+          const [newExp, newVal] = editor
+            .getLine(changeObject.from.line)
+            .split(":")
+            .map((item: string) => {
+              return item.replace(/\"|\,/g, "").trim();
+            });
+
+          addItemToHistory(
+            {
+              propertyPath: oldExp,
+              value: oldVal,
+            },
+            {
+              propertyPath: newExp,
+              value: newVal,
+            }
+          );
           updateCurrentReduxJSON(JSON.parse(editor.getValue()));
-        } catch {}
+        }
+        // console.log(editor.getCursor());
+        // if (changeObject.origin === "redo" || changeObject.origin === "undo") {
+        //   undo();
+        //   redo();
+        //
+        //   // editor.setValue()
+        // }
+        // try {
+        //   updateCurrentReduxJSON(JSON.parse(editor.getValue()));
+        // } catch {}
         // excessive props check
         checkExcessivePropInLine(
           editor,
@@ -586,16 +659,16 @@ const mapStateToProps = createStructuredSelector<
     namespaceJSON: NamespaceConstructorInputs;
     rulePackJSON: RulePackConstructorInputs;
     taskSetJSON: TaskSetConstructorInputs;
+    currentHistoryChange: ConstructorHistoryItem | undefined;
   }
 >({
   namespaceJSON: selectNamespaceJSON,
   rulePackJSON: selectRulePackJSON,
   taskSetJSON: selectTaskSetJSON,
+  currentHistoryChange: selectCurrentTaskSetHistoryChange,
 });
 
-const mapDispatchToProps = (
-  dispatch: Dispatch<ConstructorJSONsActionTypes>
-) => ({
+const mapDispatchToProps = (dispatch: Dispatch<any>) => ({
   updateNamespaceJSON: (namespaceJSON: NamespaceConstructorInputs) => {
     return dispatch(updateNamespaceJSON(namespaceJSON));
   },
@@ -605,6 +678,13 @@ const mapDispatchToProps = (
   updateRulePackJSON: (rulePackJSON: RulePackConstructorInputs) => {
     return dispatch(updateRulePackJSON(rulePackJSON));
   },
+  // version control
+  addItemToHistory: (
+    oldVal: ConstructorHistoryItem,
+    newVal: ConstructorHistoryItem
+  ) => dispatch(addItemToTaskSetHistory({ oldVal, newVal })),
+  undo: () => dispatch(undoTaskSetHistory()),
+  redo: () => dispatch(redoTaskSetHistory()),
 });
 
 const connector = connect(mapStateToProps, mapDispatchToProps);

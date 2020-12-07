@@ -1,5 +1,5 @@
 // libs and hooks
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useFormContext } from "react-hook-form";
 // redux
 import { connect, ConnectedProps } from "react-redux";
@@ -16,7 +16,6 @@ import {
 // context
 import { TasksFieldArrayActionsContext } from "../task-set-constructor/task-set-constructor.component";
 // components
-import AppModalComponent from "../../components/app-modal/app-modal.component";
 import ActionButton from "../../components/action-button/action-button.component";
 import ConstructorForm from "../../components/constructor-form/constructor-form.component";
 // types
@@ -40,8 +39,6 @@ import {
   mdiArrowUp,
   mdiClose,
   mdiContentCopy,
-  mdiEye,
-  mdiEyeOff,
   mdiFileEye,
   mdiPlayCircle,
   mdiRobot,
@@ -51,6 +48,7 @@ import {
 import "./task-constructor.styles.scss";
 import { addItemToTaskSetHistory } from "../../redux/constructor-history/constructor-history.actions";
 import { ConstructorHistoryItem } from "../../redux/constructor-history/constructor-history.types";
+import { ConstructorJSONsTypes } from "../../redux/constructor-jsons/constructor-jsons.types";
 
 export interface HistoryItem {
   propertyPath: string;
@@ -486,16 +484,7 @@ const TaskConstructor = ({
             ? autoTaskBasicInputs.concat(autoTasksAddInputs)
             : manualTaskBasicInputs.concat(manualTasksAddInputs)
         }
-        register={register}
-        // @ts-ignore
-        updateJSON={() => updateTaskSetJSON(getValues())}
-        addToHistory={(
-          oldVal: ConstructorHistoryItem,
-          newVal: ConstructorHistoryItem
-        ) => {
-          console.log(newVal);
-          addToHistory(oldVal, newVal);
-        }}
+        constructorType={ConstructorJSONsTypes.TASK_SET}
       />
       {isTable() ? (
         <>
