@@ -191,8 +191,80 @@ const SampleUserPage: React.FC<SampleUserPageProps> = () => {
                                 Рейтинг
                             </h1>
                         </li>
-                        <li>
+                        <li className="user-stats__rating__sections__table">
+                            <div className="user-stats__rating__sections__table__tab" style={{backgroundColor: "gold"}}>
+                                <div className="user-stats__rating__sections__table__tab__place">
+                                    1
+                                </div>
+                                <div className="user-stats__rating__sections__table__tab__login">
+                                    Master_Flomaster
+                                </div>
+                                <div className="user-stats__rating__sections__table__tab__rating">
+                                    123123
+                                </div>
+                                <img className="user-stats__rating__sections__table__tab__rank" style={{borderColor: "blueviolet"}} src={userShowRank}/>
+                            </div>
+                            <div className="user-stats__rating__sections__table__tab">
+                                <div className="user-stats__rating__sections__table__tab__place">
+                                    141
+                                </div>
+                                <div className="user-stats__rating__sections__table__tab__login">
+                                    M1cky M0use
+                                </div>
+                                <div className="user-stats__rating__sections__table__tab__rating">
+                                    10000
+                                </div>
+                                <img className="user-stats__rating__sections__table__tab__rank" style={{borderColor: "gold"}} src={userShowRank}/>
+                            </div>
+                            <div className="user-stats__rating__sections__table__tab">
+                                <div className="user-stats__rating__sections__table__tab__place">
+                                    142
+                                </div>
+                                <div className="user-stats__rating__sections__table__tab__login">
+                                    zxc
+                                </div>
+                                <div className="user-stats__rating__sections__table__tab__rating">
+                                    9876
+                                </div>
+                                <img className="user-stats__rating__sections__table__tab__rank" src={userShowRank}/>
+                            </div>
+                            <div className="user-stats__rating__sections__table__tab" style={{backgroundColor: "lightgreen"}}>
+                                <div className="user-stats__rating__sections__table__tab__place">
+                                    143
+                                </div>
+                                <div className="user-stats__rating__sections__table__tab__login">
+                                    ___peppa___
+                                </div>
+                                <div className="user-stats__rating__sections__table__tab__rating">
+                                    9397
+                                </div>
+                                <img className="user-stats__rating__sections__table__tab__rank" src={userShowRank}/>
+                            </div>
 
+                            <div className="user-stats__rating__sections__table__tab">
+                                <div className="user-stats__rating__sections__table__tab__place">
+                                    144
+                                </div>
+                                <div className="user-stats__rating__sections__table__tab__login">
+                                    BamBy
+                                </div>
+                                <div className="user-stats__rating__sections__table__tab__rating">
+                                    8901
+                                </div>
+                                <img className="user-stats__rating__sections__table__tab__rank" src={userShowRank}/>
+                            </div>
+                            <div className="user-stats__rating__sections__table__tab">
+                                <div className="user-stats__rating__sections__table__tab__place">
+                                    145
+                                </div>
+                                <div className="user-stats__rating__sections__table__tab__login">
+                                    Donald Duck (0^0)
+                                </div>
+                                <div className="user-stats__rating__sections__table__tab__rating">
+                                    7000
+                                </div>
+                                <img className="user-stats__rating__sections__table__tab__rank" src={userShowRank}/>
+                            </div>
                         </li>
                     </ul>
                 </li>
