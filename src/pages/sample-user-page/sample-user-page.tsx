@@ -8,15 +8,18 @@ import {Link} from "react-router-dom";
 import EditButton from "react-edit-button";
 import {containerCSS} from "react-select/src/components/containers";
 
-interface SampleUserPageProps {}
+interface SampleUserPageProps {
+}
 
 const userShowLogin = "___peppa___";
+
 class EditLoginButton extends Component {
     state = {text: userShowLogin}
     onAccept = (text: string) => {
         this.setState({text: text})
     }
-    render () {
+
+    render() {
         const EditButtonProps = {
             editButtonProps: {
                 text: ' '
@@ -25,8 +28,8 @@ class EditLoginButton extends Component {
         }
         return (
             <div>
-                <EditButton { ...EditButtonProps }>
-                    <span>{ this.state.text }</span>
+                <EditButton {...EditButtonProps}>
+                    <span>{this.state.text}</span>
                 </EditButton>
             </div>
         )
@@ -34,12 +37,14 @@ class EditLoginButton extends Component {
 }
 
 const userShowName = "Peppa Pig";
+
 class EditNameButton extends Component {
     state = {text: userShowName}
     onAccept = (text: string) => {
         this.setState({text: text})
     }
-    render () {
+
+    render() {
         const EditButtonProps = {
             editButtonProps: {
                 text: ' '
@@ -48,8 +53,8 @@ class EditNameButton extends Component {
         }
         return (
             <div>
-                <EditButton { ...EditButtonProps }>
-                    <span>{ this.state.text }</span>
+                <EditButton {...EditButtonProps}>
+                    <span>{this.state.text}</span>
                 </EditButton>
             </div>
         )
@@ -67,54 +72,131 @@ const SampleUserPage: React.FC<SampleUserPageProps> = () => {
     const userProgressProc = 72;
     const userXPNumerator = 720;
     const userXPDenominator = 1000;
+    const inProgress =
+        <li className="user-stats__achievements__sections__blocks__in-progress__item">
+            <ul className="user-stats__achievements__sections__blocks__in-progress__item__achievement">
+                <li>
+                    <img
+                        className="user-stats__achievements__sections__blocks__in-progress__item__achievement__image"
+                        src={userShowPhoto}/>
+                </li>
+                <li className="user-stats__achievements__sections__blocks__in-progress__item__achievement__arrow"
+                    style={{background: `linear-gradient(135deg, #28a745 ${userProgressProc}%, #cfd8dc ${userProgressProc}%)`}}/>
+            </ul>
+        </li>
+    const done =
+        <li className="user-stats__achievements__sections__blocks__done__item">
+            <img className="user-stats__achievements__sections__blocks__done__item__image"
+                 src={userShowPhoto}/>
+        </li>
+
 
     return (
         <div className="sample-user-page u-container">
-            <div className="sample-user-page-left-side">
-            <ul className="user-info">
-                <li>
-                    <img className="user-photo" src={userShowPhoto}>
-                    </img>
-                </li>
-                <li>
-                    <h1 className="user-login">
-                        <EditLoginButton />
-                    </h1>
-                </li>
-                <li>
-                    <h1 className="user-name">
-                        <EditNameButton />
-                    </h1>
-                </li>
-            </ul>
-            </div>
-            <div className="user-main-container-1">
-                <ul className="user-rating-and-xp">
+            <div className="user-info">
+                <ul className="user-info__block">
                     <li>
-                        <h1 className="user-rating">
-                            <nav>
-                                <FcRating className="user-rating-icon"/> <Link to="/matify-players" className="link-to-rating">
-                                    {translate(rating)}:
-                                </Link> {userShowRating}
-                            </nav>
-                        </h1>
+                        <img className="user-info__block__photo" src={userShowPhoto}/>
                     </li>
                     <li>
-                        <h1 className="user-xp">
-                            <GiSevenPointedStar className="user-xp-icon"/> {translate(xp)}: {userShowXp}
-                        </h1>
+                        <div className="user-info__block__login">
+                            <EditLoginButton/>
+                        </div>
+                    </li>
+                    <li>
+                        <div className="user-info__block__name">
+                            <EditNameButton/>
+                        </div>
                     </li>
                 </ul>
-                <div className="arrow-progress-bar" style={{background: `linear-gradient(135deg, #28a745 ${userProgressProc}%, #cfd8dc ${userProgressProc}%)`}}>
-                    {userXPNumerator} / {userXPDenominator} XP
-                </div>
-                <div className="user-rank">
-                    <img className="user-rank-image" src={userShowRank}>
-                    </img>
-                    <div className="user-rank-number-container">
-                    </div>
-                </div>
             </div>
+            <ul className="user-stats">
+                <li className="user-stats__progress">
+                    <div className="user-stats__progress__arrow-progress-bar"
+                         style={{background: `linear-gradient(135deg, #28a745 ${userProgressProc}%, #cfd8dc ${userProgressProc}%)`}}>
+                        {userXPNumerator} / {userXPDenominator} XP
+                    </div>
+                    <div className="user-stats__progress__rank">
+                        <img className="user-stats__progress__rank__image" src={userShowRank}>
+                        </img>
+                        <div className="user-stats__progress__rank__number-container">
+                        </div>
+                    </div>
+                    <ul className="user-stats__progress__rating-and-xp">
+                        <li>
+                            <div className="user-stats__progress__rating-and-xp__rating">
+                                <nav>
+                                    <FcRating className="user-stats__progress__rating-and-xp__rating-icon"/> <Link
+                                    to="/matify-players"
+                                    className="user-stats__progress__rating-and-xp__link-to-rating">
+                                    {translate(rating)}:
+                                </Link> {userShowRating}
+                                </nav>
+                            </div>
+                        </li>
+                        <li>
+                            <div className="user-stats__progress__rating-and-xp__xp">
+                                <GiSevenPointedStar
+                                    className="user-stats__progress__rating-and-xp__xp-icon"/> {translate(xp)}: {userShowXp}
+                            </div>
+                        </li>
+                    </ul>
+                </li>
+                <li className="user-stats__achievements">
+                    <ul className="user-stats__achievements__sections">
+                        <li>
+                            <h1 className="user-stats__achievements__sections__label">
+                                Достижения
+                            </h1>
+                        </li>
+                        <li>
+                            <ul className="user-stats__achievements__sections__blocks">
+                                <li>
+                                    {/* очень много копипасты :|, поправлю*/}
+                                    <ul className="user-stats__achievements__sections__blocks__in-progress">
+                                        {inProgress}
+                                        {inProgress}
+                                        {inProgress}
+                                        {inProgress}
+                                        {inProgress}
+                                        {inProgress}
+                                        {inProgress}
+                                        {inProgress}
+                                        {inProgress}
+                                        {inProgress}
+                                    </ul>
+                                </li>
+                                <li>
+                                    <ul className="user-stats__achievements__sections__blocks__done">
+                                        {done}
+                                        {done}
+                                        {done}
+                                        {done}
+                                        {done}
+                                        {done}
+                                        {done}
+                                        {done}
+                                        {done}
+                                        {done}
+                                    </ul>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li className="user-stats__rating">
+                    <ul className="user-stats__rating__sections">
+                        <li>
+                            <h1 className="user-stats__rating__sections__label">
+                                Рейтинг
+                            </h1>
+                        </li>
+                        <li>
+
+                        </li>
+                    </ul>
+                </li>
+            </ul>
         </div>
     );
 };
