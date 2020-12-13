@@ -48,7 +48,6 @@ import { RulePackConstructorInputs } from "../../constructors/rule-pack-construc
 import { TaskSetConstructorInputs } from "../../constructors/task-set-constructor/task-set-constructor.types";
 // styles
 import "./code-mirror.styles.scss";
-import { edit } from "ace-builds";
 import {
   getErrorFromMathInput,
   MathInputFormat,
@@ -63,7 +62,6 @@ import {
 } from "../../redux/constructor-history/constructor-history.actions";
 import { ConstructorHistoryItem } from "../../redux/constructor-history/constructor-history.types";
 import { selectCurrentTaskSetHistoryChange } from "../../redux/constructor-history/constructor-history.selectors";
-
 // jsonlint config
 const jsonlint = require("jsonlint-mod");
 // @ts-ignore
@@ -441,16 +439,21 @@ const CodeMirrorEditor = ({
   useEffect(() => {
     if (editor && currentHistoryChange) {
       const cursorPos = editor.getCursor();
-      editor.setValue(
-        JSON.stringify(
-          {
-            ...JSON.parse(editor.getValue()),
-            [currentHistoryChange.propertyPath]: currentHistoryChange.value,
-          },
-          null,
-          2
-        )
+      const setToValue = (obj: any, value: any, path: any) => {
+        let i;
+        path = path.split(".");
+        for (i = 0; i < path.length - 1; i++) {
+          obj = obj[path[i]];
+        }
+        obj[path[i]] = value;
+      };
+      const newEditorVal = JSON.parse(editor.getValue());
+      setToValue(
+        newEditorVal,
+        currentHistoryChange.value,
+        currentHistoryChange.propertyPath.replace("[", ".").replace("]", "")
       );
+      editor.setValue(JSON.stringify(newEditorVal, null, 2));
       editor.setCursor(cursorPos);
     }
   }, [currentHistoryChange]);
@@ -469,6 +472,14 @@ const CodeMirrorEditor = ({
         lineWrapping: true,
         autoCloseBrackets: true,
       });
+
+      editor.undo = () => {
+        undo();
+      };
+      editor.redo = () => {
+        redo();
+      };
+
       editor.on("changes", (editor, changes) => {
         // console.log(editor);
         // changes.forEach((change: any) => {
@@ -479,16 +490,9 @@ const CodeMirrorEditor = ({
         //   );
         // });
       });
-      // editor.on("")
-      editor.undo = () => {
-        undo();
-      };
-
-      editor.redo = () => {
-        redo();
-      };
 
       editor.on("change", (editor, changeObject) => {
+        console.log(changeObject);
         if (changeObject.origin === "+input") {
           const [oldExp, oldVal] = (
             editor
@@ -508,13 +512,315 @@ const CodeMirrorEditor = ({
               return item.replace(/\"|\,/g, "").trim();
             });
 
+          const getPositions = (
+            query: string,
+            start: Position,
+            end: Position
+          ) => {
+            const res: CodeMirrorWordPosition[] = [];
+            // @ts-ignore
+            const cursor = editor.getSearchCursor(query, start);
+            cursor.find();
+            while (
+              cursor.from() &&
+              cursor.to() &&
+              cursor.from().line <= end.line
+            ) {
+              res.push({
+                from: cursor.from(),
+                to: cursor.to(),
+              });
+              cursor.findNext();
+            }
+            return res;
+          };
+
+          const openingBrackets = getPositions(
+            "[",
+            { line: 1, ch: 0 },
+            changeObject.from
+          );
+          const closingBrackets = getPositions(
+            "]",
+            { line: 1, ch: 0 },
+            changeObject.from
+          );
+
+          const openingCurlyBraces = getPositions(
+            "{",
+            { line: 1, ch: 0 },
+            changeObject.from
+          );
+          const closingCurlyBraces = getPositions(
+            "}",
+            { line: 1, ch: 0 },
+            changeObject.from
+          );
+
+          interface Bracket {
+            char: "{" | "[" | "}" | "]";
+            position: CodeMirrorWordPosition;
+          }
+
+          const brackets: Bracket[] = [];
+          let searchLine = 1;
+          while (searchLine < changeObject.from.line) {
+            const lineValue = editor.getLine(++searchLine);
+            if (lineValue.includes("{")) {
+              brackets.push({
+                char: "{",
+                position: getPositions(
+                  "{",
+                  { line: searchLine, ch: 0 },
+                  { line: searchLine, ch: 999 }
+                )[0],
+              });
+            } else if (lineValue.includes("[")) {
+              brackets.push({
+                char: "[",
+                position: getPositions(
+                  "[",
+                  { line: searchLine, ch: 0 },
+                  { line: searchLine, ch: 999 }
+                )[0],
+              });
+            } else if (lineValue.includes("}")) {
+              if (brackets[brackets.length - 1].char === "{") {
+                brackets.pop();
+              }
+            } else if (lineValue.includes("]")) {
+              if (brackets[brackets.length - 1].char === "[") {
+                brackets.pop();
+              }
+            }
+          }
+
+          const notMatchingOpeningBrackets = brackets
+            .map((bracket: Bracket) => bracket.position)
+            .sort((a: CodeMirrorWordPosition, b: CodeMirrorWordPosition) => {
+              if (a.from.line > b.from.line) {
+                return -1;
+              } else {
+                return 0;
+              }
+            });
+
+          const getKeyAndValueFromLine = (
+            editor: CodeMirror.Editor,
+            line: number
+          ): string[] => {
+            return editor
+              .getLine(line)
+              .split(":")
+              .map((item: string) => {
+                return item.replace(/\"|\,/g, "").trim();
+              });
+          };
+
+          let expPrefix = "";
+
+          console.log(notMatchingOpeningBrackets);
+
+          notMatchingOpeningBrackets.forEach(
+            (
+              item: CodeMirrorWordPosition,
+              idx: number,
+              arr: CodeMirrorWordPosition[]
+            ) => {
+              if (
+                arr[idx + 1] &&
+                editor.getRange(arr[idx + 1].from, arr[idx + 1].to) === "["
+              ) {
+                return;
+              }
+              if (editor.getRange(item.from, item.to) === "{") {
+                let currentSearchLine = item.from.line;
+                let currentLine = editor.getLine(currentSearchLine);
+                while (!currentLine.match(/\"[A-Za-z]*\":/g)) {
+                  currentLine = editor.getLine(--currentSearchLine);
+                }
+                if (
+                  getKeyAndValueFromLine(editor, currentSearchLine)[1] === "["
+                ) {
+                  return;
+                } else {
+                  expPrefix =
+                    getKeyAndValueFromLine(editor, currentSearchLine)[0] +
+                    expPrefix +
+                    ".";
+                }
+              } else if (editor.getRange(item.from, item.to) === "[") {
+                let currentSearchLine = item.from.line;
+                let currentLine = editor.getLine(currentSearchLine);
+                while (!currentLine.match(/\"[A-Za-z]*\":/g)) {
+                  currentLine = editor.getLine(--currentSearchLine);
+                }
+                const parentKey = getKeyAndValueFromLine(
+                  editor,
+                  currentSearchLine
+                )[0];
+                const propertyPath = expPrefix + newExp;
+                console.log(propertyPath);
+                const [closingBracketPos] = getPositions("]", item.from, {
+                  line: editor.lastLine(),
+                  ch: 999,
+                });
+                let occurrences = getPositions(
+                  `"${propertyPath.split(".")[0]}":`,
+                  item.from,
+                  closingBracketPos.from
+                );
+                const nestingLevels = propertyPath.split(".");
+                if (nestingLevels.length !== 1) {
+                  nestingLevels.slice(1).forEach((level: string) => {
+                    occurrences.filter((occ: CodeMirrorWordPosition) => {
+                      return (
+                        getPositions(
+                          `"${level}":`,
+                          occ.from,
+                          getPositions("}", occ.from, {
+                            line: editor.lastLine(),
+                            ch: 999,
+                          })[0].from
+                        ).length !== 0
+                      );
+                    });
+                    occurrences = occurrences.map(
+                      (occ: CodeMirrorWordPosition) => {
+                        return getPositions(
+                          `"${level}":`,
+                          occ.from,
+                          getPositions("}", occ.from, {
+                            line: editor.lastLine(),
+                            ch: 999,
+                          })[0].from
+                        )[0];
+                      }
+                    );
+                  });
+                }
+                const currentIdx = occurrences.findIndex(
+                  (pos: CodeMirrorWordPosition) => {
+                    return pos.from.line === changeObject.from.line;
+                  }
+                );
+                expPrefix = `${parentKey}[${currentIdx}].${expPrefix}`;
+
+                // const expPositions = getPositions(
+                //   newExp,
+                //   item.from,
+                //   getPositions(
+                //     "]",
+                //     { line: 1, ch: 0 },
+                //     { line: editor.lastLine(), ch: 0 }
+                //   )[closingBrackets.length].from
+                // );
+                // expPrefix =
+                //   parentKey +
+                //   "[" +
+                //   expPositions
+                //     .findIndex((el: CodeMirrorWordPosition) => {
+                //       return el.from.line === changeObject.from.line;
+                //     })
+                //     .toString() +
+                //   "]." +
+                //   expPrefix;
+                // console.log(expPrefix);
+              }
+            }
+          );
+          console.log(expPrefix + newExp);
+
+          // if (
+          //   openingCurlyBraces.length > closingCurlyBraces.length &&
+          //   openingBrackets.length > closingBrackets.length
+          // ) {
+          //   if (
+          //     openingCurlyBraces[openingCurlyBraces.length - 1].from.line >
+          //     openingBrackets[openingBrackets.length - 1].from.line
+          //   ) {
+          //     const parentKey = editor
+          //       .getLine(
+          //         openingBrackets[openingCurlyBraces.length - 1].from.line
+          //       )
+          //       .split(":")[0]
+          //       .replace(/\"|\,/g, "")
+          //       .trim();
+          //   }
+          // }
+
+          // if (openingBrackets.length > closingBrackets.length) {
+          //   const parentKey = editor
+          //     .getLine(openingBrackets[openingBrackets.length - 1].from.line)
+          //     .split(":")[0]
+          //     .replace(/\"|\,/g, "")
+          //     .trim();
+          //
+          //   const expPositions = getPositions(
+          //     newExp,
+          //     openingBrackets[openingBrackets.length - 1].from,
+          //     getPositions(
+          //       "]",
+          //       { line: 1, ch: 0 },
+          //       { line: editor.lastLine(), ch: 0 }
+          //     )[closingBrackets.length].from
+          //   );
+          //   expPrefix =
+          //     parentKey +
+          //     "[" +
+          //     expPositions
+          //       .findIndex((el: CodeMirrorWordPosition) => {
+          //         return el.from.line === changeObject.from.line;
+          //       })
+          //       .toString() +
+          //     "].";
+          // }
+
+          // const expPrefix =
+          //   openingBrackets.length > closingBrackets.length
+          //     ? editor
+          //         .getLine(
+          //           openingBrackets[openingBrackets.length - 1].from.line
+          //         )
+          //         .split(":")[0]
+          //         .replace(/\"|\,/g, "")
+          //         .trim() + "."
+          //     : "";
+
+          // if (openingParenthesizesPositions.length > closingParenthesizesPositions.length) {
+          //   op
+          // }
+          // while (cursor.from() && cursor.to()) {
+          //   if (specificLine) {
+          //     if (cursor.from().line === specificLine) {
+          //       return {
+          //         from: cursor.from(),
+          //         to: cursor.to(),
+          //       };
+          //     } else {
+          //       return;
+          //     }
+          //   } else {
+          //     wordPositions.push({
+          //       from: cursor.from(),
+          //       to: cursor.to(),
+          //     });
+          //   }
+          //   cursor.findNext();
+          // }
+          // if (wordPositions.length === 0) return undefined;
+          // return wordPositions;
+
+          // console.log(expPrefix + oldExp, oldVal);
+          // console.log(newExp, newVal);
+
           addItemToHistory(
             {
-              propertyPath: oldExp,
+              propertyPath: expPrefix + oldExp,
               value: oldVal,
             },
             {
-              propertyPath: newExp,
+              propertyPath: expPrefix + newExp,
               value: newVal,
             }
           );
