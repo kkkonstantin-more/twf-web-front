@@ -4,7 +4,10 @@ import { ConstructorSelectProps } from "../constructor-select/constructor-select
 import { isSelectInput } from "../../constructors/utils";
 import ConstructorSelect from "../constructor-select/constructor-select.component";
 import ConstructorInput from "../constructor-input/constructor-input.component";
-import { ConstructorHistoryItem } from "../../redux/constructor-history/constructor-history.types";
+import {
+  ConstructorHistoryItem,
+  ExpressionChange,
+} from "../../redux/constructor-history/constructor-history.types";
 import { ConstructorType } from "../../pages/constructor-page/constructor-page.types";
 import { ConstructorJSONsTypes } from "../../redux/constructor-jsons/constructor-jsons.types";
 
@@ -12,10 +15,7 @@ interface ConstructorFormProps {
   inputs: (ConstructorInputProps | ConstructorSelectProps)[];
   register?: () => void;
   updateJSON?: () => void;
-  addToHistory?: (
-    oldVal: ConstructorHistoryItem,
-    newVal: ConstructorHistoryItem
-  ) => void;
+  addToHistory?: (oldVal: ExpressionChange, newVal: ExpressionChange) => void;
   constructorType?: ConstructorJSONsTypes;
 }
 

@@ -1,7 +1,10 @@
 import {
-  ADD_ITEM_TO_TASK_SET_HISTORY,
-  AddItemToTaskSetHistoryAction,
-  ConstructorHistoryItem,
+  ADD_MULTIPLE_LINES_CHANGE_TO_HISTORY,
+  ADD_ONE_LINE_CHANGE_TO_HISTORY,
+  AddMultipleLinesChangeToHistoryAction,
+  AddOneLineChangeToHistoryAction,
+  MultipleLinesHistoryChange,
+  OneLineHistoryChange,
   REDO_TASK_SET_HISTORY,
   RedoTaskSetHistoryAction,
   UNDO_TASK_SET_HISTORY,
@@ -10,11 +13,17 @@ import {
   UpdateTaskSetHistoryIndexAction,
 } from "./constructor-history.types";
 
-export const addItemToTaskSetHistory = (item: {
-  oldVal: ConstructorHistoryItem;
-  newVal: ConstructorHistoryItem;
-}): AddItemToTaskSetHistoryAction => ({
-  type: ADD_ITEM_TO_TASK_SET_HISTORY,
+export const addOneLineChangeToHistory = (
+  item: OneLineHistoryChange
+): AddOneLineChangeToHistoryAction => ({
+  type: ADD_ONE_LINE_CHANGE_TO_HISTORY,
+  payload: item,
+});
+
+export const addMultipleLinesChangeToHistory = (
+  item: MultipleLinesHistoryChange
+): AddMultipleLinesChangeToHistoryAction => ({
+  type: ADD_MULTIPLE_LINES_CHANGE_TO_HISTORY,
   payload: item,
 });
 

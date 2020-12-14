@@ -40,7 +40,10 @@ import "codemirror/addon/lint/lint";
 import "codemirror/addon/lint/lint.css";
 // types
 import { Dispatch } from "react";
-import { ConstructorJSONsActionTypes } from "../../redux/constructor-jsons/constructor-jsons.types";
+import {
+  ConstructorInputs,
+  ConstructorJSONsActionTypes,
+} from "../../redux/constructor-jsons/constructor-jsons.types";
 import { NamespaceConstructorInputs } from "../../constructors/namespace-constructor/namespace-constructor.types";
 import { ConstructorType } from "../../pages/constructor-page/constructor-page.types";
 import { RootState } from "../../redux/root-reducer";
@@ -56,11 +59,15 @@ import ActionButton from "../action-button/action-button.component";
 import { mdiFindReplace, mdiMagnify } from "@mdi/js";
 import { ActionButtonProps } from "../action-button/action-button.types";
 import {
-  addItemToTaskSetHistory,
+  addMultipleLinesChangeToHistory,
+  addOneLineChangeToHistory,
   redoTaskSetHistory,
   undoTaskSetHistory,
 } from "../../redux/constructor-history/constructor-history.actions";
-import { ConstructorHistoryItem } from "../../redux/constructor-history/constructor-history.types";
+import {
+  ConstructorHistoryItem,
+  ExpressionChange,
+} from "../../redux/constructor-history/constructor-history.types";
 import { selectCurrentTaskSetHistoryChange } from "../../redux/constructor-history/constructor-history.selectors";
 // jsonlint config
 const jsonlint = require("jsonlint-mod");
@@ -99,7 +106,8 @@ const CodeMirrorEditor = ({
   currentHistoryChange,
   undo,
   redo,
-  addItemToHistory,
+  addOneLineChangeToHistory,
+  addMultipleLinesChangeToHistory,
 }: CodeMirrorProps & ConnectedProps<typeof connector>): JSX.Element => {
   const [editor, setEditor] = useState<any>(null);
   const [dynamicErrors, setDynamicErrors] = useState<CMError[]>([]);
@@ -209,7 +217,11 @@ const CodeMirrorEditor = ({
         }
       });
     };
-    addExcessiveProps(JSON.parse(doc), initialReduxJSON);
+    try {
+      addExcessiveProps(JSON.parse(doc), initialReduxJSON);
+    } catch {
+      return [];
+    }
     return excessiveProps;
   };
 
@@ -260,6 +272,11 @@ const CodeMirrorEditor = ({
   const getAllExpressions = (
     editor: CodeMirror.Editor
   ): { format: string; expression: string }[] => {
+    try {
+      JSON.parse(editor.getValue());
+    } catch {
+      return [];
+    }
     const editorObj = JSON.parse(editor.getValue());
     const expressions: { format: string; expression: string }[] = [];
     const appendExpressions = (obj: any) => {
@@ -438,23 +455,36 @@ const CodeMirrorEditor = ({
 
   useEffect(() => {
     if (editor && currentHistoryChange) {
-      const cursorPos = editor.getCursor();
-      const setToValue = (obj: any, value: any, path: any) => {
-        let i;
-        path = path.split(".");
-        for (i = 0; i < path.length - 1; i++) {
-          obj = obj[path[i]];
+      try {
+        if (currentHistoryChange.type === "ONE_LINE_CHANGE") {
+          const cursorPos = editor.getCursor();
+          const setToValue = (obj: any, value: any, path: any) => {
+            let i;
+            path = path.split(".");
+            for (i = 0; i < path.length - 1; i++) {
+              obj = obj[path[i]];
+            }
+            obj[path[i]] = value;
+          };
+          const newEditorVal = JSON.parse(editor.getValue());
+          setToValue(
+            newEditorVal,
+            currentHistoryChange.item.value,
+            currentHistoryChange.item.propertyPath
+              .replace("[", ".")
+              .replace("]", "")
+          );
+          editor.setValue(JSON.stringify(newEditorVal, null, 2));
+          editor.setCursor(cursorPos);
+        } else if (currentHistoryChange.type === "MULTIPLE_LINES_CHANGE") {
+          editor.setValue(JSON.stringify(currentHistoryChange.item, null, 2));
+          // @ts-ignore
+          updateCurrentReduxJSON(currentHistoryChange.item);
         }
-        obj[path[i]] = value;
-      };
-      const newEditorVal = JSON.parse(editor.getValue());
-      setToValue(
-        newEditorVal,
-        currentHistoryChange.value,
-        currentHistoryChange.propertyPath.replace("[", ".").replace("]", "")
-      );
-      editor.setValue(JSON.stringify(newEditorVal, null, 2));
-      editor.setCursor(cursorPos);
+      } catch {
+        console.log("invalid JSON");
+        return;
+      }
     }
   }, [currentHistoryChange]);
 
@@ -493,7 +523,12 @@ const CodeMirrorEditor = ({
 
       editor.on("change", (editor, changeObject) => {
         console.log(changeObject);
-        if (changeObject.origin === "+input") {
+        if (
+          changeObject.origin === "+input" ||
+          (changeObject.origin === "+delete" &&
+            changeObject.removed &&
+            changeObject.removed.length === 1)
+        ) {
           const [oldExp, oldVal] = (
             editor
               .getLine(changeObject.from.line)
@@ -534,28 +569,6 @@ const CodeMirrorEditor = ({
             }
             return res;
           };
-
-          const openingBrackets = getPositions(
-            "[",
-            { line: 1, ch: 0 },
-            changeObject.from
-          );
-          const closingBrackets = getPositions(
-            "]",
-            { line: 1, ch: 0 },
-            changeObject.from
-          );
-
-          const openingCurlyBraces = getPositions(
-            "{",
-            { line: 1, ch: 0 },
-            changeObject.from
-          );
-          const closingCurlyBraces = getPositions(
-            "}",
-            { line: 1, ch: 0 },
-            changeObject.from
-          );
 
           interface Bracket {
             char: "{" | "[" | "}" | "]";
@@ -814,7 +827,7 @@ const CodeMirrorEditor = ({
           // console.log(expPrefix + oldExp, oldVal);
           // console.log(newExp, newVal);
 
-          addItemToHistory(
+          addOneLineChangeToHistory(
             {
               propertyPath: expPrefix + oldExp,
               value: oldVal,
@@ -824,7 +837,59 @@ const CodeMirrorEditor = ({
               value: newVal,
             }
           );
-          updateCurrentReduxJSON(JSON.parse(editor.getValue()));
+          try {
+            updateCurrentReduxJSON(JSON.parse(editor.getValue()));
+          } catch {}
+        } else if (
+          (changeObject.origin === "cut" ||
+            changeObject.origin === "+delete") &&
+          changeObject.removed &&
+          changeObject.removed.length > 1
+        ) {
+          const oldVal =
+            editor.getRange(
+              {
+                line: 0,
+                ch: 0,
+              },
+              changeObject.from
+            ) +
+            changeObject.removed.join("") +
+            editor.getRange(changeObject.from, {
+              line: editor.lastLine(),
+              ch: 999,
+            });
+          addMultipleLinesChangeToHistory(
+            JSON.parse(oldVal),
+            JSON.parse(editor.getValue())
+          );
+          try {
+            updateCurrentReduxJSON(JSON.parse(editor.getValue()));
+          } catch {}
+        } else if (
+          changeObject.origin === "paste" &&
+          changeObject.text &&
+          changeObject.text.length > 1
+        ) {
+          const oldVal =
+            editor.getRange(
+              {
+                line: 0,
+                ch: 0,
+              },
+              changeObject.from
+            ) +
+            editor.getRange(changeObject.from, {
+              line: editor.lastLine(),
+              ch: 999,
+            });
+          addMultipleLinesChangeToHistory(
+            JSON.parse(oldVal),
+            JSON.parse(editor.getValue())
+          );
+          try {
+            updateCurrentReduxJSON(JSON.parse(editor.getValue()));
+          } catch {}
         }
         // console.log(editor.getCursor());
         // if (changeObject.origin === "redo" || changeObject.origin === "undo") {
@@ -833,9 +898,7 @@ const CodeMirrorEditor = ({
         //
         //   // editor.setValue()
         // }
-        // try {
-        //   updateCurrentReduxJSON(JSON.parse(editor.getValue()));
-        // } catch {}
+
         // excessive props check
         checkExcessivePropInLine(
           editor,
@@ -985,10 +1048,16 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) => ({
     return dispatch(updateRulePackJSON(rulePackJSON));
   },
   // version control
-  addItemToHistory: (
-    oldVal: ConstructorHistoryItem,
-    newVal: ConstructorHistoryItem
-  ) => dispatch(addItemToTaskSetHistory({ oldVal, newVal })),
+  addOneLineChangeToHistory: (
+    oldVal: ExpressionChange,
+    newVal: ExpressionChange
+  ) => dispatch(addOneLineChangeToHistory({ oldVal, newVal })),
+  addMultipleLinesChangeToHistory: (
+    oldVal: TaskSetConstructorInputs,
+    newVal: TaskSetConstructorInputs
+  ) => {
+    dispatch(addMultipleLinesChangeToHistory({ oldVal, newVal }));
+  },
   undo: () => dispatch(undoTaskSetHistory()),
   redo: () => dispatch(redoTaskSetHistory()),
 });

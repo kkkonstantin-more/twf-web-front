@@ -46,8 +46,11 @@ import {
 } from "@mdi/js";
 // styles
 import "./task-constructor.styles.scss";
-import { addItemToTaskSetHistory } from "../../redux/constructor-history/constructor-history.actions";
-import { ConstructorHistoryItem } from "../../redux/constructor-history/constructor-history.types";
+import { addOneLineChangeToHistory } from "../../redux/constructor-history/constructor-history.actions";
+import {
+  ConstructorHistoryItem,
+  ExpressionChange,
+} from "../../redux/constructor-history/constructor-history.types";
 import { ConstructorJSONsTypes } from "../../redux/constructor-jsons/constructor-jsons.types";
 
 export interface HistoryItem {
@@ -546,10 +549,8 @@ const mapDispatchToProps = (dispatch: any) => ({
   updateTaskSetJSON: (taskSetJSON: TaskSetConstructorInputs) => {
     return dispatch(updateTaskSetJSON(taskSetJSON));
   },
-  addToHistory: (
-    oldVal: ConstructorHistoryItem,
-    newVal: ConstructorHistoryItem
-  ) => dispatch(addItemToTaskSetHistory({ oldVal, newVal })),
+  addToHistory: (oldVal: ExpressionChange, newVal: ExpressionChange) =>
+    dispatch(addOneLineChangeToHistory({ oldVal, newVal })),
 });
 
 const connector = connect(mapStateToProps, mapDispatchToProps);

@@ -1,5 +1,5 @@
 import {
-  ADD_ITEM_TO_TASK_SET_HISTORY,
+  ADD_ONE_LINE_CHANGE_TO_HISTORY,
   ConstructorHistory,
   ConstructorHistoryActionTypes,
 } from "./constructor-history.types";
@@ -12,18 +12,18 @@ const constructorHistoryReducer = (
   action: ConstructorHistoryActionTypes
 ): ConstructorHistory => {
   switch (action.type) {
-    case "ADD_ITEM_TO_TASK_SET_HISTORY":
+    case "ADD_ONE_LINE_CHANGE_TO_HISTORY":
       if (
-        deepEqual(
-          state.taskSet[state.taskSet.length - 1],
-          action.payload.oldVal
-        )
+        deepEqual(state.taskSet[state.taskSet.length - 1], {
+          item: { ...action.payload.oldVal },
+          type: "ONE_LINE_CHANGE",
+        })
       ) {
         return {
           ...state,
           taskSet: [
             ...state.taskSet.slice(0, state.taskSetIdx + 1),
-            action.payload.newVal,
+            { item: { ...action.payload.newVal }, type: "ONE_LINE_CHANGE" },
           ],
           taskSetIdx: state.taskSetIdx + 1,
         };
@@ -31,9 +31,46 @@ const constructorHistoryReducer = (
         return {
           ...state,
           taskSet: [
-            ...state.taskSet
-              .slice(0, state.taskSetIdx + 1)
-              .concat([action.payload.oldVal, action.payload.newVal]),
+            ...state.taskSet.slice(0, state.taskSetIdx + 1).concat([
+              { item: { ...action.payload.oldVal }, type: "ONE_LINE_CHANGE" },
+              { item: { ...action.payload.newVal }, type: "ONE_LINE_CHANGE" },
+            ]),
+          ],
+          taskSetIdx: state.taskSetIdx + 2,
+        };
+      }
+    case "ADD_MULTIPLE_LINES_CHANGE_TO_HISTORY":
+      if (
+        deepEqual(state.taskSet[state.taskSet.length - 1], {
+          item: { ...action.payload.oldVal },
+          type: "MULTIPLE_LINES_CHANGE",
+        })
+      ) {
+        return {
+          ...state,
+          taskSet: [
+            ...state.taskSet.slice(0, state.taskSetIdx + 1),
+            {
+              item: { ...action.payload.newVal },
+              type: "MULTIPLE_LINES_CHANGE",
+            },
+          ],
+          taskSetIdx: state.taskSetIdx + 1,
+        };
+      } else {
+        return {
+          ...state,
+          taskSet: [
+            ...state.taskSet.slice(0, state.taskSetIdx + 1).concat([
+              {
+                item: { ...action.payload.oldVal },
+                type: "MULTIPLE_LINES_CHANGE",
+              },
+              {
+                item: { ...action.payload.newVal },
+                type: "MULTIPLE_LINES_CHANGE",
+              },
+            ]),
           ],
           taskSetIdx: state.taskSetIdx + 2,
         };

@@ -12,8 +12,10 @@ import { createStructuredSelector } from "reselect";
 import { RootState } from "../../redux/root-reducer";
 import { TaskSetConstructorInputs } from "../../constructors/task-set-constructor/task-set-constructor.types";
 import {
-  AddItemToTaskSetHistoryAction,
+  AddOneLineChangeToHistoryAction,
   ConstructorHistoryItem,
+  ExpressionChange,
+  OneLineHistoryChange,
   RedoTaskSetHistoryAction,
   UndoTaskSetHistoryAction,
   UpdateTaskSetHistoryIndexAction,
@@ -38,7 +40,7 @@ import {
   updateTaskSetJSON,
 } from "../../redux/constructor-jsons/constructor-jsons.actions";
 import {
-  addItemToTaskSetHistory,
+  addOneLineChangeToHistory,
   redoTaskSetHistory,
   undoTaskSetHistory,
 } from "../../redux/constructor-history/constructor-history.actions";
@@ -196,10 +198,8 @@ const mapDispatch = (dispatch: Dispatch<any>) => ({
     constructorType: ConstructorJSONsTypes,
     JSON: ConstructorInputs
   ) => dispatch(updateConstructorJSON(constructorType, JSON)),
-  addItemToHistory: (
-    oldVal: ConstructorHistoryItem,
-    newVal: ConstructorHistoryItem
-  ) => dispatch(addItemToTaskSetHistory({ oldVal, newVal })),
+  addItemToHistory: (oldVal: ExpressionChange, newVal: ExpressionChange) =>
+    dispatch(addOneLineChangeToHistory({ oldVal, newVal })),
 });
 
 const connector = connect(mapState, mapDispatch);

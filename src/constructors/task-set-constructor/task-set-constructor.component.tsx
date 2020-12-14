@@ -49,8 +49,9 @@ import {
 // styles
 import "./task-set-constructor.styles.scss";
 import {
-  AddItemToTaskSetHistoryAction,
+  AddOneLineChangeToHistoryAction,
   ConstructorHistoryItem,
+  ExpressionChange,
   RedoTaskSetHistoryAction,
   UndoTaskSetHistoryAction,
   UpdateTaskSetHistoryIndexAction,
@@ -61,7 +62,7 @@ import {
   selectTaskSetHistoryIndex,
 } from "../../redux/constructor-history/constructor-history.selectors";
 import {
-  addItemToTaskSetHistory,
+  addOneLineChangeToHistory,
   redoTaskSetHistory,
   undoTaskSetHistory,
   updateTaskSetHistoryIndex,
@@ -160,8 +161,11 @@ ConnectedProps<typeof connector>): JSX.Element => {
   }, []);
 
   useEffect(() => {
-    if (currentHistoryChange?.propertyPath) {
-      setValue(currentHistoryChange.propertyPath, currentHistoryChange.value);
+    if (currentHistoryChange?.type === "ONE_LINE_CHANGE") {
+      setValue(
+        currentHistoryChange.item.propertyPath,
+        currentHistoryChange.item.value
+      );
       updateTaskSetJSON(getValues());
     }
   }, [currentHistoryChange]);
@@ -226,8 +230,8 @@ ConnectedProps<typeof connector>): JSX.Element => {
                 register={register}
                 updateJSON={() => updateTaskSetJSON(getValues())}
                 addToHistory={(
-                  oldVal: ConstructorHistoryItem,
-                  newVal: ConstructorHistoryItem
+                  oldVal: ExpressionChange,
+                  newVal: ExpressionChange
                 ) => {
                   addItemToHistory(oldVal, newVal);
                 }}
@@ -585,7 +589,7 @@ const mapState = createStructuredSelector<
 const mapDispatch = (
   dispatch: Dispatch<
     | UpdateTaskSetJSONAction
-    | AddItemToTaskSetHistoryAction
+    | AddOneLineChangeToHistoryAction
     | UpdateTaskSetHistoryIndexAction
     | RedoTaskSetHistoryAction
     | UndoTaskSetHistoryAction
@@ -593,10 +597,8 @@ const mapDispatch = (
 ) => ({
   updateTaskSetJSON: (taskSetJSON: TaskSetConstructorInputs) =>
     dispatch(updateTaskSetJSON(taskSetJSON)),
-  addItemToHistory: (
-    oldVal: ConstructorHistoryItem,
-    newVal: ConstructorHistoryItem
-  ) => dispatch(addItemToTaskSetHistory({ oldVal, newVal })),
+  addItemToHistory: (oldVal: ExpressionChange, newVal: ExpressionChange) =>
+    dispatch(addOneLineChangeToHistory({ oldVal, newVal })),
   undo: () => dispatch(undoTaskSetHistory()),
   redo: () => dispatch(redoTaskSetHistory()),
 });
