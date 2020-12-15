@@ -108,7 +108,7 @@ ConnectedProps<typeof connector>): JSX.Element => {
     mode: "onSubmit",
     defaultValues,
   });
-  const { register, getValues, control, setValue } = methods;
+  const { register, getValues, control, setValue, reset } = methods;
   const fieldArrayMethods = useFieldArray<TaskConstructorInputs>({
     control,
     name: "tasks",
@@ -167,6 +167,10 @@ ConnectedProps<typeof connector>): JSX.Element => {
         currentHistoryChange.item.value
       );
       updateTaskSetJSON(getValues());
+    } else if (currentHistoryChange?.type === "MULTIPLE_LINES_CHANGE") {
+      reset(currentHistoryChange.item);
+      // @ts-ignore
+      updateTaskSetJSON(currentHistoryChange?.item);
     }
   }, [currentHistoryChange]);
 
