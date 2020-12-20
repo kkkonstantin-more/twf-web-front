@@ -109,39 +109,39 @@ const SampleUserPage: React.FC<SampleUserPageProps> = () => {
                         </div>
                     </li>
                 </ul>
-            </div>
-            <ul className="user-stats">
-                <li className="user-stats__progress">
-                    <div className="user-stats__progress__arrow-progress-bar"
+                <div className="user-info__progress">
+                    <div className="user-info__progress__arrow-progress-bar"
                          style={{background: `linear-gradient(135deg, #28a745 ${userProgressProc}%, #cfd8dc ${userProgressProc}%)`}}>
                         {userXPNumerator} / {userXPDenominator} XP
                     </div>
-                    <div className="user-stats__progress__rank">
-                        <img className="user-stats__progress__rank__image" src={userShowRank}>
+                    <div className="user-info__progress__rank">
+                        <img className="user-info__progress__rank__image" src={userShowRank}>
                         </img>
-                        <div className="user-stats__progress__rank__number-container">
+                        <div className="user-info__progress__rank__number-container">
                         </div>
                     </div>
-                    <ul className="user-stats__progress__rating-and-xp">
+                    <ul className="user-info__progress__rating-and-xp">
                         <li>
-                            <div className="user-stats__progress__rating-and-xp__rating">
+                            <div className="user-info__progress__rating-and-xp__rating">
                                 <nav>
-                                    <FcRating className="user-stats__progress__rating-and-xp__rating-icon"/> <Link
+                                    <FcRating className="user-info__progress__rating-and-xp__rating-icon"/> <Link
                                     to="/matify-players"
-                                    className="user-stats__progress__rating-and-xp__link-to-rating">
+                                    className="user-info__progress__rating-and-xp__link-to-rating">
                                     {translate(rating)}:
                                 </Link> {userShowRating}
                                 </nav>
                             </div>
                         </li>
                         <li>
-                            <div className="user-stats__progress__rating-and-xp__xp">
+                            <div className="user-info__progress__rating-and-xp__xp">
                                 <GiSevenPointedStar
-                                    className="user-stats__progress__rating-and-xp__xp-icon"/> {translate(xp)}: {userShowXp}
+                                    className="user-info__progress__rating-and-xp__xp-icon"/> {translate(xp)}: {userShowXp}
                             </div>
                         </li>
                     </ul>
-                </li>
+                </div>
+            </div>
+            <ul className="user-stats">
                 <li className="user-stats__achievements">
                     <ul className="user-stats__achievements__sections">
                         <li>
