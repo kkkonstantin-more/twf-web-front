@@ -8,6 +8,7 @@ const navigationBarRu = {
   [prefix + ".link.login"]: "Войти",
   [prefix + ".link.rating"]: "Рейтинг",
   [prefix + ".link.ranks"]: "Ранги",
+  [prefix + ".link.profile"]: "Профиль",
 };
 
 const navigationBarEn = {
@@ -18,6 +19,7 @@ const navigationBarEn = {
   [prefix + ".link.login"]: "Login",
   [prefix + ".link.rating"]: "Ratings",
   [prefix + ".link.ranks"]: "Ranks",
+  [prefix + ".link.profile"]: "Profile",
 };
 
 export { navigationBarEn, navigationBarRu };

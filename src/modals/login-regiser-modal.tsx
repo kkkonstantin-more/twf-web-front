@@ -3,8 +3,8 @@ import { injectIntl } from "react-intl";
 
 import { Modal, Tab, Tabs } from "react-bootstrap";
 
-import LoginForm from "../forms/login-form/login-form";
-import RegisterForm from "../forms/regiser-form/register-form";
+import LoginFormComponent from "../forms/login-form/login-form.component";
+import RegisterFormComponent from "../forms/regiser-form/register-form.component";
 
 import "./login-register-modal.scss";
 
@@ -33,14 +33,14 @@ const LoginRegisterModal: React.FC<LoginRegisterModalProps> = ({
             title={intl.formatMessage({ id: loginTabId })}
             className="login-register-modal__form"
           >
-            <LoginForm hideModal={() => setShowModal(false)} />
+            <LoginFormComponent hideModal={() => setShowModal(false)} />
           </Tab>
           <Tab
             eventKey="register"
             title={intl.formatMessage({ id: registerTabId })}
             className="login-register-modal__form"
           >
-            <RegisterForm hideModal={() => setShowModal(false)} />
+            <RegisterFormComponent hideModal={() => setShowModal(false)} />
           </Tab>
         </Tabs>
       </Modal>

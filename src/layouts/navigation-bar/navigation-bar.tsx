@@ -6,7 +6,12 @@ import { LOCALES } from "../../translations";
 import { HashLink as Link } from "react-router-hash-link";
 // icons for mobile navigation
 import Icon from "@mdi/react";
-import { mdiMenu, mdiCloseCircleOutline, mdiLoginVariant } from "@mdi/js";
+import {
+  mdiMenu,
+  mdiCloseCircleOutline,
+  mdiLoginVariant,
+  mdiAccount,
+} from "@mdi/js";
 
 import LoginRegisterModal from "../../modals/login-regiser-modal";
 
@@ -85,21 +90,28 @@ const NavigationBar: React.FC<NavigationBarProps> = ({
                 if (showMobileNavigation) {
                   setShowMobileNavigation(false);
                 }
-                if (link.linkNameId === "navigationBar.link.login") {
-                  setShowLoginRegisterModal(true);
-                }
               }}
             >
               {translate(link.linkNameId)}
             </Link>
           ))}
-          <div
-            className="navigation-bar__link navigation-bar__link--signin"
-            onClick={() => setShowLoginRegisterModal(true)}
-          >
-            <Icon path={mdiLoginVariant} size={1} />
-            <span>{translate("navigationBar.link.login")}</span>
-          </div>
+          {window.localStorage.token ? (
+            <Link
+              to={"/user"}
+              className="navigation-bar__link navigation-bar__link--signin"
+            >
+              <Icon path={mdiAccount} size={1} />
+              <span>{translate("navigationBar.link.profile")}</span>
+            </Link>
+          ) : (
+            <div
+              className="navigation-bar__link navigation-bar__link--signin"
+              onClick={() => setShowLoginRegisterModal(true)}
+            >
+              <Icon path={mdiLoginVariant} size={1} />
+              <span>{translate("navigationBar.link.login")}</span>
+            </div>
+          )}
         </div>
         <div onClick={() => setShowMobileNavigation(true)}>
           <Icon

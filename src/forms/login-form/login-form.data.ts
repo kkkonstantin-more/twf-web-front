@@ -1,10 +1,16 @@
+// types
 import { FormInput } from "../types";
 
-const translationPrefix: string = "forms";
+// translation vars
+const translationPrefix = "forms";
+export const googleButtonTextId = translationPrefix + ".googleButtonText";
+export const loginButtonText = translationPrefix + ".loginButtonText";
+export const loginErrorText = translationPrefix + ".loginError";
+export const successText = translationPrefix + ".loginSuccess";
 
 const loginFormInputs: FormInput[] = [
   {
-    name: "login",
+    name: "loginOrEmail",
     labelTranslationId: translationPrefix + ".loginOrEmailLabel",
     inputType: "text",
     validation: {

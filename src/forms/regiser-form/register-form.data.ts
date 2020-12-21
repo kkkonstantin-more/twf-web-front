@@ -1,8 +1,22 @@
+// types
 import { FormInput } from "../types";
 
+// translation vars
 const translationPrefix: string = "forms";
+export const registerButtonTextId: string =
+  translationPrefix + ".registerButtonText";
+export const googleButtonTextId: string =
+  translationPrefix + ".googleButtonText";
+export const errorDuplicateLogin =
+  translationPrefix + ".registerErrorDuplicateLogin";
+export const errorDuplicateEmail =
+  translationPrefix + ".registerErrorDuplicateEmail";
+export const errorUnknown = translationPrefix + ".registerInvalidForm";
+export const success = translationPrefix + ".registerSuccess";
+export const localizationInputLabel =
+  translationPrefix + ".localizationInputLabel";
 
-const registerFormInputs: FormInput[] = [
+export const registerFormInputs: FormInput[] = [
   {
     name: "login",
     labelTranslationId: translationPrefix + ".loginLabel",
@@ -56,5 +70,3 @@ const registerFormInputs: FormInput[] = [
     inputType: "textarea",
   },
 ];
-
-export { registerFormInputs };

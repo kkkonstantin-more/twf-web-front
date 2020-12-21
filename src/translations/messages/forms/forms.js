@@ -12,12 +12,15 @@ const formsRu = {
   [prefix + ".registerButtonText"]: "Зарегистрироваться",
   [prefix + ".googleButtonText"]: "Через Google",
   [prefix +
-  ".registerErrorDuplicate"]: "Пользователь с данным логином или email уже существует!",
+  ".registerErrorDuplicateEmail"]: "Пользователь с данным email уже существует!",
+  [prefix +
+  ".registerErrorDuplicateLogin"]: "Пользователь с данным логином уже существует!",
   [prefix +
   ".registerInvalidForm"]: "Что-то пошло не так, проверьте корректность введенных данных",
   [prefix + ".registerSuccess"]: "Успешная регистрация!",
   [prefix + ".loginSuccess"]: "Успешно!",
-  [prefix + ".loginError"]: "Пользователя с таким паролем не существует",
+  [prefix + ".loginError"]: "Неправильный логин/email или пароль",
+  [prefix + ".localizationInputLabel"]: "Локализация",
 };
 
 const formsEn = {
@@ -32,12 +35,15 @@ const formsEn = {
   [prefix + ".additionalInfoLabel"]: "Additional info",
   [prefix + ".registerButtonText"]: "Sign Up",
   [prefix +
-  ".registerErrorDuplicate"]: "User with such email or login is already exists",
+  ".registerErrorDuplicateEmail"]: "User with such email is already exists",
+  [prefix +
+  ".registerErrorDuplicateLogin"]: "User with such login is already exists",
   [prefix +
   ".registerInvalidForm"]: "Something went wrong. Check correctness of your inputs",
   [prefix + ".registerSuccess"]: "Registered successfully!",
   [prefix + ".loginSuccess"]: "Success!",
-  [prefix + ".loginError"]: "User with such password doesn't exist",
+  [prefix + ".loginError"]: "Wrong login/email or password",
+  [prefix + ".localizationInputLabel"]: "Localization",
 };
 
 export { formsEn, formsRu };
