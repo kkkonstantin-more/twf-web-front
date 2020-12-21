@@ -62,23 +62,22 @@ const RegisterForm: React.FC<{ intl: any; hideModal: () => void }> = ({
     if (response.hasOwnProperty("error")) {
       setRegistered(false);
     } else {
-      setRegistered(true);
-      hideModal();
-      // // send google's token to server
-      // const idTokenString = response.tokenId;
-      // console.log(response.tokenId);
-      // axios({
-      //   method: "get",
-      //   url: `${process.env.REACT_APP_SERVER_API}/api/auth/google_sing_in`,
-      //   params: { idTokenString },
-      // })
-      //   .then((res) => {
-      //     setAuthorized(res.status === 200);
-      //   })
-      //   .catch((e) => {
-      //     setAuthorized(false);
-      //     console.log(e.message);
-      //   });
+      console.log(response);
+      const idTokenString = response.tokenId;
+      axios({
+        method: "get",
+        url: `localhost:8080/api/auth/google_sing_in`,
+        params: { idTokenString },
+      })
+        .then((res) => {
+          console.log(res);
+          // setAuthorized(res.status === 200);
+        })
+        .catch((e) => {
+          // setAuthorized(false);
+          console.log(e);
+          console.log(e.message);
+        });
     }
   };
 

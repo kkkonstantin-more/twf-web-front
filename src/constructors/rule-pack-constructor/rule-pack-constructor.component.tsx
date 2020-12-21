@@ -1,10 +1,15 @@
 // libs and hooks
-import React from "react";
-import { FormProvider, useFieldArray, useForm } from "react-hook-form";
-// custom hooks
-import useMockConstructorToEdit from "../hooks/use-mock-constructor-to-edit";
+import React, { Dispatch, useEffect, useState } from "react";
+import {
+  ArrayField,
+  FormProvider,
+  useFieldArray,
+  useForm,
+} from "react-hook-form";
+import axios, { AxiosError, AxiosResponse } from "axios";
+import { useParams } from "react-router-dom";
 // redux
-import { connect } from "react-redux";
+import { connect, ConnectedProps } from "react-redux";
 import { createStructuredSelector } from "reselect";
 import { selectRulePackJSON } from "../../redux/constructor-jsons/constructor-jsons.selectors";
 import { updateRulePackJSON } from "../../redux/constructor-jsons/constructor-jsons.actions";
@@ -18,12 +23,12 @@ import { RulePackConstructorInputs } from "./rule-pack-constructor.types";
 import { ConstructorInputProps } from "../../components/constructor-input/construcor-input.types";
 import { ConstructorSelectProps } from "../../components/constructor-select/constructor-select.types";
 import { RootState } from "../../redux/root-reducer";
-import { Dispatch } from "react";
-import { UpdateRulePackJSONAction } from "../../redux/constructor-jsons/constructor-jsons.types";
-import { ConnectedProps } from "react-redux";
+import {
+  ConstructorJSONsTypes,
+  UpdateRulePackJSONAction,
+} from "../../redux/constructor-jsons/constructor-jsons.types";
 import { ActionButtonProps } from "../../components/action-button/action-button.types";
 import { RuleConstructorInputs } from "../rule-constructor/rule-constructor.types";
-import { ArrayField } from "react-hook-form";
 // mock data
 import { mockRulePacks } from "./rule-pack-constructor.mock-data";
 // icons
@@ -42,23 +47,19 @@ const RulePackConstructor = ({
   rulePackJSON,
   updateRulePackJSON,
 }: ConnectedProps<typeof connector>): JSX.Element => {
-  const rulePackToEdit = useMockConstructorToEdit<RulePackConstructorInputs>(
-    mockRulePacks
-  );
+  const { code } = useParams();
+  const [
+    fetchedRulePack,
+    setFetchedRulePack,
+  ] = useState<RulePackConstructorInputs | null>(null);
 
-  const defaultValues: RulePackConstructorInputs =
-    rulePackToEdit && rulePackJSON === CONSTRUCTOR_JSONS_INITIAL_STATE.rulePack
-      ? rulePackToEdit
-      : rulePackJSON;
-
-  updateRulePackJSON(defaultValues);
+  // updateRulePackJSON(CONSTRUCTOR_JSONS_INITIAL_STATE.rulePack);
 
   const formMethods = useForm<RulePackConstructorInputs>({
     mode: "onSubmit",
-    defaultValues,
+    defaultValues: CONSTRUCTOR_JSONS_INITIAL_STATE.rulePack,
   });
-  const { register, getValues, control, setValue } = formMethods;
-
+  const { register, getValues, control, setValue, reset } = formMethods;
   const { fields, append, swap, remove } = useFieldArray<RuleConstructorInputs>(
     {
       control,
@@ -66,14 +67,45 @@ const RulePackConstructor = ({
     }
   );
 
+  useEffect(() => {
+    if (code) {
+      axios({
+        method: "get",
+        url: "http://localhost:8080/rule-pack/" + code,
+      })
+        .then((res: AxiosResponse<RulePackConstructorInputs>) => {
+          setFetchedRulePack(res.data);
+          reset({
+            ...res.data,
+            rules: res.data.rules
+              ? res.data.rules.map((rule: RuleConstructorInputs) => {
+                  return {
+                    ...rule,
+                    matchJumbledAndNested: "true",
+                    basedOnTaskContext: "true",
+                  };
+                })
+              : [],
+          });
+        })
+        .catch((e: AxiosError) => {
+          setFetchedRulePack(null);
+          console.error(
+            "Error occurred while fetching rule pack with code: " + code,
+            e.response
+          );
+        });
+    }
+  }, []);
+
   const actionButtonsLeft: ActionButtonProps[] = [
     {
       mdiIconPath: mdiContentCopy,
       size: 1.5,
       action(index: number) {
-        append({
-          ...getValues().rules[index],
-        });
+        // append({
+        //   ...getValues().rules[index],
+        // });
       },
     },
     {
@@ -89,9 +121,9 @@ const RulePackConstructor = ({
       mdiIconPath: mdiArrowDown,
       size: 1.5,
       action(index: number) {
-        if (index !== getValues().rules.length - 1) {
-          swap(index, index + 1);
-        }
+        // if (index !== getValues().rules.length - 1) {
+        //   swap(index, index + 1);
+        // }
       },
     },
   ];
@@ -129,9 +161,14 @@ const RulePackConstructor = ({
           label: mockRulePacks[key].nameRu,
         };
       }),
-      defaultValue: defaultValues.rulePacks,
+      // defaultValue: defaultValues.rulePacks,
     },
   ];
+
+  const submitRulePack = () => {
+    const values = getValues();
+    console.log(values);
+  };
 
   return (
     <FormProvider {...formMethods}>
@@ -141,6 +178,7 @@ const RulePackConstructor = ({
           inputs={inputs}
           register={register}
           updateJSON={() => updateRulePackJSON(getValues())}
+          constructorType={ConstructorJSONsTypes.RULE_PACK}
         />
         <h3>Правила:</h3>
         <div className="rule-pack-constructor__rules">
@@ -208,6 +246,15 @@ const RulePackConstructor = ({
             </button>
             <button className="btn" onClick={() => console.log(getValues())}>
               get values
+            </button>
+            <button
+              type="submit"
+              onClick={() => {
+                submitRulePack();
+              }}
+              className="btn u-ml-sm"
+            >
+              создать
             </button>
           </div>
         </div>

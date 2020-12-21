@@ -56,10 +56,11 @@ const LoginForm: React.FC<{ intl: any; hideModal: () => void }> = ({
       console.log(response.tokenId);
       axios({
         method: "get",
-        url: `${process.env.REACT_APP_SERVER_API}/api/auth/google_sing_in`,
+        url: `http://localhost:8080/api/auth/google_sing_in`,
         params: { idTokenString },
       })
         .then((res) => {
+          console.log(res);
           setAuthorized(res.status === 200);
         })
         .catch((e) => {

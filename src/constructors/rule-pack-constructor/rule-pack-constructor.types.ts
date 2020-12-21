@@ -1,10 +1,11 @@
 import { RuleConstructorInputs } from "../rule-constructor/rule-constructor.types";
 
 export interface RulePackConstructorInputs {
-  namespace: string;
+  namespaceCode: string;
   code: string;
   nameEn: string;
   nameRu: string;
-  rulePacks: string;
-  rules: RuleConstructorInputs[];
+  rulePacks?: string;
+  rules?: RuleConstructorInputs[];
+  otherData?: string;
 }

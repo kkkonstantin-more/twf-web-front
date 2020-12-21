@@ -1,6 +1,7 @@
+// libs and hooks
 import React, { useEffect, useState } from "react";
-// hooks
 import { useHistory, useParams } from "react-router-dom";
+import axios from "axios";
 // components
 import AppModalComponent from "../../components/app-modal/app-modal.component";
 // icons
@@ -94,6 +95,18 @@ const ConstructorMenuPageComponent: React.FC = () => {
       setCurrentTab(activeTab);
     }
   }, [activeTab]);
+
+  const [rulePacks, setRulePacks] = useState([]);
+
+  useEffect(() => {
+    axios({
+      method: "get",
+      url: "http://localhost:8080/rule-pack",
+    }).then((res) => {
+      setRulePacks(res.data);
+      console.log(res.data);
+    });
+  }, []);
 
   const gameBlocks: ConstructorMenuBlockProps[] = [
     {
@@ -268,19 +281,19 @@ const ConstructorMenuPageComponent: React.FC = () => {
       options: [
         {
           name: "С нуля",
-          action: () => history.push("constructor/rule-pack"),
+          action: () => history.push("/constructor/rule-pack"),
         },
         {
           name: "На основе уже существующего",
           action: () => {
             setItems(
               Object.keys(mockRulePacks).map((code: string) => {
-                const { nameRu, namespace } = mockRulePacks[code];
+                const { nameRu, namespaceCode } = mockRulePacks[code];
 
                 return {
                   code,
                   name: nameRu,
-                  namespace,
+                  namespaceCode,
                   onSelect: (): void => {
                     history.push("constructor/rule-pack/" + code);
                   },
@@ -296,42 +309,84 @@ const ConstructorMenuPageComponent: React.FC = () => {
     {
       title: "Редактировать существующий пакет правил",
       titleIconUrl: mdiPencil,
-      options: [
-        {
-          name: mockRulePacks[3].nameRu,
-          action: () => history.push("/constructor/rule-pack/3"),
-        },
-        {
-          name: mockRulePacks[2].nameRu,
-          action: () => history.push("/constructor/rule-pack/2"),
-        },
-        {
-          name: mockRulePacks[1].nameRu,
-          action: () => history.push("/constructor/rule-pack/1"),
-        },
-        {
-          name: "Смотреть все",
-          action: () => {
-            setItems(
-              Object.keys(mockRulePacks).map((code: string) => {
-                const { nameRu, namespace } = mockRulePacks[code];
-
-                return {
-                  code,
-                  name: nameRu,
-                  namespace,
-                  onSelect: (): void => {
-                    history.push("/constructor/rule-pack/" + code);
+      options:
+        rulePacks.length !== 0
+          ? rulePacks
+              .slice(0, 3)
+              .map((rulePack) => ({
+                // @ts-ignore
+                name: rulePack.nameRu,
+                action: () =>
+                  // @ts-ignore
+                  history.push("/constructor/rule-pack/" + rulePack.code),
+              }))
+              .concat([
+                {
+                  name: "Смотреть все",
+                  action: () => {
+                    setItems(
+                      rulePacks.map((rulePack: any) => {
+                        const { code, nameRu, namespaceCode } = rulePack;
+                        return {
+                          code,
+                          name: nameRu,
+                          namespaceCode,
+                          onSelect: (): void => {
+                            history.push("/constructor/rule-pack/" + code);
+                          },
+                          filterProps: [namespaceCode],
+                        };
+                      })
+                    );
+                    setPropsToFilter(["namespaceCode"]);
+                    setShowAllItemsModal(true);
                   },
-                  filterProps: [namespace],
-                };
-              })
-            );
-            setPropsToFilter(["namespace"]);
-            setShowAllItemsModal(true);
-          },
-        },
-      ],
+                },
+              ])
+          : [
+              {
+                name: "Смотреть все",
+                action: () => alert(1),
+              },
+            ],
+      //   {
+      //     // @ts-ignore
+      //     name: rulePacks[2] ? rulePacks[2].nameRu : "",
+      //     action: () => history.push("/constructor/rule-pack/3"),
+      //   },
+      //   // {
+      //   //   // @ts-ignore
+      //   //   name: rulePacks[1].nameRu || "",
+      //   //   action: () => history.push("/constructor/rule-pack/2"),
+      //   // },
+      //   // {
+      //   //   // @ts-ignore
+      //   //   name: rulePacks[0].nameRu || "",
+      //   //   action: () => history.push("/constructor/rule-pack/1"),
+      //   // },
+      //   {
+      //     name: "Смотреть все",
+      //     action: () => {
+      //       setItems(
+      //         Object.keys(mockRulePacks).map((code: string) => {
+      //           const { nameRu, namespace } = mockRulePacks[code];
+      //
+      //           return {
+      //             code,
+      //             name: nameRu,
+      //             namespace,
+      //             onSelect: (): void => {
+      //               history.push("/constructor/rule-pack/" + code);
+      //             },
+      //             filterProps: [namespace],
+      //           };
+      //         })
+      //       );
+      //       setPropsToFilter(["namespace"]);
+      //       setShowAllItemsModal(true);
+      //     },
+      //   },
+      // ],
     },
   ];
 

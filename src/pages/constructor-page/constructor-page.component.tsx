@@ -14,7 +14,7 @@ import "./constructor-page.styles.scss";
 const ConstructorPage = (): JSX.Element => {
   const { url } = useRouteMatch();
   const [currentEditingMode, setCurrentEditingMode] = useState<EditingMode>(
-    "textEditor"
+    "forms"
   );
 
   const renderConstructor = (

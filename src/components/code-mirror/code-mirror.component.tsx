@@ -95,6 +95,11 @@ interface CMError {
   gutterId: string;
 }
 
+interface Bracket {
+  char: "{" | "[" | "}" | "]";
+  position: CodeMirrorWordPosition;
+}
+
 const CodeMirrorEditor = ({
   constructorType,
   rulePackJSON,
@@ -522,7 +527,6 @@ const CodeMirrorEditor = ({
       });
 
       editor.on("change", (editor, changeObject) => {
-        console.log(changeObject);
         if (
           changeObject.origin === "+input" ||
           (changeObject.origin === "+delete" &&
@@ -569,11 +573,6 @@ const CodeMirrorEditor = ({
             }
             return res;
           };
-
-          interface Bracket {
-            char: "{" | "[" | "}" | "]";
-            position: CodeMirrorWordPosition;
-          }
 
           const brackets: Bracket[] = [];
           let searchLine = 1;
@@ -718,114 +717,10 @@ const CodeMirrorEditor = ({
                   }
                 );
                 expPrefix = `${parentKey}[${currentIdx}].${expPrefix}`;
-
-                // const expPositions = getPositions(
-                //   newExp,
-                //   item.from,
-                //   getPositions(
-                //     "]",
-                //     { line: 1, ch: 0 },
-                //     { line: editor.lastLine(), ch: 0 }
-                //   )[closingBrackets.length].from
-                // );
-                // expPrefix =
-                //   parentKey +
-                //   "[" +
-                //   expPositions
-                //     .findIndex((el: CodeMirrorWordPosition) => {
-                //       return el.from.line === changeObject.from.line;
-                //     })
-                //     .toString() +
-                //   "]." +
-                //   expPrefix;
-                // console.log(expPrefix);
               }
             }
           );
           console.log(expPrefix + newExp);
-
-          // if (
-          //   openingCurlyBraces.length > closingCurlyBraces.length &&
-          //   openingBrackets.length > closingBrackets.length
-          // ) {
-          //   if (
-          //     openingCurlyBraces[openingCurlyBraces.length - 1].from.line >
-          //     openingBrackets[openingBrackets.length - 1].from.line
-          //   ) {
-          //     const parentKey = editor
-          //       .getLine(
-          //         openingBrackets[openingCurlyBraces.length - 1].from.line
-          //       )
-          //       .split(":")[0]
-          //       .replace(/\"|\,/g, "")
-          //       .trim();
-          //   }
-          // }
-
-          // if (openingBrackets.length > closingBrackets.length) {
-          //   const parentKey = editor
-          //     .getLine(openingBrackets[openingBrackets.length - 1].from.line)
-          //     .split(":")[0]
-          //     .replace(/\"|\,/g, "")
-          //     .trim();
-          //
-          //   const expPositions = getPositions(
-          //     newExp,
-          //     openingBrackets[openingBrackets.length - 1].from,
-          //     getPositions(
-          //       "]",
-          //       { line: 1, ch: 0 },
-          //       { line: editor.lastLine(), ch: 0 }
-          //     )[closingBrackets.length].from
-          //   );
-          //   expPrefix =
-          //     parentKey +
-          //     "[" +
-          //     expPositions
-          //       .findIndex((el: CodeMirrorWordPosition) => {
-          //         return el.from.line === changeObject.from.line;
-          //       })
-          //       .toString() +
-          //     "].";
-          // }
-
-          // const expPrefix =
-          //   openingBrackets.length > closingBrackets.length
-          //     ? editor
-          //         .getLine(
-          //           openingBrackets[openingBrackets.length - 1].from.line
-          //         )
-          //         .split(":")[0]
-          //         .replace(/\"|\,/g, "")
-          //         .trim() + "."
-          //     : "";
-
-          // if (openingParenthesizesPositions.length > closingParenthesizesPositions.length) {
-          //   op
-          // }
-          // while (cursor.from() && cursor.to()) {
-          //   if (specificLine) {
-          //     if (cursor.from().line === specificLine) {
-          //       return {
-          //         from: cursor.from(),
-          //         to: cursor.to(),
-          //       };
-          //     } else {
-          //       return;
-          //     }
-          //   } else {
-          //     wordPositions.push({
-          //       from: cursor.from(),
-          //       to: cursor.to(),
-          //     });
-          //   }
-          //   cursor.findNext();
-          // }
-          // if (wordPositions.length === 0) return undefined;
-          // return wordPositions;
-
-          // console.log(expPrefix + oldExp, oldVal);
-          // console.log(newExp, newVal);
 
           addOneLineChangeToHistory(
             {

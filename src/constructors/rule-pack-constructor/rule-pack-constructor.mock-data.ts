@@ -4,7 +4,7 @@ export const mockRulePacks: {
   [code: string]: RulePackConstructorInputs;
 } = {
   "1": {
-    namespace: "ns_1",
+    namespaceCode: "ns_1",
     code: "1",
     nameEn: "rule pack 1",
     nameRu: "пакет правил 1",
@@ -31,7 +31,7 @@ export const mockRulePacks: {
     ],
   },
   "2": {
-    namespace: "ns_2",
+    namespaceCode: "ns_2",
     code: "2",
     nameEn: "rule pack 2",
     nameRu: "пакет правил 2",
@@ -58,7 +58,7 @@ export const mockRulePacks: {
     ],
   },
   "3": {
-    namespace: "ns_1",
+    namespaceCode: "ns_1",
     code: "3",
     nameEn: "rule pack 3",
     nameRu: "пакет правил 3",

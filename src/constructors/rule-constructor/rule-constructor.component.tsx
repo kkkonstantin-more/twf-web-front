@@ -26,18 +26,19 @@ const RuleConstructor = ({
   rulePackJSON,
   updateRulePackJSON,
 }: RuleConstructorProps & ConnectedProps<typeof connector>): JSX.Element => {
+  console.log(defaultValue);
   const { register, getValues, setValue } = useFormContext();
 
-  useEffect(() => {
-    setValue(`rules[${index}]`, {
-      left: defaultValue?.left,
-      right: defaultValue?.right,
-      basedOnTaskContext: defaultValue?.basedOnTaskContext,
-      matchJumbledAndNested: defaultValue?.matchJumbledAndNested,
-    });
-    // @ts-ignore
-    updateRulePackJSON(getValues());
-  }, []);
+  // useEffect(() => {
+  //   setValue(`rules[${index}]`, {
+  //     left: defaultValue?.left,
+  //     right: defaultValue?.right,
+  //     basedOnTaskContext: defaultValue?.basedOnTaskContext,
+  //     matchJumbledAndNested: defaultValue?.matchJumbledAndNested,
+  //   });
+  //   // @ts-ignore
+  //   updateRulePackJSON(getValues());
+  // }, []);
 
   const inputs: (ConstructorInputProps | ConstructorSelectProps)[] = [
     {
