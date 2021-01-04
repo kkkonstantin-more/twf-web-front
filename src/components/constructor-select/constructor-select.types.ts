@@ -9,6 +9,7 @@ export interface SelectOption {
 export interface ConstructorSelectProps {
   name: string;
   label: string;
+  disabled?: boolean;
   register?: any;
   options: LabeledValue[];
   defaultValue?: string | string[];

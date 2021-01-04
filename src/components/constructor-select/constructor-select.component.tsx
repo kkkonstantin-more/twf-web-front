@@ -1,5 +1,5 @@
 // libs and hooks
-import React from "react";
+import React, { useEffect, useState } from "react";
 import useMergedRef from "@react-hook/merged-ref";
 // lib components
 import ruRu from "antd/lib/locale/ru_RU";
@@ -20,8 +20,10 @@ const ConstructorSelect = ({
   updateJSON,
   isRendered = true,
   isVisible = true,
+  disabled = false,
 }: ConstructorSelectProps): JSX.Element => {
-  const { register, getValues, watch } = useFormContext();
+  const { register, getValues, watch, setValue } = useFormContext();
+  const value = watch(name, defaultValue);
   const parseValue = (
     value: string | number | string[] | undefined,
     isMulti: boolean
@@ -52,17 +54,18 @@ const ConstructorSelect = ({
         >
           <h4>{label}</h4>
           <input
-            defaultValue={defaultValue}
+            value={value}
             name={name}
             // eslint-disable-next-line react-hooks/rules-of-hooks
             ref={useMergedRef(register(), mixedInputRef)}
             style={{ display: "none" }}
           />
           <Select
+            disabled={disabled}
+            value={parseValue(value, isMulti)}
             mode={isMulti ? "multiple" : undefined}
-            defaultValue={parseValue(defaultValue, isMulti)}
+            // defaultValue={parseValue(value, isMulti)}
             style={{ width: "100%" }}
-            placeholder={label}
             onChange={(value: any) => {
               if (mixedInputRef.current) {
                 mixedInputRef.current.value = value;

@@ -56,12 +56,14 @@ const ConstructorInput = ({
   type,
   label,
   defaultValue,
+  disabled = false,
   isVisible = true,
   isRendered = true,
   expressionInput = false,
   constructorType,
   updateJSON,
   addItemToHistory,
+  onChange,
 }: ConstructorInputProps & ConnectedProps<typeof connector>): JSX.Element => {
   const { register, getValues } = useFormContext();
   const mixedInputRef:
@@ -115,6 +117,12 @@ const ConstructorInput = ({
                   // @ts-ignore
                   expressionFormatRef
                 )}
+                // onChange={() => {
+                //   if (constructorType) {
+                //     // @ts-ignore
+                //     updateJSON(constructorType, getValues());
+                //   }
+                // }}
               />
               <MixedInput
                 value={defaultValue.expression}
@@ -124,6 +132,12 @@ const ConstructorInput = ({
                 //     updateJSON();
                 //   }
                 // }}
+                onChange={() => {
+                  if (updateJSON && constructorType) {
+                    // @ts-ignore
+                    updateJSON(constructorType, getValues());
+                  }
+                }}
                 inputRef={mixedInputRef}
                 formatRef={expressionFormatRef}
                 initialFormat={defaultValue.format}
@@ -131,13 +145,18 @@ const ConstructorInput = ({
             </>
           )}
           <input
+            disabled={disabled}
             className="form-control"
             style={{
               display: expressionInput ? "none" : "block",
             }}
+            defaultValue={defaultValue}
             name={expressionInput ? name + ".expression" : name}
             type={type}
             onChange={(event: ChangeEvent<HTMLInputElement>) => {
+              if (onChange) {
+                onChange();
+              }
               if (updateJSON && constructorType) {
                 addItemToHistory(
                   {

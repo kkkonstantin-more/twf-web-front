@@ -494,6 +494,22 @@ const CodeMirrorEditor = ({
   }, [currentHistoryChange]);
 
   useEffect(() => {
+    const initialValue = currentReduxJSON;
+    if (constructorType === "rulePack") {
+      //@ts-ignore
+      if (
+        //@ts-ignore
+        initialValue.rulePacks &&
+        //@ts-ignore
+        typeof initialValue.rulePacks === "string" &&
+        //@ts-ignore
+        initialValue.rulePacks.includes(",")
+      ) {
+        // @ts-ignore
+        initialValue.rulePacks = initialValue.rulePacks.split(",");
+      }
+      console.log(initialValue);
+    }
     if (entryPoint.current) {
       const editor = CodeMirror(entryPoint.current, {
         value: JSON.stringify(currentReduxJSON, null, 2),

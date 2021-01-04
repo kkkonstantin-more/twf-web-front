@@ -4,7 +4,7 @@ import { MathInputFormat } from "../../utils/kotlin-lib-functions";
 export interface MixedInputProps {
   width?: string;
   value?: string;
-  onChange?: (value: string) => void;
+  onChange?: (...args: any) => void;
   onBlur?: (value: string) => void;
   inputRef?: React.RefObject<HTMLInputElement>;
   formatRef?: React.RefObject<HTMLInputElement>;

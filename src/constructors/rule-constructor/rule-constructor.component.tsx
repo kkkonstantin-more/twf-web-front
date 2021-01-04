@@ -1,8 +1,8 @@
 // libs and hooks
-import React, { useEffect } from "react";
+import React, { Dispatch } from "react";
 import { useFormContext } from "react-hook-form";
 // redux
-import { connect } from "react-redux";
+import { connect, ConnectedProps } from "react-redux";
 import { createStructuredSelector } from "reselect";
 import { selectRulePackJSON } from "../../redux/constructor-jsons/constructor-jsons.selectors";
 import { updateRulePackJSON } from "../../redux/constructor-jsons/constructor-jsons.actions";
@@ -13,12 +13,14 @@ import { RuleConstructorProps } from "./rule-constructor.types";
 import { RulePackConstructorInputs } from "../rule-pack-constructor/rule-pack-constructor.types";
 import { ConstructorInputProps } from "../../components/constructor-input/construcor-input.types";
 import { ConstructorSelectProps } from "../../components/constructor-select/constructor-select.types";
-import { UpdateRulePackJSONAction } from "../../redux/constructor-jsons/constructor-jsons.types";
-import { ConnectedProps } from "react-redux";
+import {
+  ConstructorJSONsTypes,
+  UpdateRulePackJSONAction,
+} from "../../redux/constructor-jsons/constructor-jsons.types";
 import { RootState } from "../../redux/root-reducer";
-import { Dispatch } from "react";
 // styles
 import "./rule-constructor.styles.scss";
+import { MathInputFormat } from "../../utils/kotlin-lib-functions";
 
 const RuleConstructor = ({
   index,
@@ -26,19 +28,7 @@ const RuleConstructor = ({
   rulePackJSON,
   updateRulePackJSON,
 }: RuleConstructorProps & ConnectedProps<typeof connector>): JSX.Element => {
-  console.log(defaultValue);
   const { register, getValues, setValue } = useFormContext();
-
-  // useEffect(() => {
-  //   setValue(`rules[${index}]`, {
-  //     left: defaultValue?.left,
-  //     right: defaultValue?.right,
-  //     basedOnTaskContext: defaultValue?.basedOnTaskContext,
-  //     matchJumbledAndNested: defaultValue?.matchJumbledAndNested,
-  //   });
-  //   // @ts-ignore
-  //   updateRulePackJSON(getValues());
-  // }, []);
 
   const inputs: (ConstructorInputProps | ConstructorSelectProps)[] = [
     {
@@ -46,14 +36,24 @@ const RuleConstructor = ({
       label: "Левая часть",
       type: "text",
       expressionInput: true,
-      defaultValue: defaultValue?.left,
+      defaultValue: defaultValue?.left
+        ? defaultValue?.left
+        : {
+            format: MathInputFormat.TEX,
+            expression: "",
+          },
     },
     {
       name: `rules[${index}].right`,
       label: "Правая часть",
       type: "text",
       expressionInput: true,
-      defaultValue: defaultValue?.right,
+      defaultValue: defaultValue?.right
+        ? defaultValue?.right
+        : {
+            format: MathInputFormat.TEX,
+            expression: "",
+          },
     },
     {
       name: `rules[${index}].basedOnTaskContext`,
@@ -84,6 +84,7 @@ const RuleConstructor = ({
         register={register}
         // @ts-ignore
         updateJSON={() => updateRulePackJSON(getValues())}
+        constructorType={ConstructorJSONsTypes.RULE_PACK}
       />
     </div>
   );

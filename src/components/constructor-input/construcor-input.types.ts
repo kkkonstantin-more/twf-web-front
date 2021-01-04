@@ -9,6 +9,7 @@ import { ConstructorJSONsTypes } from "../../redux/constructor-jsons/constructor
 export interface ConstructorInputProps {
   name: string;
   type: string;
+  disabled?: boolean;
   register?: (...args: any) => void;
   label?: string;
   isRendered?: boolean;

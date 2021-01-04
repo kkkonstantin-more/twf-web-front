@@ -14,6 +14,7 @@ import { mockRulePacks } from "../../constructors/rule-pack-constructor/rule-pac
 import SelectConstructorItemList from "../../components/filterable-select-list/filterable-select-list.component";
 import { FilterableSelectListItem } from "../../components/filterable-select-list/filterable-select-list.types";
 import { mockTaskSets } from "../../constructors/task-set-constructor/task-set-constructor.mock-data";
+import { getLastEditedConstructorItemsFromLocalStorage } from "../../utils/last-edited-constructor-items-local-storage";
 
 interface ConstructorMenuBlockProps {
   title: string;
@@ -97,15 +98,35 @@ const ConstructorMenuPageComponent: React.FC = () => {
   }, [activeTab]);
 
   const [rulePacks, setRulePacks] = useState([]);
+  const [taskSets, setTaskSets] = useState([]);
 
   useEffect(() => {
     axios({
       method: "get",
-      url: "http://localhost:8080/rule-pack",
-    }).then((res) => {
-      setRulePacks(res.data);
-      console.log(res.data);
-    });
+      url: "http://localhost:8080/api/rule-pack",
+    })
+      .then((res) => {
+        console.log(res.data);
+        setRulePacks(res.data);
+      })
+      .catch((e) => {
+        console.error("Error fetching rule-packs", e.message);
+      });
+
+    axios({
+      method: "get",
+      url: "http://localhost:8080/api/taskset",
+      headers: {
+        Authorization: "Bearer " + localStorage.getItem("token"),
+      },
+    })
+      .then((res) => {
+        console.log(res.data);
+        setTaskSets(res.data);
+      })
+      .catch((e) => {
+        console.error("Error fetching task-sets", e.message);
+      });
   }, []);
 
   const gameBlocks: ConstructorMenuBlockProps[] = [
@@ -287,20 +308,21 @@ const ConstructorMenuPageComponent: React.FC = () => {
           name: "На основе уже существующего",
           action: () => {
             setItems(
-              Object.keys(mockRulePacks).map((code: string) => {
-                const { nameRu, namespaceCode } = mockRulePacks[code];
-
+              rulePacks.map((rulePack: any) => {
+                const { code, nameRu, namespaceCode } = rulePack;
                 return {
                   code,
                   name: nameRu,
                   namespaceCode,
                   onSelect: (): void => {
-                    history.push("constructor/rule-pack/" + code);
+                    history.push(
+                      "/constructor/rule-pack/" + code + "?create-by-example"
+                    );
                   },
                 };
               })
             );
-            setPropsToFilter(["namespace"]);
+            setPropsToFilter(["namespaceCode"]);
             setShowAllItemsModal(true);
           },
         },
@@ -310,15 +332,18 @@ const ConstructorMenuPageComponent: React.FC = () => {
       title: "Редактировать существующий пакет правил",
       titleIconUrl: mdiPencil,
       options:
-        rulePacks.length !== 0
-          ? rulePacks
-              .slice(0, 3)
+        getLastEditedConstructorItemsFromLocalStorage(
+          "last-edited-rule-packs"
+        ) !== null
+          ? // @ts-ignore
+            getLastEditedConstructorItemsFromLocalStorage(
+              "last-edited-rule-packs"
+            )
               .map((rulePack) => ({
-                // @ts-ignore
-                name: rulePack.nameRu,
+                name: rulePack,
                 action: () =>
                   // @ts-ignore
-                  history.push("/constructor/rule-pack/" + rulePack.code),
+                  history.push("/constructor/rule-pack/" + rulePack),
               }))
               .concat([
                 {
@@ -334,7 +359,6 @@ const ConstructorMenuPageComponent: React.FC = () => {
                           onSelect: (): void => {
                             history.push("/constructor/rule-pack/" + code);
                           },
-                          filterProps: [namespaceCode],
                         };
                       })
                     );
@@ -346,47 +370,38 @@ const ConstructorMenuPageComponent: React.FC = () => {
           : [
               {
                 name: "Смотреть все",
-                action: () => alert(1),
+                action: () => {
+                  setItems(
+                    rulePacks.map((rulePack: any) => {
+                      const { code, nameRu, namespaceCode } = rulePack;
+                      return {
+                        code,
+                        name: nameRu,
+                        namespaceCode,
+                        onSelect: (): void => {
+                          history.push("/constructor/rule-pack/" + code);
+                        },
+                      };
+                    })
+                  );
+                  setPropsToFilter(["namespaceCode"]);
+                  setShowAllItemsModal(true);
+                },
               },
             ],
-      //   {
-      //     // @ts-ignore
-      //     name: rulePacks[2] ? rulePacks[2].nameRu : "",
-      //     action: () => history.push("/constructor/rule-pack/3"),
-      //   },
-      //   // {
-      //   //   // @ts-ignore
-      //   //   name: rulePacks[1].nameRu || "",
-      //   //   action: () => history.push("/constructor/rule-pack/2"),
-      //   // },
-      //   // {
-      //   //   // @ts-ignore
-      //   //   name: rulePacks[0].nameRu || "",
-      //   //   action: () => history.push("/constructor/rule-pack/1"),
-      //   // },
-      //   {
-      //     name: "Смотреть все",
-      //     action: () => {
-      //       setItems(
-      //         Object.keys(mockRulePacks).map((code: string) => {
-      //           const { nameRu, namespace } = mockRulePacks[code];
-      //
-      //           return {
-      //             code,
-      //             name: nameRu,
-      //             namespace,
-      //             onSelect: (): void => {
-      //               history.push("/constructor/rule-pack/" + code);
-      //             },
-      //             filterProps: [namespace],
-      //           };
-      //         })
-      //       );
-      //       setPropsToFilter(["namespace"]);
-      //       setShowAllItemsModal(true);
-      //     },
-      //   },
-      // ],
+      // rulePacks.length !== 0
+      //   ? rulePacks
+      //       .slice(0, 3)
+
+      //       .concat([
+
+      //       ])
+      //   : [
+      //       {
+      //         name: "Смотреть все",
+      //         action: () => alert(1),
+      //       },
+      //     ],
     },
   ];
 
@@ -432,7 +447,6 @@ const ConstructorMenuPageComponent: React.FC = () => {
             return <ConstructorMenuBlock key={i} {...block} />;
           })}
       </div>
-
       <AppModalComponent
         isOpen={showAllItemsModal}
         close={() => setShowAllItemsModal(false)}

@@ -109,7 +109,7 @@ const MixedInput = ({
 
   useEffect(() => {
     if (onChange) {
-      onChange(currentValue);
+      onChange();
     }
   }, [currentValue]);
 
