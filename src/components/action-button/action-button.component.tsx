@@ -16,6 +16,7 @@ const ActionButton = ({
 }: ActionButtonProps): JSX.Element => {
   return (
     <button
+      type="button"
       className="action-button"
       style={{ margin: margin ? margin : "" }}
       onClick={() => {

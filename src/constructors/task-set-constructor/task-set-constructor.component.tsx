@@ -1,7 +1,6 @@
 // libs and hooks
 import React, { Dispatch, useEffect, useState } from "react";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
-import deepEqual from "fast-deep-equal/es6";
 // redux
 import { createStructuredSelector } from "reselect";
 import { selectTaskSetJSON } from "../../redux/constructor-jsons/constructor-jsons.selectors";
@@ -9,20 +8,16 @@ import { updateTaskSetJSON } from "../../redux/constructor-jsons/constructor-jso
 import { connect, ConnectedProps } from "react-redux";
 import CONSTRUCTOR_JSONS_INITIAL_STATE from "../../redux/constructor-jsons/constructor-jsons.state";
 // custom hooks
-import useMockConstructorToEdit from "../hooks/use-mock-constructor-to-edit";
 // lib components
 import Draggable from "react-draggable";
 // custom components
 import MathQuillEditor from "../../components/math-quill-editor/math-quill-editor";
-import TaskConstructor, {
-  HistoryItem,
-} from "../task-constructor/task-constructor.component";
+import TaskConstructor from "../task-constructor/task-constructor.component";
 import AppModal from "../../components/app-modal/app-modal.component";
 import SelectConstructorItemList from "../../components/filterable-select-list/filterable-select-list.component";
 import ConstructorForm from "../../components/constructor-form/constructor-form.component";
 // types
 import { FilterableSelectListItem } from "../../components/filterable-select-list/filterable-select-list.types";
-import { TaskSetConstructorInputs } from "./task-set-constructor.types";
 import { RootState } from "../../redux/root-reducer";
 import { ConstructorInputProps } from "../../components/constructor-input/construcor-input.types";
 import { ConstructorSelectProps } from "../../components/constructor-select/constructor-select.types";
@@ -33,7 +28,6 @@ import {
 } from "../../redux/constructor-jsons/constructor-jsons.types";
 // data
 import { mockTasks } from "../task-constructor/task-constructor.mock-data";
-import { mockTaskSets } from "./task-set-constructor.mock-data";
 import { taskConstructorDefaultValues } from "./task-set-constructor.data";
 // icons
 import Icon from "@mdi/react";
@@ -65,8 +59,23 @@ import {
   addOneLineChangeToHistory,
   redoTaskSetHistory,
   undoTaskSetHistory,
-  updateTaskSetHistoryIndex,
 } from "../../redux/constructor-history/constructor-history.actions";
+import { useParams } from "react-router-dom";
+import { ConstructorCreationMode } from "../common-types";
+import useCreationMode from "../hooks/useCreationType";
+import getConstructorSubmitButtonAndTitleText from "../utiils/get-constructor-submit-button-and-title-text";
+import {
+  getLastEditedCreationMode,
+  getLastExampleConstructorCode,
+  setLastEditedCreationMode,
+  setLastExampleConstructorCode,
+} from "../../utils/local-storage/last-edited-creation-type";
+import {
+  getTaskSet,
+  submitTaskSet,
+} from "../../utils/fetch-constructors/fetch-constructors.requests";
+import { FetchedTaskSet } from "../../utils/fetch-constructors/fetch-constructors.types";
+import ConstructorUndoRedoPanel from "../../components/constructor-undo-redo-panel/constructor-undo-redo-panel.component";
 
 // @ts-ignore
 export const TasksFieldArrayActionsContext = React.createContext();
@@ -82,33 +91,46 @@ const TaskSetConstructor = ({
   currentHistoryChange,
 }: // updateHistoryIdx,
 ConnectedProps<typeof connector>): JSX.Element => {
+  const { code } = useParams();
+  const creationMode: ConstructorCreationMode = useCreationMode();
+  const titleAndSubmitButtonText: string = getConstructorSubmitButtonAndTitleText(
+    creationMode,
+    ConstructorJSONsTypes.TASK_SET,
+    code
+  );
   const [showHintsBlock, setShowHintsBlock] = useState(false);
   const [startExpressionHint, setStartExpressionHint] = useState("");
   const [goalExpressionHint, setGoalExpressionHint] = useState("");
   const [hintsDeltaX, setHintsDeltaX] = useState(0);
   const [showSelectModal, setShowSelectModal] = useState(false);
 
-  const taskSetToEdit = useMockConstructorToEdit<TaskSetConstructorInputs>(
-    mockTaskSets
-  );
+  // const taskSetToEdit = useMockConstructorToEdit<TaskSetConstructorInputs>(
+  //   mockTaskSets
+  // );
 
-  const defaultValues: TaskSetConstructorInputs =
-    taskSetToEdit && taskSetJSON === CONSTRUCTOR_JSONS_INITIAL_STATE.taskSet
-      ? taskSetToEdit
-      : taskSetJSON;
+  // const defaultValues: TaskSetConstructorInputs =
+  //   taskSetToEdit && taskSetJSON === CONSTRUCTOR_JSONS_INITIAL_STATE.taskSet
+  //     ? taskSetToEdit
+  //     : taskSetJSON;
+  //
+  // if (
+  //   taskSetToEdit &&
+  //   taskSetJSON === CONSTRUCTOR_JSONS_INITIAL_STATE.taskSet
+  // ) {
+  //   updateTaskSetJSON(defaultValues);
+  // }
 
-  if (
-    taskSetToEdit &&
-    taskSetJSON === CONSTRUCTOR_JSONS_INITIAL_STATE.taskSet
-  ) {
-    updateTaskSetJSON(defaultValues);
-  }
-
-  const methods = useForm({
+  const methods = useForm<FetchedTaskSet>({
     mode: "onSubmit",
-    defaultValues,
   });
-  const { register, getValues, control, setValue, reset } = methods;
+  const {
+    register,
+    getValues,
+    control,
+    setValue,
+    reset,
+    handleSubmit,
+  } = methods;
   const fieldArrayMethods = useFieldArray<TaskConstructorInputs>({
     control,
     name: "tasks",
@@ -166,6 +188,7 @@ ConnectedProps<typeof connector>): JSX.Element => {
         currentHistoryChange.item.propertyPath,
         currentHistoryChange.item.value
       );
+      // @ts-ignore
       updateTaskSetJSON(getValues());
     } else if (currentHistoryChange?.type === "MULTIPLE_LINES_CHANGE") {
       reset(currentHistoryChange.item);
@@ -176,30 +199,107 @@ ConnectedProps<typeof connector>): JSX.Element => {
 
   const inputs: (ConstructorInputProps | ConstructorSelectProps)[] = [
     {
-      name: "nameEn",
-      label: "Имя en",
+      name: "namespaceCode",
+      label: "Namespace",
       type: "text",
-      defaultValue: defaultValues.nameEn,
-    },
-    {
-      name: "nameRu",
-      label: "Имя ru",
-      type: "text",
-      defaultValue: defaultValues.nameRu,
+      options: [{ label: "test_namespace_code", value: "test_namespace_code" }],
+      defaultValue: "",
+      isMulti: false,
+      disabled: creationMode === ConstructorCreationMode.EDIT,
     },
     {
       name: "code",
       label: "Код",
       type: "text",
-      defaultValue: defaultValues.code,
+      defaultValue: "",
+      disabled: creationMode === ConstructorCreationMode.EDIT,
     },
     {
-      name: "namespace",
-      label: "Namespace",
+      name: "nameEn",
+      label: "Имя en",
       type: "text",
-      defaultValue: defaultValues.namespace,
+      defaultValue: "",
+    },
+    {
+      name: "nameRu",
+      label: "Имя ru",
+      type: "text",
+      defaultValue: "",
+    },
+    {
+      name: "subjectTypes",
+      label: "Предметные области",
+      options: ["subjectType1", "subjectType2"].map((st: string) => ({
+        label: st,
+        value: st,
+      })),
+      isMulti: true,
+    },
+    {
+      name: "otherData",
+      label: "Дополнительная информация",
+      type: "text",
+      defaultValue: "",
     },
   ];
+
+  const lastEditedMode: ConstructorCreationMode | null = getLastEditedCreationMode(
+    ConstructorJSONsTypes.TASK_SET
+  );
+
+  useEffect(() => {
+    if (creationMode === ConstructorCreationMode.CREATE) {
+      if (lastEditedMode === ConstructorCreationMode.CREATE) {
+        reset(taskSetJSON);
+      } else {
+        reset(CONSTRUCTOR_JSONS_INITIAL_STATE.taskSet);
+        setLastEditedCreationMode(ConstructorJSONsTypes.TASK_SET, creationMode);
+        // @ts-ignore
+        updateTaskSetJSON(getValues());
+      }
+    } else if (creationMode === ConstructorCreationMode.EDIT) {
+      if (
+        lastEditedMode === ConstructorCreationMode.EDIT &&
+        code === taskSetJSON.code
+      ) {
+        reset(taskSetJSON);
+      } else {
+        (async () => {
+          const res = await getTaskSet(code);
+          console.log(res);
+          await reset(res);
+          setLastEditedCreationMode(
+            ConstructorJSONsTypes.TASK_SET,
+            creationMode
+          );
+          // @ts-ignore
+          updateTaskSetJSON(getValues());
+        })();
+      }
+    } else if (creationMode === ConstructorCreationMode.CREATE_BY_EXAMPLE) {
+      if (
+        lastEditedMode === ConstructorCreationMode.CREATE_BY_EXAMPLE &&
+        getLastExampleConstructorCode(ConstructorJSONsTypes.TASK_SET) === code
+      ) {
+        reset(taskSetJSON);
+      } else {
+        console.log(
+          getLastExampleConstructorCode(ConstructorJSONsTypes.TASK_SET)
+        );
+        (async () => {
+          const res = await getTaskSet(code);
+          await reset(res);
+          setLastEditedCreationMode(
+            ConstructorJSONsTypes.TASK_SET,
+            creationMode
+          );
+          setLastExampleConstructorCode(ConstructorJSONsTypes.TASK_SET, code);
+          // @ts-ignore
+          updateTaskSetJSON(getValues());
+        })();
+      }
+    }
+  }, []);
 
   return (
     <div className="task-set-constructor">
@@ -212,275 +312,292 @@ ConnectedProps<typeof connector>): JSX.Element => {
               : `calc(50% + ${hintsDeltaX}px)`,
         }}
       >
-        <button
-          onClick={() => {
-            undo();
-          }}
-        >
-          Назад
-        </button>
-        <button
-          onClick={() => {
-            redo();
-          }}
-        >
-          Вперед
-        </button>
+        <ConstructorUndoRedoPanel undo={undo} redo={redo} />
         <div className="task-set-constructor__form">
           <FormProvider {...methods}>
             <TasksFieldArrayActionsContext.Provider value={fieldArrayMethods}>
-              <ConstructorForm
-                inputs={inputs}
-                register={register}
-                updateJSON={() => updateTaskSetJSON(getValues())}
-                addToHistory={(
-                  oldVal: ExpressionChange,
-                  newVal: ExpressionChange
-                ) => {
-                  addItemToHistory(oldVal, newVal);
-                }}
-                constructorType={ConstructorJSONsTypes.TASK_SET}
-              />
-              <div className="u-flex" style={{ alignItems: "center" }}>
-                <h3>Уровни</h3>
-                <div className="task-set-constructor__visualization-mode-switchers">
-                  <div
-                    className={`task-set-constructor__visualization-mode-switcher ${
-                      visualizationMode === "list" &&
-                      "task-set-constructor__visualization-mode-switcher--active"
-                    }`}
-                    onClick={() => {
-                      setVisualizationMode("list");
-                    }}
-                  >
-                    <Icon path={mdiFormatListBulleted} size={1.5} />
-                  </div>
-                  <div
-                    className={`task-set-constructor__visualization-mode-switcher ${
-                      visualizationMode === "table" &&
-                      "task-set-constructor__visualization-mode-switcher--active"
-                    }`}
-                    onClick={() => {
-                      setVisualizationMode("table");
-                    }}
-                  >
-                    <Icon path={mdiTableLarge} size={1.5} />
+              <form
+                onSubmit={handleSubmit((data) =>
+                  submitTaskSet(
+                    data,
+                    code,
+                    creationMode === ConstructorCreationMode.EDIT
+                      ? "patch"
+                      : "post"
+                  )
+                )}
+              >
+                <h2 className="u-mt-sm">{titleAndSubmitButtonText}</h2>
+                <ConstructorForm
+                  inputs={inputs}
+                  register={register}
+                  // @ts-ignore
+                  updateJSON={() => updateTaskSetJSON(getValues())}
+                  addToHistory={(
+                    oldVal: ExpressionChange,
+                    newVal: ExpressionChange
+                  ) => {
+                    addItemToHistory(oldVal, newVal);
+                  }}
+                  constructorType={ConstructorJSONsTypes.TASK_SET}
+                />
+                <div className="u-flex" style={{ alignItems: "center" }}>
+                  <h3>Задачи</h3>
+                  <div className="task-set-constructor__visualization-mode-switchers">
+                    <div
+                      className={`task-set-constructor__visualization-mode-switcher ${
+                        visualizationMode === "list" &&
+                        "task-set-constructor__visualization-mode-switcher--active"
+                      }`}
+                      onClick={() => {
+                        setVisualizationMode("list");
+                      }}
+                    >
+                      <Icon path={mdiFormatListBulleted} size={1.5} />
+                    </div>
+                    <div
+                      className={`task-set-constructor__visualization-mode-switcher ${
+                        visualizationMode === "table" &&
+                        "task-set-constructor__visualization-mode-switcher--active"
+                      }`}
+                      onClick={() => {
+                        setVisualizationMode("table");
+                      }}
+                    >
+                      <Icon path={mdiTableLarge} size={1.5} />
+                    </div>
                   </div>
                 </div>
-              </div>
-              <div
-                className={`${
-                  visualizationMode === "table"
-                    ? "form-levels-table"
-                    : "form-levels-list"
-                }`}
-              >
-                {visualizationMode === "list" && (
-                  <div className="form-levels-list__select">
-                    {fields.map((field, index) => {
-                      return (
-                        <div
-                          key={field.id}
-                          onClick={() => setSelectedLevel(index)}
-                          className={`form-levels-list__select-option ${
-                            index === selectedLevel &&
-                            "form-levels-list__select-option--active"
-                          }`}
+                <div
+                  className={`${
+                    visualizationMode === "table"
+                      ? "form-levels-table"
+                      : "form-levels-list"
+                  }`}
+                >
+                  {visualizationMode === "list" && (
+                    <div className="form-levels-list__select">
+                      {fields.map((field, index) => {
+                        return (
+                          <div
+                            key={field.id}
+                            onClick={() => setSelectedLevel(index)}
+                            className={`form-levels-list__select-option ${
+                              index === selectedLevel &&
+                              "form-levels-list__select-option--active"
+                            }`}
+                          >
+                            <Icon
+                              path={
+                                field.taskCreationType === "auto"
+                                  ? mdiRobot
+                                  : mdiWrench
+                              }
+                              size={2}
+                              style={{ marginRight: "1rem" }}
+                            />
+                            <span>
+                              Уровень {index + 1}. {levelNames[index]}
+                            </span>
+                          </div>
+                        );
+                      })}
+                      <div className="form-levels-list__action-buttons">
+                        <button
+                          type="button"
+                          className="btn form-levels-list__action-button"
+                          onClick={async () => {
+                            // @ts-ignore
+                            await append({
+                              ...taskConstructorDefaultValues,
+                              taskCreationType: "manual",
+                            });
+                            setSelectedLevel(fields.length);
+                          }}
                         >
-                          <Icon
-                            path={
-                              field.taskCreationType === "auto"
-                                ? mdiRobot
-                                : mdiWrench
-                            }
-                            size={2}
-                            style={{ marginRight: "1rem" }}
-                          />
+                          <Icon path={mdiPlus} size={1.2} />
                           <span>
-                            Уровень {index + 1}. {levelNames[index]}
+                            <b>ручная задача</b>
                           </span>
-                        </div>
+                        </button>
+                        <button
+                          type="button"
+                          className="btn form-levels-list__action-button"
+                          onClick={() => {
+                            // @ts-ignore
+                            append({
+                              ...taskConstructorDefaultValues,
+                              taskCreationType: "auto",
+                            });
+                            setSelectedLevel(fields.length);
+                          }}
+                        >
+                          <Icon path={mdiPlus} size={1.2} />
+                          <span>авто задача</span>
+                        </button>
+                        <button
+                          type="button"
+                          className="btn form-levels-list__action-button u-mr-sm"
+                          onClick={() => {
+                            setShowSelectModal(true);
+                          }}
+                        >
+                          <Icon path={mdiPlus} size={1.2} />
+                          <span>существующая задача</span>
+                        </button>
+                        <button
+                          type="button"
+                          className="btn form-levels-list__action-button"
+                          onClick={() => console.log(getValues())}
+                        >
+                          get values
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                  <div
+                    className={`${
+                      visualizationMode === "list"
+                        ? "form-levels-list__selected-level"
+                        : ""
+                    }`}
+                  >
+                    {fields.map((field, index: number) => {
+                      return (
+                        <TaskConstructor
+                          key={field.id}
+                          index={index}
+                          defaultValue={fields[index]}
+                          updateDemo={() => {}}
+                          visualizationMode={visualizationMode}
+                          hidden={
+                            visualizationMode === "list" &&
+                            index !== selectedLevel
+                          }
+                          updateName={updateName}
+                        />
                       );
                     })}
-                    <div className="form-levels-list__action-buttons">
+                  </div>
+                  {visualizationMode === "table" && (
+                    <div className="form-levels-table__action-buttons">
                       <button
-                        className="btn form-levels-list__action-button"
-                        onClick={() => {
-                          append({
+                        type="button"
+                        className="btn form-levels-table__action-button"
+                        onClick={async () => {
+                          // @ts-ignore
+                          await append({
                             ...taskConstructorDefaultValues,
                             taskCreationType: "manual",
                           });
-                          setSelectedLevel(fields.length);
-
-                          // console.log(getValues().tasks.length);
+                          // @ts-ignore
+                          updateTaskSetJSON(getValues());
                         }}
                       >
                         <Icon path={mdiPlus} size={1.2} />
                         <span>
-                          <b>ручной уровень</b>
+                          <b>ручной задача</b>
                         </span>
                       </button>
                       <button
-                        className="btn form-levels-list__action-button"
+                        type="button"
+                        className="btn form-levels-table__action-button"
                         onClick={() => {
+                          // @ts-ignore
                           append({
                             ...taskConstructorDefaultValues,
                             taskCreationType: "auto",
                           });
-                          setSelectedLevel(fields.length);
                         }}
                       >
                         <Icon path={mdiPlus} size={1.2} />
-                        <span>авто уровень</span>
+                        <span>авто задача</span>
                       </button>
                       <button
-                        className="btn form-levels-list__action-button u-mr-sm"
+                        type="button"
+                        className="btn form-levels-table__action-button"
+                        onClick={() => {
+                          swap(0, 1);
+                        }}
+                      >
+                        <Icon path={mdiPlus} size={1.2} />
+                        <span>swap</span>
+                      </button>
+                      <button
+                        type="button"
+                        className="btn form-levels-table__action-button"
                         onClick={() => {
                           setShowSelectModal(true);
                         }}
                       >
                         <Icon path={mdiPlus} size={1.2} />
-                        <span>существующий уровень</span>
+                        <span>существующий задача</span>
                       </button>
                       <button
-                        className="btn form-levels-list__action-button"
+                        type="button"
+                        className="btn form-levels-table__action-button"
                         onClick={() => console.log(getValues())}
                       >
                         get values
                       </button>
                     </div>
-                  </div>
-                )}
-                <div
-                  className={`${
-                    visualizationMode === "list"
-                      ? "form-levels-list__selected-level"
-                      : ""
-                  }`}
-                >
-                  {fields.map((field, index: number) => {
-                    return (
-                      <TaskConstructor
-                        key={field.id}
-                        index={index}
-                        defaultValue={fields[index]}
-                        updateDemo={() => {}}
-                        visualizationMode={visualizationMode}
-                        hidden={
-                          visualizationMode === "list" &&
-                          index !== selectedLevel
-                        }
-                        updateName={updateName}
-                      />
-                    );
-                  })}
+                  )}
                 </div>
-                {visualizationMode === "table" && (
-                  <div className="form-levels-table__action-buttons">
-                    <button
-                      className="btn form-levels-table__action-button"
-                      onClick={() => {
-                        append({
-                          ...taskConstructorDefaultValues,
-                          taskCreationType: "manual",
-                        });
-                      }}
-                    >
-                      <Icon path={mdiPlus} size={1.2} />
-                      <span>
-                        <b>ручной уровень</b>
-                      </span>
-                    </button>
-                    <button
-                      className="btn form-levels-table__action-button"
-                      onClick={() => {
-                        append({
-                          ...taskConstructorDefaultValues,
-                          taskCreationType: "auto",
-                        });
-                      }}
-                    >
-                      <Icon path={mdiPlus} size={1.2} />
-                      <span>авто уровень</span>
-                    </button>
-                    <button
-                      className="btn form-levels-table__action-button"
-                      onClick={() => {
-                        swap(0, 1);
-                      }}
-                    >
-                      <Icon path={mdiPlus} size={1.2} />
-                      <span>swap</span>
-                    </button>
-                    <button
-                      className="btn form-levels-table__action-button"
-                      onClick={() => {
-                        setShowSelectModal(true);
-                      }}
-                    >
-                      <Icon path={mdiPlus} size={1.2} />
-                      <span>существующий уровень</span>
-                    </button>
-                    <button
-                      className="btn form-levels-table__action-button"
-                      onClick={() => console.log(getValues())}
-                    >
-                      get values
-                    </button>
-                  </div>
-                )}
-              </div>
+                <button type="submit" className="btn u-mt-sm">
+                  {titleAndSubmitButtonText}
+                </button>
+              </form>
             </TasksFieldArrayActionsContext.Provider>
           </FormProvider>
         </div>
 
-        <AppModal
-          isOpen={showSelectModal}
-          close={() => setShowSelectModal(false)}
-          width="80vw"
-          height="80vh"
-        >
-          <SelectConstructorItemList
-            items={Object.keys(mockTasks).map(
-              (code: string): FilterableSelectListItem => {
-                const { nameRu, namespace } = mockTasks[code];
-                return {
-                  name: nameRu,
-                  namespace,
-                  code,
-                  taskSet: (() => {
-                    const arr = [
-                      "интересная игра",
-                      "очень сложно",
-                      "просто",
-                      "ЕГЭ",
-                    ];
-                    const startIdx = Math.floor(Math.random() * 4);
-                    const endIdx = Math.floor(Math.random() * 5) + startIdx + 1;
-                    return arr.slice(startIdx, endIdx);
-                  })(),
-                  subjectType: (() => {
-                    const arr = [
-                      "тригонометрия",
-                      "логарифмы",
-                      "теория вероятности",
-                      "производные",
-                    ];
-                    const startIdx = Math.floor(Math.random() * 4);
-                    const endIdx = Math.floor(Math.random() * 5) + startIdx + 1;
-                    return arr.slice(startIdx, endIdx);
-                  })(),
-                  onSelect: () => {
-                    append(mockTasks[code], true);
-                    setShowSelectModal(false);
-                    setSelectedLevel(fields.length);
-                  },
-                };
-              }
-            )}
-            propsToFilter={["namespace", "taskSet", "subjectType"]}
-          />
-        </AppModal>
+        {/*<AppModal*/}
+        {/*  isOpen={showSelectModal}*/}
+        {/*  close={() => setShowSelectModal(false)}*/}
+        {/*  width="80vw"*/}
+        {/*  height="80vh"*/}
+        {/*>*/}
+        {/*  <SelectConstructorItemList*/}
+        {/*    items={Object.keys(mockTasks).map(*/}
+        {/*      (code: string): FilterableSelectListItem => {*/}
+        {/*        const { nameRu, namespace } = mockTasks[code];*/}
+        {/*        return {*/}
+        {/*          name: nameRu,*/}
+        {/*          namespace,*/}
+        {/*          code,*/}
+        {/*          taskSet: (() => {*/}
+        {/*            const arr = [*/}
+        {/*              "интересная игра",*/}
+        {/*              "очень сложно",*/}
+        {/*              "просто",*/}
+        {/*              "ЕГЭ",*/}
+        {/*            ];*/}
+        {/*            const startIdx = Math.floor(Math.random() * 4);*/}
+        {/*            const endIdx = Math.floor(Math.random() * 5) + startIdx + 1;*/}
+        {/*            return arr.slice(startIdx, endIdx);*/}
+        {/*          })(),*/}
+        {/*          subjectType: (() => {*/}
+        {/*            const arr = [*/}
+        {/*              "тригонометрия",*/}
+        {/*              "логарифмы",*/}
+        {/*              "теория вероятности",*/}
+        {/*              "производные",*/}
+        {/*            ];*/}
+        {/*            const startIdx = Math.floor(Math.random() * 4);*/}
+        {/*            const endIdx = Math.floor(Math.random() * 5) + startIdx + 1;*/}
+        {/*            return arr.slice(startIdx, endIdx);*/}
+        {/*          })(),*/}
+        {/*          onSelect: () => {*/}
+        {/*            append(mockTasks[code], true);*/}
+        {/*            setShowSelectModal(false);*/}
+        {/*            setSelectedLevel(fields.length);*/}
+        {/*          },*/}
+        {/*        };*/}
+        {/*      }*/}
+        {/*    )}*/}
+        {/*    propsToFilter={["namespace", "taskSet", "subjectType"]}*/}
+        {/*  />*/}
+        {/*</AppModal>*/}
       </div>
       {/*HINTS BLOCK*/}
       <div
@@ -530,7 +647,7 @@ ConnectedProps<typeof connector>): JSX.Element => {
           )}
         </div>
         <div className="current-edited-level">
-          <h1>Редактируемый уровень:</h1>
+          <h1>Редактируемая задача:</h1>
           <input type="text" ref={currentEditedLevelRef} />
           <MathQuillEditor
             inputRef={currentEditedLevelRef}
@@ -559,7 +676,7 @@ ConnectedProps<typeof connector>): JSX.Element => {
                 )}
               </div>
               <div className="current-edited-level">
-                <h1>Редактируемый уровень:</h1>
+                <h1>Редактируемая задача:</h1>
                 <input type="text" ref={currentEditedLevelRef} />
                 <MathQuillEditor
                   inputRef={currentEditedLevelRef}
@@ -578,7 +695,7 @@ ConnectedProps<typeof connector>): JSX.Element => {
 const mapState = createStructuredSelector<
   RootState,
   {
-    taskSetJSON: TaskSetConstructorInputs;
+    taskSetJSON: FetchedTaskSet;
     history: ConstructorHistoryItem[];
     historyIdx: number;
     currentHistoryChange: ConstructorHistoryItem | undefined;
@@ -599,7 +716,7 @@ const mapDispatch = (
     | UndoTaskSetHistoryAction
   >
 ) => ({
-  updateTaskSetJSON: (taskSetJSON: TaskSetConstructorInputs) =>
+  updateTaskSetJSON: (taskSetJSON: FetchedTaskSet) =>
     dispatch(updateTaskSetJSON(taskSetJSON)),
   addItemToHistory: (oldVal: ExpressionChange, newVal: ExpressionChange) =>
     dispatch(addOneLineChangeToHistory({ oldVal, newVal })),

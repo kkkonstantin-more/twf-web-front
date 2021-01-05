@@ -1,8 +1,9 @@
 import { TaskConstructorInputs } from "./task-constructor.types";
 import { taskConstructorDefaultValues } from "../task-set-constructor/task-set-constructor.data";
+import { FetchedTask } from "../../utils/fetch-constructors/fetch-constructors.types";
 
 export const mockTasks: {
-  [code: string]: TaskConstructorInputs;
+  [code: string]: FetchedTask;
 } = {
   "1": {
     ...taskConstructorDefaultValues,

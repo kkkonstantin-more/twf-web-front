@@ -15,42 +15,10 @@ import SelectConstructorItemList from "../../components/filterable-select-list/f
 import { FilterableSelectListItem } from "../../components/filterable-select-list/filterable-select-list.types";
 import { mockTaskSets } from "../../constructors/task-set-constructor/task-set-constructor.mock-data";
 import { getLastEditedConstructorItemsFromLocalStorage } from "../../utils/last-edited-constructor-items-local-storage";
-
-interface ConstructorMenuBlockProps {
-  title: string;
-  titleIconUrl: string;
-  options: { name: string; action: () => any }[];
-}
-
-const ConstructorMenuBlock = ({
-  title,
-  titleIconUrl,
-  options,
-}: ConstructorMenuBlockProps) => {
-  return (
-    <div className="constructor-menu-block">
-      <div className="constructor-menu-block__title">
-        <Icon path={titleIconUrl} size={2} className="u-mr-sm" />
-        <h1>{title}</h1>
-      </div>
-      <div className="constructor-menu-block__options">
-        {options.map(
-          (option: { name: string; action: () => any }, i: number) => {
-            return (
-              <div
-                key={i}
-                className="constructor-menu-block__option"
-                onClick={(): any => option.action()}
-              >
-                {option.name}
-              </div>
-            );
-          }
-        )}
-      </div>
-    </div>
-  );
-};
+import { ConstructorMenuBlockProps } from "../../components/constructor-menu-block/constructor-menu-block.types";
+import ConstructorMenuBlock from "../../components/constructor-menu-block/constructor-menu-block.component";
+import { getAllTaskSets } from "../../utils/fetch-constructors/fetch-constructors.requests";
+import { FetchedTaskSet } from "../../utils/fetch-constructors/fetch-constructors.types";
 
 export const demoList = [
   "Alison Park",
@@ -98,38 +66,34 @@ const ConstructorMenuPageComponent: React.FC = () => {
   }, [activeTab]);
 
   const [rulePacks, setRulePacks] = useState([]);
-  const [taskSets, setTaskSets] = useState([]);
+  const [taskSets, setTaskSets] = useState<FetchedTaskSet[]>([]);
+
+  const [isFetched, setIsFetched] = useState<boolean>(false);
 
   useEffect(() => {
-    axios({
-      method: "get",
-      url: "http://localhost:8080/api/rule-pack",
-    })
-      .then((res) => {
-        console.log(res.data);
-        setRulePacks(res.data);
-      })
-      .catch((e) => {
-        console.error("Error fetching rule-packs", e.message);
+    setIsFetched(false);
+    if (activeTab === "taskSet") {
+      getAllTaskSets().then((res: FetchedTaskSet[]) => {
+        setTaskSets(res);
+        setIsFetched(true);
       });
-
-    axios({
-      method: "get",
-      url: "http://localhost:8080/api/taskset",
-      headers: {
-        Authorization: "Bearer " + localStorage.getItem("token"),
-      },
-    })
-      .then((res) => {
-        console.log(res.data);
-        setTaskSets(res.data);
+    } else if (activeTab === "rulePack") {
+      axios({
+        method: "get",
+        url: "http://localhost:8080/api/rule-pack",
       })
-      .catch((e) => {
-        console.error("Error fetching task-sets", e.message);
-      });
-  }, []);
+        .then((res) => {
+          console.log(res.data);
+          setRulePacks(res.data);
+          setIsFetched(true);
+        })
+        .catch((e) => {
+          console.error("Error fetching rule-packs", e.message);
+        });
+    }
+  }, [activeTab]);
 
-  const gameBlocks: ConstructorMenuBlockProps[] = [
+  const gameBlocks: any = [
     {
       title: "Создать новый набор задач",
       titleIconUrl: mdiPlus,
@@ -142,93 +106,91 @@ const ConstructorMenuPageComponent: React.FC = () => {
           name: "На основе уже существующей",
           action: () => {
             setItems(
-              Object.keys(mockTaskSets).map(
-                (code: string): FilterableSelectListItem => {
-                  const { nameRu, namespace } = mockTaskSets[code];
-                  return {
-                    name: nameRu,
-                    code,
-                    namespace,
-                    subjectType: (() => {
-                      const arr = [
-                        "тригонометрия",
-                        "логарифмы",
-                        "теория вероятности",
-                        "производные",
-                      ];
-                      const startIdx = Math.floor(Math.random() * 4);
-                      const endIdx =
-                        Math.floor(Math.random() * 5) + startIdx + 1;
-                      return arr.slice(startIdx, endIdx);
-                    })(),
-                    onSelect: () => {
-                      history.push("/constructor/task-set/" + code);
-                    },
-                  };
-                }
-              )
+              taskSets.map((taskSet: FetchedTaskSet) => {
+                const { code, nameRu, namespaceCode } = taskSet;
+                return {
+                  code,
+                  name: nameRu,
+                  namespaceCode,
+                  onSelect: (): void => {
+                    history.push(
+                      "/constructor/task-set/" + code + "?create-by-example"
+                    );
+                  },
+                };
+              })
             );
-            setPropsToFilter(["namespace", "subjectType"]);
+            setPropsToFilter(["namespaceCode"]);
             setShowAllItemsModal(true);
           },
         },
       ],
     },
     {
-      title: "Редактировать мои наборы задач",
+      title: "Редактировать существующие наборы задач",
       titleIconUrl: mdiPencil,
-      options: [
-        {
-          name: mockTaskSets[3].nameRu,
-          action: () => history.push("/constructor/task-set/3"),
-        },
-        {
-          name: mockTaskSets[2].nameRu,
-          action: () => history.push("/constructor/task-set/2"),
-        },
-        {
-          name: mockTaskSets[1].nameRu,
-          action: () => history.push("/constructor/task-set/1"),
-        },
-        {
-          name: "Смотреть все",
-          action: () => {
-            setItems(
-              Object.keys(mockTaskSets).map(
-                (code: string): FilterableSelectListItem => {
-                  const { nameRu, namespace } = mockTaskSets[code];
-                  return {
-                    name: nameRu,
-                    code,
-                    namespace,
-                    subjectType: (() => {
-                      const arr = [
-                        "тригонометрия",
-                        "логарифмы",
-                        "теория вероятности",
-                        "производные",
-                      ];
-                      const startIdx = Math.floor(Math.random() * 4);
-                      const endIdx =
-                        Math.floor(Math.random() * 5) + startIdx + 1;
-                      return arr.slice(startIdx, endIdx);
-                    })(),
-                    onSelect: () => {
-                      history.push("/constructor/task-set/" + code);
-                    },
-                  };
-                }
-              )
-            );
-            setPropsToFilter(["namespace", "subjectType"]);
-            setShowAllItemsModal(true);
-          },
-        },
-      ],
+      options:
+        getLastEditedConstructorItemsFromLocalStorage(
+          "last-edited-task-sets"
+        ) !== null
+          ? // @ts-ignore
+            getLastEditedConstructorItemsFromLocalStorage(
+              "last-edited-task-sets"
+            )
+              .map((taskSet) => ({
+                name: taskSet,
+                action: () =>
+                  // @ts-ignore
+                  history.push("/constructor/task-set/" + taskSet),
+              }))
+              .concat([
+                {
+                  name: "Смотреть все",
+                  action: () => {
+                    setItems(
+                      taskSets.map((taskSet: FetchedTaskSet) => {
+                        const { code, nameRu, namespaceCode } = taskSet;
+                        return {
+                          code,
+                          name: nameRu,
+                          namespaceCode,
+                          onSelect: (): void => {
+                            history.push("/constructor/task-set/" + code);
+                          },
+                        };
+                      })
+                    );
+                    setPropsToFilter(["namespaceCode"]);
+                    setShowAllItemsModal(true);
+                  },
+                },
+              ])
+          : [
+              {
+                name: "Смотреть все",
+                action: () => {
+                  setItems(
+                    taskSets.map((taskSet: FetchedTaskSet) => {
+                      const { code, nameRu, namespaceCode } = taskSet;
+                      return {
+                        code,
+                        name: nameRu,
+                        namespaceCode,
+                        onSelect: (): void => {
+                          history.push("/constructor/task-set/" + code);
+                        },
+                      };
+                    })
+                  );
+                  setPropsToFilter(["namespaceCode"]);
+                  setShowAllItemsModal(true);
+                },
+              },
+            ],
     },
   ];
 
-  const gameSpaceBlocks: ConstructorMenuBlockProps[] = [
+  const gameSpaceBlocks: any = [
     {
       title: "Создать новый Namespace",
       titleIconUrl: mdiPlus,
@@ -295,7 +257,7 @@ const ConstructorMenuPageComponent: React.FC = () => {
     },
   ];
 
-  const rulePacksBlocks: ConstructorMenuBlockProps[] = [
+  const rulePacksBlocks: any = [
     {
       title: "Создать новый пакет правил",
       titleIconUrl: mdiPlus,
@@ -389,19 +351,6 @@ const ConstructorMenuPageComponent: React.FC = () => {
                 },
               },
             ],
-      // rulePacks.length !== 0
-      //   ? rulePacks
-      //       .slice(0, 3)
-
-      //       .concat([
-
-      //       ])
-      //   : [
-      //       {
-      //         name: "Смотреть все",
-      //         action: () => alert(1),
-      //       },
-      //     ],
     },
   ];
 
@@ -436,15 +385,33 @@ const ConstructorMenuPageComponent: React.FC = () => {
       <div className="constructor-menu-page__blocks">
         {currentTab === tabs[0] &&
           gameBlocks.map((block: ConstructorMenuBlockProps, i: number) => {
-            return <ConstructorMenuBlock key={i} {...block} />;
+            return (
+              <ConstructorMenuBlock
+                key={i}
+                {...block}
+                isDataFetched={isFetched}
+              />
+            );
           })}
         {currentTab === tabs[1] &&
           gameSpaceBlocks.map((block: ConstructorMenuBlockProps, i: number) => {
-            return <ConstructorMenuBlock key={i} {...block} />;
+            return (
+              <ConstructorMenuBlock
+                key={i}
+                {...block}
+                isDataFetched={isFetched}
+              />
+            );
           })}
         {currentTab === tabs[2] &&
           rulePacksBlocks.map((block: ConstructorMenuBlockProps, i: number) => {
-            return <ConstructorMenuBlock key={i} {...block} />;
+            return (
+              <ConstructorMenuBlock
+                key={i}
+                {...block}
+                isDataFetched={isFetched}
+              />
+            );
           })}
       </div>
       <AppModalComponent

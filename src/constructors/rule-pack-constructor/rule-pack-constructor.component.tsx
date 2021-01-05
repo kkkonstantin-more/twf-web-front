@@ -1,6 +1,6 @@
 // libs and hooks
 import React, { Dispatch, useEffect, useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import axios from "axios";
 import { v4 as uidv4 } from "uuid";
 import {
@@ -50,6 +50,8 @@ import {
 } from "@mdi/js";
 // styles
 import "./rule-pack-constructor.scss";
+import useCreationMode from "../hooks/useCreationType";
+import getConstructorSubmitButtonAndTitleText from "../utiils/get-constructor-submit-button-and-title-text";
 
 const RulePackConstructor = ({
   rulePackJSON,
@@ -57,26 +59,12 @@ const RulePackConstructor = ({
 }: ConnectedProps<typeof connector>): JSX.Element => {
   // defining creation type and dependent vars
   const { code } = useParams();
-  const isCreateByExample = useLocation().search === "?create-by-example";
-  const creationMode: ConstructorCreationMode = (() => {
-    if (code && isCreateByExample) {
-      return ConstructorCreationMode.CREATE_BY_EXAMPLE;
-    } else if (code) {
-      return ConstructorCreationMode.EDIT;
-    } else {
-      return ConstructorCreationMode.CREATE;
-    }
-  })();
-  const titleAndSubmitButtonText: string = (() => {
-    switch (creationMode) {
-      case ConstructorCreationMode.CREATE:
-        return "Создать пакет правил";
-      case ConstructorCreationMode.CREATE_BY_EXAMPLE:
-        return "Создать пакет правил на основе пакета " + code;
-      case ConstructorCreationMode.EDIT:
-        return "Изменить пакет правил";
-    }
-  })();
+  const creationMode: ConstructorCreationMode = useCreationMode();
+  const titleAndSubmitButtonText: string = getConstructorSubmitButtonAndTitleText(
+    creationMode,
+    ConstructorJSONsTypes.RULE_PACK,
+    code
+  );
   const lastEditedMode: ConstructorCreationMode | null = getLastEditedCreationMode(
     ConstructorJSONsTypes.RULE_PACK
   );

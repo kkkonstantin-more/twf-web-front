@@ -13,6 +13,7 @@ import {
 } from "./constructor-jsons.types";
 import { TaskSetConstructorInputs } from "../../constructors/task-set-constructor/task-set-constructor.types";
 import { RulePackConstructorInputs } from "../../constructors/rule-pack-constructor/rule-pack-constructor.types";
+import { FetchedTaskSet } from "../../utils/fetch-constructors/fetch-constructors.types";
 
 export const updateConstructorJSON = (
   constructorType: ConstructorJSONsTypes,
@@ -42,7 +43,7 @@ export const updateNamespaceJSON = (
 });
 
 export const updateTaskSetJSON = (
-  taskSetJSON: TaskSetConstructorInputs
+  taskSetJSON: FetchedTaskSet
 ): UpdateTaskSetJSONAction => ({
   type: UPDATE_TASK_SET_JSON,
   payload: taskSetJSON,

@@ -1,10 +1,11 @@
 import { NamespaceConstructorInputs } from "../../constructors/namespace-constructor/namespace-constructor.types";
 import { TaskSetConstructorInputs } from "../../constructors/task-set-constructor/task-set-constructor.types";
 import { RulePackConstructorInputs } from "../../constructors/rule-pack-constructor/rule-pack-constructor.types";
+import { FetchedTaskSet } from "../../utils/fetch-constructors/fetch-constructors.types";
 
 export interface ConstructorJSONs {
   namespace: NamespaceConstructorInputs;
-  taskSet: TaskSetConstructorInputs;
+  taskSet: FetchedTaskSet;
   rulePack: RulePackConstructorInputs;
 }
 
@@ -16,7 +17,7 @@ export enum ConstructorJSONsTypes {
 
 export type ConstructorInputs =
   | NamespaceConstructorInputs
-  | TaskSetConstructorInputs
+  | FetchedTaskSet
   | RulePackConstructorInputs;
 
 // actions
@@ -31,7 +32,7 @@ export interface UpdateNamespaceJSONAction {
 
 export interface UpdateTaskSetJSONAction {
   type: typeof UPDATE_TASK_SET_JSON;
-  payload: TaskSetConstructorInputs;
+  payload: FetchedTaskSet;
 }
 
 export interface UpdateRulePackJSONAction {

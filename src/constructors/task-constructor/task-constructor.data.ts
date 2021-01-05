@@ -1,12 +1,14 @@
+import { GoalType } from "../../utils/fetch-constructors/fetch-constructors.types";
+
 export const goalTypes = [
-  "Сведение к целевому выражению",
-  "Сведение к КНФ",
-  "Сведение к ДНФ",
-  "Разложения на множители",
-  "Вычисление",
-  "Сокращение",
-  "Упрощение",
-  "Другое",
+  GoalType.CUSTOM,
+  GoalType.EXPRESSION,
+  GoalType.COMPUTATION,
+  GoalType.SIMPLIFICATION,
+  GoalType.CNF,
+  GoalType.DNF,
+  GoalType.FACTORIZATION,
+  GoalType.FACTORIZATION,
 ];
 
 export const subjectTypes = [

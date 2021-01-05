@@ -69,6 +69,7 @@ import {
   ExpressionChange,
 } from "../../redux/constructor-history/constructor-history.types";
 import { selectCurrentTaskSetHistoryChange } from "../../redux/constructor-history/constructor-history.selectors";
+import { FetchedTaskSet } from "../../utils/fetch-constructors/fetch-constructors.types";
 // jsonlint config
 const jsonlint = require("jsonlint-mod");
 // @ts-ignore
@@ -938,7 +939,7 @@ const mapStateToProps = createStructuredSelector<
   {
     namespaceJSON: NamespaceConstructorInputs;
     rulePackJSON: RulePackConstructorInputs;
-    taskSetJSON: TaskSetConstructorInputs;
+    taskSetJSON: FetchedTaskSet;
     currentHistoryChange: ConstructorHistoryItem | undefined;
   }
 >({
@@ -952,7 +953,7 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) => ({
   updateNamespaceJSON: (namespaceJSON: NamespaceConstructorInputs) => {
     return dispatch(updateNamespaceJSON(namespaceJSON));
   },
-  updateTaskSetJSON: (taskSetJSON: TaskSetConstructorInputs) => {
+  updateTaskSetJSON: (taskSetJSON: FetchedTaskSet) => {
     return dispatch(updateTaskSetJSON(taskSetJSON));
   },
   updateRulePackJSON: (rulePackJSON: RulePackConstructorInputs) => {
@@ -964,8 +965,8 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) => ({
     newVal: ExpressionChange
   ) => dispatch(addOneLineChangeToHistory({ oldVal, newVal })),
   addMultipleLinesChangeToHistory: (
-    oldVal: TaskSetConstructorInputs,
-    newVal: TaskSetConstructorInputs
+    oldVal: FetchedTaskSet,
+    newVal: FetchedTaskSet
   ) => {
     dispatch(addMultipleLinesChangeToHistory({ oldVal, newVal }));
   },

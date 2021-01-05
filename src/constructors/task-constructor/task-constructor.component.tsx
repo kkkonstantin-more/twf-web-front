@@ -21,7 +21,6 @@ import ConstructorForm from "../../components/constructor-form/constructor-form.
 // types
 import { ActionButtonProps } from "../../components/action-button/action-button.types";
 import { AllLevelsHiddenFields } from "../../redux/levels-hidden-fields/levels-hidden-fields.types";
-import { TaskSetConstructorInputs } from "../task-set-constructor/task-set-constructor.types";
 import { ConstructorInputProps } from "../../components/constructor-input/construcor-input.types";
 import { ConstructorSelectProps } from "../../components/constructor-select/constructor-select.types";
 import { RootState } from "../../redux/root-reducer";
@@ -47,11 +46,13 @@ import {
 // styles
 import "./task-constructor.styles.scss";
 import { addOneLineChangeToHistory } from "../../redux/constructor-history/constructor-history.actions";
-import {
-  ConstructorHistoryItem,
-  ExpressionChange,
-} from "../../redux/constructor-history/constructor-history.types";
+import { ExpressionChange } from "../../redux/constructor-history/constructor-history.types";
 import { ConstructorJSONsTypes } from "../../redux/constructor-jsons/constructor-jsons.types";
+import { FetchedTaskSet } from "../../utils/fetch-constructors/fetch-constructors.types";
+import {
+  convertMathInput,
+  MathInputFormat,
+} from "../../utils/kotlin-lib-functions";
 
 export interface HistoryItem {
   propertyPath: string;
@@ -150,6 +151,18 @@ const TaskConstructor = ({
 
   const allInputs: (ConstructorInputProps | ConstructorSelectProps)[] = [
     {
+      name: `tasks[${index}].namespaceCode`,
+      label: "Namespace",
+      type: "text",
+      defaultValue: defaultValue.namespaceCode,
+    },
+    {
+      name: `tasks[${index}].code`,
+      label: "Код",
+      type: "text",
+      defaultValue: defaultValue.code,
+    },
+    {
       name: `tasks[${index}].nameEn`,
       label: "Имя En",
       type: "text",
@@ -160,18 +173,6 @@ const TaskConstructor = ({
       label: "Имя Ru",
       type: "text",
       defaultValue: defaultValue.nameRu,
-    },
-    {
-      name: `tasks[${index}].code`,
-      label: "Код",
-      type: "text",
-      defaultValue: defaultValue.code,
-    },
-    {
-      name: `tasks[${index}].namespace`,
-      label: "Namespace",
-      type: "text",
-      defaultValue: defaultValue.namespace,
     },
     {
       name: `tasks[${index}].subjectTypes`,
@@ -185,11 +186,14 @@ const TaskConstructor = ({
       defaultValue: defaultValue.subjectTypes,
     },
     {
-      name: `tasks[${index}].startExpression`,
+      name: `tasks[${index}].originalExpression`,
       label: "Стартовое выражение",
       type: "text",
       expressionInput: true,
-      defaultValue: defaultValue.startExpression,
+      defaultValue: {
+        format: MathInputFormat.TEX,
+        expression: defaultValue.originalExpressionTex,
+      },
     },
     {
       name: `tasks[${index}].goalType`,
@@ -199,31 +203,16 @@ const TaskConstructor = ({
       defaultValue: defaultValue.goalType,
     },
     {
-      name: `tasks[${index}].goalExpression`,
-      label: "Целевое выражение",
+      name: `tasks[${index}].goalPattern`,
+      label: "Патерн цели",
       type: "text",
-      expressionInput: true,
-      defaultValue: defaultValue.goalExpression,
-      isVisible: goalTypeValue === "Сведение к целевому выражению",
+      defaultValue: defaultValue.goalPattern,
     },
     {
       name: `tasks[${index}].goalNumberProperty`,
       label: "Целевое числовое значение",
       type: "number",
       defaultValue: defaultValue.goalNumberProperty,
-      isVisible:
-        goalTypeValue === "Сведение к КНФ" ||
-        goalTypeValue === "Сведение к ДНФ",
-    },
-    {
-      name: `tasks[${index}].goalPattern`,
-      label: "Патерн цели",
-      type: "text",
-      defaultValue: defaultValue.goalPattern,
-      isVisible:
-        goalTypeValue !== "Сведение к целевому выражению" &&
-        goalTypeValue !== "Сведение к КНФ" &&
-        goalTypeValue !== "Сведение к ДНФ",
     },
     {
       name: `tasks[${index}].rulePacks`,
@@ -232,6 +221,16 @@ const TaskConstructor = ({
       isMulti: true,
       options: rulePacks.map((item: string) => ({ label: item, value: item })),
       defaultValue: defaultValue.rulePacks,
+    },
+    {
+      name: `tasks[${index}].goalExpression`,
+      label: "Целевое выражение",
+      type: "text",
+      expressionInput: true,
+      defaultValue: {
+        format: MathInputFormat.TEX,
+        expression: defaultValue.goalExpression,
+      },
     },
     {
       name: `tasks[${index}].stepsNumber`,
@@ -256,7 +255,14 @@ const TaskConstructor = ({
       label: "Решение",
       type: "text",
       expressionInput: true,
-      defaultValue: defaultValue.solution,
+      defaultValue: {
+        format: MathInputFormat.TEX,
+        expression: convertMathInput(
+          MathInputFormat.STRUCTURE_STRING,
+          MathInputFormat.TEX,
+          defaultValue.solution
+        ),
+      },
     },
     {
       name: `tasks[${index}].countOfAutoGeneratedTasks`,
@@ -271,10 +277,10 @@ const TaskConstructor = ({
       defaultValue: defaultValue.operations,
     },
     {
-      name: `tasks[${index}].stepsCountInterval`,
+      name: `tasks[${index}].stepsCountIntervals`,
       label: "Количество шагов",
       type: "number",
-      defaultValue: defaultValue.stepsCountInterval,
+      defaultValue: defaultValue.stepsCountIntervals,
     },
     {
       name: `tasks[${index}].implicitTransformationsCount`,
@@ -290,6 +296,7 @@ const TaskConstructor = ({
       options: rulePacks.map((item: string) => ({ label: item, value: item })),
       defaultValue: defaultValue.autoGenerationRulePacks,
     },
+
     {
       name: `tasks[${index}].lightWeightOperations`,
       label: "lightWeightOperations",
@@ -303,16 +310,46 @@ const TaskConstructor = ({
       defaultValue: defaultValue.nullWeightOperations,
     },
     {
-      name: `tasks[${index}].startTime`,
-      label: "Дата запуска",
+      name: `tasks[${index}].maxNumberOfAutogeneratedTasks`,
+      label: "Максимальное количество автогенерируемых уровней",
       type: "text",
-      defaultValue: defaultValue.startTime,
+      defaultValue: defaultValue.maxNumberOfAutogeneratedTasks,
     },
     {
-      name: `tasks[${index}].endTime`,
-      label: "Дата закрытия",
+      name: `tasks[${index}].numberOfAutogeneratedTasksToSolve`,
+      label: "Количество автогенерируемых уровней для решения",
       type: "text",
-      defaultValue: defaultValue.endTime,
+      defaultValue: defaultValue.numberOfAutogeneratedTasksToSolve,
+    },
+    {
+      name: `tasks[${index}].otherGoalData`,
+      label: "Дополнительная информация о цели задачи",
+      type: "text",
+      defaultValue: defaultValue.otherGoalData,
+    },
+    {
+      name: `tasks[${index}].otherCheckSolutionData`,
+      label: "Дополнительная информация о проверке решения",
+      type: "text",
+      defaultValue: defaultValue.otherCheckSolutionData,
+    },
+    {
+      name: `tasks[${index}].otherAwardData`,
+      label: "Дополнительная информация о награде",
+      type: "text",
+      defaultValue: defaultValue.otherAwardData,
+    },
+    {
+      name: `tasks[${index}].otherAutogenerationData`,
+      label: "Дополнительная информация об автогенерации",
+      type: "text",
+      defaultValue: defaultValue.otherAutogenerationData,
+    },
+    {
+      name: `tasks[${index}].otherData`,
+      label: "Дополнительная информация",
+      type: "text",
+      defaultValue: defaultValue.otherData,
     },
   ];
 
@@ -532,7 +569,7 @@ const mapStateToProps = createStructuredSelector<
   RootState,
   {
     allLevelsHiddenFields: AllLevelsHiddenFields;
-    taskSetJSON: TaskSetConstructorInputs;
+    taskSetJSON: FetchedTaskSet;
   }
 >({
   allLevelsHiddenFields: selectAllLevelsHiddenFields,
@@ -546,7 +583,7 @@ const mapDispatchToProps = (dispatch: any) => ({
   toggleFieldVisibilityForAllAutoLevels: (fieldName: string) => {
     return dispatch(toggleFieldVisibilityForAllAutoLevels(fieldName));
   },
-  updateTaskSetJSON: (taskSetJSON: TaskSetConstructorInputs) => {
+  updateTaskSetJSON: (taskSetJSON: FetchedTaskSet) => {
     return dispatch(updateTaskSetJSON(taskSetJSON));
   },
   addToHistory: (oldVal: ExpressionChange, newVal: ExpressionChange) =>
