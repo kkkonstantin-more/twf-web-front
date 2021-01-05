@@ -6,10 +6,8 @@ import {FcRating} from "react-icons/fc";
 import {Link} from "react-router-dom";
 // @ts-ignore
 import EditButton from "react-edit-button";
-import {containerCSS} from "react-select/src/components/containers";
 
-interface SampleUserPageProps {
-}
+interface SampleUserPageProps {}
 
 const userShowLogin = "___peppa___";
 
@@ -65,6 +63,7 @@ const SampleUserPage: React.FC<SampleUserPageProps> = () => {
     const translationPrefix: string = "sampleUserPage";
     const rating: string = translationPrefix + ".rating";
     const xp: string = translationPrefix + ".xp";
+    const achievements: string = translationPrefix + ".achievements";
     const userShowPhoto = "https://avatarfiles.alphacoders.com/115/115920.png";
     const userShowRank = "https://cdn.drawception.com/images/panels/2017/4-5/x76Qd5RwcG-8.png";
     const userShowRating = "9397";
@@ -146,7 +145,7 @@ const SampleUserPage: React.FC<SampleUserPageProps> = () => {
                     <ul className="user-stats__achievements__sections">
                         <li>
                             <h1 className="user-stats__achievements__sections__label">
-                                Достижения
+                                {translate(achievements)}
                             </h1>
                         </li>
                         <li>
@@ -188,7 +187,7 @@ const SampleUserPage: React.FC<SampleUserPageProps> = () => {
                     <ul className="user-stats__rating__sections">
                         <li>
                             <h1 className="user-stats__rating__sections__label">
-                                Рейтинг
+                                {translate(rating)}
                             </h1>
                         </li>
                         <li className="user-stats__rating__sections__table">
