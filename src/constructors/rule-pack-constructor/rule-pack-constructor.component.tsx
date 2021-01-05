@@ -9,6 +9,8 @@ import {
   useFieldArray,
   useForm,
 } from "react-hook-form";
+// custom hooks
+import useCreationMode from "../hooks/useCreationType";
 // redux
 import { connect, ConnectedProps } from "react-redux";
 import { createStructuredSelector } from "reselect";
@@ -27,6 +29,7 @@ import {
   setLastEditedCreationMode,
   setLastExampleConstructorCode,
 } from "../../utils/local-storage/last-edited-creation-type";
+import getConstructorSubmitButtonAndTitleText from "../utiils/get-constructor-submit-button-and-title-text";
 // types
 import { RulePackConstructorInputs } from "./rule-pack-constructor.types";
 import { ConstructorInputProps } from "../../components/constructor-input/construcor-input.types";
@@ -50,8 +53,6 @@ import {
 } from "@mdi/js";
 // styles
 import "./rule-pack-constructor.scss";
-import useCreationMode from "../hooks/useCreationType";
-import getConstructorSubmitButtonAndTitleText from "../utiils/get-constructor-submit-button-and-title-text";
 
 const RulePackConstructor = ({
   rulePackJSON,
@@ -222,43 +223,44 @@ const RulePackConstructor = ({
     }
   }, []);
 
-  const actionButtonsLeft: ActionButtonProps[] = [
+  const actionButtons: ActionButtonProps[] = [
     {
       mdiIconPath: mdiContentCopy,
       size: 1.5,
-      action(index: number) {
-        // append({
-        //   ...getValues().rules[index],
-        // });
+      async action(index: number) {
+        // @ts-ignore
+        await append(getValues().rules[index]);
+        updateRulePackJSON(getValues());
       },
     },
     {
       mdiIconPath: mdiArrowUp,
       size: 1.5,
-      action(index: number) {
+      async action(index: number) {
         if (index !== 0) {
-          swap(index, index - 1);
+          await swap(index, index - 1);
+          updateRulePackJSON(getValues());
         }
       },
     },
     {
       mdiIconPath: mdiArrowDown,
       size: 1.5,
-      action(index: number) {
-        // if (index !== getValues().rules.length - 1) {
-        //   swap(index, index + 1);
-        // }
+      async action(index: number) {
+        // @ts-ignore
+        if (index !== getValues().rules.length - 1) {
+          await swap(index, index + 1);
+          updateRulePackJSON(getValues());
+        }
       },
     },
-  ];
-
-  const actionButtonsRight: ActionButtonProps[] = [
     {
       mdiIconPath: mdiClose,
       size: 2,
-      action(index: number) {
+      async action(index: number) {
         if (window.confirm(`Вы точно хотите удалить правило ${index + 1}?`)) {
-          remove(index);
+          await remove(index);
+          updateRulePackJSON(getValues());
         }
       },
     },
@@ -415,8 +417,11 @@ const RulePackConstructor = ({
               return (
                 <div className="rule-pack-constructor__rule" key={fieldIdx}>
                   <b>{fieldIdx + 1}.</b>
-                  {actionButtonsLeft.map(
-                    (button: ActionButtonProps, buttonIdx: number) => {
+                  {actionButtons
+                    .filter((button: ActionButtonProps) => {
+                      return button.mdiIconPath !== mdiClose;
+                    })
+                    .map((button: ActionButtonProps, buttonIdx: number) => {
                       return (
                         <ActionButton
                           key={buttonIdx}
@@ -428,28 +433,29 @@ const RulePackConstructor = ({
                           margin="0 1rem 0 0"
                         />
                       );
-                    }
-                  )}
+                    })}
                   <RuleConstructor
                     key={field.id}
                     index={fieldIdx}
                     defaultValue={fields[fieldIdx]}
                   />
-                  {actionButtonsRight.map(
-                    (button: ActionButtonProps, buttonIdx: number) => {
+                  {actionButtons
+                    .filter((button: ActionButtonProps) => {
+                      return button.mdiIconPath === mdiClose;
+                    })
+                    .map((button: ActionButtonProps, buttonIdx: number) => {
                       return (
                         <ActionButton
                           key={buttonIdx}
                           mdiIconPath={button.mdiIconPath}
-                          size={2}
+                          size={1.5}
                           action={() => {
                             button.action(fieldIdx);
                           }}
-                          margin="0"
+                          margin="0 1rem 0 0"
                         />
                       );
-                    }
-                  )}
+                    })}
                 </div>
               );
             }

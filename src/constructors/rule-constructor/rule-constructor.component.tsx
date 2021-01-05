@@ -17,10 +17,10 @@ import {
   ConstructorJSONsTypes,
   UpdateRulePackJSONAction,
 } from "../../redux/constructor-jsons/constructor-jsons.types";
+import { MathInputFormat } from "../../utils/kotlin-lib-functions";
 import { RootState } from "../../redux/root-reducer";
 // styles
 import "./rule-constructor.styles.scss";
-import { MathInputFormat } from "../../utils/kotlin-lib-functions";
 
 const RuleConstructor = ({
   index,
@@ -28,7 +28,7 @@ const RuleConstructor = ({
   rulePackJSON,
   updateRulePackJSON,
 }: RuleConstructorProps & ConnectedProps<typeof connector>): JSX.Element => {
-  const { register, getValues, setValue } = useFormContext();
+  const { register, getValues } = useFormContext();
 
   const inputs: (ConstructorInputProps | ConstructorSelectProps)[] = [
     {
