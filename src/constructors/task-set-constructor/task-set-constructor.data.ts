@@ -1,7 +1,7 @@
 import {
   FetchedTask,
   GoalType,
-} from "../../utils/fetch-constructors/fetch-constructors.types";
+} from "../../utils/constructors-requests/fetch-constructors.types";
 
 export const subjectTypes: string[] = [
   "subject type 1",

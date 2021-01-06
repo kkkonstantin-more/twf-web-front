@@ -73,8 +73,8 @@ import {
 import {
   getTaskSet,
   submitTaskSet,
-} from "../../utils/fetch-constructors/fetch-constructors.requests";
-import { FetchedTaskSet } from "../../utils/fetch-constructors/fetch-constructors.types";
+} from "../../utils/constructors-requests/fetch-constructors.requests";
+import { FetchedTaskSet } from "../../utils/constructors-requests/fetch-constructors.types";
 import ConstructorUndoRedoPanel from "../../components/constructor-undo-redo-panel/constructor-undo-redo-panel.component";
 
 // @ts-ignore

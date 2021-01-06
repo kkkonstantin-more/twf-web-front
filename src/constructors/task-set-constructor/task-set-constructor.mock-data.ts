@@ -1,7 +1,7 @@
 import { TaskSetConstructorInputs } from "./task-set-constructor.types";
 import { taskConstructorDefaultValues } from "./task-set-constructor.data";
 import { MathInputFormat } from "../../utils/kotlin-lib-functions";
-import { FetchedTaskSet } from "../../utils/fetch-constructors/fetch-constructors.types";
+import { FetchedTaskSet } from "../../utils/constructors-requests/fetch-constructors.types";
 
 export const mockTaskSets: {
   [code: string]: FetchedTaskSet;

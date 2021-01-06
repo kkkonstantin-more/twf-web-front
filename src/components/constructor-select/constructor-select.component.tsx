@@ -7,7 +7,7 @@ import { ConfigProvider, Select } from "antd";
 // types
 import { ConstructorSelectProps } from "./constructor-select.types";
 import { LabeledValue } from "antd/es/select";
-import { useFormContext } from "react-hook-form";
+import { useFieldArray, useFormContext } from "react-hook-form";
 
 const { Option } = Select;
 
@@ -24,6 +24,7 @@ const ConstructorSelect = ({
 }: ConstructorSelectProps): JSX.Element => {
   const { register, getValues, watch, setValue } = useFormContext();
   const value = watch(name, defaultValue);
+
   const parseValue = (
     value: string | number | string[] | undefined,
     isMulti: boolean
@@ -37,13 +38,15 @@ const ConstructorSelect = ({
     if (typeof value === "string") {
       return value.includes(",") ? value.split(",") : value;
     }
-    if (Array.isArray(value)) {
-      return value.join(",");
-    }
     return value;
   };
+  const [localValue, setLocalValue] = useState<any>(parseValue(value, isMulti));
 
   const mixedInputRef: React.RefObject<HTMLInputElement> = React.createRef();
+
+  useEffect(() => {
+    setLocalValue(parseValue(value, isMulti));
+  }, [value]);
 
   if (isRendered) {
     return (
@@ -62,9 +65,8 @@ const ConstructorSelect = ({
           />
           <Select
             disabled={disabled}
-            value={parseValue(value, isMulti)}
+            value={localValue}
             mode={isMulti ? "multiple" : undefined}
-            // defaultValue={parseValue(value, isMulti)}
             style={{ width: "100%" }}
             onChange={(value: any) => {
               if (mixedInputRef.current) {

@@ -1,7 +1,7 @@
 // libs and hooks
 import React, { useEffect, useState } from "react";
 import { useHistory, useParams } from "react-router-dom";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 // components
 import AppModalComponent from "../../components/app-modal/app-modal.component";
 // icons
@@ -9,7 +9,6 @@ import Icon from "@mdi/react";
 import { mdiPencil, mdiPlus } from "@mdi/js";
 // styles
 import "./constructor-menu-page.styles.scss";
-import { mockNamespaces } from "../../constructors/namespace-constructor/namespace-constructor.mock-data";
 import { mockRulePacks } from "../../constructors/rule-pack-constructor/rule-pack-constructor.mock-data";
 import SelectConstructorItemList from "../../components/filterable-select-list/filterable-select-list.component";
 import { FilterableSelectListItem } from "../../components/filterable-select-list/filterable-select-list.types";
@@ -17,8 +16,11 @@ import { mockTaskSets } from "../../constructors/task-set-constructor/task-set-c
 import { getLastEditedConstructorItemsFromLocalStorage } from "../../utils/last-edited-constructor-items-local-storage";
 import { ConstructorMenuBlockProps } from "../../components/constructor-menu-block/constructor-menu-block.types";
 import ConstructorMenuBlock from "../../components/constructor-menu-block/constructor-menu-block.component";
-import { getAllTaskSets } from "../../utils/fetch-constructors/fetch-constructors.requests";
-import { FetchedTaskSet } from "../../utils/fetch-constructors/fetch-constructors.types";
+import { getAllTaskSets } from "../../utils/constructors-requests/fetch-constructors.requests";
+import { FetchedTaskSet } from "../../utils/constructors-requests/fetch-constructors.types";
+import NamespaceRequestHandler, {
+  NamespaceReceiveForm,
+} from "../../utils/constructors-requests/namespace-request-handler";
 
 export const demoList = [
   "Alison Park",
@@ -67,6 +69,8 @@ const ConstructorMenuPageComponent: React.FC = () => {
 
   const [rulePacks, setRulePacks] = useState([]);
   const [taskSets, setTaskSets] = useState<FetchedTaskSet[]>([]);
+  const [namespaces, setNamespaces] = useState<NamespaceReceiveForm[]>([]);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const [isFetched, setIsFetched] = useState<boolean>(false);
 
@@ -89,6 +93,16 @@ const ConstructorMenuPageComponent: React.FC = () => {
         })
         .catch((e) => {
           console.error("Error fetching rule-packs", e.message);
+        });
+    } else if (activeTab === "namespace") {
+      NamespaceRequestHandler.getAll()
+        .then((res: NamespaceReceiveForm[]) => {
+          setNamespaces(res);
+          setErrorMsg(null);
+          setIsFetched(true);
+        })
+        .catch((e: AxiosError) => {
+          setErrorMsg("Ошибка при получении актуальных namespace");
         });
     }
   }, [activeTab]);
@@ -203,17 +217,19 @@ const ConstructorMenuPageComponent: React.FC = () => {
           name: "На основе уже существующего",
           action: () => {
             setItems(
-              Object.keys(mockNamespaces).map((code: string) => {
-                const { nameRu } = mockNamespaces[code];
+              namespaces.map((namespace: NamespaceReceiveForm) => {
+                const { code } = namespace;
                 return {
-                  code,
-                  name: nameRu,
-                  onSelect: () => {
-                    history.push("/constructor/namespace/" + code);
+                  name: code,
+                  onSelect: (): void => {
+                    history.push(
+                      "/constructor/namespace/" + code + "?create-by-example"
+                    );
                   },
                 };
               })
             );
+            setPropsToFilter([]);
             setShowAllItemsModal(true);
           },
         },
@@ -222,38 +238,62 @@ const ConstructorMenuPageComponent: React.FC = () => {
     {
       title: "Редактировать существующий Namespace",
       titleIconUrl: mdiPencil,
-      options: [
-        {
-          name: mockNamespaces[3].nameRu,
-          action: () => history.push("/constructor/namespace/3"),
-        },
-        {
-          name: mockNamespaces[2].nameRu,
-          action: () => history.push("/constructor/namespace/2"),
-        },
-        {
-          name: mockNamespaces[1].nameRu,
-          action: () => history.push("/constructor/namespace/1"),
-        },
-        {
-          name: "Смотреть все",
-          action: () => {
-            setItems(
-              Object.keys(mockNamespaces).map((code: string) => {
-                const { nameRu } = mockNamespaces[code];
-                return {
-                  code,
-                  name: nameRu,
-                  onSelect: () => {
-                    history.push("/constructor/namespace/" + code);
+      options:
+        getLastEditedConstructorItemsFromLocalStorage(
+          "last-edited-namespaces"
+        ) !== null
+          ? // @ts-ignore
+            getLastEditedConstructorItemsFromLocalStorage(
+              "last-edited-namespaces"
+            )
+              .map((namespaceCode) => ({
+                name: namespaceCode,
+                action: () =>
+                  // @ts-ignore
+                  history.push("/constructor/namespace/" + namespaceCode),
+              }))
+              .concat([
+                {
+                  name: "Смотреть все",
+                  action: () => {
+                    setItems(
+                      namespaces.map((namespace: NamespaceReceiveForm) => {
+                        const { code } = namespace;
+                        return {
+                          code,
+                          name: code,
+                          onSelect: (): void => {
+                            history.push("/constructor/namespace/" + code);
+                          },
+                        };
+                      })
+                    );
+                    setPropsToFilter([]);
+                    setShowAllItemsModal(true);
                   },
-                };
-              })
-            );
-            setShowAllItemsModal(true);
-          },
-        },
-      ],
+                },
+              ])
+          : [
+              {
+                name: "Смотреть все",
+                action: () => {
+                  setItems(
+                    namespaces.map((namespace: NamespaceReceiveForm) => {
+                      const { code } = namespace;
+                      return {
+                        code,
+                        name: code,
+                        onSelect: (): void => {
+                          history.push("/constructor/namespace/" + code);
+                        },
+                      };
+                    })
+                  );
+                  setPropsToFilter([]);
+                  setShowAllItemsModal(true);
+                },
+              },
+            ],
     },
   ];
 

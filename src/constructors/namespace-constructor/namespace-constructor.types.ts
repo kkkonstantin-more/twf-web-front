@@ -1,10 +1,9 @@
+import { NamespaceGrantType } from "../../utils/constructors-requests/namespace-request-handler";
+
 export interface NamespaceConstructorInputs {
-  nameEn: string;
-  nameRu: string;
   code: string;
-  allowRead: string;
-  allowEdit: string;
-  readGrantedUsers: string;
-  editGrantedUsers: string;
-  taskSetList: string;
+  allowRead: boolean | "true" | "false";
+  grantType: NamespaceGrantType;
+  readGrantedUsers: string[] | string;
+  writeGrantedUsers: string[] | string;
 }

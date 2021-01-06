@@ -69,7 +69,8 @@ import {
   ExpressionChange,
 } from "../../redux/constructor-history/constructor-history.types";
 import { selectCurrentTaskSetHistoryChange } from "../../redux/constructor-history/constructor-history.selectors";
-import { FetchedTaskSet } from "../../utils/fetch-constructors/fetch-constructors.types";
+import { FetchedTaskSet } from "../../utils/constructors-requests/fetch-constructors.types";
+import { NamespaceReceiveForm } from "../../utils/constructors-requests/namespace-request-handler";
 // jsonlint config
 const jsonlint = require("jsonlint-mod");
 // @ts-ignore

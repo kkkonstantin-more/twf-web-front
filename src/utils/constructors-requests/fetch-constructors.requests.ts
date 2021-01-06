@@ -46,7 +46,6 @@ export const submitTaskSet = async (
   code: string,
   method: "post" | "patch"
 ) => {
-  console.warn("SUBMIT REQUEST TRIGGERED");
   // format expression inputs
   if (data.tasks) {
     data.tasks.forEach((task: any) => {

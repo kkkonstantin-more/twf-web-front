@@ -48,7 +48,7 @@ import "./task-constructor.styles.scss";
 import { addOneLineChangeToHistory } from "../../redux/constructor-history/constructor-history.actions";
 import { ExpressionChange } from "../../redux/constructor-history/constructor-history.types";
 import { ConstructorJSONsTypes } from "../../redux/constructor-jsons/constructor-jsons.types";
-import { FetchedTaskSet } from "../../utils/fetch-constructors/fetch-constructors.types";
+import { FetchedTaskSet } from "../../utils/constructors-requests/fetch-constructors.types";
 import {
   convertMathInput,
   MathInputFormat,

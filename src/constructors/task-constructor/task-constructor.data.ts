@@ -1,4 +1,4 @@
-import { GoalType } from "../../utils/fetch-constructors/fetch-constructors.types";
+import { GoalType } from "../../utils/constructors-requests/fetch-constructors.types";
 
 export const goalTypes = [
   GoalType.CUSTOM,

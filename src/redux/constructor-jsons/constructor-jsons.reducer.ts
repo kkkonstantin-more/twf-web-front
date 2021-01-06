@@ -3,6 +3,7 @@ import {
   ConstructorJSONsActionTypes,
 } from "./constructor-jsons.types";
 import CONSTRUCTOR_JSONS_INITIAL_STATE from "./constructor-jsons.state";
+import { convertInputStringListSeparatedByCommasToArray } from "./constructor-jsons.utils";
 
 const constructorJSONsReducer = (
   state: ConstructorJSONs = CONSTRUCTOR_JSONS_INITIAL_STATE,
@@ -10,9 +11,18 @@ const constructorJSONsReducer = (
 ): ConstructorJSONs => {
   switch (action.type) {
     case "UPDATE_NAMESPACE_JSON":
+      const { payload } = action;
       return {
         ...state,
-        namespace: action.payload,
+        namespace: {
+          ...payload,
+          writeGrantedUsers: convertInputStringListSeparatedByCommasToArray(
+            payload.writeGrantedUsers
+          ),
+          readGrantedUsers: convertInputStringListSeparatedByCommasToArray(
+            payload.readGrantedUsers
+          ),
+        },
       };
     case "UPDATE_RULE_PACK_JSON":
       return {

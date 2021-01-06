@@ -1,16 +1,14 @@
 import { ConstructorJSONs } from "./constructor-jsons.types";
-import { GoalType } from "../../utils/fetch-constructors/fetch-constructors.types";
+import { GoalType } from "../../utils/constructors-requests/fetch-constructors.types";
+import { NamespaceGrantType } from "../../utils/constructors-requests/namespace-request-handler";
 
 const CONSTRUCTOR_JSONS_INITIAL_STATE: ConstructorJSONs = {
   namespace: {
-    nameEn: "",
-    nameRu: "",
     code: "",
-    allowEdit: "false",
     allowRead: "true",
-    editGrantedUsers: "",
+    grantType: NamespaceGrantType.PUBLIC_READ_PRIVATE_WRITE,
+    writeGrantedUsers: "",
     readGrantedUsers: "",
-    taskSetList: "",
   },
   rulePack: {
     code: "",
