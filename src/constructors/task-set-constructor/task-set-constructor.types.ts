@@ -1,14 +1,34 @@
-import { TaskConstructorInputs } from "../task-constructor/task-constructor.types";
+// types
+import {
+  TaskConstructorInputs,
+  TaskConstructorReceivedForm,
+} from "../task-constructor/task-constructor.types";
 
 export interface TaskLinkInput {
   namespace: string;
   taskCode: string;
 }
 
-export interface TaskSetConstructorInputs {
+export interface TaskSetConstructorReceivedForm {
+  code: string;
+  namespaceCode: string;
   nameEn: string;
   nameRu: string;
-  code: string;
-  namespace: string;
-  tasks: TaskConstructorInputs[];
+  subjectTypes: string[];
+  tasks: TaskConstructorReceivedForm[];
+  recommendedByCommunity: boolean;
+  otherData?: any;
 }
+
+export interface TaskSetConstructorInputs {
+  code: string;
+  namespaceCode: string;
+  nameEn: string;
+  nameRu: string;
+  subjectTypes: string[] | string;
+  tasks: TaskConstructorInputs[];
+  recommendedByCommunity: boolean;
+  otherData?: any;
+}
+
+export type TaskSetConstructorSendForm = TaskSetConstructorReceivedForm;

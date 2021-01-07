@@ -1,23 +1,49 @@
 // libs and hooks
 import React, { Dispatch, useEffect, useState } from "react";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
+import { useParams } from "react-router-dom";
+// custom hooks
+import useCreationMode from "../hooks/useCreationType";
 // redux
 import { createStructuredSelector } from "reselect";
 import { selectTaskSetJSON } from "../../redux/constructor-jsons/constructor-jsons.selectors";
 import { updateTaskSetJSON } from "../../redux/constructor-jsons/constructor-jsons.actions";
 import { connect, ConnectedProps } from "react-redux";
 import CONSTRUCTOR_JSONS_INITIAL_STATE from "../../redux/constructor-jsons/constructor-jsons.state";
-// custom hooks
+import {
+  selectCurrentTaskSetHistoryChange,
+  selectTaskSetHistory,
+  selectTaskSetHistoryIndex,
+} from "../../redux/constructor-history/constructor-history.selectors";
+import {
+  addOneLineChangeToHistory,
+  redoTaskSetHistory,
+  undoTaskSetHistory,
+} from "../../redux/constructor-history/constructor-history.actions";
 // lib components
 import Draggable from "react-draggable";
 // custom components
 import MathQuillEditor from "../../components/math-quill-editor/math-quill-editor";
 import TaskConstructor from "../task-constructor/task-constructor.component";
 import AppModal from "../../components/app-modal/app-modal.component";
-import SelectConstructorItemList from "../../components/filterable-select-list/filterable-select-list.component";
 import ConstructorForm from "../../components/constructor-form/constructor-form.component";
+import ConstructorUndoRedoPanel from "../../components/constructor-undo-redo-panel/constructor-undo-redo-panel.component";
+import ServerResponseAlert from "../../components/server-response-alert/server-response-alert.component";
+// utils
+import getConstructorSubmitButtonAndTitleText from "../utiils/get-constructor-submit-button-and-title-text";
+import {
+  getLastEditedCreationMode,
+  getLastExampleConstructorCode,
+  setLastEditedCreationMode,
+  setLastExampleConstructorCode,
+} from "../../utils/local-storage/last-edited-creation-type";
+import NamespaceRequestHandler, {
+  NamespaceReceiveForm,
+} from "../../utils/constructors-requests/namespace-request-handler";
+import TaskSetConstructorRequestsHandler from "./task-set-constructor.requests-handler";
+import TaskSetConstructorFormatter from "./task-set-constructor.formatter";
+import { addLastEditedConstructorItemToLocalStorage } from "../../utils/last-edited-constructor-items-local-storage";
 // types
-import { FilterableSelectListItem } from "../../components/filterable-select-list/filterable-select-list.types";
 import { RootState } from "../../redux/root-reducer";
 import { ConstructorInputProps } from "../../components/constructor-input/construcor-input.types";
 import { ConstructorSelectProps } from "../../components/constructor-select/constructor-select.types";
@@ -26,8 +52,21 @@ import {
   ConstructorJSONsTypes,
   UpdateTaskSetJSONAction,
 } from "../../redux/constructor-jsons/constructor-jsons.types";
+import {
+  AddOneLineChangeToHistoryAction,
+  ConstructorHistoryItem,
+  ExpressionChange,
+  RedoTaskSetHistoryAction,
+  UndoTaskSetHistoryAction,
+  UpdateTaskSetHistoryIndexAction,
+} from "../../redux/constructor-history/constructor-history.types";
+import { ConstructorCreationMode } from "../common-types";
+import {
+  TaskSetConstructorInputs,
+  TaskSetConstructorReceivedForm,
+  TaskSetConstructorSendForm,
+} from "./task-set-constructor.types";
 // data
-import { mockTasks } from "../task-constructor/task-constructor.mock-data";
 import { taskConstructorDefaultValues } from "./task-set-constructor.data";
 // icons
 import Icon from "@mdi/react";
@@ -42,40 +81,6 @@ import {
 } from "@mdi/js";
 // styles
 import "./task-set-constructor.styles.scss";
-import {
-  AddOneLineChangeToHistoryAction,
-  ConstructorHistoryItem,
-  ExpressionChange,
-  RedoTaskSetHistoryAction,
-  UndoTaskSetHistoryAction,
-  UpdateTaskSetHistoryIndexAction,
-} from "../../redux/constructor-history/constructor-history.types";
-import {
-  selectCurrentTaskSetHistoryChange,
-  selectTaskSetHistory,
-  selectTaskSetHistoryIndex,
-} from "../../redux/constructor-history/constructor-history.selectors";
-import {
-  addOneLineChangeToHistory,
-  redoTaskSetHistory,
-  undoTaskSetHistory,
-} from "../../redux/constructor-history/constructor-history.actions";
-import { useParams } from "react-router-dom";
-import { ConstructorCreationMode } from "../common-types";
-import useCreationMode from "../hooks/useCreationType";
-import getConstructorSubmitButtonAndTitleText from "../utiils/get-constructor-submit-button-and-title-text";
-import {
-  getLastEditedCreationMode,
-  getLastExampleConstructorCode,
-  setLastEditedCreationMode,
-  setLastExampleConstructorCode,
-} from "../../utils/local-storage/last-edited-creation-type";
-import {
-  getTaskSet,
-  submitTaskSet,
-} from "../../utils/constructors-requests/fetch-constructors.requests";
-import { FetchedTaskSet } from "../../utils/constructors-requests/fetch-constructors.types";
-import ConstructorUndoRedoPanel from "../../components/constructor-undo-redo-panel/constructor-undo-redo-panel.component";
 
 // @ts-ignore
 export const TasksFieldArrayActionsContext = React.createContext();
@@ -89,8 +94,8 @@ const TaskSetConstructor = ({
   undo,
   redo,
   currentHistoryChange,
-}: // updateHistoryIdx,
-ConnectedProps<typeof connector>): JSX.Element => {
+}: ConnectedProps<typeof connector>): JSX.Element => {
+  // defining creation type and dependent vars
   const { code } = useParams();
   const creationMode: ConstructorCreationMode = useCreationMode();
   const titleAndSubmitButtonText: string = getConstructorSubmitButtonAndTitleText(
@@ -98,29 +103,18 @@ ConnectedProps<typeof connector>): JSX.Element => {
     ConstructorJSONsTypes.TASK_SET,
     code
   );
+  // state vars
   const [showHintsBlock, setShowHintsBlock] = useState(false);
   const [startExpressionHint, setStartExpressionHint] = useState("");
   const [goalExpressionHint, setGoalExpressionHint] = useState("");
   const [hintsDeltaX, setHintsDeltaX] = useState(0);
   const [showSelectModal, setShowSelectModal] = useState(false);
-
-  // const taskSetToEdit = useMockConstructorToEdit<TaskSetConstructorInputs>(
-  //   mockTaskSets
-  // );
-
-  // const defaultValues: TaskSetConstructorInputs =
-  //   taskSetToEdit && taskSetJSON === CONSTRUCTOR_JSONS_INITIAL_STATE.taskSet
-  //     ? taskSetToEdit
-  //     : taskSetJSON;
-  //
-  // if (
-  //   taskSetToEdit &&
-  //   taskSetJSON === CONSTRUCTOR_JSONS_INITIAL_STATE.taskSet
-  // ) {
-  //   updateTaskSetJSON(defaultValues);
-  // }
-
-  const methods = useForm<FetchedTaskSet>({
+  const [levelNames, setLevelNames] = useState<string[]>([]);
+  // server response messages
+  const [errorMsg, setErrorMsg] = useState<null | string>(null);
+  const [successMsg, setSuccessMsg] = useState<null | string>(null);
+  // react-hook-form core functions
+  const methods = useForm<TaskSetConstructorInputs>({
     mode: "onSubmit",
   });
   const {
@@ -131,19 +125,20 @@ ConnectedProps<typeof connector>): JSX.Element => {
     reset,
     handleSubmit,
   } = methods;
+  // react-hook-form field-array core functions for managing task constructor
   const fieldArrayMethods = useFieldArray<TaskConstructorInputs>({
     control,
     name: "tasks",
   });
-  const { fields, append, remove, swap } = fieldArrayMethods;
+  const { fields, append } = fieldArrayMethods;
 
-  const [levelNames, setLevelNames] = useState<string[]>([]);
   const currentEditedLevelRef: React.RefObject<HTMLInputElement> = React.createRef();
   // const updateDemo = (index: number) => {
   //   setStartExpressionHint(getValues().tasks[index].startExpression);
   //   setGoalExpressionHint(getValues().tasks[index].goalExpression);
   //   if (!showHintsBlock) setShowHintsBlock(true);
   // };
+  const [namespaces, setNamespaces] = useState<string[]>([]);
 
   const updateName = (index: number, newName: string): void => {
     setLevelNames((prevState: string[]) => {
@@ -180,6 +175,9 @@ ConnectedProps<typeof connector>): JSX.Element => {
     ) {
       setSelectedLevel(getValues().tasks.length - 1);
     }
+    NamespaceRequestHandler.getAll().then((res: NamespaceReceiveForm[]) => {
+      setNamespaces(res.map((ns: NamespaceReceiveForm) => ns.code));
+    });
   }, []);
 
   useEffect(() => {
@@ -188,7 +186,6 @@ ConnectedProps<typeof connector>): JSX.Element => {
         currentHistoryChange.item.propertyPath,
         currentHistoryChange.item.value
       );
-      // @ts-ignore
       updateTaskSetJSON(getValues());
     } else if (currentHistoryChange?.type === "MULTIPLE_LINES_CHANGE") {
       reset(currentHistoryChange.item);
@@ -202,7 +199,7 @@ ConnectedProps<typeof connector>): JSX.Element => {
       name: "namespaceCode",
       label: "Namespace",
       type: "text",
-      options: [{ label: "test_namespace_code", value: "test_namespace_code" }],
+      options: namespaces.map((ns: string) => ({ label: ns, value: ns })),
       defaultValue: "",
       isMulti: false,
       disabled: creationMode === ConstructorCreationMode.EDIT,
@@ -252,10 +249,14 @@ ConnectedProps<typeof connector>): JSX.Element => {
       if (lastEditedMode === ConstructorCreationMode.CREATE) {
         reset(taskSetJSON);
       } else {
-        reset(CONSTRUCTOR_JSONS_INITIAL_STATE.taskSet);
-        setLastEditedCreationMode(ConstructorJSONsTypes.TASK_SET, creationMode);
-        // @ts-ignore
-        updateTaskSetJSON(getValues());
+        (async () => {
+          await reset(CONSTRUCTOR_JSONS_INITIAL_STATE.taskSet);
+          setLastEditedCreationMode(
+            ConstructorJSONsTypes.TASK_SET,
+            creationMode
+          );
+          updateTaskSetJSON(getValues());
+        })();
       }
     } else if (creationMode === ConstructorCreationMode.EDIT) {
       if (
@@ -265,14 +266,15 @@ ConnectedProps<typeof connector>): JSX.Element => {
         reset(taskSetJSON);
       } else {
         (async () => {
-          const res = await getTaskSet(code);
-          console.log(res);
-          await reset(res);
+          await reset(
+            TaskSetConstructorFormatter.convertReceivedFormToConstructorInputs(
+              await TaskSetConstructorRequestsHandler.getOne(code)
+            )
+          );
           setLastEditedCreationMode(
             ConstructorJSONsTypes.TASK_SET,
             creationMode
           );
-          // @ts-ignore
           updateTaskSetJSON(getValues());
         })();
       }
@@ -283,23 +285,51 @@ ConnectedProps<typeof connector>): JSX.Element => {
       ) {
         reset(taskSetJSON);
       } else {
-        console.log(
-          getLastExampleConstructorCode(ConstructorJSONsTypes.TASK_SET)
-        );
         (async () => {
-          const res = await getTaskSet(code);
-          await reset(res);
+          const taskSetInputs = TaskSetConstructorFormatter.convertReceivedFormToConstructorInputs(
+            await TaskSetConstructorRequestsHandler.getOne(code)
+          );
+          await reset({
+            ...taskSetInputs,
+            code: taskSetInputs.code + "_new",
+            tasks: taskSetInputs.tasks.map((task: TaskConstructorInputs) => ({
+              ...task,
+              code: task.code + "_new",
+            })),
+          });
           setLastEditedCreationMode(
             ConstructorJSONsTypes.TASK_SET,
             creationMode
           );
           setLastExampleConstructorCode(ConstructorJSONsTypes.TASK_SET, code);
-          // @ts-ignore
           updateTaskSetJSON(getValues());
         })();
       }
     }
   }, []);
+
+  const submit = async (data: TaskSetConstructorInputs) => {
+    TaskSetConstructorRequestsHandler.submitOne(
+      TaskSetConstructorFormatter.convertConstructorInputsToSendForm(data),
+      creationMode === ConstructorCreationMode.EDIT ? "patch" : "post"
+    )
+      .then(() => {
+        setErrorMsg(null);
+        setSuccessMsg(
+          ConstructorCreationMode.EDIT
+            ? "Набор задач успешно изменен!"
+            : "Набор задач успешно создан!"
+        );
+        addLastEditedConstructorItemToLocalStorage(
+          "last-edited-task-sets",
+          data.code
+        );
+      })
+      .catch(() => {
+        setSuccessMsg(null);
+        setErrorMsg("Произошла ошибка!");
+      });
+  };
 
   return (
     <div className="task-set-constructor">
@@ -317,15 +347,9 @@ ConnectedProps<typeof connector>): JSX.Element => {
           <FormProvider {...methods}>
             <TasksFieldArrayActionsContext.Provider value={fieldArrayMethods}>
               <form
-                onSubmit={handleSubmit((data) =>
-                  submitTaskSet(
-                    data,
-                    code,
-                    creationMode === ConstructorCreationMode.EDIT
-                      ? "patch"
-                      : "post"
-                  )
-                )}
+                onSubmit={handleSubmit((data) => {
+                  submit(data);
+                })}
               >
                 <h2 className="u-mt-sm">{titleAndSubmitButtonText}</h2>
                 <ConstructorForm
@@ -407,7 +431,6 @@ ConnectedProps<typeof connector>): JSX.Element => {
                           type="button"
                           className="btn form-levels-list__action-button"
                           onClick={async () => {
-                            // @ts-ignore
                             await append({
                               ...taskConstructorDefaultValues,
                               taskCreationType: "manual",
@@ -424,7 +447,6 @@ ConnectedProps<typeof connector>): JSX.Element => {
                           type="button"
                           className="btn form-levels-list__action-button"
                           onClick={() => {
-                            // @ts-ignore
                             append({
                               ...taskConstructorDefaultValues,
                               taskCreationType: "auto",
@@ -485,29 +507,27 @@ ConnectedProps<typeof connector>): JSX.Element => {
                         type="button"
                         className="btn form-levels-table__action-button"
                         onClick={async () => {
-                          // @ts-ignore
                           await append({
                             ...taskConstructorDefaultValues,
                             taskCreationType: "manual",
                           });
-                          // @ts-ignore
                           updateTaskSetJSON(getValues());
                         }}
                       >
                         <Icon path={mdiPlus} size={1.2} />
                         <span>
-                          <b>ручной задача</b>
+                          <b>ручная задача</b>
                         </span>
                       </button>
                       <button
                         type="button"
                         className="btn form-levels-table__action-button"
-                        onClick={() => {
-                          // @ts-ignore
-                          append({
+                        onClick={async () => {
+                          await append({
                             ...taskConstructorDefaultValues,
                             taskCreationType: "auto",
                           });
+                          updateTaskSetJSON(getValues());
                         }}
                       >
                         <Icon path={mdiPlus} size={1.2} />
@@ -517,21 +537,11 @@ ConnectedProps<typeof connector>): JSX.Element => {
                         type="button"
                         className="btn form-levels-table__action-button"
                         onClick={() => {
-                          swap(0, 1);
-                        }}
-                      >
-                        <Icon path={mdiPlus} size={1.2} />
-                        <span>swap</span>
-                      </button>
-                      <button
-                        type="button"
-                        className="btn form-levels-table__action-button"
-                        onClick={() => {
                           setShowSelectModal(true);
                         }}
                       >
                         <Icon path={mdiPlus} size={1.2} />
-                        <span>существующий задача</span>
+                        <span>существующая задача</span>
                       </button>
                       <button
                         type="button"
@@ -543,6 +553,10 @@ ConnectedProps<typeof connector>): JSX.Element => {
                     </div>
                   )}
                 </div>
+                <ServerResponseAlert
+                  errorMsg={errorMsg}
+                  successMsg={successMsg}
+                />
                 <button type="submit" className="btn u-mt-sm">
                   {titleAndSubmitButtonText}
                 </button>
@@ -695,7 +709,7 @@ ConnectedProps<typeof connector>): JSX.Element => {
 const mapState = createStructuredSelector<
   RootState,
   {
-    taskSetJSON: FetchedTaskSet;
+    taskSetJSON: TaskSetConstructorInputs;
     history: ConstructorHistoryItem[];
     historyIdx: number;
     currentHistoryChange: ConstructorHistoryItem | undefined;
@@ -716,7 +730,7 @@ const mapDispatch = (
     | UndoTaskSetHistoryAction
   >
 ) => ({
-  updateTaskSetJSON: (taskSetJSON: FetchedTaskSet) =>
+  updateTaskSetJSON: (taskSetJSON: TaskSetConstructorInputs) =>
     dispatch(updateTaskSetJSON(taskSetJSON)),
   addItemToHistory: (oldVal: ExpressionChange, newVal: ExpressionChange) =>
     dispatch(addOneLineChangeToHistory({ oldVal, newVal })),

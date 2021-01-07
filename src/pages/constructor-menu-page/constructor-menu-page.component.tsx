@@ -9,18 +9,16 @@ import Icon from "@mdi/react";
 import { mdiPencil, mdiPlus } from "@mdi/js";
 // styles
 import "./constructor-menu-page.styles.scss";
-import { mockRulePacks } from "../../constructors/rule-pack-constructor/rule-pack-constructor.mock-data";
 import SelectConstructorItemList from "../../components/filterable-select-list/filterable-select-list.component";
 import { FilterableSelectListItem } from "../../components/filterable-select-list/filterable-select-list.types";
-import { mockTaskSets } from "../../constructors/task-set-constructor/task-set-constructor.mock-data";
 import { getLastEditedConstructorItemsFromLocalStorage } from "../../utils/last-edited-constructor-items-local-storage";
 import { ConstructorMenuBlockProps } from "../../components/constructor-menu-block/constructor-menu-block.types";
 import ConstructorMenuBlock from "../../components/constructor-menu-block/constructor-menu-block.component";
-import { getAllTaskSets } from "../../utils/constructors-requests/fetch-constructors.requests";
-import { FetchedTaskSet } from "../../utils/constructors-requests/fetch-constructors.types";
 import NamespaceRequestHandler, {
   NamespaceReceiveForm,
 } from "../../utils/constructors-requests/namespace-request-handler";
+import { TaskSetConstructorReceivedForm } from "../../constructors/task-set-constructor/task-set-constructor.types";
+import TaskSetConstructorRequestsHandler from "../../constructors/task-set-constructor/task-set-constructor.requests-handler";
 
 export const demoList = [
   "Alison Park",
@@ -68,7 +66,9 @@ const ConstructorMenuPageComponent: React.FC = () => {
   }, [activeTab]);
 
   const [rulePacks, setRulePacks] = useState([]);
-  const [taskSets, setTaskSets] = useState<FetchedTaskSet[]>([]);
+  const [taskSets, setTaskSets] = useState<TaskSetConstructorReceivedForm[]>(
+    []
+  );
   const [namespaces, setNamespaces] = useState<NamespaceReceiveForm[]>([]);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -77,10 +77,12 @@ const ConstructorMenuPageComponent: React.FC = () => {
   useEffect(() => {
     setIsFetched(false);
     if (activeTab === "taskSet") {
-      getAllTaskSets().then((res: FetchedTaskSet[]) => {
-        setTaskSets(res);
-        setIsFetched(true);
-      });
+      TaskSetConstructorRequestsHandler.getAll().then(
+        (res: TaskSetConstructorReceivedForm[]) => {
+          setTaskSets(res);
+          setIsFetched(true);
+        }
+      );
     } else if (activeTab === "rulePack") {
       axios({
         method: "get",
@@ -120,7 +122,7 @@ const ConstructorMenuPageComponent: React.FC = () => {
           name: "На основе уже существующей",
           action: () => {
             setItems(
-              taskSets.map((taskSet: FetchedTaskSet) => {
+              taskSets.map((taskSet: TaskSetConstructorReceivedForm) => {
                 const { code, nameRu, namespaceCode } = taskSet;
                 return {
                   code,
@@ -162,17 +164,19 @@ const ConstructorMenuPageComponent: React.FC = () => {
                   name: "Смотреть все",
                   action: () => {
                     setItems(
-                      taskSets.map((taskSet: FetchedTaskSet) => {
-                        const { code, nameRu, namespaceCode } = taskSet;
-                        return {
-                          code,
-                          name: nameRu,
-                          namespaceCode,
-                          onSelect: (): void => {
-                            history.push("/constructor/task-set/" + code);
-                          },
-                        };
-                      })
+                      taskSets.map(
+                        (taskSet: TaskSetConstructorReceivedForm) => {
+                          const { code, nameRu, namespaceCode } = taskSet;
+                          return {
+                            code,
+                            name: nameRu,
+                            namespaceCode,
+                            onSelect: (): void => {
+                              history.push("/constructor/task-set/" + code);
+                            },
+                          };
+                        }
+                      )
                     );
                     setPropsToFilter(["namespaceCode"]);
                     setShowAllItemsModal(true);
@@ -184,7 +188,7 @@ const ConstructorMenuPageComponent: React.FC = () => {
                 name: "Смотреть все",
                 action: () => {
                   setItems(
-                    taskSets.map((taskSet: FetchedTaskSet) => {
+                    taskSets.map((taskSet: TaskSetConstructorReceivedForm) => {
                       const { code, nameRu, namespaceCode } = taskSet;
                       return {
                         code,

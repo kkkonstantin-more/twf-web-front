@@ -48,7 +48,6 @@ import { connect, ConnectedProps } from "react-redux";
 import { NamespaceConstructorInputs } from "../../constructors/namespace-constructor/namespace-constructor.types";
 import { RulePackConstructorInputs } from "../../constructors/rule-pack-constructor/rule-pack-constructor.types";
 import { useFormContext } from "react-hook-form";
-import { FetchedTaskSet } from "../../utils/constructors-requests/fetch-constructors.types";
 
 // TODO: fix typescript and eslint errors
 
@@ -201,7 +200,7 @@ const ConstructorInput = ({
 const mapState = createStructuredSelector<
   RootState,
   {
-    taskSetJSON: FetchedTaskSet;
+    taskSetJSON: TaskSetConstructorInputs;
     history: ConstructorHistoryItem[];
     historyIdx: number;
     currentHistoryChange: ConstructorHistoryItem | undefined;

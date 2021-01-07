@@ -9,3 +9,10 @@ export interface RulePackConstructorInputs {
   rules?: RuleConstructorInputs[];
   otherData?: string;
 }
+
+export interface RulePackLink {
+  rulePackCode: string;
+  namespaceCode?: string;
+  rulePackNameEn?: string;
+  rulePackNameRy?: string;
+}
