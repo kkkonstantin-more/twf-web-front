@@ -77,14 +77,14 @@ const ConstructorMenuPageComponent: React.FC = () => {
 
   useEffect(() => {
     setIsFetched(false);
-    if (activeTab === "taskSet") {
+    if (currentTab === "taskSet") {
       TaskSetConstructorRequestsHandler.getAll().then(
         (res: TaskSetConstructorReceivedForm[]) => {
           setTaskSets(res);
           setIsFetched(true);
         }
       );
-    } else if (activeTab === "rulePack") {
+    } else if (currentTab === "rulePack") {
       axios({
         method: "get",
         url: "http://localhost:8080/api/rule-pack",
@@ -97,7 +97,7 @@ const ConstructorMenuPageComponent: React.FC = () => {
         .catch((e) => {
           console.error("Error fetching rule-packs", e.message);
         });
-    } else if (activeTab === "namespace") {
+    } else if (currentTab === "namespace") {
       NamespaceConstructorRequestHandler.getAll()
         .then((res: NamespaceReceivedForm[]) => {
           setNamespaces(res);
@@ -108,7 +108,7 @@ const ConstructorMenuPageComponent: React.FC = () => {
           setErrorMsg("Ошибка при получении актуальных namespace");
         });
     }
-  }, [activeTab]);
+  }, [currentTab]);
 
   const gameBlocks: any = [
     {
