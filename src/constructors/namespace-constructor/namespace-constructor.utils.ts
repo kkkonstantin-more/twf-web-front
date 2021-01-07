@@ -1,5 +1,5 @@
 // types
-import { NamespaceGrantType } from "../../utils/constructors-requests/namespace-request-handler";
+import { NamespaceGrantType } from "./namespace-constructor.types";
 
 export const getGrantTypeUserReadableDescription = (
   grantType: NamespaceGrantType

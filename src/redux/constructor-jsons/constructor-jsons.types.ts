@@ -1,7 +1,6 @@
 import { NamespaceConstructorInputs } from "../../constructors/namespace-constructor/namespace-constructor.types";
 import { TaskSetConstructorInputs } from "../../constructors/task-set-constructor/task-set-constructor.types";
 import { RulePackConstructorInputs } from "../../constructors/rule-pack-constructor/rule-pack-constructor.types";
-import { NamespaceReceiveForm } from "../../utils/constructors-requests/namespace-request-handler";
 
 export interface ConstructorJSONs {
   namespace: NamespaceConstructorInputs;

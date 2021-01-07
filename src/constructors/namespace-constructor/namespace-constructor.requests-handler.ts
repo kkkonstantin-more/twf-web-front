@@ -1,39 +1,17 @@
+// libs and hooks
 import axios, { AxiosError, AxiosResponse } from "axios";
-import { getAuthToken } from "../local-storage/auth-token";
-
-export enum NamespaceGrantType {
-  PUBLIC_READ_WRITE = "PUBLIC_READ_WRITE",
-  PUBLIC_READ_PRIVATE_WRITE = "PUBLIC_READ_PRIVATE_WRITE",
-  PRIVATE_READ_WRITE = "PRIVATE_READ_WRITE",
-}
-
-export enum NamespaceUserGrants {
-  READ_WRITE = "READ_WRITE",
-  READ_NO_WRITE = "READ_NO_WRITE",
-}
-
-export interface NamespaceSendFormUserGrants {
-  [userCode: string]: NamespaceUserGrants;
-}
-
-export interface NamespaceReceiveForm {
-  code: string;
-  grantType: NamespaceGrantType;
-  authorUserCode: string;
-  writeGrantedUsers: string[];
-  readGrantedUsers: string[];
-}
-
-export interface NamespaceSendForm {
-  code: string;
-  grantType: NamespaceGrantType;
-  userGrants: { [key: string]: string }[];
-}
+// utils
+import { getAuthToken } from "../../utils/local-storage/auth-token";
+// types
+import {
+  NamespaceReceivedForm,
+  NamespaceSendForm,
+} from "./namespace-constructor.types";
 
 class NamespaceRequestHandler {
   private static url = process.env.REACT_APP_SERVER_API + "/namespace/";
 
-  public static async getAll(): Promise<NamespaceReceiveForm[]> {
+  public static async getAll(): Promise<NamespaceReceivedForm[]> {
     return axios({
       method: "get",
       url: this.url,
@@ -41,7 +19,7 @@ class NamespaceRequestHandler {
         Authorization: "Bearer " + getAuthToken(),
       },
     })
-      .then((res: AxiosResponse<{ namespaces: NamespaceReceiveForm[] }>) => {
+      .then((res: AxiosResponse<{ namespaces: NamespaceReceivedForm[] }>) => {
         return res.data.namespaces;
       })
       .catch((e: AxiosError) => {
@@ -50,7 +28,7 @@ class NamespaceRequestHandler {
       });
   }
 
-  public static getOne(code: string): Promise<NamespaceReceiveForm> {
+  public static getOne(code: string): Promise<NamespaceReceivedForm> {
     return axios({
       method: "get",
       url: this.url + code,
@@ -58,7 +36,7 @@ class NamespaceRequestHandler {
         Authorization: "Bearer " + getAuthToken(),
       },
     })
-      .then((res: AxiosResponse<NamespaceReceiveForm>) => {
+      .then((res: AxiosResponse<NamespaceReceivedForm>) => {
         return res.data;
       })
       .catch((e: AxiosError) => {

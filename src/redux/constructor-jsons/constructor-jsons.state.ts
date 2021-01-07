@@ -1,7 +1,7 @@
 import { ConstructorJSONs } from "./constructor-jsons.types";
 import { GoalType } from "../../constructors/task-constructor/task-constructor.types";
-import { NamespaceGrantType } from "../../utils/constructors-requests/namespace-request-handler";
 import { MathInputFormat } from "../../utils/kotlin-lib-functions";
+import { NamespaceGrantType } from "../../constructors/namespace-constructor/namespace-constructor.types";
 
 const CONSTRUCTOR_JSONS_INITIAL_STATE: ConstructorJSONs = {
   namespace: {

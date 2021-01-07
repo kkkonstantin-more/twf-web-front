@@ -1,16 +1,16 @@
 // types
-import { NamespaceConstructorInputs } from "../../constructors/namespace-constructor/namespace-constructor.types";
 import {
-  NamespaceReceiveForm,
+  NamespaceConstructorInputs,
+  NamespaceReceivedForm,
   NamespaceSendForm,
   NamespaceUserGrants,
-} from "./namespace-request-handler";
+} from "../../constructors/namespace-constructor/namespace-constructor.types";
 // utils
 import { convertInputStringListSeparatedByCommasToArray } from "../../redux/constructor-jsons/constructor-jsons.utils";
 
-class NamespaceFormatsHandler {
-  public static convertReceiveFormToSendForm(
-    data: NamespaceReceiveForm
+class NamespaceConstructorFormatter {
+  public static convertReceivedFormToSendForm(
+    data: NamespaceReceivedForm
   ): NamespaceSendForm {
     return {
       code: data.code,
@@ -27,8 +27,8 @@ class NamespaceFormatsHandler {
     };
   }
 
-  public static convertReceiveFormToConstructorInputs(
-    data: NamespaceReceiveForm
+  public static convertReceivedFormToConstructorInputs(
+    data: NamespaceReceivedForm
   ): NamespaceConstructorInputs {
     return {
       code: data.code,
@@ -64,4 +64,4 @@ class NamespaceFormatsHandler {
   }
 }
 
-export default NamespaceFormatsHandler;
+export default NamespaceConstructorFormatter;

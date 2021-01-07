@@ -14,7 +14,10 @@ import { connect, ConnectedProps } from "react-redux";
 import { createStructuredSelector } from "reselect";
 import CONSTRUCTOR_JSONS_INITIAL_STATE from "../../redux/constructor-jsons/constructor-jsons.state";
 // types
-import { NamespaceConstructorInputs } from "./namespace-constructor.types";
+import {
+  NamespaceConstructorInputs,
+  NamespaceGrantType,
+} from "./namespace-constructor.types";
 import { ConstructorInputProps } from "../../components/constructor-input/construcor-input.types";
 import { ConstructorSelectProps } from "../../components/constructor-select/constructor-select.types";
 import { ConstructorCreationMode } from "../common-types";
@@ -28,19 +31,17 @@ import { usersDemoList } from "../../pages/constructor-menu-page/constructor-men
 // utils
 import getConstructorSubmitButtonAndTitleText from "../utiils/get-constructor-submit-button-and-title-text";
 import { getGrantTypeUserReadableDescription } from "./namespace-constructor.utils";
-import NamespaceFormatsHandler from "../../utils/constructors-requests/namespace-formats-handler";
+import NamespaceConstructorFormatter from "./namespace-constructor.formatter";
+import { addLastEditedConstructorItemToLocalStorage } from "../../utils/last-edited-constructor-items-local-storage";
+import NamespaceRequestHandler from "./namespace-constructor.requests-handler";
 import {
   getLastEditedCreationMode,
   getLastExampleConstructorCode,
   setLastEditedCreationMode,
   setLastExampleConstructorCode,
 } from "../../utils/local-storage/last-edited-creation-type";
-import NamespaceRequestHandler, {
-  NamespaceGrantType,
-} from "../../utils/constructors-requests/namespace-request-handler";
 // styles
 import "./namespace-constructor.styles.scss";
-import { addLastEditedConstructorItemToLocalStorage } from "../../utils/last-edited-constructor-items-local-storage";
 
 const NamespaceConstructorComponent = ({
   namespaceJSON,
@@ -72,6 +73,7 @@ const NamespaceConstructorComponent = ({
     watch,
     setValue,
   } = formMethods;
+
   // set initial values due to creation mode
   useEffect(() => {
     if (creationMode === ConstructorCreationMode.CREATE) {
@@ -97,7 +99,9 @@ const NamespaceConstructorComponent = ({
         (async () => {
           const res = await NamespaceRequestHandler.getOne(code);
           await reset(
-            NamespaceFormatsHandler.convertReceiveFormToConstructorInputs(res)
+            NamespaceConstructorFormatter.convertReceivedFormToConstructorInputs(
+              res
+            )
           );
           setLastEditedCreationMode(
             ConstructorJSONsTypes.NAMESPACE,
@@ -116,10 +120,12 @@ const NamespaceConstructorComponent = ({
         (async () => {
           const res = await NamespaceRequestHandler.getOne(code);
           await reset(
-            NamespaceFormatsHandler.convertReceiveFormToConstructorInputs({
-              ...res,
-              code: res.code + "_new",
-            })
+            NamespaceConstructorFormatter.convertReceivedFormToConstructorInputs(
+              {
+                ...res,
+                code: res.code + "_new",
+              }
+            )
           );
           setLastEditedCreationMode(
             ConstructorJSONsTypes.NAMESPACE,
@@ -174,14 +180,14 @@ const NamespaceConstructorComponent = ({
       label: "Пользователи с правом чтения",
       isMulti: true,
       options: usersDemoList,
-      isRendered: grantType === NamespaceGrantType.PRIVATE_READ_WRITE,
+      isVisible: grantType === NamespaceGrantType.PRIVATE_READ_WRITE,
     },
     {
       name: "writeGrantedUsers",
       label: "Пользователи с правом редактирования",
       isMulti: true,
       options: usersDemoList,
-      isRendered:
+      isVisible:
         grantType === NamespaceGrantType.PUBLIC_READ_PRIVATE_WRITE ||
         grantType === NamespaceGrantType.PRIVATE_READ_WRITE,
     },
@@ -193,12 +199,12 @@ const NamespaceConstructorComponent = ({
   ): void => {
     NamespaceRequestHandler.submitOne(
       creationMode === ConstructorCreationMode.EDIT ? "patch" : "post",
-      NamespaceFormatsHandler.convertConstructorInputsToSendForm(data)
+      NamespaceConstructorFormatter.convertConstructorInputsToSendForm(data)
     )
       .then(() => {
         setErrorMsg(null);
         setSuccessMsg(
-          ConstructorCreationMode.EDIT
+          creationMode === ConstructorCreationMode.EDIT
             ? "Namespace успешно изменен!"
             : "Namespace успешно создан!"
         );

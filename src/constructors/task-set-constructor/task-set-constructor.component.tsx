@@ -37,9 +37,7 @@ import {
   setLastEditedCreationMode,
   setLastExampleConstructorCode,
 } from "../../utils/local-storage/last-edited-creation-type";
-import NamespaceRequestHandler, {
-  NamespaceReceiveForm,
-} from "../../utils/constructors-requests/namespace-request-handler";
+import NamespaceRequestHandler from "../namespace-constructor/namespace-constructor.requests-handler";
 import TaskSetConstructorRequestsHandler from "./task-set-constructor.requests-handler";
 import TaskSetConstructorFormatter from "./task-set-constructor.formatter";
 import { addLastEditedConstructorItemToLocalStorage } from "../../utils/last-edited-constructor-items-local-storage";
@@ -66,6 +64,7 @@ import {
   TaskSetConstructorReceivedForm,
   TaskSetConstructorSendForm,
 } from "./task-set-constructor.types";
+import { NamespaceReceivedForm } from "../namespace-constructor/namespace-constructor.types";
 // data
 import { taskConstructorDefaultValues } from "./task-set-constructor.data";
 // icons
@@ -175,8 +174,8 @@ const TaskSetConstructor = ({
     ) {
       setSelectedLevel(getValues().tasks.length - 1);
     }
-    NamespaceRequestHandler.getAll().then((res: NamespaceReceiveForm[]) => {
-      setNamespaces(res.map((ns: NamespaceReceiveForm) => ns.code));
+    NamespaceRequestHandler.getAll().then((res: NamespaceReceivedForm[]) => {
+      setNamespaces(res.map((ns: NamespaceReceivedForm) => ns.code));
     });
   }, []);
 

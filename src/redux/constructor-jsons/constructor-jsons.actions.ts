@@ -2,7 +2,6 @@
 import { NamespaceConstructorInputs } from "../../constructors/namespace-constructor/namespace-constructor.types";
 import {
   ConstructorInputs,
-  ConstructorJSONsActionTypes,
   ConstructorJSONsTypes,
   UPDATE_NAMESPACE_JSON,
   UPDATE_RULE_PACK_JSON,
@@ -13,7 +12,6 @@ import {
 } from "./constructor-jsons.types";
 import { TaskSetConstructorInputs } from "../../constructors/task-set-constructor/task-set-constructor.types";
 import { RulePackConstructorInputs } from "../../constructors/rule-pack-constructor/rule-pack-constructor.types";
-import { NamespaceReceiveForm } from "../../utils/constructors-requests/namespace-request-handler";
 
 export const updateConstructorJSON = (
   constructorType: ConstructorJSONsTypes,

@@ -4,21 +4,22 @@ import { useHistory, useParams } from "react-router-dom";
 import axios, { AxiosError } from "axios";
 // components
 import AppModalComponent from "../../components/app-modal/app-modal.component";
+import SelectConstructorItemList from "../../components/filterable-select-list/filterable-select-list.component";
+import ConstructorMenuBlock from "../../components/constructor-menu-block/constructor-menu-block.component";
+// utils
+import TaskSetConstructorRequestsHandler from "../../constructors/task-set-constructor/task-set-constructor.requests-handler";
+import NamespaceRequestHandler from "../../constructors/namespace-constructor/namespace-constructor.requests-handler";
+import { getLastEditedConstructorItemsFromLocalStorage } from "../../utils/last-edited-constructor-items-local-storage";
+// types
+import { NamespaceReceivedForm } from "../../constructors/namespace-constructor/namespace-constructor.types";
+import { TaskSetConstructorReceivedForm } from "../../constructors/task-set-constructor/task-set-constructor.types";
+import { FilterableSelectListItem } from "../../components/filterable-select-list/filterable-select-list.types";
+import { ConstructorMenuBlockProps } from "../../components/constructor-menu-block/constructor-menu-block.types";
 // icons
 import Icon from "@mdi/react";
 import { mdiPencil, mdiPlus } from "@mdi/js";
 // styles
 import "./constructor-menu-page.styles.scss";
-import SelectConstructorItemList from "../../components/filterable-select-list/filterable-select-list.component";
-import { FilterableSelectListItem } from "../../components/filterable-select-list/filterable-select-list.types";
-import { getLastEditedConstructorItemsFromLocalStorage } from "../../utils/last-edited-constructor-items-local-storage";
-import { ConstructorMenuBlockProps } from "../../components/constructor-menu-block/constructor-menu-block.types";
-import ConstructorMenuBlock from "../../components/constructor-menu-block/constructor-menu-block.component";
-import NamespaceRequestHandler, {
-  NamespaceReceiveForm,
-} from "../../utils/constructors-requests/namespace-request-handler";
-import { TaskSetConstructorReceivedForm } from "../../constructors/task-set-constructor/task-set-constructor.types";
-import TaskSetConstructorRequestsHandler from "../../constructors/task-set-constructor/task-set-constructor.requests-handler";
 
 export const demoList = [
   "Alison Park",
@@ -69,7 +70,7 @@ const ConstructorMenuPageComponent: React.FC = () => {
   const [taskSets, setTaskSets] = useState<TaskSetConstructorReceivedForm[]>(
     []
   );
-  const [namespaces, setNamespaces] = useState<NamespaceReceiveForm[]>([]);
+  const [namespaces, setNamespaces] = useState<NamespaceReceivedForm[]>([]);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const [isFetched, setIsFetched] = useState<boolean>(false);
@@ -98,7 +99,7 @@ const ConstructorMenuPageComponent: React.FC = () => {
         });
     } else if (activeTab === "namespace") {
       NamespaceRequestHandler.getAll()
-        .then((res: NamespaceReceiveForm[]) => {
+        .then((res: NamespaceReceivedForm[]) => {
           setNamespaces(res);
           setErrorMsg(null);
           setIsFetched(true);
@@ -221,7 +222,7 @@ const ConstructorMenuPageComponent: React.FC = () => {
           name: "На основе уже существующего",
           action: () => {
             setItems(
-              namespaces.map((namespace: NamespaceReceiveForm) => {
+              namespaces.map((namespace: NamespaceReceivedForm) => {
                 const { code } = namespace;
                 return {
                   name: code,
@@ -261,7 +262,7 @@ const ConstructorMenuPageComponent: React.FC = () => {
                   name: "Смотреть все",
                   action: () => {
                     setItems(
-                      namespaces.map((namespace: NamespaceReceiveForm) => {
+                      namespaces.map((namespace: NamespaceReceivedForm) => {
                         const { code } = namespace;
                         return {
                           code,
@@ -282,7 +283,7 @@ const ConstructorMenuPageComponent: React.FC = () => {
                 name: "Смотреть все",
                 action: () => {
                   setItems(
-                    namespaces.map((namespace: NamespaceReceiveForm) => {
+                    namespaces.map((namespace: NamespaceReceivedForm) => {
                       const { code } = namespace;
                       return {
                         code,
