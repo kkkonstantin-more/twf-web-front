@@ -63,7 +63,7 @@ const RuleConstructor = ({
         { value: "true", label: "да" },
         { value: "false", label: "нет" },
       ],
-      defaultValue: defaultValue?.basedOnTaskContext,
+      defaultValue: defaultValue?.basedOnTaskContext?.toString(),
     },
     {
       name: `rules[${index}].matchJumbledAndNested`,
@@ -73,7 +73,7 @@ const RuleConstructor = ({
         { value: "true", label: "да" },
         { value: "false", label: "нет" },
       ],
-      defaultValue: defaultValue?.matchJumbledAndNested,
+      defaultValue: defaultValue?.matchJumbledAndNested?.toString(),
     },
   ];
 

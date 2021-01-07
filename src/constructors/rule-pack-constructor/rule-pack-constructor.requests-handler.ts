@@ -1,17 +1,14 @@
-// libs and hooks
 import axios, { AxiosError, AxiosResponse } from "axios";
-// utils
 import { getAuthToken } from "../../utils/local-storage/auth-token";
-// types
 import {
-  NamespaceReceivedForm,
-  NamespaceSendForm,
-} from "./namespace-constructor.types";
+  RulePackConstructorSendForm,
+  RulePackReceivedForm,
+} from "./rule-pack-constructor.types";
 
-class NamespaceConstructorRequestHandler {
-  private static url = process.env.REACT_APP_SERVER_API + "/namespace/";
+class RulePackConstructorRequestsHandler {
+  private static url = process.env.REACT_APP_SERVER_API + "/rule-pack/";
 
-  public static async getAll(): Promise<NamespaceReceivedForm[]> {
+  public static async getAll(): Promise<RulePackReceivedForm[]> {
     return axios({
       method: "get",
       url: this.url,
@@ -19,16 +16,17 @@ class NamespaceConstructorRequestHandler {
         Authorization: "Bearer " + getAuthToken(),
       },
     })
-      .then((res: AxiosResponse<{ namespaces: NamespaceReceivedForm[] }>) => {
-        return res.data.namespaces;
+      .then((res: AxiosResponse<RulePackReceivedForm[]>) => {
+        console.log(res.data);
+        return res.data;
       })
       .catch((e: AxiosError) => {
-        console.error("Error fetching all namespaces", e.response, e.message);
+        console.error("Error fetching all rule packs", e.response, e.message);
         throw e;
       });
   }
 
-  public static getOne(code: string): Promise<NamespaceReceivedForm> {
+  public static getOne(code: string): Promise<RulePackReceivedForm> {
     return axios({
       method: "get",
       url: this.url + code,
@@ -36,12 +34,12 @@ class NamespaceConstructorRequestHandler {
         Authorization: "Bearer " + getAuthToken(),
       },
     })
-      .then((res: AxiosResponse<NamespaceReceivedForm>) => {
+      .then((res: AxiosResponse<RulePackReceivedForm>) => {
         return res.data;
       })
       .catch((e: AxiosError) => {
         console.error(
-          "Error trying to get namespace with code:" + code,
+          "Error trying to get rule-pack with code:" + code,
           e.response,
           e.message
         );
@@ -51,7 +49,7 @@ class NamespaceConstructorRequestHandler {
 
   public static submitOne(
     requestType: "post" | "patch",
-    data: NamespaceSendForm
+    data: RulePackConstructorSendForm
   ): Promise<number> {
     return axios({
       method: requestType,
@@ -66,7 +64,7 @@ class NamespaceConstructorRequestHandler {
       })
       .catch((e: AxiosError) => {
         console.error(
-          `Error trying to make namespace ${requestType} request. Namespace code: ${data.code}`,
+          `Error trying to make rule-pack ${requestType} request. Rule-pack code: ${data.code}`,
           e.response,
           e.message
         );
@@ -75,4 +73,4 @@ class NamespaceConstructorRequestHandler {
   }
 }
 
-export default NamespaceConstructorRequestHandler;
+export default RulePackConstructorRequestsHandler;

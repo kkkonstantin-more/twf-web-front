@@ -37,7 +37,7 @@ import {
   setLastEditedCreationMode,
   setLastExampleConstructorCode,
 } from "../../utils/local-storage/last-edited-creation-type";
-import NamespaceRequestHandler from "../namespace-constructor/namespace-constructor.requests-handler";
+import NamespaceConstructorRequestHandler from "../namespace-constructor/namespace-constructor.requests-handler";
 import TaskSetConstructorRequestsHandler from "./task-set-constructor.requests-handler";
 import TaskSetConstructorFormatter from "./task-set-constructor.formatter";
 import { addLastEditedConstructorItemToLocalStorage } from "../../utils/last-edited-constructor-items-local-storage";
@@ -174,9 +174,11 @@ const TaskSetConstructor = ({
     ) {
       setSelectedLevel(getValues().tasks.length - 1);
     }
-    NamespaceRequestHandler.getAll().then((res: NamespaceReceivedForm[]) => {
-      setNamespaces(res.map((ns: NamespaceReceivedForm) => ns.code));
-    });
+    NamespaceConstructorRequestHandler.getAll().then(
+      (res: NamespaceReceivedForm[]) => {
+        setNamespaces(res.map((ns: NamespaceReceivedForm) => ns.code));
+      }
+    );
   }, []);
 
   useEffect(() => {

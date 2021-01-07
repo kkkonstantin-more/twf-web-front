@@ -1,7 +1,6 @@
 // libs and hooks
 import React, { Dispatch, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import axios from "axios";
 import { v4 as uidv4 } from "uuid";
 import {
   ArrayField,
@@ -22,7 +21,6 @@ import ConstructorForm from "../../components/constructor-form/constructor-form.
 import ActionButton from "../../components/action-button/action-button.component";
 import RuleConstructor from "../rule-constructor/rule-constructor.component";
 // utils
-import { addLastEditedConstructorItemToLocalStorage } from "../../utils/last-edited-constructor-items-local-storage";
 import {
   getLastEditedCreationMode,
   getLastExampleConstructorCode,
@@ -31,7 +29,10 @@ import {
 } from "../../utils/local-storage/last-edited-creation-type";
 import getConstructorSubmitButtonAndTitleText from "../utiils/get-constructor-submit-button-and-title-text";
 // types
-import { RulePackConstructorInputs } from "./rule-pack-constructor.types";
+import {
+  RulePackConstructorInputs,
+  RulePackReceivedForm,
+} from "./rule-pack-constructor.types";
 import { ConstructorInputProps } from "../../components/constructor-input/construcor-input.types";
 import { ConstructorSelectProps } from "../../components/constructor-select/constructor-select.types";
 import { RootState } from "../../redux/root-reducer";
@@ -53,6 +54,11 @@ import {
 } from "@mdi/js";
 // styles
 import "./rule-pack-constructor.scss";
+import RulePackConstructorRequestsHandler from "./rule-pack-constructor.requests-handler";
+import { NamespaceReceivedForm } from "../namespace-constructor/namespace-constructor.types";
+import NamespaceConstructorRequestHandler from "../namespace-constructor/namespace-constructor.requests-handler";
+import RulePackConstructorFormatter from "./rule-pack-constructor.formatter";
+import { MathInputFormat } from "../../utils/kotlin-lib-functions";
 
 const RulePackConstructor = ({
   rulePackJSON,
@@ -70,7 +76,8 @@ const RulePackConstructor = ({
     ConstructorJSONsTypes.RULE_PACK
   );
   // all rule-packs are used as select input values
-  const [allRulePacks, setAllRulPacks] = useState([]);
+  const [allRulePacks, setAllRulPacks] = useState<string[]>([]);
+  const [allNamespaces, setAllNamespaces] = useState<string[]>([]);
   // server response messages
   const [errorMsg, setErrorMsg] = useState<null | string>(null);
   const [successMsg, setSuccessMsg] = useState<null | string>(null);
@@ -96,45 +103,27 @@ const RulePackConstructor = ({
   );
   // set valid value due to creation mode and relevant constructor state
   useEffect(() => {
-    // fetching all rule-packs
-    axios({
-      method: "get",
-      url: process.env.REACT_APP_SERVER_API + "/rule-pack",
-    })
-      .then((res) => {
-        setAllRulPacks(res.data);
-      })
-      .catch((e) => {
-        console.error("Fetching rule-packs failed", e.message);
-      });
-
-    const fetchRulePack = async (code: string) => {
-      return axios({
-        method: "get",
-        url: process.env.REACT_APP_SERVER_API + "/rule-pack/" + code,
-      })
-        .then((res) => {
-          return res.data;
-        })
-        .catch((e) => {
-          console.error(
-            "Fetching rule-pack failed. Rule-pack code: " + code,
-            e.message
-          );
-          throw e;
-        });
-    };
-
+    // get all rulepacks for links
+    NamespaceConstructorRequestHandler.getAll().then(
+      (res: NamespaceReceivedForm[]) =>
+        setAllNamespaces(res.map((ns: NamespaceReceivedForm) => ns.code))
+    );
+    RulePackConstructorRequestsHandler.getAll().then(
+      (res: RulePackReceivedForm[]) =>
+        setAllRulPacks(res.map((rp: RulePackReceivedForm) => rp.code))
+    );
     if (creationMode === ConstructorCreationMode.CREATE) {
       if (lastEditedMode === ConstructorCreationMode.CREATE) {
         reset(rulePackJSON);
       } else {
-        reset(CONSTRUCTOR_JSONS_INITIAL_STATE.rulePack);
-        setLastEditedCreationMode(
-          ConstructorJSONsTypes.RULE_PACK,
-          creationMode
-        );
-        updateRulePackJSON(getValues());
+        (async () => {
+          await reset(CONSTRUCTOR_JSONS_INITIAL_STATE.rulePack);
+          setLastEditedCreationMode(
+            ConstructorJSONsTypes.RULE_PACK,
+            creationMode
+          );
+          updateRulePackJSON(getValues());
+        })();
       }
     } else if (creationMode === ConstructorCreationMode.EDIT) {
       if (
@@ -144,30 +133,11 @@ const RulePackConstructor = ({
         reset(rulePackJSON);
       } else {
         (async () => {
-          const res = await fetchRulePack(code);
-          await reset({
-            ...res,
-            rulePacks: res.rulePacks
-              ? res.rulePacks.map((rulePack: any) => rulePack.rulePackCode)
-              : [],
-            rules: res.rules
-              ? res.rules.map((rule: RuleConstructorInputs) => {
-                  return {
-                    ...rule,
-                    matchJumbledAndNested:
-                      typeof rule.matchJumbledAndNested === "boolean"
-                        ? // @ts-ignore
-                          rule.matchJumbledAndNested.toString()
-                        : "true",
-                    basedOnTaskContext:
-                      typeof rule.basedOnTaskContext === "boolean"
-                        ? // @ts-ignore
-                          rule.basedOnTaskContext.toString()
-                        : "true",
-                  };
-                })
-              : [],
-          });
+          await reset(
+            RulePackConstructorFormatter.convertReceivedFormToConstructorInputs(
+              await RulePackConstructorRequestsHandler.getOne(code)
+            )
+          );
           setLastEditedCreationMode(
             ConstructorJSONsTypes.RULE_PACK,
             creationMode
@@ -180,37 +150,15 @@ const RulePackConstructor = ({
         lastEditedMode === ConstructorCreationMode.CREATE_BY_EXAMPLE &&
         getLastExampleConstructorCode(ConstructorJSONsTypes.RULE_PACK) === code
       ) {
-        console.log("AAAAAAAAA");
         reset(rulePackJSON);
       } else {
-        console.log(code);
-        console.log(
-          getLastExampleConstructorCode(ConstructorJSONsTypes.RULE_PACK)
-        );
         (async () => {
-          const res = await fetchRulePack(code);
+          const rulePackInputs = RulePackConstructorFormatter.convertReceivedFormToConstructorInputs(
+            await RulePackConstructorRequestsHandler.getOne(code)
+          );
           await reset({
-            ...res,
-            rulePacks: res.rulePacks
-              ? res.rulePacks.map((rulePack: any) => rulePack.rulePackCode)
-              : [],
-            rules: res.rules
-              ? res.rules.map((rule: RuleConstructorInputs) => {
-                  return {
-                    ...rule,
-                    matchJumbledAndNested:
-                      typeof rule.matchJumbledAndNested === "boolean"
-                        ? // @ts-ignore
-                          rule.matchJumbledAndNested.toString()
-                        : "true",
-                    basedOnTaskContext:
-                      typeof rule.basedOnTaskContext === "boolean"
-                        ? // @ts-ignore
-                          rule.basedOnTaskContext.toString()
-                        : "true",
-                  };
-                })
-              : [],
+            ...rulePackInputs,
+            code: rulePackInputs.code + "_new",
           });
           setLastEditedCreationMode(
             ConstructorJSONsTypes.RULE_PACK,
@@ -271,7 +219,7 @@ const RulePackConstructor = ({
       name: "namespaceCode",
       label: "Namespace",
       type: "text",
-      options: [{ label: "test_namespace_code", value: "test_namespace_code" }],
+      options: allNamespaces.map((ns: string) => ({ label: ns, value: ns })),
       defaultValue: "",
       isMulti: false,
       disabled: creationMode === ConstructorCreationMode.EDIT,
@@ -300,67 +248,71 @@ const RulePackConstructor = ({
       name: "rulePacks",
       label: "Добавить существующие пакеты",
       isMulti: true,
-      options: allRulePacks.map((rulePack: any) => {
-        return {
-          value: rulePack.code,
-          label: rulePack.code,
-        };
-      }),
+      options: allRulePacks.map((rp: string) => ({ label: rp, value: rp })),
     },
   ];
 
-  const submitRulePack = (
-    data: RulePackConstructorInputs,
-    requestType: "post" | "patch"
-  ) => {
-    setSuccessMsg(null);
-    setErrorMsg(null);
-    // delete empty fields
-    Object.keys(data).forEach((key: string) => {
-      if (data[key as keyof RulePackConstructorInputs] === "") {
-        delete data[key as keyof RulePackConstructorInputs];
-      }
-    });
-    if (data.rulePacks) {
-      // @ts-ignore
-      data.rulePacks = data.rulePacks.split(",").map((code: string) => ({
-        rulePackCode: code,
-      }));
-    }
-    // convert string booleans ("true", "false") to booleans
-    if (data.rules) {
-      // @ts-ignore
-      data.rules = data.rules.map((rule: RuleConstructorInputs) => {
-        return {
-          ...rule,
-          matchJumbledAndNested: rule.matchJumbledAndNested === "true",
-          basedOnTaskContext: rule.basedOnTaskContext === "true",
-        };
-      });
-    }
-    // make request
-    axios({
-      method: requestType,
-      url: process.env.REACT_APP_SERVER_API + "/rule-pack",
-      headers: {
-        Authorization: "Bearer " + localStorage.token,
-      },
-      data,
-    })
-      .then((res) => {
+  const submit = (data: RulePackConstructorInputs) => {
+    RulePackConstructorRequestsHandler.submitOne(
+      creationMode === ConstructorCreationMode.EDIT ? "patch" : "post",
+      RulePackConstructorFormatter.convertConstructorInputsToSendForm(data)
+    )
+      .then(() => {
         setErrorMsg(null);
-        setSuccessMsg("Успешно!");
-        addLastEditedConstructorItemToLocalStorage(
-          "last-edited-rule-packs",
-          data.code
-        );
+        setSuccessMsg("Успех!");
       })
-      .catch((e) => {
-        console.error("Error after posting rule-pack", e.message);
-        console.log(e.response);
+      .catch(() => {
         setSuccessMsg(null);
-        setErrorMsg("Ошибка! Проверьте правильность введенных данных");
+        setErrorMsg("Провал");
       });
+    // setSuccessMsg(null);
+    // setErrorMsg(null);
+    // // delete empty fields
+    // Object.keys(data).forEach((key: string) => {
+    //   if (data[key as keyof RulePackConstructorInputs] === "") {
+    //     delete data[key as keyof RulePackConstructorInputs];
+    //   }
+    // });
+    // if (data.rulePacks) {
+    //   // @ts-ignore
+    //   data.rulePacks = data.rulePacks.split(",").map((code: string) => ({
+    //     rulePackCode: code,
+    //   }));
+    // }
+    // // convert string booleans ("true", "false") to booleans
+    // if (data.rules) {
+    //   // @ts-ignore
+    //   data.rules = data.rules.map((rule: RuleConstructorInputs) => {
+    //     return {
+    //       ...rule,
+    //       matchJumbledAndNested: rule.matchJumbledAndNested === "true",
+    //       basedOnTaskContext: rule.basedOnTaskContext === "true",
+    //     };
+    //   });
+    // }
+    // // make request
+    // axios({
+    //   method: requestType,
+    //   url: process.env.REACT_APP_SERVER_API + "/rule-pack",
+    //   headers: {
+    //     Authorization: "Bearer " + localStorage.token,
+    //   },
+    //   data,
+    // })
+    //   .then((res) => {
+    //     setErrorMsg(null);
+    //     setSuccessMsg("Успешно!");
+    //     addLastEditedConstructorItemToLocalStorage(
+    //       "last-edited-rule-packs",
+    //       data.code
+    //     );
+    //   })
+    //   .catch((e) => {
+    //     console.error("Error after posting rule-pack", e.message);
+    //     console.log(e.response);
+    //     setSuccessMsg(null);
+    //     setErrorMsg("Ошибка! Проверьте правильность введенных данных");
+    //   });
   };
 
   // setup unique code
@@ -393,10 +345,7 @@ const RulePackConstructor = ({
     <FormProvider {...formMethods}>
       <form
         onSubmit={handleSubmit((data: RulePackConstructorInputs) => {
-          submitRulePack(
-            data,
-            creationMode === ConstructorCreationMode.EDIT ? "patch" : "post"
-          );
+          submit(data);
         })}
         className="rule-pack-constructor"
       >
@@ -466,10 +415,16 @@ const RulePackConstructor = ({
               className="btn u-mr-sm"
               onClick={async () => {
                 await append({
-                  left: "",
-                  right: "",
-                  matchJumbledAndNested: "true",
-                  basedOnTaskContext: "true",
+                  left: {
+                    format: MathInputFormat.TEX,
+                    expression: "",
+                  },
+                  right: {
+                    format: MathInputFormat.TEX,
+                    expression: "",
+                  },
+                  basedOnTaskContext: true,
+                  matchJumbledAndNested: true,
                 });
                 updateRulePackJSON(getValues());
               }}
@@ -490,6 +445,15 @@ const RulePackConstructor = ({
             {successMsg}
           </div>
         )}
+        <button
+          type="button"
+          className="btn"
+          onClick={() => {
+            console.log(getValues());
+          }}
+        >
+          get values
+        </button>
         <button type="submit" className="btn u-mt-sm">
           {titleAndSubmitButtonText}
         </button>

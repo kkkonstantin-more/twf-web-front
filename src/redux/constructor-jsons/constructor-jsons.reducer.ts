@@ -4,6 +4,7 @@ import {
 } from "./constructor-jsons.types";
 import CONSTRUCTOR_JSONS_INITIAL_STATE from "./constructor-jsons.state";
 import { convertInputStringListSeparatedByCommasToArray } from "./constructor-jsons.utils";
+import { RuleConstructorInputs } from "../../constructors/rule-constructor/rule-constructor.types";
 
 const convertAllStringListsInObjToArrays = (
   constructorValue: any,
@@ -32,7 +33,20 @@ const constructorJSONsReducer = (
     case "UPDATE_RULE_PACK_JSON":
       return {
         ...state,
-        rulePack: action.payload,
+        rulePack: {
+          ...convertAllStringListsInObjToArrays(action.payload, ["rulePacks"]),
+          rules: action.payload.rules?.map((rule: RuleConstructorInputs) => {
+            return {
+              ...rule,
+              matchJumbledAndNested:
+                rule.matchJumbledAndNested === "true" ||
+                rule.matchJumbledAndNested === true,
+              basedOnTaskContext:
+                rule.basedOnTaskContext === "true" ||
+                rule.matchJumbledAndNested === true,
+            };
+          }),
+        },
       };
     case "UPDATE_TASK_SET_JSON":
       return {

@@ -8,7 +8,7 @@ import SelectConstructorItemList from "../../components/filterable-select-list/f
 import ConstructorMenuBlock from "../../components/constructor-menu-block/constructor-menu-block.component";
 // utils
 import TaskSetConstructorRequestsHandler from "../../constructors/task-set-constructor/task-set-constructor.requests-handler";
-import NamespaceRequestHandler from "../../constructors/namespace-constructor/namespace-constructor.requests-handler";
+import NamespaceConstructorRequestHandler from "../../constructors/namespace-constructor/namespace-constructor.requests-handler";
 import { getLastEditedConstructorItemsFromLocalStorage } from "../../utils/last-edited-constructor-items-local-storage";
 // types
 import { NamespaceReceivedForm } from "../../constructors/namespace-constructor/namespace-constructor.types";
@@ -98,7 +98,7 @@ const ConstructorMenuPageComponent: React.FC = () => {
           console.error("Error fetching rule-packs", e.message);
         });
     } else if (activeTab === "namespace") {
-      NamespaceRequestHandler.getAll()
+      NamespaceConstructorRequestHandler.getAll()
         .then((res: NamespaceReceivedForm[]) => {
           setNamespaces(res);
           setErrorMsg(null);

@@ -33,7 +33,7 @@ import getConstructorSubmitButtonAndTitleText from "../utiils/get-constructor-su
 import { getGrantTypeUserReadableDescription } from "./namespace-constructor.utils";
 import NamespaceConstructorFormatter from "./namespace-constructor.formatter";
 import { addLastEditedConstructorItemToLocalStorage } from "../../utils/last-edited-constructor-items-local-storage";
-import NamespaceRequestHandler from "./namespace-constructor.requests-handler";
+import NamespaceConstructorRequestHandler from "./namespace-constructor.requests-handler";
 import {
   getLastEditedCreationMode,
   getLastExampleConstructorCode,
@@ -97,7 +97,7 @@ const NamespaceConstructorComponent = ({
         reset(namespaceJSON);
       } else {
         (async () => {
-          const res = await NamespaceRequestHandler.getOne(code);
+          const res = await NamespaceConstructorRequestHandler.getOne(code);
           await reset(
             NamespaceConstructorFormatter.convertReceivedFormToConstructorInputs(
               res
@@ -118,7 +118,7 @@ const NamespaceConstructorComponent = ({
         reset(namespaceJSON);
       } else {
         (async () => {
-          const res = await NamespaceRequestHandler.getOne(code);
+          const res = await NamespaceConstructorRequestHandler.getOne(code);
           await reset(
             NamespaceConstructorFormatter.convertReceivedFormToConstructorInputs(
               {
@@ -197,7 +197,7 @@ const NamespaceConstructorComponent = ({
     data: NamespaceConstructorInputs,
     creationMode: ConstructorCreationMode
   ): void => {
-    NamespaceRequestHandler.submitOne(
+    NamespaceConstructorRequestHandler.submitOne(
       creationMode === ConstructorCreationMode.EDIT ? "patch" : "post",
       NamespaceConstructorFormatter.convertConstructorInputsToSendForm(data)
     )
