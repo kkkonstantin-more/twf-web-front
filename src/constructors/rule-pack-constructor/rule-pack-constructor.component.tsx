@@ -366,45 +366,28 @@ const RulePackConstructor = ({
               return (
                 <div className="rule-pack-constructor__rule" key={fieldIdx}>
                   <b>{fieldIdx + 1}.</b>
-                  {actionButtons
-                    .filter((button: ActionButtonProps) => {
-                      return button.mdiIconPath !== mdiClose;
-                    })
-                    .map((button: ActionButtonProps, buttonIdx: number) => {
-                      return (
-                        <ActionButton
-                          key={buttonIdx}
-                          mdiIconPath={button.mdiIconPath}
-                          size={1.5}
-                          action={() => {
-                            button.action(fieldIdx);
-                          }}
-                          margin="0 1rem 0 0"
-                        />
-                      );
-                    })}
+                  <div className="rule-pack-constructor__action-buttons">
+                    {actionButtons.map(
+                      (button: ActionButtonProps, buttonIdx: number) => {
+                        return (
+                          <ActionButton
+                            key={buttonIdx}
+                            mdiIconPath={button.mdiIconPath}
+                            size={1.5}
+                            action={() => {
+                              button.action(fieldIdx);
+                            }}
+                            margin="0 1rem 0 0"
+                          />
+                        );
+                      }
+                    )}
+                  </div>
                   <RuleConstructor
                     key={field.id}
                     index={fieldIdx}
                     defaultValue={fields[fieldIdx]}
                   />
-                  {actionButtons
-                    .filter((button: ActionButtonProps) => {
-                      return button.mdiIconPath === mdiClose;
-                    })
-                    .map((button: ActionButtonProps, buttonIdx: number) => {
-                      return (
-                        <ActionButton
-                          key={buttonIdx}
-                          mdiIconPath={button.mdiIconPath}
-                          size={1.5}
-                          action={() => {
-                            button.action(fieldIdx);
-                          }}
-                          margin="0 1rem 0 0"
-                        />
-                      );
-                    })}
                 </div>
               );
             }

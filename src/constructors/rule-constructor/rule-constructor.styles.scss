@@ -1,11 +1,15 @@
 .rule-constructor {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   &:not(:last-child) {
     margin-bottom: 2rem;
   }
   & > *:not(:last-child) {
     margin-right: 2rem;
+  }
+  & > * {
+    min-width: 20rem !important;
+    margin-bottom: 0 !important;
   }
   &__select {
     min-width: 15rem;

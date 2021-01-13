@@ -10,10 +10,14 @@
   }
   &__rule {
     display: flex;
-    align-items: center;
+    align-items: flex-end;
     & > *:not(:last-child) {
       margin-right: 2rem;
     }
     overflow: scroll;
+    padding-bottom: 2rem;
+  }
+  &__action-buttons {
+    display: flex;
   }
 }

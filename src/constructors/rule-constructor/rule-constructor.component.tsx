@@ -32,6 +32,24 @@ const RuleConstructor = ({
 
   const inputs: (ConstructorInputProps | ConstructorSelectProps)[] = [
     {
+      name: `rules[${index}].nameEn`,
+      label: "Название En",
+      type: "text",
+      defaultValue: defaultValue?.nameEn,
+    },
+    {
+      name: `rules[${index}].nameRu`,
+      label: "Название Ru",
+      type: "text",
+      defaultValue: defaultValue?.nameRu,
+    },
+    {
+      name: `rules[${index}].code`,
+      label: "Код",
+      type: "text",
+      defaultValue: defaultValue?.code,
+    },
+    {
       name: `rules[${index}].left`,
       label: "Левая часть",
       type: "text",
@@ -54,6 +72,32 @@ const RuleConstructor = ({
             format: MathInputFormat.TEX,
             expression: "",
           },
+    },
+    {
+      name: `rules[${index}].priority`,
+      label: "Приоритет",
+      type: "number",
+      defaultValue: defaultValue?.priority,
+    },
+    {
+      name: `rules[${index}].isExtending`,
+      label: "isExtending",
+      type: "text",
+      options: [
+        { value: "true", label: "да" },
+        { value: "false", label: "нет" },
+      ],
+      defaultValue: defaultValue?.isExtending?.toString(),
+    },
+    {
+      name: `rules[${index}].simpleAdditional`,
+      label: "simpleAdditional",
+      type: "text",
+      options: [
+        { value: "true", label: "да" },
+        { value: "false", label: "нет" },
+      ],
+      defaultValue: defaultValue?.simpleAdditional?.toString(),
     },
     {
       name: `rules[${index}].basedOnTaskContext`,

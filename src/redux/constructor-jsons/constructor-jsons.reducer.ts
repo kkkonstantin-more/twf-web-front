@@ -17,6 +17,12 @@ const convertAllStringListsInObjToArrays = (
   return res;
 };
 
+const convertStringBoolToBool = (
+  value: "true" | "false" | boolean
+): boolean => {
+  return value === "true" || value === true;
+};
+
 const constructorJSONsReducer = (
   state: ConstructorJSONs = CONSTRUCTOR_JSONS_INITIAL_STATE,
   action: ConstructorJSONsActionTypes
@@ -38,12 +44,14 @@ const constructorJSONsReducer = (
           rules: action.payload.rules?.map((rule: RuleConstructorInputs) => {
             return {
               ...rule,
-              matchJumbledAndNested:
-                rule.matchJumbledAndNested === "true" ||
-                rule.matchJumbledAndNested === true,
-              basedOnTaskContext:
-                rule.basedOnTaskContext === "true" ||
-                rule.matchJumbledAndNested === true,
+              matchJumbledAndNested: convertStringBoolToBool(
+                rule.matchJumbledAndNested
+              ),
+              basedOnTaskContext: convertStringBoolToBool(
+                rule.basedOnTaskContext
+              ),
+              isExtending: convertStringBoolToBool(rule.isExtending),
+              simpleAdditional: convertStringBoolToBool(rule.simpleAdditional),
             };
           }),
         },
