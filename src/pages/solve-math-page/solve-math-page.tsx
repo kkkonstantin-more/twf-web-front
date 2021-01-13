@@ -1,55 +1,83 @@
+// libs and hooks
 import React, { useState } from "react";
-// @ts-ignore
-import Stepper from "react-stepper-horizontal";
-
-import "./solve-math-page.scss";
+// components
 import MathQuillEditor from "../../components/math-quill-editor/math-quill-editor";
+import ServerResponseAlert from "../../components/server-response-alert/server-response-alert.component";
+// utils
+import { checkTex } from "../../utils/kotlin-lib-functions";
+// styles
+import "./solve-math-page.scss";
 
 const SolveMathPage: React.FC = () => {
-  const [activeStep, setActiveStep] = useState<number>(0);
-  const steps: any[] = [];
-  for (let i = 0; i < 5; i++) {
-    steps.push({
-      title: `Задача ${i + 1}`,
-    });
-  }
-  const levels: string[] = ["2+2", "3+3", "4+4", "5+5", "6+6"];
+  const inputRef: React.Ref<HTMLInputElement> = React.createRef();
+  const inputRef2: React.Ref<HTMLInputElement> = React.createRef();
+  const [currentTexExp, setCurrentTexExp] = useState("2+2=4");
+  const [errMsg, setErrMsg] = useState<null | string>(null);
+  const [successMsg, setSuccessMsg] = useState<null | "Правильно!">(null);
+  const [showSolution, setShowSolution] = useState<boolean>(false);
+  const [solution, setSolution] = useState<string>("");
+
   return (
     <div className="solve-math">
-      <div className="solve-math__stepper">
-        <Stepper steps={steps} activeStep={activeStep} />
-      </div>
-      <div className="solve-math__editor">
-        <MathQuillEditor
-          inputRef={React.createRef()}
-          width={"60vw"}
-          startingLatexExpression={levels[activeStep] + "=..."}
-        />
-      </div>
+      <input type="text" ref={inputRef} />
+      {!showSolution && (
+        <div className="solve-math__editor">
+          <MathQuillEditor
+            inputRef={inputRef}
+            width={"60vw"}
+            startingLatexExpression={currentTexExp}
+            updateValue={(value: string) => setCurrentTexExp(value)}
+          />
+        </div>
+      )}
+      {showSolution && (
+        <div
+          style={{ display: showSolution ? "block" : "none" }}
+          className="solve-math__editor"
+        >
+          <MathQuillEditor
+            inputRef={inputRef2}
+            width={"60vw"}
+            startingLatexExpression={solution}
+          />
+          <ServerResponseAlert errorMsg={errMsg} successMsg={successMsg} />
+        </div>
+      )}
       <div className="solve-math__actions">
         <div>
-          <button
-            className="btn u-mr-sm"
-            onClick={() => {
-              if (activeStep !== 0) {
-                setActiveStep(activeStep - 1);
-              }
-            }}
-          >
+          <button className="btn u-mr-sm" onClick={() => {}}>
             назад
           </button>
-          <button
-            className="btn"
-            onClick={() => {
-              if (activeStep !== steps.length - 1) {
-                setActiveStep(activeStep + 1);
-              }
-            }}
-          >
+          <button className="btn" onClick={() => {}}>
             далее
           </button>
         </div>
         <button className="btn">завершить</button>
+        <button
+          className="btn"
+          onClick={() => {
+            const res = checkTex(currentTexExp);
+            setSolution(res.validatedSolution);
+            setShowSolution(true);
+            if (res.errorMessage !== "") {
+              setSuccessMsg(null);
+              setErrMsg(res.errorMessage);
+            } else {
+              setErrMsg(null);
+              setSuccessMsg("Правильно!");
+            }
+          }}
+        >
+          Проверить
+        </button>
+        <button
+          className="btn"
+          onClick={() => {
+            setShowSolution(false);
+          }}
+        >
+          вернуться к решению
+        </button>
       </div>
     </div>
   );
