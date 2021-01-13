@@ -1,5 +1,5 @@
 // libs and hooks
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useFormContext } from "react-hook-form";
 // redux
 import { connect, ConnectedProps } from "react-redux";
@@ -72,6 +72,7 @@ const TaskConstructor = ({
   taskSetJSON,
   updateTaskSetJSON,
   addToHistory,
+  rulePacks,
 }: TaskConstructorProps & ConnectedProps<typeof connector>): JSX.Element => {
   const { register, getValues, watch } = useFormContext();
   // @ts-ignore
@@ -222,7 +223,7 @@ const TaskConstructor = ({
       label: "Пакеты правил",
       type: "text",
       isMulti: true,
-      options: rulePacks.map((item: string) => ({ label: item, value: item })),
+      options: rulePacks.map((rp: string) => ({ label: rp, value: rp })),
       defaultValue: defaultValue.rulePacks,
     },
     {
@@ -520,6 +521,8 @@ const TaskConstructor = ({
             : manualTaskBasicInputs.concat(manualTasksAddInputs)
         }
         constructorType={ConstructorJSONsTypes.TASK_SET}
+        // @ts-ignore
+        updateJSON={() => updateTaskSetJSON(getValues())}
       />
       {isTable() ? (
         <>

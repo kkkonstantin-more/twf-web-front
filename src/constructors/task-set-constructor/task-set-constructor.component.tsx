@@ -80,6 +80,8 @@ import {
 } from "@mdi/js";
 // styles
 import "./task-set-constructor.styles.scss";
+import RulePackConstructorRequestsHandler from "../rule-pack-constructor/rule-pack-constructor.requests-handler";
+import { RulePackReceivedForm } from "../rule-pack-constructor/rule-pack-constructor.types";
 
 // @ts-ignore
 export const TasksFieldArrayActionsContext = React.createContext();
@@ -138,6 +140,7 @@ const TaskSetConstructor = ({
   //   if (!showHintsBlock) setShowHintsBlock(true);
   // };
   const [namespaces, setNamespaces] = useState<string[]>([]);
+  const [rulePacks, setRulePacks] = useState<string[]>([]);
 
   const updateName = (index: number, newName: string): void => {
     setLevelNames((prevState: string[]) => {
@@ -174,9 +177,17 @@ const TaskSetConstructor = ({
     ) {
       setSelectedLevel(getValues().tasks.length - 1);
     }
+  }, []);
+
+  useEffect(() => {
     NamespaceConstructorRequestHandler.getAll().then(
       (res: NamespaceReceivedForm[]) => {
         setNamespaces(res.map((ns: NamespaceReceivedForm) => ns.code));
+      }
+    );
+    RulePackConstructorRequestsHandler.getAll().then(
+      (res: RulePackReceivedForm[]) => {
+        setRulePacks(res.map((rp: RulePackReceivedForm) => rp.code));
       }
     );
   }, []);
@@ -498,6 +509,7 @@ const TaskSetConstructor = ({
                             index !== selectedLevel
                           }
                           updateName={updateName}
+                          rulePacks={rulePacks}
                         />
                       );
                     })}

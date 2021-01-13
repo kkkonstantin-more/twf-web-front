@@ -5,6 +5,7 @@ import {
 import CONSTRUCTOR_JSONS_INITIAL_STATE from "./constructor-jsons.state";
 import { convertInputStringListSeparatedByCommasToArray } from "./constructor-jsons.utils";
 import { RuleConstructorInputs } from "../../constructors/rule-constructor/rule-constructor.types";
+import { TaskConstructorInputs } from "../../constructors/task-constructor/task-constructor.types";
 
 const convertAllStringListsInObjToArrays = (
   constructorValue: any,
@@ -59,10 +60,20 @@ const constructorJSONsReducer = (
     case "UPDATE_TASK_SET_JSON":
       return {
         ...state,
-        taskSet: convertAllStringListsInObjToArrays(action.payload, [
-          "subjectTypes",
-          "rulePacks",
-        ]),
+        taskSet: {
+          ...convertAllStringListsInObjToArrays(action.payload, [
+            "subjectTypes",
+            "rulePacks",
+          ]),
+          tasks: action.payload.tasks
+            ? action.payload.tasks.map((task: TaskConstructorInputs) =>
+                convertAllStringListsInObjToArrays(task, [
+                  "rulePacks",
+                  "subjectTypes",
+                ])
+              )
+            : [],
+        },
       };
     default:
       return state;

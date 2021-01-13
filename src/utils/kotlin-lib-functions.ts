@@ -145,14 +145,6 @@ export const checkTex = (fullExpression?: string) => {
   const endExpressionIdentifier = "(/(2;sin(x)))";
   const additionalFactsIdentifiers = "";
 
-  console.log(
-    convertMathInput(
-      MathInputFormat.PLAIN_TEXT,
-      MathInputFormat.STRUCTURE_STRING,
-      "2+2+2-1"
-    )
-  );
-
   return twfKotlinLibrary.api.checkSolutionInTex_1yhbkg$(
     fullExpression,
     "(+(2;2))",

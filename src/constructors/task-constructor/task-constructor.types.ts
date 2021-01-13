@@ -24,6 +24,7 @@ export interface TaskConstructorProps {
   visualizationMode: "table" | "list";
   hidden?: boolean;
   updateName?: (index: number, newName: string) => void;
+  rulePacks: string[];
 }
 
 export interface TaskConstructorReceivedForm {
