@@ -33,7 +33,11 @@ const Routes: React.FC = () => {
         path={"/constructor-menu/:activeTab?"}
         component={ConstructorMenuPageComponent}
       />
-      <Route exact path={"/solve-math"} component={SolveMathPage} />
+      <Route
+        exact
+        path={"/solve-math/:taskSetCode"}
+        component={SolveMathPage}
+      />
       <Route path={"/constructor"} component={ConstructorPage} />
     </Switch>
   );

@@ -18,6 +18,7 @@ import "./solve-math-page.scss";
 import "antd/dist/antd.compact.min.css";
 // icons
 import { mdiArrowLeftBoldBox, mdiArrowRightBoldBox } from "@mdi/js";
+import { useParams } from "react-router-dom";
 
 const { Step } = Steps;
 
@@ -31,8 +32,10 @@ const SolveMathPage: React.FC = () => {
   const [errMsg, setErrMsg] = useState<null | string>(null);
   const [successMsg, setSuccessMsg] = useState<null | "Правильно!">(null);
 
+  const { taskSetCode } = useParams();
+
   useEffect(() => {
-    TaskSetConstructorRequestsHandler.getOne("trigo_demo").then(
+    TaskSetConstructorRequestsHandler.getOne(taskSetCode).then(
       (res: TaskSetConstructorReceivedForm) => {
         setTaskSet(res);
         setSolutions(
