@@ -75,11 +75,11 @@ export const getErrorFromMathInput = (
     : null;
 };
 
-export const checkTex = (fullExpression?: string) => {
-  window.lib = twfKotlinLibrary;
-  const originalExpression =
-    "\\frac{\\sin \\left(x\\right)}{1+\\cos \\left(x\\right)}+\\frac{1+\\cos \\left(x\\right)}{\\sin \\left(x\\right)}=\\frac{\\sin ^2\\left(x\\right)+1+\\cos ^2\\left(x\\right)+2\\cdot \\cos \\left(x\\right)}{\\left(1+\\cos \\left(x\\right)\\right)\\sin \\left(x\\right)}=\\frac{2+2\\cdot \\cos \\left(x\\right)}{\\left(1+\\cos \\left(x\\right)\\right)\\sin \\left(x\\right)}=\\frac{2}{\\sin \\left(x\\right)}";
-
+export const checkTex = (
+  fullExpression?: string,
+  start: string,
+  end: string
+) => {
   const wellKnownFunctionsString = `
     ;;;0;;;
     ;;;1;;;
@@ -140,17 +140,13 @@ export const checkTex = (fullExpression?: string) => {
     "cos(x+2*pi);;;cos(x);;;" +
     "cos(pi/2-x);;;sin(x);;;" +
     "sin(pi/2-x);;;cos(x)";
-  const startExpressionIdentifier =
-    "(+(/(sin(x);+(1;cos(x)));/(+(1;cos(x));sin(x))))";
-  const endExpressionIdentifier = "(/(2;sin(x)))";
-  const additionalFactsIdentifiers = "";
 
   return twfKotlinLibrary.api.checkSolutionInTex_1yhbkg$(
     fullExpression,
-    "(+(2;2))",
+    start,
     undefined,
-    additionalFactsIdentifiers,
-    "(4)",
+    "",
+    end,
     undefined,
     undefined,
     wellKnownFunctionsString,

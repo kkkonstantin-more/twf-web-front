@@ -2,14 +2,15 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  &__stepper {
-    width: 100%;
-    margin-bottom: 2rem;
+  &__editor {
+    margin-top: 2rem;
   }
   &__actions {
     width: 60vw;
     margin-top: 2rem;
     display: flex;
-    justify-content: space-between;
+    & > *:last-child {
+      margin-left: auto;
+    }
   }
 }
