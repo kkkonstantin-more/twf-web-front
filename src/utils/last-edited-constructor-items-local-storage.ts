@@ -7,16 +7,21 @@ export const addLastEditedConstructorItemToLocalStorage = (
   name: LastEditedConstructorItemsInLocalStorage,
   code: string
 ): void => {
-  const item = localStorage.getItem(name);
-  if (item) {
-    if (item.split(",").length === 3) {
+  const items: string[] | null = localStorage.getItem(name)
+    ? // @ts-ignore
+      localStorage.getItem(name).split(",")
+    : null;
+  if (items) {
+    if (items.includes(code)) {
       localStorage.setItem(
         name,
-        [code, ...item.split(",").slice(1, 4)].join(",")
+        [code, ...items.filter((item) => item !== code)].join(",")
       );
-    } else if (item.split(",").length < 2) {
-      localStorage.setItem(name, code + "," + item);
-    } else if (item.split(",").length > 3) {
+    } else if (items.length === 3) {
+      localStorage.setItem(name, [code, ...items.slice(1, 4)].join(","));
+    } else if (items.length < 3) {
+      localStorage.setItem(name, code + "," + items);
+    } else if (items.length > 3) {
       throw new Error("last edited items in local storage more than 3");
     }
   } else {
