@@ -82,6 +82,7 @@ import {
 import "./task-set-constructor.styles.scss";
 import RulePackConstructorRequestsHandler from "../rule-pack-constructor/rule-pack-constructor.requests-handler";
 import { RulePackReceivedForm } from "../rule-pack-constructor/rule-pack-constructor.types";
+import { ClipLoader } from "react-spinners";
 
 // @ts-ignore
 export const TasksFieldArrayActionsContext = React.createContext();
@@ -256,6 +257,11 @@ const TaskSetConstructor = ({
     ConstructorJSONsTypes.TASK_SET
   );
 
+  // show spinner while fetching
+  const [showSpinner, setShowSpinner] = useState<boolean>(
+    creationMode !== ConstructorCreationMode.CREATE
+  );
+  // set valid values due to creation mode and relevant constructor state
   useEffect(() => {
     if (creationMode === ConstructorCreationMode.CREATE) {
       if (lastEditedMode === ConstructorCreationMode.CREATE) {
@@ -276,6 +282,7 @@ const TaskSetConstructor = ({
         code === taskSetJSON.code
       ) {
         reset(taskSetJSON);
+        setShowSpinner(false);
       } else {
         (async () => {
           await reset(
@@ -288,6 +295,7 @@ const TaskSetConstructor = ({
             creationMode
           );
           updateTaskSetJSON(getValues());
+          setShowSpinner(false);
         })();
       }
     } else if (creationMode === ConstructorCreationMode.CREATE_BY_EXAMPLE) {
@@ -296,6 +304,7 @@ const TaskSetConstructor = ({
         getLastExampleConstructorCode(ConstructorJSONsTypes.TASK_SET) === code
       ) {
         reset(taskSetJSON);
+        setShowSpinner(false);
       } else {
         (async () => {
           const taskSetInputs = TaskSetConstructorFormatter.convertReceivedFormToConstructorInputs(
@@ -315,6 +324,7 @@ const TaskSetConstructor = ({
           );
           setLastExampleConstructorCode(ConstructorJSONsTypes.TASK_SET, code);
           updateTaskSetJSON(getValues());
+          setShowSpinner(false);
         })();
       }
     }
@@ -328,7 +338,7 @@ const TaskSetConstructor = ({
       .then(() => {
         setErrorMsg(null);
         setSuccessMsg(
-          ConstructorCreationMode.EDIT
+          ConstructorCreationMode.CREATE_BY_EXAMPLE
             ? "Набор задач успешно изменен!"
             : "Набор задач успешно создан!"
         );
@@ -343,111 +353,191 @@ const TaskSetConstructor = ({
       });
   };
 
-  return (
-    <div className="task-set-constructor">
-      <div
-        className="task-set-constructor__form-container"
-        style={{
-          width:
-            !showHintsBlock || isMobile
-              ? "100%"
-              : `calc(50% + ${hintsDeltaX}px)`,
-        }}
-      >
-        <ConstructorUndoRedoPanel undo={undo} redo={redo} />
-        <div className="task-set-constructor__form">
-          <FormProvider {...methods}>
-            <TasksFieldArrayActionsContext.Provider value={fieldArrayMethods}>
-              <form
-                onSubmit={handleSubmit((data) => {
-                  submit(data);
-                })}
-              >
-                <h2 className="u-mt-sm">{titleAndSubmitButtonText}</h2>
-                <ConstructorForm
-                  inputs={inputs}
-                  register={register}
-                  // @ts-ignore
-                  updateJSON={() => updateTaskSetJSON(getValues())}
-                  addToHistory={(
-                    oldVal: ExpressionChange,
-                    newVal: ExpressionChange
-                  ) => {
-                    addItemToHistory(oldVal, newVal);
-                  }}
-                  constructorType={ConstructorJSONsTypes.TASK_SET}
-                />
-                <div className="u-flex" style={{ alignItems: "center" }}>
-                  <h3>Задачи</h3>
-                  <div className="task-set-constructor__visualization-mode-switchers">
-                    <div
-                      className={`task-set-constructor__visualization-mode-switcher ${
-                        visualizationMode === "list" &&
-                        "task-set-constructor__visualization-mode-switcher--active"
-                      }`}
-                      onClick={() => {
-                        setVisualizationMode("list");
-                      }}
-                    >
-                      <Icon path={mdiFormatListBulleted} size={1.5} />
-                    </div>
-                    <div
-                      className={`task-set-constructor__visualization-mode-switcher ${
-                        visualizationMode === "table" &&
-                        "task-set-constructor__visualization-mode-switcher--active"
-                      }`}
-                      onClick={() => {
-                        setVisualizationMode("table");
-                      }}
-                    >
-                      <Icon path={mdiTableLarge} size={1.5} />
+  if (showSpinner) {
+    return <ClipLoader loading={showSpinner} />;
+  } else {
+    return (
+      <div className="task-set-constructor">
+        <div
+          className="task-set-constructor__form-container"
+          style={{
+            width:
+              !showHintsBlock || isMobile
+                ? "100%"
+                : `calc(50% + ${hintsDeltaX}px)`,
+          }}
+        >
+          <ConstructorUndoRedoPanel undo={undo} redo={redo} />
+          <div className="task-set-constructor__form">
+            <FormProvider {...methods}>
+              <TasksFieldArrayActionsContext.Provider value={fieldArrayMethods}>
+                <form
+                  onSubmit={handleSubmit((data) => {
+                    submit(data);
+                  })}
+                >
+                  <h2 className="u-mt-sm">{titleAndSubmitButtonText}</h2>
+                  <ConstructorForm
+                    inputs={inputs}
+                    register={register}
+                    // @ts-ignore
+                    updateJSON={() => updateTaskSetJSON(getValues())}
+                    addToHistory={(
+                      oldVal: ExpressionChange,
+                      newVal: ExpressionChange
+                    ) => {
+                      addItemToHistory(oldVal, newVal);
+                    }}
+                    constructorType={ConstructorJSONsTypes.TASK_SET}
+                  />
+                  <div className="u-flex" style={{ alignItems: "center" }}>
+                    <h3>Задачи</h3>
+                    <div className="task-set-constructor__visualization-mode-switchers">
+                      <div
+                        className={`task-set-constructor__visualization-mode-switcher ${
+                          visualizationMode === "list" &&
+                          "task-set-constructor__visualization-mode-switcher--active"
+                        }`}
+                        onClick={() => {
+                          setVisualizationMode("list");
+                        }}
+                      >
+                        <Icon path={mdiFormatListBulleted} size={1.5} />
+                      </div>
+                      <div
+                        className={`task-set-constructor__visualization-mode-switcher ${
+                          visualizationMode === "table" &&
+                          "task-set-constructor__visualization-mode-switcher--active"
+                        }`}
+                        onClick={() => {
+                          setVisualizationMode("table");
+                        }}
+                      >
+                        <Icon path={mdiTableLarge} size={1.5} />
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div
-                  className={`${
-                    visualizationMode === "table"
-                      ? "form-levels-table"
-                      : "form-levels-list"
-                  }`}
-                >
-                  {visualizationMode === "list" && (
-                    <div className="form-levels-list__select">
-                      {fields.map((field, index) => {
-                        return (
-                          <div
-                            key={field.id}
-                            onClick={() => setSelectedLevel(index)}
-                            className={`form-levels-list__select-option ${
-                              index === selectedLevel &&
-                              "form-levels-list__select-option--active"
-                            }`}
+                  <div
+                    className={`${
+                      visualizationMode === "table"
+                        ? "form-levels-table"
+                        : "form-levels-list"
+                    }`}
+                  >
+                    {visualizationMode === "list" && (
+                      <div className="form-levels-list__select">
+                        {fields.map((field, index) => {
+                          return (
+                            <div
+                              key={field.id}
+                              onClick={() => setSelectedLevel(index)}
+                              className={`form-levels-list__select-option ${
+                                index === selectedLevel &&
+                                "form-levels-list__select-option--active"
+                              }`}
+                            >
+                              <Icon
+                                path={
+                                  field.taskCreationType === "auto"
+                                    ? mdiRobot
+                                    : mdiWrench
+                                }
+                                size={2}
+                                style={{ marginRight: "1rem" }}
+                              />
+                              <span>
+                                Уровень {index + 1}. {levelNames[index]}
+                              </span>
+                            </div>
+                          );
+                        })}
+                        <div className="form-levels-list__action-buttons">
+                          <button
+                            type="button"
+                            className="btn form-levels-list__action-button"
+                            onClick={async () => {
+                              await append({
+                                ...taskConstructorDefaultValues,
+                                taskCreationType: "manual",
+                              });
+                              setSelectedLevel(fields.length);
+                            }}
                           >
-                            <Icon
-                              path={
-                                field.taskCreationType === "auto"
-                                  ? mdiRobot
-                                  : mdiWrench
-                              }
-                              size={2}
-                              style={{ marginRight: "1rem" }}
-                            />
+                            <Icon path={mdiPlus} size={1.2} />
                             <span>
-                              Уровень {index + 1}. {levelNames[index]}
+                              <b>ручная задача</b>
                             </span>
-                          </div>
+                          </button>
+                          <button
+                            type="button"
+                            className="btn form-levels-list__action-button"
+                            onClick={() => {
+                              append({
+                                ...taskConstructorDefaultValues,
+                                taskCreationType: "auto",
+                              });
+                              setSelectedLevel(fields.length);
+                            }}
+                          >
+                            <Icon path={mdiPlus} size={1.2} />
+                            <span>авто задача</span>
+                          </button>
+                          <button
+                            type="button"
+                            className="btn form-levels-list__action-button u-mr-sm"
+                            onClick={() => {
+                              setShowSelectModal(true);
+                            }}
+                          >
+                            <Icon path={mdiPlus} size={1.2} />
+                            <span>существующая задача</span>
+                          </button>
+                          <button
+                            type="button"
+                            className="btn form-levels-list__action-button"
+                            onClick={() => console.log(getValues())}
+                          >
+                            get values
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                    <div
+                      className={`${
+                        visualizationMode === "list"
+                          ? "form-levels-list__selected-level"
+                          : ""
+                      }`}
+                    >
+                      {fields.map((field, index: number) => {
+                        return (
+                          <TaskConstructor
+                            key={field.id}
+                            index={index}
+                            defaultValue={fields[index]}
+                            updateDemo={() => {}}
+                            visualizationMode={visualizationMode}
+                            hidden={
+                              visualizationMode === "list" &&
+                              index !== selectedLevel
+                            }
+                            updateName={updateName}
+                            rulePacks={rulePacks}
+                          />
                         );
                       })}
-                      <div className="form-levels-list__action-buttons">
+                    </div>
+                    {visualizationMode === "table" && (
+                      <div className="form-levels-table__action-buttons">
                         <button
                           type="button"
-                          className="btn form-levels-list__action-button"
+                          className="btn form-levels-table__action-button"
                           onClick={async () => {
                             await append({
                               ...taskConstructorDefaultValues,
                               taskCreationType: "manual",
                             });
-                            setSelectedLevel(fields.length);
+                            updateTaskSetJSON(getValues());
                           }}
                         >
                           <Icon path={mdiPlus} size={1.2} />
@@ -457,13 +547,13 @@ const TaskSetConstructor = ({
                         </button>
                         <button
                           type="button"
-                          className="btn form-levels-list__action-button"
-                          onClick={() => {
-                            append({
+                          className="btn form-levels-table__action-button"
+                          onClick={async () => {
+                            await append({
                               ...taskConstructorDefaultValues,
                               taskCreationType: "auto",
                             });
-                            setSelectedLevel(fields.length);
+                            updateTaskSetJSON(getValues());
                           }}
                         >
                           <Icon path={mdiPlus} size={1.2} />
@@ -471,7 +561,7 @@ const TaskSetConstructor = ({
                         </button>
                         <button
                           type="button"
-                          className="btn form-levels-list__action-button u-mr-sm"
+                          className="btn form-levels-table__action-button"
                           onClick={() => {
                             setShowSelectModal(true);
                           }}
@@ -481,241 +571,165 @@ const TaskSetConstructor = ({
                         </button>
                         <button
                           type="button"
-                          className="btn form-levels-list__action-button"
+                          className="btn form-levels-table__action-button"
                           onClick={() => console.log(getValues())}
                         >
                           get values
                         </button>
                       </div>
-                    </div>
-                  )}
-                  <div
-                    className={`${
-                      visualizationMode === "list"
-                        ? "form-levels-list__selected-level"
-                        : ""
-                    }`}
-                  >
-                    {fields.map((field, index: number) => {
-                      return (
-                        <TaskConstructor
-                          key={field.id}
-                          index={index}
-                          defaultValue={fields[index]}
-                          updateDemo={() => {}}
-                          visualizationMode={visualizationMode}
-                          hidden={
-                            visualizationMode === "list" &&
-                            index !== selectedLevel
-                          }
-                          updateName={updateName}
-                          rulePacks={rulePacks}
-                        />
-                      );
-                    })}
+                    )}
                   </div>
-                  {visualizationMode === "table" && (
-                    <div className="form-levels-table__action-buttons">
-                      <button
-                        type="button"
-                        className="btn form-levels-table__action-button"
-                        onClick={async () => {
-                          await append({
-                            ...taskConstructorDefaultValues,
-                            taskCreationType: "manual",
-                          });
-                          updateTaskSetJSON(getValues());
-                        }}
-                      >
-                        <Icon path={mdiPlus} size={1.2} />
-                        <span>
-                          <b>ручная задача</b>
-                        </span>
-                      </button>
-                      <button
-                        type="button"
-                        className="btn form-levels-table__action-button"
-                        onClick={async () => {
-                          await append({
-                            ...taskConstructorDefaultValues,
-                            taskCreationType: "auto",
-                          });
-                          updateTaskSetJSON(getValues());
-                        }}
-                      >
-                        <Icon path={mdiPlus} size={1.2} />
-                        <span>авто задача</span>
-                      </button>
-                      <button
-                        type="button"
-                        className="btn form-levels-table__action-button"
-                        onClick={() => {
-                          setShowSelectModal(true);
-                        }}
-                      >
-                        <Icon path={mdiPlus} size={1.2} />
-                        <span>существующая задача</span>
-                      </button>
-                      <button
-                        type="button"
-                        className="btn form-levels-table__action-button"
-                        onClick={() => console.log(getValues())}
-                      >
-                        get values
-                      </button>
-                    </div>
-                  )}
-                </div>
-                <ServerResponseAlert
-                  errorMsg={errorMsg}
-                  successMsg={successMsg}
-                />
-                <button type="submit" className="btn u-mt-sm">
-                  {titleAndSubmitButtonText}
-                </button>
-              </form>
-            </TasksFieldArrayActionsContext.Provider>
-          </FormProvider>
-        </div>
+                  <ServerResponseAlert
+                    errorMsg={errorMsg}
+                    successMsg={successMsg}
+                  />
+                  <button type="submit" className="btn u-mt-sm">
+                    {titleAndSubmitButtonText}
+                  </button>
+                </form>
+              </TasksFieldArrayActionsContext.Provider>
+            </FormProvider>
+          </div>
 
-        {/*<AppModal*/}
-        {/*  isOpen={showSelectModal}*/}
-        {/*  close={() => setShowSelectModal(false)}*/}
-        {/*  width="80vw"*/}
-        {/*  height="80vh"*/}
-        {/*>*/}
-        {/*  <SelectConstructorItemList*/}
-        {/*    items={Object.keys(mockTasks).map(*/}
-        {/*      (code: string): FilterableSelectListItem => {*/}
-        {/*        const { nameRu, namespace } = mockTasks[code];*/}
-        {/*        return {*/}
-        {/*          name: nameRu,*/}
-        {/*          namespace,*/}
-        {/*          code,*/}
-        {/*          taskSet: (() => {*/}
-        {/*            const arr = [*/}
-        {/*              "интересная игра",*/}
-        {/*              "очень сложно",*/}
-        {/*              "просто",*/}
-        {/*              "ЕГЭ",*/}
-        {/*            ];*/}
-        {/*            const startIdx = Math.floor(Math.random() * 4);*/}
-        {/*            const endIdx = Math.floor(Math.random() * 5) + startIdx + 1;*/}
-        {/*            return arr.slice(startIdx, endIdx);*/}
-        {/*          })(),*/}
-        {/*          subjectType: (() => {*/}
-        {/*            const arr = [*/}
-        {/*              "тригонометрия",*/}
-        {/*              "логарифмы",*/}
-        {/*              "теория вероятности",*/}
-        {/*              "производные",*/}
-        {/*            ];*/}
-        {/*            const startIdx = Math.floor(Math.random() * 4);*/}
-        {/*            const endIdx = Math.floor(Math.random() * 5) + startIdx + 1;*/}
-        {/*            return arr.slice(startIdx, endIdx);*/}
-        {/*          })(),*/}
-        {/*          onSelect: () => {*/}
-        {/*            append(mockTasks[code], true);*/}
-        {/*            setShowSelectModal(false);*/}
-        {/*            setSelectedLevel(fields.length);*/}
-        {/*          },*/}
-        {/*        };*/}
-        {/*      }*/}
-        {/*    )}*/}
-        {/*    propsToFilter={["namespace", "taskSet", "subjectType"]}*/}
-        {/*  />*/}
-        {/*</AppModal>*/}
-      </div>
-      {/*HINTS BLOCK*/}
-      <div
-        className="task-set-constructor__icon"
-        onClick={() => setShowHintsBlock(!showHintsBlock)}
-      >
-        <Icon
-          size={3}
-          path={showHintsBlock ? mdiCloseCircle : mdiCommentQuestion}
-        />
-      </div>
-      <div
-        className={`task-set-constructor__hints-desktop ${
-          showHintsBlock && "task-set-constructor__hints-desktop--visible"
-        }`}
-        style={{
-          width: showHintsBlock ? `calc(50% - ${hintsDeltaX}px)` : "0",
-        }}
-      >
-        <Draggable
-          axis="x"
-          position={{
-            x: 0,
-            y: 0,
-          }}
-          defaultClassName="task-set-constructor__hints-desktop-dragger"
-          defaultClassNameDragging="task-set-constructor__hints-desktop-dragger task-set-constructor__hints-desktop-dragger--dragging"
-          onStop={(_, { lastX }) => {
-            setHintsDeltaX((prevState) => {
-              return prevState + lastX;
-            });
-          }}
-        >
-          <span />
-        </Draggable>
-        <div className="task-set-constructor__math-quill-hint">
-          {showHintsBlock && (
-            <>
-              <h1>Как писать в TEX:</h1>
-              <img
-                src={require("../../assets/math-quill-hint.gif")}
-                alt="latex editor hint"
-                width="100%"
-                height="auto"
-              />
-            </>
-          )}
+          {/*<AppModal*/}
+          {/*  isOpen={showSelectModal}*/}
+          {/*  close={() => setShowSelectModal(false)}*/}
+          {/*  width="80vw"*/}
+          {/*  height="80vh"*/}
+          {/*>*/}
+          {/*  <SelectConstructorItemList*/}
+          {/*    items={Object.keys(mockTasks).map(*/}
+          {/*      (code: string): FilterableSelectListItem => {*/}
+          {/*        const { nameRu, namespace } = mockTasks[code];*/}
+          {/*        return {*/}
+          {/*          name: nameRu,*/}
+          {/*          namespace,*/}
+          {/*          code,*/}
+          {/*          taskSet: (() => {*/}
+          {/*            const arr = [*/}
+          {/*              "интересная игра",*/}
+          {/*              "очень сложно",*/}
+          {/*              "просто",*/}
+          {/*              "ЕГЭ",*/}
+          {/*            ];*/}
+          {/*            const startIdx = Math.floor(Math.random() * 4);*/}
+          {/*            const endIdx = Math.floor(Math.random() * 5) + startIdx + 1;*/}
+          {/*            return arr.slice(startIdx, endIdx);*/}
+          {/*          })(),*/}
+          {/*          subjectType: (() => {*/}
+          {/*            const arr = [*/}
+          {/*              "тригонометрия",*/}
+          {/*              "логарифмы",*/}
+          {/*              "теория вероятности",*/}
+          {/*              "производные",*/}
+          {/*            ];*/}
+          {/*            const startIdx = Math.floor(Math.random() * 4);*/}
+          {/*            const endIdx = Math.floor(Math.random() * 5) + startIdx + 1;*/}
+          {/*            return arr.slice(startIdx, endIdx);*/}
+          {/*          })(),*/}
+          {/*          onSelect: () => {*/}
+          {/*            append(mockTasks[code], true);*/}
+          {/*            setShowSelectModal(false);*/}
+          {/*            setSelectedLevel(fields.length);*/}
+          {/*          },*/}
+          {/*        };*/}
+          {/*      }*/}
+          {/*    )}*/}
+          {/*    propsToFilter={["namespace", "taskSet", "subjectType"]}*/}
+          {/*  />*/}
+          {/*</AppModal>*/}
         </div>
-        <div className="current-edited-level">
-          <h1>Редактируемая задача:</h1>
-          <input type="text" ref={currentEditedLevelRef} />
-          <MathQuillEditor
-            inputRef={currentEditedLevelRef}
-            startingLatexExpression={`${startExpressionHint}=..=${goalExpressionHint}`}
+        {/*HINTS BLOCK*/}
+        <div
+          className="task-set-constructor__icon"
+          onClick={() => setShowHintsBlock(!showHintsBlock)}
+        >
+          <Icon
+            size={3}
+            path={showHintsBlock ? mdiCloseCircle : mdiCommentQuestion}
           />
         </div>
-      </div>
-      <div ref={mobileHintsRef} className="task-set-constructor__hints-phone">
-        {isMobile && (
-          <AppModal
-            isOpen={showHintsBlock}
-            close={() => setShowHintsBlock(false)}
+        <div
+          className={`task-set-constructor__hints-desktop ${
+            showHintsBlock && "task-set-constructor__hints-desktop--visible"
+          }`}
+          style={{
+            width: showHintsBlock ? `calc(50% - ${hintsDeltaX}px)` : "0",
+          }}
+        >
+          <Draggable
+            axis="x"
+            position={{
+              x: 0,
+              y: 0,
+            }}
+            defaultClassName="task-set-constructor__hints-desktop-dragger"
+            defaultClassNameDragging="task-set-constructor__hints-desktop-dragger task-set-constructor__hints-desktop-dragger--dragging"
+            onStop={(_, { lastX }) => {
+              setHintsDeltaX((prevState) => {
+                return prevState + lastX;
+              });
+            }}
           >
-            <>
-              <div className="task-set-constructor__math-quill-hint">
-                {showHintsBlock && (
-                  <>
-                    <h1>Как писать в TEX:</h1>
-                    <img
-                      src={require("../../assets/math-quill-hint.gif")}
-                      alt="latex editor hint"
-                      width="100%"
-                      height="auto"
-                    />
-                  </>
-                )}
-              </div>
-              <div className="current-edited-level">
-                <h1>Редактируемая задача:</h1>
-                <input type="text" ref={currentEditedLevelRef} />
-                <MathQuillEditor
-                  inputRef={currentEditedLevelRef}
-                  startingLatexExpression={`${startExpressionHint}=..=${goalExpressionHint}`}
+            <span />
+          </Draggable>
+          <div className="task-set-constructor__math-quill-hint">
+            {showHintsBlock && (
+              <>
+                <h1>Как писать в TEX:</h1>
+                <img
+                  src={require("../../assets/math-quill-hint.gif")}
+                  alt="latex editor hint"
+                  width="100%"
+                  height="auto"
                 />
-              </div>
-            </>
-          </AppModal>
-        )}
+              </>
+            )}
+          </div>
+          <div className="current-edited-level">
+            <h1>Редактируемая задача:</h1>
+            <input type="text" ref={currentEditedLevelRef} />
+            <MathQuillEditor
+              inputRef={currentEditedLevelRef}
+              startingLatexExpression={`${startExpressionHint}=..=${goalExpressionHint}`}
+            />
+          </div>
+        </div>
+        <div ref={mobileHintsRef} className="task-set-constructor__hints-phone">
+          {isMobile && (
+            <AppModal
+              isOpen={showHintsBlock}
+              close={() => setShowHintsBlock(false)}
+            >
+              <>
+                <div className="task-set-constructor__math-quill-hint">
+                  {showHintsBlock && (
+                    <>
+                      <h1>Как писать в TEX:</h1>
+                      <img
+                        src={require("../../assets/math-quill-hint.gif")}
+                        alt="latex editor hint"
+                        width="100%"
+                        height="auto"
+                      />
+                    </>
+                  )}
+                </div>
+                <div className="current-edited-level">
+                  <h1>Редактируемая задача:</h1>
+                  <input type="text" ref={currentEditedLevelRef} />
+                  <MathQuillEditor
+                    inputRef={currentEditedLevelRef}
+                    startingLatexExpression={`${startExpressionHint}=..=${goalExpressionHint}`}
+                  />
+                </div>
+              </>
+            </AppModal>
+          )}
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
 };
 
 // connecting redux

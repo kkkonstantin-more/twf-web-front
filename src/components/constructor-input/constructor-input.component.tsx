@@ -94,7 +94,7 @@ const ConstructorInput = ({
         className="constructor-input"
         style={{
           display: isVisible ? "block" : "none",
-          marginBottom: expressionInput ? "2rem" : undefined,
+          marginBottom: expressionInput ? "2rem" : "1.5rem",
         }}
         ref={inputWrapperRef}
       >

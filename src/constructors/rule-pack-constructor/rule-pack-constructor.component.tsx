@@ -16,6 +16,8 @@ import { createStructuredSelector } from "reselect";
 import { selectRulePackJSON } from "../../redux/constructor-jsons/constructor-jsons.selectors";
 import { updateRulePackJSON } from "../../redux/constructor-jsons/constructor-jsons.actions";
 import CONSTRUCTOR_JSONS_INITIAL_STATE from "../../redux/constructor-jsons/constructor-jsons.state";
+// lib components
+import { ClipLoader } from "react-spinners";
 // custom components
 import ConstructorForm from "../../components/constructor-form/constructor-form.component";
 import ActionButton from "../../components/action-button/action-button.component";
@@ -28,6 +30,9 @@ import {
   setLastExampleConstructorCode,
 } from "../../utils/local-storage/last-edited-creation-type";
 import getConstructorSubmitButtonAndTitleText from "../utiils/get-constructor-submit-button-and-title-text";
+import RulePackConstructorRequestsHandler from "./rule-pack-constructor.requests-handler";
+import NamespaceConstructorRequestHandler from "../namespace-constructor/namespace-constructor.requests-handler";
+import RulePackConstructorFormatter from "./rule-pack-constructor.formatter";
 // types
 import {
   RulePackConstructorInputs,
@@ -43,6 +48,8 @@ import {
 import { ActionButtonProps } from "../../components/action-button/action-button.types";
 import { RuleConstructorInputs } from "../rule-constructor/rule-constructor.types";
 import { ConstructorCreationMode } from "../common-types";
+import { NamespaceReceivedForm } from "../namespace-constructor/namespace-constructor.types";
+import { MathInputFormat } from "../../utils/kotlin-lib-functions";
 // icons
 import Icon from "@mdi/react";
 import {
@@ -54,11 +61,6 @@ import {
 } from "@mdi/js";
 // styles
 import "./rule-pack-constructor.scss";
-import RulePackConstructorRequestsHandler from "./rule-pack-constructor.requests-handler";
-import { NamespaceReceivedForm } from "../namespace-constructor/namespace-constructor.types";
-import NamespaceConstructorRequestHandler from "../namespace-constructor/namespace-constructor.requests-handler";
-import RulePackConstructorFormatter from "./rule-pack-constructor.formatter";
-import { MathInputFormat } from "../../utils/kotlin-lib-functions";
 
 const RulePackConstructor = ({
   rulePackJSON,
@@ -101,7 +103,11 @@ const RulePackConstructor = ({
       name: "rules",
     }
   );
-  // set valid value due to creation mode and relevant constructor state
+  // show spinner while fetching
+  const [showSpinner, setShowSpinner] = useState<boolean>(
+    creationMode !== ConstructorCreationMode.CREATE
+  );
+  // set valid values due to creation mode and relevant constructor state
   useEffect(() => {
     // get all rulepacks for links
     NamespaceConstructorRequestHandler.getAll().then(
@@ -131,6 +137,7 @@ const RulePackConstructor = ({
         code === rulePackJSON.code
       ) {
         reset(rulePackJSON);
+        setShowSpinner(false);
       } else {
         (async () => {
           await reset(
@@ -143,6 +150,7 @@ const RulePackConstructor = ({
             creationMode
           );
           updateRulePackJSON(getValues());
+          setShowSpinner(false);
         })();
       }
     } else if (creationMode === ConstructorCreationMode.CREATE_BY_EXAMPLE) {
@@ -151,6 +159,7 @@ const RulePackConstructor = ({
         getLastExampleConstructorCode(ConstructorJSONsTypes.RULE_PACK) === code
       ) {
         reset(rulePackJSON);
+        setShowSpinner(false);
       } else {
         (async () => {
           const rulePackInputs = RulePackConstructorFormatter.convertReceivedFormToConstructorInputs(
@@ -166,6 +175,7 @@ const RulePackConstructor = ({
           );
           setLastExampleConstructorCode(ConstructorJSONsTypes.RULE_PACK, code);
           updateRulePackJSON(getValues());
+          setShowSpinner(false);
         })();
       }
     }
@@ -315,7 +325,7 @@ const RulePackConstructor = ({
     //   });
   };
 
-  // setup unique code
+  // setup unique code creation
   const [userCodeChange, setUserCodeChange] = useState<boolean>(false);
   const nameEnChange = watch("nameEn");
   const namespaceChange = watch("namespaceCode");
@@ -332,6 +342,7 @@ const RulePackConstructor = ({
       } else {
         if (
           namespaceChange &&
+          getValues().code &&
           !getValues().code.includes("____" + namespaceChange)
         ) {
           await setValue("code", getValues().code + "____" + namespaceChange);
@@ -341,108 +352,107 @@ const RulePackConstructor = ({
     })();
   }, [nameEnChange, namespaceChange]);
 
-  return (
-    <FormProvider {...formMethods}>
-      <form
-        onSubmit={handleSubmit((data: RulePackConstructorInputs) => {
-          submit(data);
-        })}
-        className="rule-pack-constructor"
-      >
-        <h2>{titleAndSubmitButtonText}</h2>
-        <ConstructorForm
-          inputs={inputs}
-          register={register}
-          updateJSON={() => updateRulePackJSON(getValues())}
-          constructorType={ConstructorJSONsTypes.RULE_PACK}
-        />
-        <h3>Правила:</h3>
-        <div className="rule-pack-constructor__rules">
-          {fields.map(
-            (
-              field: Partial<ArrayField<RuleConstructorInputs, "id">>,
-              fieldIdx: number
-            ) => {
-              return (
-                <div className="rule-pack-constructor__rule" key={fieldIdx}>
-                  <b>{fieldIdx + 1}.</b>
-                  <div className="rule-pack-constructor__action-buttons">
-                    {actionButtons.map(
-                      (button: ActionButtonProps, buttonIdx: number) => {
-                        return (
-                          <ActionButton
-                            key={buttonIdx}
-                            mdiIconPath={button.mdiIconPath}
-                            size={1.5}
-                            action={() => {
-                              button.action(fieldIdx);
-                            }}
-                            margin="0 1rem 0 0"
-                          />
-                        );
-                      }
-                    )}
-                  </div>
-                  <RuleConstructor
-                    key={field.id}
-                    index={fieldIdx}
-                    defaultValue={fields[fieldIdx]}
-                  />
-                </div>
-              );
-            }
-          )}
-          <div className="rule-pack-constructor__action-buttons">
-            <button
-              type="button"
-              className="btn u-mr-sm"
-              onClick={async () => {
-                await append({
-                  left: {
-                    format: MathInputFormat.TEX,
-                    expression: "",
-                  },
-                  right: {
-                    format: MathInputFormat.TEX,
-                    expression: "",
-                  },
-                  basedOnTaskContext: true,
-                  matchJumbledAndNested: true,
-                });
-                updateRulePackJSON(getValues());
-              }}
-            >
-              <Icon path={mdiPlus} size={1.2} />
-              <span>правило</span>
-            </button>
-          </div>
-        </div>
-        {/*server response messages*/}
-        {errorMsg && (
-          <div className="alert alert-danger" role="alert">
-            {errorMsg}
-          </div>
-        )}
-        {successMsg && (
-          <div className="alert alert-success" role="alert">
-            {successMsg}
-          </div>
-        )}
-        <button
-          type="button"
-          className="btn"
-          onClick={() => {
-            console.log(getValues());
-          }}
+  if (showSpinner) {
+    return (
+      <div style={{ margin: "2rem" }}>
+        <ClipLoader loading={showSpinner} />
+      </div>
+    );
+  } else {
+    return (
+      <FormProvider {...formMethods}>
+        <form
+          onSubmit={handleSubmit((data: RulePackConstructorInputs) => {
+            submit(data);
+          })}
+          className="rule-pack-constructor"
         >
-          get values
-        </button>
-        <button type="submit" className="btn u-mt-sm">
-          {titleAndSubmitButtonText}
-        </button>
-      </form>
-    </FormProvider>
-  );
+          <h2>{titleAndSubmitButtonText}</h2>
+          <ConstructorForm
+            inputs={inputs}
+            register={register}
+            updateJSON={() => updateRulePackJSON(getValues())}
+            constructorType={ConstructorJSONsTypes.RULE_PACK}
+          />
+          <h3>Правила:</h3>
+          <div className="rule-pack-constructor__rules">
+            {fields.map(
+              (
+                field: Partial<ArrayField<RuleConstructorInputs, "id">>,
+                fieldIdx: number
+              ) => {
+                return (
+                  <div className="rule-pack-constructor__rule" key={fieldIdx}>
+                    <b>{fieldIdx + 1}.</b>
+                    <div className="rule-pack-constructor__action-buttons">
+                      {actionButtons.map(
+                        (button: ActionButtonProps, buttonIdx: number) => {
+                          return (
+                            <ActionButton
+                              key={buttonIdx}
+                              mdiIconPath={button.mdiIconPath}
+                              size={1.5}
+                              action={() => {
+                                button.action(fieldIdx);
+                              }}
+                              margin="0 1rem 0 0"
+                            />
+                          );
+                        }
+                      )}
+                    </div>
+                    <RuleConstructor
+                      key={field.id}
+                      index={fieldIdx}
+                      defaultValue={fields[fieldIdx]}
+                    />
+                  </div>
+                );
+              }
+            )}
+            <div className="rule-pack-constructor__action-buttons">
+              <button
+                type="button"
+                className="btn u-mr-sm"
+                onClick={async () => {
+                  await append({
+                    left: {
+                      format: MathInputFormat.TEX,
+                      expression: "",
+                    },
+                    right: {
+                      format: MathInputFormat.TEX,
+                      expression: "",
+                    },
+                    basedOnTaskContext: true,
+                    matchJumbledAndNested: true,
+                  });
+                  updateRulePackJSON(getValues());
+                }}
+              >
+                <Icon path={mdiPlus} size={1.2} />
+                <span>правило</span>
+              </button>
+            </div>
+          </div>
+          {/*server response messages*/}
+          {errorMsg && (
+            <div className="alert alert-danger" role="alert">
+              {errorMsg}
+            </div>
+          )}
+          {successMsg && (
+            <div className="alert alert-success" role="alert">
+              {successMsg}
+            </div>
+          )}
+          <button type="submit" className="btn u-mt-sm">
+            {titleAndSubmitButtonText}
+          </button>
+        </form>
+      </FormProvider>
+    );
+  }
 };
 
 // connecting redux props

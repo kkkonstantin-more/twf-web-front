@@ -4,7 +4,8 @@ import { FormProvider, useForm } from "react-hook-form";
 import { useParams } from "react-router-dom";
 // custom hooks
 import useCreationMode from "../hooks/useCreationType";
-// components
+// lib components
+// custom components
 import ConstructorForm from "../../components/constructor-form/constructor-form.component";
 import ServerResponseAlert from "../../components/server-response-alert/server-response-alert.component";
 // redux
@@ -42,6 +43,7 @@ import {
 } from "../../utils/local-storage/last-edited-creation-type";
 // styles
 import "./namespace-constructor.styles.scss";
+import { ClipLoader } from "react-spinners";
 
 const NamespaceConstructorComponent = ({
   namespaceJSON,
@@ -73,7 +75,10 @@ const NamespaceConstructorComponent = ({
     watch,
     setValue,
   } = formMethods;
-
+  // show spinner while fetching
+  const [showSpinner, setShowSpinner] = useState<boolean>(
+    creationMode !== ConstructorCreationMode.CREATE
+  );
   // set initial values due to creation mode
   useEffect(() => {
     if (creationMode === ConstructorCreationMode.CREATE) {
@@ -95,6 +100,7 @@ const NamespaceConstructorComponent = ({
         code === namespaceJSON.code
       ) {
         reset(namespaceJSON);
+        setShowSpinner(false);
       } else {
         (async () => {
           const res = await NamespaceConstructorRequestHandler.getOne(code);
@@ -108,6 +114,7 @@ const NamespaceConstructorComponent = ({
             creationMode
           );
           updateNamespaceJSON(getValues());
+          setShowSpinner(false);
         })();
       }
     } else if (creationMode === ConstructorCreationMode.CREATE_BY_EXAMPLE) {
@@ -116,6 +123,7 @@ const NamespaceConstructorComponent = ({
         getLastExampleConstructorCode(ConstructorJSONsTypes.NAMESPACE) === code
       ) {
         reset(namespaceJSON);
+        setShowSpinner(false);
       } else {
         (async () => {
           const res = await NamespaceConstructorRequestHandler.getOne(code);
@@ -133,6 +141,7 @@ const NamespaceConstructorComponent = ({
           );
           setLastExampleConstructorCode(ConstructorJSONsTypes.NAMESPACE, code);
           updateNamespaceJSON(getValues());
+          setShowSpinner(false);
         })();
       }
     }
@@ -219,36 +228,37 @@ const NamespaceConstructorComponent = ({
       });
   };
 
-  return (
-    <FormProvider {...formMethods}>
-      <form
-        className="namespace-constructor"
-        onSubmit={handleSubmit((data: NamespaceConstructorInputs) => {
-          submit(data, creationMode);
-        })}
-      >
-        <h1>Создать Namespace</h1>
-        <ConstructorForm
-          inputs={inputs}
-          register={register}
-          // @ts-ignore
-          updateJSON={() => updateNamespaceJSON(getValues())}
-          constructorType={ConstructorJSONsTypes.NAMESPACE}
-        />
-        <ServerResponseAlert errorMsg={errorMsg} successMsg={successMsg} />
-        <button
-          type="button"
-          className="btn"
-          onClick={() => console.log(getValues())}
+  if (showSpinner) {
+    return (
+      <div style={{ margin: "2rem" }}>
+        <ClipLoader loading={showSpinner} />
+      </div>
+    );
+  } else {
+    return (
+      <FormProvider {...formMethods}>
+        <form
+          className="namespace-constructor"
+          onSubmit={handleSubmit((data: NamespaceConstructorInputs) => {
+            submit(data, creationMode);
+          })}
         >
-          Get values
-        </button>
-        <button type="submit" className="btn">
-          {titleAndSubmitButtonText}
-        </button>
-      </form>
-    </FormProvider>
-  );
+          <h1>{titleAndSubmitButtonText}</h1>
+          <ConstructorForm
+            inputs={inputs}
+            register={register}
+            // @ts-ignore
+            updateJSON={() => updateNamespaceJSON(getValues())}
+            constructorType={ConstructorJSONsTypes.NAMESPACE}
+          />
+          <ServerResponseAlert errorMsg={errorMsg} successMsg={successMsg} />
+          <button type="submit" className="btn">
+            {titleAndSubmitButtonText}
+          </button>
+        </form>
+      </FormProvider>
+    );
+  }
 };
 
 // connecting redux props

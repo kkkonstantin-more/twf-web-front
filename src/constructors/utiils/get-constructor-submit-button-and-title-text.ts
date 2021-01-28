@@ -31,7 +31,7 @@ const getConstructorSubmitButtonAndTitleText = (
     case ConstructorCreationMode.CREATE:
       return "Создать " + entityName;
     case ConstructorCreationMode.CREATE_BY_EXAMPLE:
-      return `Создать пакет правил на основе ${entityNameInGenitiveCast} ${code}`;
+      return `Создать ${entityName} на основе ${entityNameInGenitiveCast} ${code}`;
     case ConstructorCreationMode.EDIT:
       return "Изменить " + entityName;
   }
