@@ -1,39 +1,46 @@
 // libs and hooks
 import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 // lib components
 import { Steps } from "antd";
+import { EditableMathField, MathField } from "react-mathquill";
 // custom components
-import MathQuillEditor from "../../components/math-quill-editor/math-quill-editor";
 import ServerResponseAlert from "../../components/server-response-alert/server-response-alert.component";
 import ActionButton from "../../components/action-button/action-button.component";
 import AppSpinner from "../../components/app-spinner/app-spinner";
+import TexEditorActionsTab from "../../components/tex-editor-actions-tab/tex-editor-actions-tab";
 // utils
 import { checkTex } from "../../utils/kotlin-lib-functions";
 import TaskSetConstructorRequestsHandler from "../../constructors/task-set-constructor/task-set-constructor.requests-handler";
 import { TaskSetConstructorReceivedForm } from "../../constructors/task-set-constructor/task-set-constructor.types";
+import { addStyles } from "react-mathquill";
 // types
 import { TaskConstructorReceivedForm } from "../../constructors/task-constructor/task-constructor.types";
+// icons
+import { mdiArrowLeftBoldBox, mdiArrowRightBoldBox } from "@mdi/js";
 // styles
 import "./solve-math-page.scss";
 import "antd/dist/antd.compact.min.css";
-// icons
-import { mdiArrowLeftBoldBox, mdiArrowRightBoldBox } from "@mdi/js";
-import { useParams } from "react-router-dom";
 
-const { Step } = Steps;
+// adding mathquill styles
+addStyles();
 
 const SolveMathPage: React.FC = () => {
+  const { Step } = Steps;
+
   const [isTaskSetFetched, setIsTaskSetFetched] = useState<boolean>(false);
   const [taskSet, setTaskSet] = useState<TaskSetConstructorReceivedForm>();
   const [currentTaskIdx, setCurrentTaskIdx] = useState<number>(0);
   const [solutions, setSolutions] = useState<string[]>([]);
-  const [checkedSolution, setCheckedSolution] = useState<string>("");
-  const [showSolution, setShowSolution] = useState<boolean>(false);
-  const [errMsg, setErrMsg] = useState<null | string>(null);
-  const [successMsg, setSuccessMsg] = useState<null | "Правильно!">(null);
+  const [errMessages, setErrMessages] = useState<(string | null)[]>([]);
+  const [successMessages, setSuccessMessages] = useState<
+    ("Правильно!" | null)[]
+  >([]);
+  const [mathField, setMathField] = useState<MathField>();
 
   const { taskSetCode } = useParams();
 
+  // fetching taskSet
   useEffect(() => {
     TaskSetConstructorRequestsHandler.getOne(taskSetCode).then(
       (res: TaskSetConstructorReceivedForm) => {
@@ -44,14 +51,62 @@ const SolveMathPage: React.FC = () => {
               task.originalExpressionTex + "=...=" + task.goalExpressionTex
           )
         );
+        setSolutions(
+          res.tasks.map((task: TaskConstructorReceivedForm) => {
+            return (
+              task.originalExpressionTex + "=...=" + task.goalExpressionTex
+            );
+          })
+        );
         setIsTaskSetFetched(true);
       }
     );
   }, []);
 
-  const rerenderComponent = async () => {
-    await setIsTaskSetFetched(false);
-    await setIsTaskSetFetched(true);
+  const updateSolutions = (solutionIdx: number, mathField: MathField) => {
+    setSolutions((prevState: string[]) =>
+      prevState.map((solution: string, i: number) =>
+        i === solutionIdx ? mathField.latex() : solution
+      )
+    );
+  };
+
+  const onCheckTex = (solutionInTex: string) => {
+    if (taskSet?.tasks[currentTaskIdx]) {
+      const res = checkTex(
+        solutionInTex,
+        taskSet?.tasks[currentTaskIdx].originalExpressionStructureString,
+        taskSet?.tasks[currentTaskIdx].goalExpressionStructureString
+      );
+      if (res.errorMessage) {
+        setSuccessMessages((prevState) => {
+          const newState = [...prevState];
+          newState[currentTaskIdx] = null;
+          return newState;
+        });
+        setErrMessages((prevState) => {
+          const newState = [...prevState];
+          newState[currentTaskIdx] = res.errorMessage;
+          return newState;
+        });
+      } else {
+        setErrMessages((prevState) => {
+          const newState = [...prevState];
+          newState[currentTaskIdx] = null;
+          return newState;
+        });
+        setSuccessMessages((prevState) => {
+          const newState = [...prevState];
+          newState[currentTaskIdx] = "Правильно!";
+          return newState;
+        });
+      }
+      setSolutions((prevState: string[]) =>
+        prevState.map((solution: string, i: number) =>
+          i === currentTaskIdx ? res.validatedSolution : solution
+        )
+      );
+    }
   };
 
   if (isTaskSetFetched) {
@@ -69,104 +124,72 @@ const SolveMathPage: React.FC = () => {
                 return (
                   <Step
                     key={i}
-                    title={
-                      <b
-                        style={{ cursor: "pointer" }}
-                        onClick={async () => {
-                          await setCurrentTaskIdx(i);
-                          await rerenderComponent();
-                        }}
-                      >
-                        {task.nameRu}
-                      </b>
-                    }
+                    style={{ cursor: "pointer" }}
+                    onClick={() => {
+                      setCurrentTaskIdx((prevIdx) => {
+                        if (mathField) {
+                          updateSolutions(prevIdx, mathField);
+                        }
+                        return i;
+                      });
+                    }}
+                    title={<b>{task.nameRu}</b>}
                   />
                 );
               }
             )}
           </Steps>
         </div>
-        {!showSolution && solutions[currentTaskIdx] && (
-          <div className="solve-math__editor">
-            <input type="text" style={{ display: "none" }} />
-            <MathQuillEditor
-              width={"60vw"}
-              startingLatexExpression={solutions[currentTaskIdx]}
-              updateValue={(value: string) =>
-                setSolutions((prevState) =>
-                  prevState.map((solution, i) =>
-                    i === currentTaskIdx ? value : solution
-                  )
-                )
-              }
+        <div className="solve-math__tex-solution u-mt-md">
+          {mathField && <TexEditorActionsTab mathField={mathField} />}
+          <EditableMathField
+            latex={solutions[currentTaskIdx]}
+            mathquillDidMount={(mathField: MathField) => {
+              setMathField(mathField);
+            }}
+            style={{
+              minWidth: "40rem",
+              maxWidth: window.innerWidth - 100 + "px",
+            }}
+          />
+        </div>
+        <ServerResponseAlert
+          errorMsg={errMessages[currentTaskIdx]}
+          successMsg={successMessages[currentTaskIdx]}
+          style={{ marginTop: "2rem", maxWidth: window.innerWidth / 2 }}
+        />
+        <div className="solve-math__buttons">
+          <div>
+            <ActionButton
+              mdiIconPath={mdiArrowLeftBoldBox}
+              size={2}
+              margin={"0 1rem 0 0"}
+              action={async () => {
+                if (currentTaskIdx !== 0) {
+                  setCurrentTaskIdx((prevState) => --prevState);
+                }
+              }}
+            />
+            <ActionButton
+              mdiIconPath={mdiArrowRightBoldBox}
+              size={2}
+              action={async () => {
+                if (currentTaskIdx !== solutions.length - 1) {
+                  setCurrentTaskIdx((prevState) => ++prevState);
+                }
+              }}
             />
           </div>
-        )}
-        {showSolution && (
-          <div className="solve-math__editor">
-            <MathQuillEditor
-              width={"60vw"}
-              startingLatexExpression={checkedSolution}
-            />
-            <ServerResponseAlert errorMsg={errMsg} successMsg={successMsg} />
-          </div>
-        )}
-        <div className="solve-math__actions">
-          {!showSolution && (
-            <div>
-              <ActionButton
-                mdiIconPath={mdiArrowLeftBoldBox}
-                size={2}
-                margin={"0 1rem 0 0"}
-                action={async () => {
-                  if (currentTaskIdx !== 0) {
-                    setCurrentTaskIdx((prevState) => --prevState);
-                    await rerenderComponent();
-                  }
-                }}
-              />
-              <ActionButton
-                mdiIconPath={mdiArrowRightBoldBox}
-                size={2}
-                action={async () => {
-                  if (currentTaskIdx !== solutions.length - 1) {
-                    setCurrentTaskIdx((prevState) => ++prevState);
-                    await rerenderComponent();
-                  }
-                }}
-              />
-            </div>
-          )}
           <div>
             <button
               className="btn u-mr-sm"
-              onClick={async () => {
-                if (!showSolution) {
-                  if (taskSet?.tasks[currentTaskIdx]) {
-                    const res = checkTex(
-                      solutions[currentTaskIdx],
-                      taskSet?.tasks[currentTaskIdx]
-                        .originalExpressionStructureString,
-                      taskSet?.tasks[currentTaskIdx]
-                        .goalExpressionStructureString
-                    );
-                    setCheckedSolution(res.validatedSolution);
-                    setShowSolution(true);
-                    if (res.errorMessage !== "") {
-                      setSuccessMsg(null);
-                      setErrMsg(res.errorMessage);
-                    } else {
-                      setErrMsg(null);
-                      setSuccessMsg("Правильно!");
-                    }
-                  }
-                } else {
-                  await rerenderComponent();
-                  setShowSolution(false);
+              onClick={() => {
+                if (mathField) {
+                  onCheckTex(mathField?.latex());
                 }
               }}
             >
-              {showSolution ? "Вернуться к решению" : "Проверить"}
+              Проверить
             </button>
             <button
               className="btn"

@@ -1,14 +1,19 @@
 // libs and hooks
-import React from "react";
+import React, { CSSProperties } from "react";
 
 export interface ServerResponseAlert {
   errorMsg: string | null;
   successMsg: string | null;
+  style?: CSSProperties;
 }
 
-const ServerResponseAlert = ({ errorMsg, successMsg }: ServerResponseAlert) => {
+const ServerResponseAlert = ({
+  errorMsg,
+  successMsg,
+  style,
+}: ServerResponseAlert) => {
   return (
-    <>
+    <div style={style}>
       {errorMsg && (
         <div
           style={{ width: "100%" }}
@@ -27,7 +32,7 @@ const ServerResponseAlert = ({ errorMsg, successMsg }: ServerResponseAlert) => {
           {successMsg}
         </div>
       )}
-    </>
+    </div>
   );
 };
 
