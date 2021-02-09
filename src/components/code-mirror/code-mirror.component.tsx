@@ -557,7 +557,8 @@ const CodeMirrorEditor = ({
           )
             .split(":")
             .map((item: string) => {
-              if (item.endsWith(",")) {
+              item = item.trim();
+              if (item.endsWith('",')) {
                 item = item.slice(0, -1);
               }
               return item.replace(/\"/g, "");
@@ -567,7 +568,8 @@ const CodeMirrorEditor = ({
             .getLine(changeObject.from.line)
             .split(":")
             .map((item: string) => {
-              if (item.endsWith(",")) {
+              item = item.trim();
+              if (item.endsWith('",')) {
                 item = item.slice(0, -1);
               }
               return item.replace(/\"/g, "");
