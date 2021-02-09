@@ -557,14 +557,20 @@ const CodeMirrorEditor = ({
           )
             .split(":")
             .map((item: string) => {
-              return item.replace(/\"|\,/g, "").trim();
+              if (item.endsWith(",")) {
+                item = item.slice(0, -1);
+              }
+              return item.replace(/\"/g, "");
             });
 
           const [newExp, newVal] = editor
             .getLine(changeObject.from.line)
             .split(":")
             .map((item: string) => {
-              return item.replace(/\"|\,/g, "").trim();
+              if (item.endsWith(",")) {
+                item = item.slice(0, -1);
+              }
+              return item.replace(/\"/g, "");
             });
 
           const getPositions = (
@@ -647,8 +653,6 @@ const CodeMirrorEditor = ({
 
           let expPrefix = "";
 
-          console.log(notMatchingOpeningBrackets);
-
           notMatchingOpeningBrackets.forEach(
             (
               item: CodeMirrorWordPosition,
@@ -688,7 +692,6 @@ const CodeMirrorEditor = ({
                   currentSearchLine
                 )[0];
                 const propertyPath = expPrefix + newExp;
-                console.log(propertyPath);
                 const [closingBracketPos] = getPositions("]", item.from, {
                   line: editor.lastLine(),
                   ch: 999,
@@ -736,7 +739,6 @@ const CodeMirrorEditor = ({
               }
             }
           );
-          console.log(expPrefix + newExp);
 
           addOneLineChangeToHistory(
             {
@@ -864,7 +866,6 @@ const CodeMirrorEditor = ({
             }
           }
         });
-        console.log("ERRORS:", errors);
         checkActiveErrors(editor);
         // removeNotActualGutters(errors);
       });

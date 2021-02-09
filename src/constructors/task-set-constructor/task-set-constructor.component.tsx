@@ -354,7 +354,11 @@ const TaskSetConstructor = ({
   };
 
   if (showSpinner) {
-    return <ClipLoader loading={showSpinner} />;
+    return (
+      <div style={{ margin: "2rem" }}>
+        <ClipLoader loading={showSpinner} />
+      </div>
+    );
   } else {
     return (
       <div className="task-set-constructor">
