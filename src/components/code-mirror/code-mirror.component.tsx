@@ -153,6 +153,34 @@ const CodeMirrorEditor = ({
     }
   })();
 
+  const getKeyValuePairFromLine = (
+    editor: CodeMirror.Editor,
+    line: number
+  ): {
+    key: string;
+    value: string;
+  } | null => {
+    const lineValue: string = editor.getLine(line);
+    let [key, value] = lineValue.split(":").map((item: string) => item.trim());
+    if (!key.startsWith('"') || !key.endsWith('"')) {
+      return null;
+    } else {
+      key = key.split('"')[1];
+    }
+    if (value.endsWith(",")) {
+      value = value.slice(0, -1);
+    }
+    if (value.startsWith('"') && value.endsWith('"')) {
+      value = value.split('"')[1];
+    } else {
+      value = value.trim();
+    }
+    return {
+      key,
+      value,
+    };
+  };
+
   const getWordPositions = (
     editor: CodeMirror.Editor,
     word: string,
@@ -419,8 +447,6 @@ const CodeMirrorEditor = ({
     Array.from(
       document.querySelectorAll("div .CodeMirror-lint-marker-error")
     ).forEach((element: Element) => {
-      console.log(element.id);
-      console.log(errors);
       if (
         !errors.some((error: CMError) => {
           return error.gutterId === element.id;
@@ -459,7 +485,7 @@ const CodeMirrorEditor = ({
   };
 
   useEffect(() => {
-    if (editor && currentHistoryChange) {
+    if (editor && currentHistoryChange && undoOrRedoIsTriggered) {
       try {
         if (currentHistoryChange.type === "ONE_LINE_CHANGE") {
           const cursorPos = editor.getCursor();
@@ -487,11 +513,12 @@ const CodeMirrorEditor = ({
           updateCurrentReduxJSON(currentHistoryChange.item);
         }
       } catch {
-        console.log("invalid JSON");
         return;
       }
     }
   }, [currentHistoryChange]);
+
+  const [undoOrRedoIsTriggered, setUndoOrRedoIsTriggered] = useState(false);
 
   useEffect(() => {
     const initialValue = currentReduxJSON;
@@ -508,7 +535,6 @@ const CodeMirrorEditor = ({
         // @ts-ignore
         initialValue.rulePacks = initialValue.rulePacks.split(",");
       }
-      console.log(initialValue);
     }
     if (entryPoint.current) {
       const editor = CodeMirror(entryPoint.current, {
@@ -525,10 +551,14 @@ const CodeMirrorEditor = ({
       });
 
       editor.undo = () => {
+        setUndoOrRedoIsTriggered(true);
         undo();
+        setUndoOrRedoIsTriggered(false);
       };
       editor.redo = () => {
+        setUndoOrRedoIsTriggered(true);
         redo();
+        setUndoOrRedoIsTriggered(false);
       };
 
       editor.on("changes", (editor, changes) => {
@@ -543,6 +573,7 @@ const CodeMirrorEditor = ({
       });
 
       editor.on("change", (editor, changeObject) => {
+        console.log(getKeyValuePairFromLine(editor, 6));
         if (
           changeObject.origin === "+input" ||
           (changeObject.origin === "+delete" &&
@@ -820,7 +851,6 @@ const CodeMirrorEditor = ({
           getExcessiveProps(editor.getValue()),
           editor.getCursor().line
         );
-        const allExpressions = getAllExpressions(editor);
         // console.log(allExpressions);
         // check format on current line
         const line = editor.getLine(editor.getCursor().line);
