@@ -820,39 +820,102 @@ const CodeMirrorEditor = ({
           getExcessiveProps(editor.getValue()),
           editor.getCursor().line
         );
-        getAllExpressions(editor).forEach((expression) => {
-          // check formats
-          const formatOnCurrentLinePos = getWordPositions(
-            editor,
-            expression.format,
-            true,
-            editor.getCursor().line,
-            true
-          ) as CodeMirrorWordPosition | undefined;
+        const allExpressions = getAllExpressions(editor);
+        // console.log(allExpressions);
+        // check format on current line
+        const line = editor.getLine(editor.getCursor().line);
+        if (line.includes('"format":')) {
+          const [_, formatOnCurrentLine] = editor
+            .getLine(changeObject.from.line)
+            .split(":")
+            .map((item: string) => {
+              item = item.trim();
+              if (item.endsWith('",')) {
+                item = item.slice(0, -1);
+              }
+              return item.replace(/\"/g, "");
+            });
           if (
-            formatOnCurrentLinePos &&
-            expression.format !== MathInputFormat.STRUCTURE_STRING &&
-            expression.format !== MathInputFormat.PLAIN_TEXT &&
-            expression.format !== MathInputFormat.TEX
+            formatOnCurrentLine &&
+            formatOnCurrentLine !== MathInputFormat.STRUCTURE_STRING &&
+            formatOnCurrentLine !== MathInputFormat.PLAIN_TEXT &&
+            formatOnCurrentLine !== MathInputFormat.TEX
           ) {
-            setErrorLineAndGutter(
+            const wordPosition = getWordPositions(
               editor,
-              formatOnCurrentLinePos,
-              "invalid expression format",
-              CMErrorType.WRONG_EXP_FORMAT
-            );
-          } else {
-            // check expressions
-            const expressionOnCurrentLine = getWordPositions(
-              editor,
-              expression.expression,
+              formatOnCurrentLine,
               true,
               editor.getCursor().line,
               true
-            );
+            ) as CodeMirrorWordPosition | undefined;
+            if (wordPosition) {
+              setErrorLineAndGutter(
+                editor,
+                wordPosition,
+                "invalid expression format",
+                CMErrorType.WRONG_EXP_FORMAT
+              );
+            }
+          }
+        }
+        if (line.includes('"expression":')) {
+          const [_, expressionOnCurrentLine] = editor
+            .getLine(changeObject.from.line)
+            .split(":")
+            .map((item: string) => {
+              item = item.trim();
+              if (item.endsWith('",')) {
+                item = item.slice(0, -1);
+              }
+              return item.replace(/\"/g, "");
+            });
+          let format: string = "";
+          let searchLine = changeObject.from.line;
+          while (!editor.getLine(searchLine).includes("{")) {
+            if (editor.getLine(searchLine).includes('"format":')) {
+              format = editor
+                .getLine(searchLine)
+                .split(":")
+                .map((item: string) => {
+                  item = item.trim();
+                  if (item.endsWith('",')) {
+                    item = item.slice(0, -1);
+                  }
+                  return item.replace(/\"/g, "");
+                })[1];
+              break;
+            } else {
+              searchLine--;
+            }
+          }
+          if (!format) {
+            searchLine = changeObject.from.line;
+            while (!editor.getLine(searchLine).includes("}")) {
+              if (editor.getLine(searchLine).includes('"format":')) {
+                format = editor
+                  .getLine(searchLine)
+                  .split(":")
+                  .map((item: string) => {
+                    item = item.trim();
+                    if (item.endsWith('",')) {
+                      item = item.slice(0, -1);
+                    }
+                    return item.replace(/\"/g, "");
+                  })[1];
+                break;
+              } else {
+                searchLine++;
+              }
+            }
+          }
+          if (
+            format === MathInputFormat.STRUCTURE_STRING ||
+            format === MathInputFormat.PLAIN_TEXT ||
+            format === MathInputFormat.TEX
+          ) {
             const errorMsg: string | null = getErrorFromMathInput(
-              expression.format as MathInputFormat,
-              expression.expression
+              format as MathInputFormat,
+              expressionOnCurrentLine
             );
             if (
               expressionOnCurrentLine &&
@@ -861,15 +924,81 @@ const CodeMirrorEditor = ({
             ) {
               setErrorLineAndGutter(
                 editor,
-                expressionOnCurrentLine,
+                {
+                  from: {
+                    line: changeObject.from.line,
+                    ch: editor
+                      .getLine(changeObject.from.line)
+                      .indexOf(expressionOnCurrentLine[0]),
+                  },
+                  to: {
+                    line: changeObject.from.line,
+                    ch: editor
+                      .getLine(changeObject.from.line)
+                      .indexOf(
+                        expressionOnCurrentLine[
+                          expressionOnCurrentLine.length - 1
+                        ]
+                      ),
+                  },
+                },
                 errorMsg,
                 CMErrorType.INVALID_EXP
               );
             }
           }
-        });
+        }
+        // check expression on current line
+        // allExpressions.forEach((expression) => {
+        //   // check formats
+        //   const formatOnCurrentLinePos = getWordPositions(
+        //     editor,
+        //     expression.format,
+        //     true,
+        //     editor.getCursor().line,
+        //     true
+        //   ) as CodeMirrorWordPosition | undefined;
+        //   if (
+        //     formatOnCurrentLinePos &&
+        //     expression.format !== MathInputFormat.STRUCTURE_STRING &&
+        //     expression.format !== MathInputFormat.PLAIN_TEXT &&
+        //     expression.format !== MathInputFormat.TEX
+        //   ) {
+        //     setErrorLineAndGutter(
+        //       editor,
+        //       formatOnCurrentLinePos,
+        //       "invalid expression format",
+        //       CMErrorType.WRONG_EXP_FORMAT
+        //     );
+        //   } else {
+        //     // check expressions
+        //     const expressionOnCurrentLine = getWordPositions(
+        //       editor,
+        //       expression.expression,
+        //       true,
+        //       editor.getCursor().line,
+        //       true
+        //     );
+        //     const errorMsg: string | null = getErrorFromMathInput(
+        //       expression.format as MathInputFormat,
+        //       expression.expression
+        //     );
+        //     if (
+        //       expressionOnCurrentLine &&
+        //       !Array.isArray(expressionOnCurrentLine) &&
+        //       errorMsg !== null
+        //     ) {
+        //       setErrorLineAndGutter(
+        //         editor,
+        //         expressionOnCurrentLine,
+        //         errorMsg,
+        //         CMErrorType.INVALID_EXP
+        //       );
+        //     }
+        //   }
+        // });
         checkActiveErrors(editor);
-        // removeNotActualGutters(errors);
+        removeNotActualGutters(errors);
       });
       setEditor(editor);
     }
