@@ -537,6 +537,7 @@ const CodeMirrorEditor = ({
       }
     }
     if (entryPoint.current) {
+      // setup editor
       const editor = CodeMirror(entryPoint.current, {
         value: JSON.stringify(currentReduxJSON, null, 2),
         mode: "application/ld+json",
@@ -549,7 +550,7 @@ const CodeMirrorEditor = ({
         lineWrapping: true,
         autoCloseBrackets: true,
       });
-
+      // setup undo redo logic
       editor.undo = () => {
         setUndoOrRedoIsTriggered(true);
         undo();
@@ -560,26 +561,11 @@ const CodeMirrorEditor = ({
         redo();
         setUndoOrRedoIsTriggered(false);
       };
-
-      editor.on("changes", (editor, changes) => {
-        // console.log(editor);
-        // changes.forEach((change: any) => {
-        //   checkExcessivePropInLine(
-        //     editor,
-        //     getExcessiveProps(editor.getValue()),
-        //     change.from.line
-        //   );
-        // });
-      });
-
+      // setup editor's onchange actions
       editor.on("change", (editor, changeObject) => {
-        console.log(getKeyValuePairFromLine(editor, 6));
-        if (
-          changeObject.origin === "+input" ||
-          (changeObject.origin === "+delete" &&
-            changeObject.removed &&
-            changeObject.removed.length === 1)
-        ) {
+        const numberOfChangedLines = changeObject.removed?.length;
+        // one line change
+        if (numberOfChangedLines === 1) {
           const [oldExp, oldVal] = (
             editor
               .getLine(changeObject.from.line)
@@ -787,10 +773,9 @@ const CodeMirrorEditor = ({
             updateCurrentReduxJSON(JSON.parse(editor.getValue()));
           } catch {}
         } else if (
-          (changeObject.origin === "cut" ||
-            changeObject.origin === "+delete") &&
-          changeObject.removed &&
-          changeObject.removed.length > 1
+          numberOfChangedLines &&
+          numberOfChangedLines > 1 &&
+          changeObject.removed
         ) {
           const oldVal =
             editor.getRange(
