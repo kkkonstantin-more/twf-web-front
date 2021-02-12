@@ -486,7 +486,12 @@ const CodeMirrorEditor = ({
     });
   };
 
-  const getPositions = (query: string, start: Position, end: Position) => {
+  const getPositions = (
+    editor: CodeMirror.Editor,
+    query: string,
+    start: Position,
+    end: Position
+  ) => {
     const res: CodeMirrorWordPosition[] = [];
     // @ts-ignore
     const cursor = editor.getSearchCursor(query, start);
@@ -499,6 +504,18 @@ const CodeMirrorEditor = ({
       cursor.findNext();
     }
     return res;
+  };
+
+  const getKeyAndValueFromLine = (
+    editor: CodeMirror.Editor,
+    line: number
+  ): string[] => {
+    return editor
+      .getLine(line)
+      .split(":")
+      .map((item: string) => {
+        return item.replace(/\"|\,/g, "").trim();
+      });
   };
 
   useEffect(() => {
@@ -525,11 +542,13 @@ const CodeMirrorEditor = ({
           editor.setValue(JSON.stringify(newEditorVal, null, 2));
           editor.setCursor(cursorPos);
         } else if (currentHistoryChange.type === "MULTIPLE_LINES_CHANGE") {
+          console.log("AAAAAAA");
           editor.setValue(JSON.stringify(currentHistoryChange.item, null, 2));
           // @ts-ignore
           updateCurrentReduxJSON(currentHistoryChange.item);
         }
       } catch {
+        console.log("ERROR WHILE UNDO REDO");
         return;
       }
     }
@@ -582,15 +601,19 @@ const CodeMirrorEditor = ({
       editor.on("change", (editor, changeObject) => {
         console.log(changeObject);
         const numberOfChangedLines: number | undefined =
-          changeObject.removed?.length;
+          changeObject.text.length !== 0
+            ? changeObject.removed?.length
+            : changeObject.text.length;
         const changedLineNum: number = changeObject.from.line;
+        console.log(numberOfChangedLines);
         // one line change
         if (
-          numberOfChangedLines === 1 &&
-          (changeObject.origin === "+input" ||
-            changeObject.origin === "paste" ||
-            changeObject.origin === "+delete" ||
-            changeObject.origin === "cut")
+          ((changeObject.origin === "+input" ||
+            changeObject.origin === "paste") &&
+            changeObject.text.length === 1) ||
+          ((changeObject.origin === "+delete" ||
+            changeObject.origin === "cut") &&
+            changeObject.removed?.length === 1)
         ) {
           const { key: newKey, value: newVal } = getKeyValuePairFromLine(
             editor.getLine(changedLineNum)
@@ -630,6 +653,7 @@ const CodeMirrorEditor = ({
               brackets.push({
                 char: "{",
                 position: getPositions(
+                  editor,
                   "{",
                   { line: searchLine, ch: 0 },
                   { line: searchLine, ch: 999 }
@@ -639,6 +663,7 @@ const CodeMirrorEditor = ({
               brackets.push({
                 char: "[",
                 position: getPositions(
+                  editor,
                   "[",
                   { line: searchLine, ch: 0 },
                   { line: searchLine, ch: 999 }
@@ -664,18 +689,6 @@ const CodeMirrorEditor = ({
                 return 0;
               }
             });
-
-          const getKeyAndValueFromLine = (
-            editor: CodeMirror.Editor,
-            line: number
-          ): string[] => {
-            return editor
-              .getLine(line)
-              .split(":")
-              .map((item: string) => {
-                return item.replace(/\"|\,/g, "").trim();
-              });
-          };
 
           let expPrefix = "";
 
@@ -718,11 +731,17 @@ const CodeMirrorEditor = ({
                   currentSearchLine
                 )[0];
                 const propertyPath = expPrefix + newKey;
-                const [closingBracketPos] = getPositions("]", item.from, {
-                  line: editor.lastLine(),
-                  ch: 999,
-                });
+                const [closingBracketPos] = getPositions(
+                  editor,
+                  "]",
+                  item.from,
+                  {
+                    line: editor.lastLine(),
+                    ch: 999,
+                  }
+                );
                 let occurrences = getPositions(
+                  editor,
                   `"${propertyPath.split(".")[0]}":`,
                   item.from,
                   closingBracketPos.from
@@ -733,9 +752,10 @@ const CodeMirrorEditor = ({
                     occurrences.filter((occ: CodeMirrorWordPosition) => {
                       return (
                         getPositions(
+                          editor,
                           `"${level}":`,
                           occ.from,
-                          getPositions("}", occ.from, {
+                          getPositions(editor, "}", occ.from, {
                             line: editor.lastLine(),
                             ch: 999,
                           })[0].from
@@ -745,9 +765,10 @@ const CodeMirrorEditor = ({
                     occurrences = occurrences.map(
                       (occ: CodeMirrorWordPosition) => {
                         return getPositions(
+                          editor,
                           `"${level}":`,
                           occ.from,
-                          getPositions("}", occ.from, {
+                          getPositions(editor, "}", occ.from, {
                             line: editor.lastLine(),
                             ch: 999,
                           })[0].from
@@ -780,9 +801,9 @@ const CodeMirrorEditor = ({
             updateCurrentReduxJSON(JSON.parse(editor.getValue()));
           } catch {}
         } else if (
-          numberOfChangedLines &&
-          numberOfChangedLines > 1 &&
-          changeObject.removed
+          changeObject.origin === "cut" &&
+          changeObject.removed &&
+          changeObject.removed.length > 1
         ) {
           const oldVal =
             editor.getRange(
@@ -806,7 +827,6 @@ const CodeMirrorEditor = ({
           } catch {}
         } else if (
           changeObject.origin === "paste" &&
-          changeObject.text &&
           changeObject.text.length > 1
         ) {
           const oldVal =
