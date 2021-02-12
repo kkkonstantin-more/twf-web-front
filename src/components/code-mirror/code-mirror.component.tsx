@@ -154,17 +154,19 @@ const CodeMirrorEditor = ({
   })();
 
   const getKeyValuePairFromLine = (
-    editor: CodeMirror.Editor,
-    line: number
+    line: string
   ): {
     key: string;
     value: string;
-  } | null => {
-    const lineValue: string = editor.getLine(line);
-    let [key, value] = lineValue.split(":").map((item: string) => item.trim());
-    if (!key.startsWith('"') || !key.endsWith('"')) {
-      return null;
-    } else {
+  } => {
+    if (!line.includes(":")) {
+      return {
+        key: "",
+        value: "",
+      };
+    }
+    let [key, value] = line.split(":").map((item: string) => item.trim());
+    if (key.startsWith('"') || key.endsWith('"')) {
       key = key.split('"')[1];
     }
     if (value.endsWith(",")) {
@@ -484,6 +486,21 @@ const CodeMirrorEditor = ({
     });
   };
 
+  const getPositions = (query: string, start: Position, end: Position) => {
+    const res: CodeMirrorWordPosition[] = [];
+    // @ts-ignore
+    const cursor = editor.getSearchCursor(query, start);
+    cursor.find();
+    while (cursor.from() && cursor.to() && cursor.from().line <= end.line) {
+      res.push({
+        from: cursor.from(),
+        to: cursor.to(),
+      });
+      cursor.findNext();
+    }
+    return res;
+  };
+
   useEffect(() => {
     if (editor && currentHistoryChange && undoOrRedoIsTriggered) {
       try {
@@ -563,57 +580,33 @@ const CodeMirrorEditor = ({
       };
       // setup editor's onchange actions
       editor.on("change", (editor, changeObject) => {
-        const numberOfChangedLines = changeObject.removed?.length;
+        const numberOfChangedLines: number | undefined =
+          changeObject.removed?.length;
+        const changedLineNum: number = changeObject.from.line;
         // one line change
         if (numberOfChangedLines === 1) {
-          const [oldExp, oldVal] = (
-            editor
-              .getLine(changeObject.from.line)
-              .slice(0, changeObject.from.ch) +
-            editor.getLine(changeObject.from.line).slice(changeObject.to.ch + 1)
-          )
-            .split(":")
-            .map((item: string) => {
-              item = item.trim();
-              if (item.endsWith('",')) {
-                item = item.slice(0, -1);
-              }
-              return item.replace(/\"/g, "");
-            });
-
-          const [newExp, newVal] = editor
-            .getLine(changeObject.from.line)
-            .split(":")
-            .map((item: string) => {
-              item = item.trim();
-              if (item.endsWith('",')) {
-                item = item.slice(0, -1);
-              }
-              return item.replace(/\"/g, "");
-            });
-
-          const getPositions = (
-            query: string,
-            start: Position,
-            end: Position
-          ) => {
-            const res: CodeMirrorWordPosition[] = [];
-            // @ts-ignore
-            const cursor = editor.getSearchCursor(query, start);
-            cursor.find();
-            while (
-              cursor.from() &&
-              cursor.to() &&
-              cursor.from().line <= end.line
+          const { key: newKey, value: newVal } = getKeyValuePairFromLine(
+            editor.getLine(changedLineNum)
+          );
+          const { key: oldKey, value: oldVal } = (() => {
+            const changedLineText: string = editor.getLine(changedLineNum);
+            if (
+              changeObject.origin === "+input" ||
+              changeObject.origin === "paste"
             ) {
-              res.push({
-                from: cursor.from(),
-                to: cursor.to(),
-              });
-              cursor.findNext();
+              return getKeyValuePairFromLine(
+                changedLineText.slice(0, changeObject.from.ch) +
+                  changedLineText.slice(changeObject.to.ch + 1)
+              );
+            } else {
+              return getKeyValuePairFromLine(
+                changedLineText.slice(0, changeObject.from.ch) +
+                  // @ts-ignore
+                  changeObject.removed[0] +
+                  changedLineText.slice(changeObject.from.ch)
+              );
             }
-            return res;
-          };
+          })();
 
           const brackets: Bracket[] = [];
           let searchLine = 1;
@@ -710,7 +703,7 @@ const CodeMirrorEditor = ({
                   editor,
                   currentSearchLine
                 )[0];
-                const propertyPath = expPrefix + newExp;
+                const propertyPath = expPrefix + newKey;
                 const [closingBracketPos] = getPositions("]", item.from, {
                   line: editor.lastLine(),
                   ch: 999,
@@ -761,11 +754,11 @@ const CodeMirrorEditor = ({
 
           addOneLineChangeToHistory(
             {
-              propertyPath: expPrefix + oldExp,
+              propertyPath: expPrefix + oldKey,
               value: oldVal,
             },
             {
-              propertyPath: expPrefix + newExp,
+              propertyPath: expPrefix + newKey,
               value: newVal,
             }
           );
