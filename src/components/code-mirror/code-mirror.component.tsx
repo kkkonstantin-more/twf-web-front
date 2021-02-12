@@ -580,11 +580,18 @@ const CodeMirrorEditor = ({
       };
       // setup editor's onchange actions
       editor.on("change", (editor, changeObject) => {
+        console.log(changeObject);
         const numberOfChangedLines: number | undefined =
           changeObject.removed?.length;
         const changedLineNum: number = changeObject.from.line;
         // one line change
-        if (numberOfChangedLines === 1) {
+        if (
+          numberOfChangedLines === 1 &&
+          (changeObject.origin === "+input" ||
+            changeObject.origin === "paste" ||
+            changeObject.origin === "+delete" ||
+            changeObject.origin === "cut")
+        ) {
           const { key: newKey, value: newVal } = getKeyValuePairFromLine(
             editor.getLine(changedLineNum)
           );
@@ -596,7 +603,9 @@ const CodeMirrorEditor = ({
             ) {
               return getKeyValuePairFromLine(
                 changedLineText.slice(0, changeObject.from.ch) +
-                  changedLineText.slice(changeObject.to.ch + 1)
+                  changedLineText.slice(
+                    changeObject.from.ch + changeObject.text[0].length
+                  )
               );
             } else {
               return getKeyValuePairFromLine(
@@ -607,6 +616,11 @@ const CodeMirrorEditor = ({
               );
             }
           })();
+
+          console.log("oldKey: " + oldKey);
+          console.log("oldVal: " + oldVal);
+          console.log("newKey: " + newKey);
+          console.log("newVal: " + newVal);
 
           const brackets: Bracket[] = [];
           let searchLine = 1;
