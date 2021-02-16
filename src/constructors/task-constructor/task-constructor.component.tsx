@@ -476,90 +476,98 @@ const TaskConstructor = ({
 
   const isTable = (): boolean => visualizationMode === "table";
 
-  return (
-    <div
-      className={isTable() ? "task-constructor-table" : "task-constructor-list"}
-      style={{
-        display: hidden ? "none" : "flex",
-      }}
-    >
-      {isTable() ? (
-        <>
-          {tableActionButtonsLeft.map(
-            (button: ActionButtonProps, i: number) => {
-              const { size, action, mdiIconPath } = button;
-              return (
-                <div key={i} className="task-constructor-table__icon">
-                  <ActionButton
-                    mdiIconPath={mdiIconPath}
-                    size={size}
-                    action={action}
-                  />
-                </div>
-              );
-            }
-          )}
-          <div className="task-constructor-table__icon">{index + 1}.</div>
-          <div className="task-constructor-table__icon">
-            <Icon
-              path={taskCreationType === "auto" ? mdiRobot : mdiWrench}
-              size={2}
-            />
-          </div>
-        </>
-      ) : (
-        <div className="task-constructor-list__top-action-buttons">
-          {listTopActionButtons.map((button: ActionButtonProps, i: number) => {
-            return <ActionButton key={i} {...button} />;
-          })}
-        </div>
-      )}
-      <ConstructorForm
-        inputs={
-          taskCreationType === "auto"
-            ? autoTaskBasicInputs.concat(autoTasksAddInputs)
-            : manualTaskBasicInputs.concat(manualTasksAddInputs)
+  if (!hidden) {
+    return (
+      <div
+        className={
+          isTable() ? "task-constructor-table" : "task-constructor-list"
         }
-        constructorType={ConstructorJSONsTypes.TASK_SET}
-        // @ts-ignore
-        updateJSON={() => updateTaskSetJSON(getValues())}
-      />
-      {isTable() ? (
-        <>
-          <div className="task-constructor-table__icon">
-            <ActionButton
-              mdiIconPath={
-                showAddFields ? mdiArrowExpandLeft : mdiArrowExpandRight
+        style={{
+          display: hidden ? "none" : "flex",
+        }}
+      >
+        {isTable() ? (
+          <>
+            {tableActionButtonsLeft.map(
+              (button: ActionButtonProps, i: number) => {
+                const { size, action, mdiIconPath } = button;
+                return (
+                  <div key={i} className="task-constructor-table__icon">
+                    <ActionButton
+                      mdiIconPath={mdiIconPath}
+                      size={size}
+                      action={action}
+                    />
+                  </div>
+                );
               }
-              size={2}
-              action={() => setShowAddFields(!showAddFields)}
-            />
+            )}
+            <div className="task-constructor-table__icon">{index + 1}.</div>
+            <div className="task-constructor-table__icon">
+              <Icon
+                path={taskCreationType === "auto" ? mdiRobot : mdiWrench}
+                size={2}
+              />
+            </div>
+          </>
+        ) : (
+          <div className="task-constructor-list__top-action-buttons">
+            {listTopActionButtons.map(
+              (button: ActionButtonProps, i: number) => {
+                return <ActionButton key={i} {...button} />;
+              }
+            )}
           </div>
-          {tableActionButtonsRight.map(
-            (button: ActionButtonProps, i: number) => {
-              const { size, mdiIconPath, action } = button;
-              return (
-                <div key={i} className="task-constructor-table__icon">
-                  <ActionButton
-                    mdiIconPath={mdiIconPath}
-                    size={size}
-                    action={action}
-                  />
-                </div>
-              );
-            }
-          )}
-        </>
-      ) : (
-        <ActionButton
-          mdiIconPath={showAddFields ? mdiArrowExpandUp : mdiArrowExpandDown}
-          size={2}
-          action={() => setShowAddFields(!showAddFields)}
-          margin={"2rem 0 0 0"}
+        )}
+        <ConstructorForm
+          inputs={
+            taskCreationType === "auto"
+              ? autoTaskBasicInputs.concat(autoTasksAddInputs)
+              : manualTaskBasicInputs.concat(manualTasksAddInputs)
+          }
+          constructorType={ConstructorJSONsTypes.TASK_SET}
+          // @ts-ignore
+          updateJSON={() => updateTaskSetJSON(getValues())}
         />
-      )}
-    </div>
-  );
+        {isTable() ? (
+          <>
+            <div className="task-constructor-table__icon">
+              <ActionButton
+                mdiIconPath={
+                  showAddFields ? mdiArrowExpandLeft : mdiArrowExpandRight
+                }
+                size={2}
+                action={() => setShowAddFields(!showAddFields)}
+              />
+            </div>
+            {tableActionButtonsRight.map(
+              (button: ActionButtonProps, i: number) => {
+                const { size, mdiIconPath, action } = button;
+                return (
+                  <div key={i} className="task-constructor-table__icon">
+                    <ActionButton
+                      mdiIconPath={mdiIconPath}
+                      size={size}
+                      action={action}
+                    />
+                  </div>
+                );
+              }
+            )}
+          </>
+        ) : (
+          <ActionButton
+            mdiIconPath={showAddFields ? mdiArrowExpandUp : mdiArrowExpandDown}
+            size={2}
+            action={() => setShowAddFields(!showAddFields)}
+            margin={"2rem 0 0 0"}
+          />
+        )}
+      </div>
+    );
+  } else {
+    return <div></div>;
+  }
 };
 
 // connecting redux

@@ -1,12 +1,14 @@
+// libs
 import React from "react";
+// types
 import { MathInputFormat } from "../../utils/kotlin-lib-functions";
 
 export interface MixedInputProps {
-  width?: string;
-  value?: string;
-  onChange?: (...args: any) => void;
+  style?: React.CSSProperties;
+  format?: MathInputFormat;
+  expression?: string;
+  onChangeExpression?: (value: string) => void;
+  onChangeFormat?: (format: MathInputFormat) => void;
   onBlur?: (value: string) => void;
-  inputRef?: React.RefObject<HTMLInputElement>;
-  formatRef?: React.RefObject<HTMLInputElement>;
-  initialFormat?: MathInputFormat;
+  expressionRef?: any;
 }

@@ -90,13 +90,14 @@ export const TasksFieldArrayActionsContext = React.createContext();
 const TaskSetConstructor = ({
   taskSetJSON,
   updateTaskSetJSON,
-  history,
-  historyIdx,
+  // history,
+  // historyIdx,
   addItemToHistory,
   undo,
   redo,
-  currentHistoryChange,
-}: ConnectedProps<typeof connector>): JSX.Element => {
+}: // currentHistoryChange,
+ConnectedProps<typeof connector>): JSX.Element => {
+  console.log("rerendered");
   // defining creation type and dependent vars
   const { code } = useParams();
   const creationMode: ConstructorCreationMode = useCreationMode();
@@ -193,19 +194,20 @@ const TaskSetConstructor = ({
     );
   }, []);
 
-  useEffect(() => {
-    if (currentHistoryChange?.type === "ONE_LINE_CHANGE") {
-      setValue(
-        currentHistoryChange.item.propertyPath,
-        currentHistoryChange.item.value
-      );
-      updateTaskSetJSON(getValues());
-    } else if (currentHistoryChange?.type === "MULTIPLE_LINES_CHANGE") {
-      reset(currentHistoryChange.item);
-      // @ts-ignore
-      updateTaskSetJSON(currentHistoryChange?.item);
-    }
-  }, [currentHistoryChange]);
+  // useEffect(() => {
+  //   console.log("useeffect on history triggered");
+  //   if (currentHistoryChange?.type === "ONE_LINE_CHANGE") {
+  //     setValue(
+  //       currentHistoryChange.item.propertyPath,
+  //       currentHistoryChange.item.value
+  //     );
+  //     // updateTaskSetJSON(getValues());
+  //   } else if (currentHistoryChange?.type === "MULTIPLE_LINES_CHANGE") {
+  //     reset(currentHistoryChange.item);
+  //     // @ts-ignore
+  //     updateTaskSetJSON(currentHistoryChange?.item);
+  //   }
+  // }, [currentHistoryChange]);
 
   const inputs: (ConstructorInputProps | ConstructorSelectProps)[] = [
     {
@@ -263,6 +265,7 @@ const TaskSetConstructor = ({
   );
   // set valid values due to creation mode and relevant constructor state
   useEffect(() => {
+    console.log("triggered");
     if (creationMode === ConstructorCreationMode.CREATE) {
       if (lastEditedMode === ConstructorCreationMode.CREATE) {
         reset(taskSetJSON);
@@ -379,13 +382,15 @@ const TaskSetConstructor = ({
                   onSubmit={handleSubmit((data) => {
                     submit(data);
                   })}
+                  onBlur={() => {
+                    console.log("onBLur triggered");
+                    updateTaskSetJSON(getValues());
+                  }}
                 >
                   <h2 className="u-mt-sm">{titleAndSubmitButtonText}</h2>
                   <ConstructorForm
                     inputs={inputs}
                     register={register}
-                    // @ts-ignore
-                    updateJSON={() => updateTaskSetJSON(getValues())}
                     addToHistory={(
                       oldVal: ExpressionChange,
                       newVal: ExpressionChange
@@ -465,6 +470,7 @@ const TaskSetConstructor = ({
                                 taskCreationType: "manual",
                               });
                               setSelectedLevel(fields.length);
+                              // updateTaskSetJSON(getValues());
                             }}
                           >
                             <Icon path={mdiPlus} size={1.2} />
@@ -481,6 +487,7 @@ const TaskSetConstructor = ({
                                 taskCreationType: "auto",
                               });
                               setSelectedLevel(fields.length);
+                              // updateTaskSetJSON(getValues());
                             }}
                           >
                             <Icon path={mdiPlus} size={1.2} />
@@ -541,7 +548,7 @@ const TaskSetConstructor = ({
                               ...taskConstructorDefaultValues,
                               taskCreationType: "manual",
                             });
-                            updateTaskSetJSON(getValues());
+                            // updateTaskSetJSON(getValues());
                           }}
                         >
                           <Icon path={mdiPlus} size={1.2} />
@@ -557,7 +564,7 @@ const TaskSetConstructor = ({
                               ...taskConstructorDefaultValues,
                               taskCreationType: "auto",
                             });
-                            updateTaskSetJSON(getValues());
+                            // updateTaskSetJSON(getValues());
                           }}
                         >
                           <Icon path={mdiPlus} size={1.2} />
@@ -741,15 +748,15 @@ const mapState = createStructuredSelector<
   RootState,
   {
     taskSetJSON: TaskSetConstructorInputs;
-    history: ConstructorHistoryItem[];
-    historyIdx: number;
-    currentHistoryChange: ConstructorHistoryItem | undefined;
+    // history: ConstructorHistoryItem[];
+    // historyIdx: number;
+    // currentHistoryChange: ConstructorHistoryItem | undefined;
   }
 >({
   taskSetJSON: selectTaskSetJSON,
-  history: selectTaskSetHistory,
-  historyIdx: selectTaskSetHistoryIndex,
-  currentHistoryChange: selectCurrentTaskSetHistoryChange,
+  // history: selectTaskSetHistory,
+  // historyIdx: selectTaskSetHistoryIndex,
+  // currentHistoryChange: selectCurrentTaskSetHistoryChange,
 });
 
 const mapDispatch = (

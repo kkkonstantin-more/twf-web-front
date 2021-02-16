@@ -1,24 +1,17 @@
 // libs and hooks
-import React, { Dispatch, useEffect, useState } from "react";
+// types
+import React, { ChangeEvent, Dispatch, useEffect, useState } from "react";
 import useMergedRef from "@react-hook/merged-ref";
 // custom components
 import MixedInput from "../mixed-input/mixed-input.component";
-// types
-import { ChangeEvent } from "react";
 import { ConstructorInputProps } from "./construcor-input.types";
 import { MathInputFormat } from "../../utils/kotlin-lib-functions";
-import { HistoryItem } from "../../constructors/task-constructor/task-constructor.component";
 import { createStructuredSelector } from "reselect";
 import { RootState } from "../../redux/root-reducer";
 import { TaskSetConstructorInputs } from "../../constructors/task-set-constructor/task-set-constructor.types";
 import {
-  AddOneLineChangeToHistoryAction,
   ConstructorHistoryItem,
   ExpressionChange,
-  OneLineHistoryChange,
-  RedoTaskSetHistoryAction,
-  UndoTaskSetHistoryAction,
-  UpdateTaskSetHistoryIndexAction,
 } from "../../redux/constructor-history/constructor-history.types";
 import { selectTaskSetJSON } from "../../redux/constructor-jsons/constructor-jsons.selectors";
 import {
@@ -29,24 +22,10 @@ import {
 import {
   ConstructorInputs,
   ConstructorJSONsTypes,
-  UpdateNamespaceJSONAction,
-  UpdateRulePackJSONAction,
-  UpdateTaskSetJSONAction,
 } from "../../redux/constructor-jsons/constructor-jsons.types";
-import {
-  updateConstructorJSON,
-  updateNamespaceJSON,
-  updateRulePackJSON,
-  updateTaskSetJSON,
-} from "../../redux/constructor-jsons/constructor-jsons.actions";
-import {
-  addOneLineChangeToHistory,
-  redoTaskSetHistory,
-  undoTaskSetHistory,
-} from "../../redux/constructor-history/constructor-history.actions";
+import { updateConstructorJSON } from "../../redux/constructor-jsons/constructor-jsons.actions";
+import { addOneLineChangeToHistory } from "../../redux/constructor-history/constructor-history.actions";
 import { connect, ConnectedProps } from "react-redux";
-import { NamespaceConstructorInputs } from "../../constructors/namespace-constructor/namespace-constructor.types";
-import { RulePackConstructorInputs } from "../../constructors/rule-pack-constructor/rule-pack-constructor.types";
 import { useFormContext } from "react-hook-form";
 
 // TODO: fix typescript and eslint errors
@@ -61,32 +40,15 @@ const ConstructorInput = ({
   isRendered = true,
   expressionInput = false,
   constructorType,
-  updateJSON,
   addItemToHistory,
-  onChange,
 }: ConstructorInputProps & ConnectedProps<typeof connector>): JSX.Element => {
-  const { register, getValues } = useFormContext();
-  const mixedInputRef:
-    | React.RefObject<HTMLInputElement>
-    | undefined = expressionInput ? React.createRef() : undefined;
-  const expressionFormatRef:
-    | React.RefObject<HTMLInputElement>
-    | undefined = expressionInput ? React.createRef() : undefined;
-
-  const inputWrapperRef: React.RefObject<HTMLDivElement> = React.createRef();
-
+  const { register } = useFormContext();
   const [inputValue, setInputValue] = useState(defaultValue);
-
-  const [mixedInputWidth, setMixedInputWidth] = useState<number>(100);
-
-  useEffect(() => {
-    if (inputWrapperRef.current) {
-      const width = window.getComputedStyle(inputWrapperRef.current, null);
-      setMixedInputWidth(
-        parseFloat(width.getPropertyValue("width").slice(0, -2))
-      );
-    }
-  }, [inputWrapperRef]);
+  // expression input deps
+  const expressionRef: React.RefObject<HTMLInputElement> = React.createRef();
+  const formatRef: React.RefObject<HTMLInputElement> = React.createRef();
+  const mergedExpressionRef = useMergedRef(register(), expressionRef);
+  const mergedFormatRef = useMergedRef(register(), formatRef);
 
   if (isRendered) {
     return (
@@ -96,7 +58,6 @@ const ConstructorInput = ({
           display: isVisible ? "block" : "none",
           marginBottom: expressionInput ? "2rem" : "1.5rem",
         }}
-        ref={inputWrapperRef}
       >
         <div
           style={{
@@ -110,54 +71,54 @@ const ConstructorInput = ({
                 type="text"
                 name={name + ".format"}
                 defaultValue={defaultValue.format}
-                // eslint-disable-next-line react-hooks/rules-of-hooks
-                ref={useMergedRef(
-                  // @ts-ignore
-                  register(),
-                  // @ts-ignore
-                  expressionFormatRef
-                )}
-                // onChange={() => {
-                //   if (constructorType) {
-                //     // @ts-ignore
-                //     updateJSON(constructorType, getValues());
-                //   }
-                // }}
+                ref={mergedFormatRef}
               />
               <MixedInput
-                value={defaultValue.expression}
-                width={mixedInputWidth + "px"}
-                // onBlur={() => {
-                //   if (updateJSON) {
-                //     updateJSON();
-                //   }
-                // }}
-                onChange={() => {
-                  if (updateJSON && constructorType) {
-                    // @ts-ignore
-                    updateJSON(constructorType, getValues());
+                expressionRef={expressionRef}
+                expression={defaultValue.expression}
+                format={defaultValue.format}
+                style={{ width: "100%" }}
+                onChangeExpression={(value: string) => {
+                  addItemToHistory(
+                    {
+                      propertyPath: name + ".expression",
+                      value: inputValue,
+                    },
+                    {
+                      propertyPath: name + ".expression",
+                      value: value,
+                    }
+                  );
+                  setInputValue(value);
+                }}
+                onChangeFormat={(value: string) => {
+                  if (formatRef && formatRef.current) {
+                    formatRef.current.value = value;
                   }
                 }}
-                inputRef={mixedInputRef}
-                formatRef={expressionFormatRef}
-                initialFormat={defaultValue.format}
+                onBlur={(value: string) => {
+                  if (expressionRef && expressionRef.current) {
+                    expressionRef.current.value = value;
+                  } else {
+                    console.log("no");
+                  }
+                }}
               />
             </>
           )}
           <input
             disabled={disabled}
             className="form-control"
-            style={{
-              display: expressionInput ? "none" : "block",
-            }}
-            defaultValue={defaultValue}
+            // style={{
+            //   display: expressionInput ? "none" : "block",
+            // }}
+            defaultValue={
+              expressionInput ? defaultValue.expression : defaultValue
+            }
             name={expressionInput ? name + ".expression" : name}
             type={type}
             onChange={(event: ChangeEvent<HTMLInputElement>) => {
-              if (onChange) {
-                onChange();
-              }
-              if (updateJSON && constructorType) {
+              if (!expressionInput) {
                 addItemToHistory(
                   {
                     propertyPath: name,
@@ -168,26 +129,10 @@ const ConstructorInput = ({
                     value: event.target.value,
                   }
                 );
+                setInputValue(event.target.value);
               }
-              setInputValue(event.target.value);
-              // @ts-ignore
-              updateJSON(constructorType, getValues());
             }}
-            // @ts-ignore
-            ref={
-              expressionInput
-                ? // eslint-disable-next-line react-hooks/rules-of-hooks
-                  useMergedRef(
-                    // @ts-ignore
-                    register(),
-                    // @ts-ignore
-                    mixedInputRef
-                  )
-                : // @ts-ignore
-                  // @ts-ignore
-                  register()
-            }
-            // defaultValue={inputValue}
+            ref={mergedExpressionRef}
           />
         </div>
       </div>
