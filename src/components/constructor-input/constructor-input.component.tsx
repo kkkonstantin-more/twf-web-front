@@ -99,8 +99,6 @@ const ConstructorInput = ({
                 onBlur={(value: string) => {
                   if (expressionRef && expressionRef.current) {
                     expressionRef.current.value = value;
-                  } else {
-                    console.log("no");
                   }
                 }}
               />

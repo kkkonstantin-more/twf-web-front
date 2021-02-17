@@ -566,7 +566,7 @@ const TaskConstructor = ({
       </div>
     );
   } else {
-    return <div></div>;
+    return <></>;
   }
 };
 

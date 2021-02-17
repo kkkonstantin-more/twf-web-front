@@ -524,6 +524,8 @@ const CodeMirrorEditor = ({
         if (currentHistoryChange.type === "ONE_LINE_CHANGE") {
           const cursorPos = editor.getCursor();
           const setToValue = (obj: any, value: any, path: any) => {
+            console.log(path);
+            console.log(value);
             let i;
             path = path.split(".");
             for (i = 0; i < path.length - 1; i++) {

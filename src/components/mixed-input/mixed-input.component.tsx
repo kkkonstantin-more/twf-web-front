@@ -1,10 +1,5 @@
 // libs and hooks
-import React, {
-  ChangeEvent,
-  PropsWithChildren,
-  useEffect,
-  useState,
-} from "react";
+import React, { ChangeEvent, PropsWithChildren, useState } from "react";
 // lib components
 import { EditableMathField, MathField } from "react-mathquill";
 // twf lib functions
@@ -137,9 +132,9 @@ const MixedInput = React.forwardRef(
     );
 
     const getVisibleInputValue = (format: MathInputFormat): string => {
-      return currentInputFormat === format
+      return currentVisibleFormat === format
         ? currentValue
-        : convertMathInput(currentInputFormat, format, currentValue);
+        : convertMathInput(currentVisibleFormat, format, currentValue);
     };
     const [error, setError] = useState<null | string>(null);
 
@@ -165,9 +160,6 @@ const MixedInput = React.forwardRef(
                 onClick={(): void => {
                   if (error === null) {
                     setCurrentVisibleFormat(format);
-                    if (onChangeFormat) {
-                      onChangeFormat(format);
-                    }
                   }
                 }}
               >
@@ -191,6 +183,13 @@ const MixedInput = React.forwardRef(
                 setCurrentValue(mathField.latex());
                 if (onChangeExpression) {
                   onChangeExpression(mathField.latex());
+                }
+                if (
+                  onChangeFormat &&
+                  currentInputFormat !== MathInputFormat.TEX
+                ) {
+                  setCurrentInputFormat(MathInputFormat.TEX);
+                  onChangeFormat(MathInputFormat.TEX);
                 }
               }}
               onBlur={() => {
@@ -221,6 +220,13 @@ const MixedInput = React.forwardRef(
               if (onChangeExpression) {
                 onChangeExpression(event.target.value);
               }
+              if (
+                onChangeFormat &&
+                currentInputFormat !== MathInputFormat.PLAIN_TEXT
+              ) {
+                setCurrentInputFormat(MathInputFormat.PLAIN_TEXT);
+                onChangeFormat(MathInputFormat.PLAIN_TEXT);
+              }
             }}
             onBlur={(event: React.FocusEvent<HTMLInputElement>) => {
               setError(
@@ -248,6 +254,13 @@ const MixedInput = React.forwardRef(
               setCurrentInputFormat(MathInputFormat.STRUCTURE_STRING);
               if (onChangeExpression) {
                 onChangeExpression(event.target.value);
+              }
+              if (
+                onChangeFormat &&
+                currentInputFormat !== MathInputFormat.STRUCTURE_STRING
+              ) {
+                setCurrentInputFormat(MathInputFormat.STRUCTURE_STRING);
+                onChangeFormat(MathInputFormat.STRUCTURE_STRING);
               }
             }}
             onBlur={(event: React.FocusEvent<HTMLInputElement>) => {

@@ -95,9 +95,8 @@ const TaskSetConstructor = ({
   addItemToHistory,
   undo,
   redo,
-}: // currentHistoryChange,
-ConnectedProps<typeof connector>): JSX.Element => {
-  console.log("rerendered");
+  currentHistoryChange,
+}: ConnectedProps<typeof connector>): JSX.Element => {
   // defining creation type and dependent vars
   const { code } = useParams();
   const creationMode: ConstructorCreationMode = useCreationMode();
@@ -194,20 +193,19 @@ ConnectedProps<typeof connector>): JSX.Element => {
     );
   }, []);
 
-  // useEffect(() => {
-  //   console.log("useeffect on history triggered");
-  //   if (currentHistoryChange?.type === "ONE_LINE_CHANGE") {
-  //     setValue(
-  //       currentHistoryChange.item.propertyPath,
-  //       currentHistoryChange.item.value
-  //     );
-  //     // updateTaskSetJSON(getValues());
-  //   } else if (currentHistoryChange?.type === "MULTIPLE_LINES_CHANGE") {
-  //     reset(currentHistoryChange.item);
-  //     // @ts-ignore
-  //     updateTaskSetJSON(currentHistoryChange?.item);
-  //   }
-  // }, [currentHistoryChange]);
+  useEffect(() => {
+    if (currentHistoryChange?.type === "ONE_LINE_CHANGE") {
+      setValue(
+        currentHistoryChange.item.propertyPath,
+        currentHistoryChange.item.value
+      );
+      // updateTaskSetJSON(getValues());
+    } else if (currentHistoryChange?.type === "MULTIPLE_LINES_CHANGE") {
+      reset(currentHistoryChange.item);
+      // @ts-ignore
+      updateTaskSetJSON(currentHistoryChange?.item);
+    }
+  }, [currentHistoryChange]);
 
   const inputs: (ConstructorInputProps | ConstructorSelectProps)[] = [
     {
@@ -265,7 +263,6 @@ ConnectedProps<typeof connector>): JSX.Element => {
   );
   // set valid values due to creation mode and relevant constructor state
   useEffect(() => {
-    console.log("triggered");
     if (creationMode === ConstructorCreationMode.CREATE) {
       if (lastEditedMode === ConstructorCreationMode.CREATE) {
         reset(taskSetJSON);
@@ -525,7 +522,11 @@ ConnectedProps<typeof connector>): JSX.Element => {
                           <TaskConstructor
                             key={field.id}
                             index={index}
-                            defaultValue={fields[index]}
+                            defaultValue={
+                              taskSetJSON.tasks[index]
+                                ? taskSetJSON.tasks[index]
+                                : fields[index]
+                            }
                             updateDemo={() => {}}
                             visualizationMode={visualizationMode}
                             hidden={
@@ -564,7 +565,7 @@ ConnectedProps<typeof connector>): JSX.Element => {
                               ...taskConstructorDefaultValues,
                               taskCreationType: "auto",
                             });
-                            // updateTaskSetJSON(getValues());
+                            updateTaskSetJSON(getValues());
                           }}
                         >
                           <Icon path={mdiPlus} size={1.2} />
@@ -750,13 +751,13 @@ const mapState = createStructuredSelector<
     taskSetJSON: TaskSetConstructorInputs;
     // history: ConstructorHistoryItem[];
     // historyIdx: number;
-    // currentHistoryChange: ConstructorHistoryItem | undefined;
+    currentHistoryChange: ConstructorHistoryItem | undefined;
   }
 >({
   taskSetJSON: selectTaskSetJSON,
   // history: selectTaskSetHistory,
   // historyIdx: selectTaskSetHistoryIndex,
-  // currentHistoryChange: selectCurrentTaskSetHistoryChange,
+  currentHistoryChange: selectCurrentTaskSetHistoryChange,
 });
 
 const mapDispatch = (
