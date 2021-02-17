@@ -132,9 +132,9 @@ const MixedInput = React.forwardRef(
     );
 
     const getVisibleInputValue = (format: MathInputFormat): string => {
-      return currentVisibleFormat === format
+      return currentVisibleFormat === currentInputFormat
         ? currentValue
-        : convertMathInput(currentVisibleFormat, format, currentValue);
+        : convertMathInput(currentInputFormat, format, currentValue);
     };
     const [error, setError] = useState<null | string>(null);
 
