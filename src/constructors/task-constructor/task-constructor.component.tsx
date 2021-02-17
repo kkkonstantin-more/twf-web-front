@@ -25,7 +25,7 @@ import { AllLevelsHiddenFields } from "../../redux/levels-hidden-fields/levels-h
 import { ConstructorInputProps } from "../../components/constructor-input/construcor-input.types";
 import { ConstructorSelectProps } from "../../components/constructor-select/constructor-select.types";
 import { RootState } from "../../redux/root-reducer";
-import { TaskConstructorProps } from "./task-constructor.types";
+import { GoalType, TaskConstructorProps } from "./task-constructor.types";
 import { ExpressionChange } from "../../redux/constructor-history/constructor-history.types";
 import { ConstructorJSONsTypes } from "../../redux/constructor-jsons/constructor-jsons.types";
 import { TaskSetConstructorInputs } from "../task-set-constructor/task-set-constructor.types";
@@ -217,6 +217,8 @@ const TaskConstructor = ({
       label: "Целевое числовое значение",
       type: "number",
       defaultValue: defaultValue.goalNumberProperty,
+      isRendered:
+        goalTypeValue === GoalType.CNF || goalTypeValue === GoalType.DNF,
     },
     {
       name: `tasks[${index}].rulePacks`,
@@ -232,6 +234,8 @@ const TaskConstructor = ({
       type: "text",
       expressionInput: true,
       defaultValue: defaultValue.goalExpression,
+      isRendered:
+        goalTypeValue !== GoalType.CNF && goalTypeValue !== GoalType.DNF,
     },
     {
       name: `tasks[${index}].stepsNumber`,
@@ -353,7 +357,7 @@ const TaskConstructor = ({
     "originalExpression",
     "goalType",
     "goalExpression",
-    "goalNaturalNumber",
+    "goalNumberProperty",
     "goalPattern",
   ];
 

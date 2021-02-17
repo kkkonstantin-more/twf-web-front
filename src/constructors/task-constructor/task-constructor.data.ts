@@ -8,7 +8,6 @@ export const allPossibleGoalTypes = [
   GoalType.CNF,
   GoalType.DNF,
   GoalType.FACTORIZATION,
-  GoalType.FACTORIZATION,
 ];
 
 export const mockSubjectTypes: string[] = [
