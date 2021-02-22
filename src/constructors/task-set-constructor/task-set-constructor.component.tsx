@@ -194,17 +194,20 @@ const TaskSetConstructor = ({
   }, []);
 
   useEffect(() => {
+    // if (undoOrRedoIsTriggered) {
+    //   console.log("triggered");
     if (currentHistoryChange?.type === "ONE_LINE_CHANGE") {
       setValue(
         currentHistoryChange.item.propertyPath,
         currentHistoryChange.item.value
       );
-      // updateTaskSetJSON(getValues());
+      updateTaskSetJSON(getValues());
     } else if (currentHistoryChange?.type === "MULTIPLE_LINES_CHANGE") {
       reset(currentHistoryChange.item);
       // @ts-ignore
       updateTaskSetJSON(currentHistoryChange?.item);
     }
+    // }
   }, [currentHistoryChange]);
 
   const inputs: (ConstructorInputProps | ConstructorSelectProps)[] = [
@@ -371,7 +374,18 @@ const TaskSetConstructor = ({
                 : `calc(50% + ${hintsDeltaX}px)`,
           }}
         >
-          <ConstructorUndoRedoPanel undo={undo} redo={redo} />
+          <ConstructorUndoRedoPanel
+            undo={() => {
+              // setUndoOrRedoIsTriggered(true);
+              undo();
+              // setUndoOrRedoIsTriggered(false);
+            }}
+            redo={() => {
+              // setUndoOrRedoIsTriggered(true);
+              redo();
+              // setUndoOrRedoIsTriggered(false);
+            }}
+          />
           <div className="task-set-constructor__form">
             <FormProvider {...methods}>
               <TasksFieldArrayActionsContext.Provider value={fieldArrayMethods}>

@@ -42,8 +42,10 @@ const ConstructorInput = ({
   constructorType,
   addItemToHistory,
 }: ConstructorInputProps & ConnectedProps<typeof connector>): JSX.Element => {
-  const { register } = useFormContext();
-  const [inputValue, setInputValue] = useState(defaultValue);
+  const { register, setValue } = useFormContext();
+  const [inputValue, setInputValue] = useState(
+    expressionInput ? defaultValue.expression : defaultValue
+  );
   // expression input deps
   const expressionRef: React.RefObject<HTMLInputElement> = React.createRef();
   const formatRef: React.RefObject<HTMLInputElement> = React.createRef();
@@ -79,17 +81,22 @@ const ConstructorInput = ({
                 format={defaultValue.format}
                 style={{ width: "100%" }}
                 onChangeExpression={(value: string) => {
-                  addItemToHistory(
-                    {
-                      propertyPath: name + ".expression",
-                      value: inputValue,
-                    },
-                    {
-                      propertyPath: name + ".expression",
-                      value: value,
+                  setValue(name + ".expression", value);
+                  setInputValue((prevState: string) => {
+                    if (prevState !== value) {
+                      addItemToHistory(
+                        {
+                          propertyPath: name + ".expression",
+                          value: prevState,
+                        },
+                        {
+                          propertyPath: name + ".expression",
+                          value: value,
+                        }
+                      );
                     }
-                  );
-                  setInputValue(value);
+                    return value;
+                  });
                 }}
                 onChangeFormat={(value: string) => {
                   if (formatRef && formatRef.current) {
@@ -107,9 +114,9 @@ const ConstructorInput = ({
           <input
             disabled={disabled}
             className="form-control"
-            // style={{
-            //   display: expressionInput ? "none" : "block",
-            // }}
+            style={{
+              display: expressionInput ? "none" : "block",
+            }}
             defaultValue={
               expressionInput ? defaultValue.expression : defaultValue
             }

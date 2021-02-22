@@ -593,11 +593,17 @@ const CodeMirrorEditor = ({
         setUndoOrRedoIsTriggered(true);
         undo();
         setUndoOrRedoIsTriggered(false);
+        try {
+          updateTaskSetJSON(JSON.parse(editor.getValue()));
+        } catch (e) {}
       };
       editor.redo = () => {
         setUndoOrRedoIsTriggered(true);
         redo();
         setUndoOrRedoIsTriggered(false);
+        try {
+          updateTaskSetJSON(JSON.parse(editor.getValue()));
+        } catch (e) {}
       };
       // setup editor's onchange actions
       editor.on("change", (editor, changeObject) => {

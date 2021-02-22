@@ -15,6 +15,13 @@ const constructorHistoryReducer = (
     case "ADD_ONE_LINE_CHANGE_TO_HISTORY":
       if (
         deepEqual(state.taskSet[state.taskSet.length - 1], {
+          item: { ...action.payload.newVal },
+          type: "ONE_LINE_CHANGE",
+        })
+      ) {
+        return state;
+      } else if (
+        deepEqual(state.taskSet[state.taskSet.length - 1], {
           item: { ...action.payload.oldVal },
           type: "ONE_LINE_CHANGE",
         })
