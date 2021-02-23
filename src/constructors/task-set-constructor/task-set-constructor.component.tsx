@@ -118,6 +118,7 @@ const TaskSetConstructor = ({
   // react-hook-form core functions
   const methods = useForm<TaskSetConstructorInputs>({
     mode: "onSubmit",
+    shouldUnregister: false,
   });
   const {
     register,
@@ -193,22 +194,25 @@ const TaskSetConstructor = ({
     );
   }, []);
 
+  const [undoOrRedoIsTriggered, setUndoOrRedoIsTriggered] = useState(false);
+
   useEffect(() => {
-    // if (undoOrRedoIsTriggered) {
-    //   console.log("triggered");
-    if (currentHistoryChange?.type === "ONE_LINE_CHANGE") {
-      setValue(
-        currentHistoryChange.item.propertyPath,
-        currentHistoryChange.item.value
-      );
-      updateTaskSetJSON(getValues());
-    } else if (currentHistoryChange?.type === "MULTIPLE_LINES_CHANGE") {
-      reset(currentHistoryChange.item);
-      // @ts-ignore
-      updateTaskSetJSON(currentHistoryChange?.item);
+    if (undoOrRedoIsTriggered) {
+      if (currentHistoryChange?.type === "ONE_LINE_CHANGE") {
+        setValue(
+          currentHistoryChange.item.propertyPath,
+          currentHistoryChange.item.value
+        );
+        updateTaskSetJSON(getValues());
+        setUndoOrRedoIsTriggered(false);
+      } else if (currentHistoryChange?.type === "MULTIPLE_LINES_CHANGE") {
+        reset(currentHistoryChange.item);
+        // TODO: create multiple lines change undo redo logic
+        // @ts-ignore
+        // updateTaskSetJSON(currentHistoryChange?.item);
+      }
     }
-    // }
-  }, [currentHistoryChange]);
+  }, [undoOrRedoIsTriggered]);
 
   const inputs: (ConstructorInputProps | ConstructorSelectProps)[] = [
     {
@@ -276,7 +280,7 @@ const TaskSetConstructor = ({
             ConstructorJSONsTypes.TASK_SET,
             creationMode
           );
-          updateTaskSetJSON(getValues());
+          // updateTaskSetJSON(getValues());
         })();
       }
     } else if (creationMode === ConstructorCreationMode.EDIT) {
@@ -334,6 +338,10 @@ const TaskSetConstructor = ({
   }, []);
 
   useEffect(() => {
+    // taskSetJSON.tasks.forEach((task, i) => {
+    //   setValue(`tasks[${i}]`, task);
+    // });
+    // getValues();
     setSelectedLevel(0);
   }, []);
 
@@ -380,14 +388,12 @@ const TaskSetConstructor = ({
         >
           <ConstructorUndoRedoPanel
             undo={() => {
-              // setUndoOrRedoIsTriggered(true);
               undo();
-              // setUndoOrRedoIsTriggered(false);
+              setUndoOrRedoIsTriggered(true);
             }}
             redo={() => {
-              // setUndoOrRedoIsTriggered(true);
               redo();
-              // setUndoOrRedoIsTriggered(false);
+              setUndoOrRedoIsTriggered(true);
             }}
           />
           <div className="task-set-constructor__form">
@@ -398,6 +404,7 @@ const TaskSetConstructor = ({
                     submit(data);
                   })}
                   onBlur={() => {
+                    console.log(getValues());
                     updateTaskSetJSON(getValues());
                   }}
                 >
@@ -484,7 +491,7 @@ const TaskSetConstructor = ({
                                 taskCreationType: "manual",
                               });
                               setSelectedLevel(fields.length);
-                              // updateTaskSetJSON(getValues());
+                              updateTaskSetJSON(getValues());
                             }}
                           >
                             <Icon path={mdiPlus} size={1.2} />
@@ -495,13 +502,13 @@ const TaskSetConstructor = ({
                           <button
                             type="button"
                             className="btn form-levels-list__action-button"
-                            onClick={() => {
-                              append({
+                            onClick={async () => {
+                              await append({
                                 ...taskConstructorDefaultValues,
                                 taskCreationType: "auto",
                               });
                               setSelectedLevel(fields.length);
-                              // updateTaskSetJSON(getValues());
+                              updateTaskSetJSON(getValues());
                             }}
                           >
                             <Icon path={mdiPlus} size={1.2} />
