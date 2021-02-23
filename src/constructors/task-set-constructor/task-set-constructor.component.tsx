@@ -268,7 +268,7 @@ const TaskSetConstructor = ({
   useEffect(() => {
     if (creationMode === ConstructorCreationMode.CREATE) {
       if (lastEditedMode === ConstructorCreationMode.CREATE) {
-        reset(taskSetJSON);
+        reset({ ...taskSetJSON });
       } else {
         (async () => {
           await reset(CONSTRUCTOR_JSONS_INITIAL_STATE.taskSet);
@@ -333,6 +333,10 @@ const TaskSetConstructor = ({
     }
   }, []);
 
+  useEffect(() => {
+    setSelectedLevel(0);
+  }, []);
+
   const submit = async (data: TaskSetConstructorInputs) => {
     TaskSetConstructorRequestsHandler.submitOne(
       TaskSetConstructorFormatter.convertConstructorInputsToSendForm(data),
@@ -394,7 +398,6 @@ const TaskSetConstructor = ({
                     submit(data);
                   })}
                   onBlur={() => {
-                    console.log("onBLur triggered");
                     updateTaskSetJSON(getValues());
                   }}
                 >
