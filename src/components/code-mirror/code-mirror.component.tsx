@@ -544,7 +544,6 @@ const CodeMirrorEditor = ({
           editor.setValue(JSON.stringify(newEditorVal, null, 2));
           editor.setCursor(cursorPos);
         } else if (currentHistoryChange.type === "MULTIPLE_LINES_CHANGE") {
-          console.log("AAAAAAA");
           editor.setValue(JSON.stringify(currentHistoryChange.item, null, 2));
           // @ts-ignore
           updateCurrentReduxJSON(currentHistoryChange.item);
@@ -647,11 +646,6 @@ const CodeMirrorEditor = ({
               );
             }
           })();
-
-          console.log("oldKey: " + oldKey);
-          console.log("oldVal: " + oldVal);
-          console.log("newKey: " + newKey);
-          console.log("newVal: " + newVal);
 
           const brackets: Bracket[] = [];
           let searchLine = 1;
@@ -837,18 +831,30 @@ const CodeMirrorEditor = ({
           changeObject.origin === "paste" &&
           changeObject.text.length > 1
         ) {
-          const oldVal =
-            editor.getRange(
-              {
-                line: 0,
-                ch: 0,
-              },
-              changeObject.from
-            ) +
-            editor.getRange(changeObject.from, {
-              line: editor.lastLine(),
-              ch: 999,
-            });
+          const pastedPiece = changeObject.text.reduce(
+            (acc: string, line: string, i: number) => {
+              if (i === 0) {
+                return acc;
+              } else {
+                return acc + "\n" + line;
+              }
+            },
+            editor.getLine(changeObject.from.line)
+          );
+          let oldVal = editor.getValue().replace(pastedPiece, "");
+          try {
+            JSON.parse(oldVal);
+          } catch (e) {
+            // error usually occurs when user pastes new element into the end of array
+            if (e.message.includes("Unexpected token , in JSON at position ")) {
+              const commaPosition: number = parseInt(
+                e.message.replace("Unexpected token , in JSON at position ", "")
+              );
+              oldVal =
+                oldVal.slice(0, commaPosition) +
+                oldVal.slice(commaPosition + 1, oldVal.length);
+            }
+          }
           addMultipleLinesChangeToHistory(
             JSON.parse(oldVal),
             JSON.parse(editor.getValue())

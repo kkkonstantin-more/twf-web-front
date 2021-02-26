@@ -338,10 +338,6 @@ const TaskSetConstructor = ({
   }, []);
 
   useEffect(() => {
-    // taskSetJSON.tasks.forEach((task, i) => {
-    //   setValue(`tasks[${i}]`, task);
-    // });
-    // getValues();
     setSelectedLevel(0);
   }, []);
 
