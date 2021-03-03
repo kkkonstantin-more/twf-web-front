@@ -831,30 +831,45 @@ const CodeMirrorEditor = ({
           changeObject.origin === "paste" &&
           changeObject.text.length > 1
         ) {
-          const pastedPiece = changeObject.text.reduce(
-            (acc: string, line: string, i: number) => {
-              if (i === 0) {
-                return acc;
-              } else {
-                return acc + "\n" + line;
+          // const pastedPiece = changeObject.text.reduce(
+          //   (acc: string, line: string, i: number) => {
+          //     return acc + "\n" + line;
+          //   }
+          // );
+          const removedPiece = changeObject.removed
+            ? changeObject.removed.reduce(
+                (acc: string, line: string, i: number) => {
+                  return acc + "\n" + line;
+                }
+              )
+            : null;
+          let oldVal =
+            editor.getRange({ line: 0, ch: 0 }, changeObject.from) +
+            (removedPiece ? removedPiece : "") +
+            editor.getRange(
+              {
+                line: changeObject.to.line + changeObject.text.length,
+                ch: 0,
+              },
+              {
+                line: editor.lastLine(),
+                ch: 999,
               }
-            },
-            editor.getLine(changeObject.from.line)
-          );
-          let oldVal = editor.getValue().replace(pastedPiece, "");
+            );
           try {
             JSON.parse(oldVal);
           } catch (e) {
             // error usually occurs when user pastes new element into the end of array
-            if (e.message.includes("Unexpected token , in JSON at position ")) {
-              const commaPosition: number = parseInt(
-                e.message.replace("Unexpected token , in JSON at position ", "")
-              );
-              oldVal =
-                oldVal.slice(0, commaPosition) +
-                oldVal.slice(commaPosition + 1, oldVal.length);
-            }
+            // if (e.message.includes("Unexpected token , in JSON at position ")) {
+            //   const commaPosition: number = parseInt(
+            //     e.message.replace("Unexpected token , in JSON at position ", "")
+            //   );
+            //   oldVal =
+            //     oldVal.slice(0, commaPosition) +
+            //     oldVal.slice(commaPosition + 1);
+            // }
           }
+          console.log(oldVal);
           addMultipleLinesChangeToHistory(
             JSON.parse(oldVal),
             JSON.parse(editor.getValue())

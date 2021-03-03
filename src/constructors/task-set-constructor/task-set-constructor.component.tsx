@@ -204,13 +204,12 @@ const TaskSetConstructor = ({
           currentHistoryChange.item.value
         );
         updateTaskSetJSON(getValues());
-        setUndoOrRedoIsTriggered(false);
       } else if (currentHistoryChange?.type === "MULTIPLE_LINES_CHANGE") {
         reset(currentHistoryChange.item);
-        // TODO: create multiple lines change undo redo logic
         // @ts-ignore
-        // updateTaskSetJSON(currentHistoryChange?.item);
+        updateTaskSetJSON(currentHistoryChange?.item);
       }
+      setUndoOrRedoIsTriggered(false);
     }
   }, [undoOrRedoIsTriggered]);
 
@@ -400,7 +399,6 @@ const TaskSetConstructor = ({
                     submit(data);
                   })}
                   onBlur={() => {
-                    console.log(getValues());
                     updateTaskSetJSON(getValues());
                   }}
                 >
