@@ -1,4 +1,5 @@
 import { ConstructorInputs } from "../constructor-jsons/constructor-jsons.types";
+import { ConstructorType } from "../../pages/constructor-page/constructor-page.types";
 
 export interface ExpressionChange {
   propertyPath: string;
@@ -8,11 +9,13 @@ export interface ExpressionChange {
 export interface MultipleLinesHistoryChange {
   oldVal: ConstructorInputs;
   newVal: ConstructorInputs;
+  constructorType: ConstructorType;
 }
 
 export interface OneLineHistoryChange {
   oldVal: ExpressionChange;
   newVal: ExpressionChange;
+  constructorType: ConstructorType;
 }
 
 export type ConstructorHistoryItem =
@@ -30,15 +33,17 @@ export interface ConstructorHistory {
   rulePack: ConstructorHistoryItem[];
   taskSet: ConstructorHistoryItem[];
   taskSetIdx: number;
+  rulePackIdx: number;
+  namespaceIdx: number;
 }
 
 // actions
 export const ADD_ONE_LINE_CHANGE_TO_HISTORY = "ADD_ONE_LINE_CHANGE_TO_HISTORY";
 export const ADD_MULTIPLE_LINES_CHANGE_TO_HISTORY =
   "ADD_MULTIPLE_LINES_CHANGE_TO_HISTORY";
-export const UPDATE_TASK_SET_HISTORY_INDEX = "UPDATE_TASK_SET_HISTORY_INDEX";
-export const UNDO_TASK_SET_HISTORY = "UNDO_TASK_SET_HISTORY";
-export const REDO_TASK_SET_HISTORY = "REDO_TASK_SET_HISTORY";
+export const UPDATE_HISTORY_INDEX = "UPDATE_HISTORY_INDEX";
+export const UNDO_HISTORY = "UNDO_HISTORY";
+export const REDO_HISTORY = "REDO_HISTORY";
 
 export interface AddOneLineChangeToHistoryAction {
   type: typeof ADD_ONE_LINE_CHANGE_TO_HISTORY;
@@ -51,16 +56,18 @@ export interface AddMultipleLinesChangeToHistoryAction {
 }
 
 export interface UpdateTaskSetHistoryIndexAction {
-  type: typeof UPDATE_TASK_SET_HISTORY_INDEX;
+  type: typeof UPDATE_HISTORY_INDEX;
   payload: number;
 }
 
 export interface UndoTaskSetHistoryAction {
-  type: typeof UNDO_TASK_SET_HISTORY;
+  type: typeof UNDO_HISTORY;
+  payload: ConstructorType;
 }
 
 export interface RedoTaskSetHistoryAction {
-  type: typeof REDO_TASK_SET_HISTORY;
+  type: typeof REDO_HISTORY;
+  payload: ConstructorType;
 }
 
 export type ConstructorHistoryActionTypes =

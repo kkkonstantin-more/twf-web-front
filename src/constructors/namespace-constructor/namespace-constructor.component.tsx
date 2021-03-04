@@ -168,6 +168,7 @@ const NamespaceConstructorComponent = ({
       label: "Код",
       type: "text",
       disabled: creationMode === ConstructorCreationMode.EDIT,
+      constructorType: "namespace",
     },
     {
       name: "grantType",
@@ -183,6 +184,7 @@ const NamespaceConstructorComponent = ({
           value: accessMode,
         };
       }),
+      constructorType: "namespace",
     },
     {
       name: "readGrantedUsers",
@@ -190,6 +192,7 @@ const NamespaceConstructorComponent = ({
       isMulti: true,
       options: usersDemoList,
       isVisible: grantType === NamespaceGrantType.PRIVATE_READ_WRITE,
+      constructorType: "namespace",
     },
     {
       name: "writeGrantedUsers",
@@ -199,6 +202,7 @@ const NamespaceConstructorComponent = ({
       isVisible:
         grantType === NamespaceGrantType.PUBLIC_READ_PRIVATE_WRITE ||
         grantType === NamespaceGrantType.PRIVATE_READ_WRITE,
+      constructorType: "namespace",
     },
   ];
 
@@ -249,7 +253,7 @@ const NamespaceConstructorComponent = ({
             register={register}
             // @ts-ignore
             updateJSON={() => updateNamespaceJSON(getValues())}
-            constructorType={ConstructorJSONsTypes.NAMESPACE}
+            constructorType="namespace"
           />
           <ServerResponseAlert errorMsg={errorMsg} successMsg={successMsg} />
           <button type="submit" className="btn">

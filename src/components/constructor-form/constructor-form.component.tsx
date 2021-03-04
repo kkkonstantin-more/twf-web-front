@@ -16,7 +16,7 @@ interface ConstructorFormProps {
   register?: () => void;
   updateJSON?: () => void;
   addToHistory?: (oldVal: ExpressionChange, newVal: ExpressionChange) => void;
-  constructorType?: ConstructorJSONsTypes;
+  constructorType: ConstructorType;
 }
 
 const ConstructorForm = ({
@@ -46,8 +46,8 @@ const ConstructorForm = ({
               <ConstructorInput
                 key={name}
                 addToHistory={addToHistory}
-                constructorType={constructorType}
                 {...input}
+                constructorType={constructorType}
               />
             );
           }

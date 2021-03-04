@@ -241,18 +241,21 @@ const RulePackConstructor = ({
       defaultValue: "____test_namespace_code" + uidv4().slice(0, 5),
       disabled: creationMode === ConstructorCreationMode.EDIT,
       onChange: () => setUserCodeChange(true),
+      constructorType: "rulePack",
     },
     {
       name: "nameEn",
       label: "Название  En",
       type: "text",
       defaultValue: "",
+      constructorType: "rulePack",
     },
     {
       name: "nameRu",
       label: "Название Ru",
       type: "text",
       defaultValue: "",
+      constructorType: "rulePack",
     },
     {
       name: "rulePacks",
@@ -372,7 +375,7 @@ const RulePackConstructor = ({
             inputs={inputs}
             register={register}
             updateJSON={() => updateRulePackJSON(getValues())}
-            constructorType={ConstructorJSONsTypes.RULE_PACK}
+            constructorType={"rulePack"}
           />
           <h3>Правила:</h3>
           <div className="rule-pack-constructor__rules">

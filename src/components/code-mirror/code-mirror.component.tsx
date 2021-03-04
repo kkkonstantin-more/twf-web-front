@@ -61,14 +61,18 @@ import { ActionButtonProps } from "../action-button/action-button.types";
 import {
   addMultipleLinesChangeToHistory,
   addOneLineChangeToHistory,
-  redoTaskSetHistory,
-  undoTaskSetHistory,
+  redoHistory,
+  undoHistory,
 } from "../../redux/constructor-history/constructor-history.actions";
 import {
   ConstructorHistoryItem,
   ExpressionChange,
 } from "../../redux/constructor-history/constructor-history.types";
-import { selectCurrentTaskSetHistoryChange } from "../../redux/constructor-history/constructor-history.selectors";
+import {
+  selectCurrentNamespaceHistoryChange,
+  selectCurrentRulePackHistoryChange,
+  selectCurrentTaskSetHistoryChange,
+} from "../../redux/constructor-history/constructor-history.selectors";
 // jsonlint config
 const jsonlint = require("jsonlint-mod");
 // @ts-ignore
@@ -108,7 +112,9 @@ const CodeMirrorEditor = ({
   updateNamespaceJSON,
   updateRulePackJSON,
   updateTaskSetJSON,
-  currentHistoryChange,
+  currentNamespaceHistoryChange,
+  currentRulePackHistoryChange,
+  currentTaskSetHistoryChange,
   undo,
   redo,
   addOneLineChangeToHistory,
@@ -139,6 +145,17 @@ const CodeMirrorEditor = ({
         return CONSTRUCTOR_JSONS_INITIAL_STATE.rulePack;
       case "taskSet":
         return CONSTRUCTOR_JSONS_INITIAL_STATE.taskSet;
+    }
+  })();
+
+  const currentHistoryChange = (() => {
+    switch (constructorType) {
+      case "namespace":
+        return currentNamespaceHistoryChange;
+      case "rulePack":
+        return currentRulePackHistoryChange;
+      case "taskSet":
+        return currentTaskSetHistoryChange;
     }
   })();
 
@@ -541,6 +558,7 @@ const CodeMirrorEditor = ({
               .replace("[", ".")
               .replace("]", "")
           );
+          console.log(newEditorVal);
           editor.setValue(JSON.stringify(newEditorVal, null, 2));
           editor.setCursor(cursorPos);
         } else if (currentHistoryChange.type === "MULTIPLE_LINES_CHANGE") {
@@ -590,18 +608,18 @@ const CodeMirrorEditor = ({
       // setup undo redo logic
       editor.undo = () => {
         setUndoOrRedoIsTriggered(true);
-        undo();
+        undo(constructorType);
         setUndoOrRedoIsTriggered(false);
         try {
-          updateTaskSetJSON(JSON.parse(editor.getValue()));
+          updateCurrentReduxJSON(JSON.parse(editor.getValue()));
         } catch (e) {}
       };
       editor.redo = () => {
         setUndoOrRedoIsTriggered(true);
-        redo();
+        redo(constructorType);
         setUndoOrRedoIsTriggered(false);
         try {
-          updateTaskSetJSON(JSON.parse(editor.getValue()));
+          updateCurrentReduxJSON(JSON.parse(editor.getValue()));
         } catch (e) {}
       };
       // setup editor's onchange actions
@@ -797,7 +815,8 @@ const CodeMirrorEditor = ({
             {
               propertyPath: expPrefix + newKey,
               value: newVal,
-            }
+            },
+            constructorType
           );
           try {
             updateCurrentReduxJSON(JSON.parse(editor.getValue()));
@@ -822,7 +841,8 @@ const CodeMirrorEditor = ({
             });
           addMultipleLinesChangeToHistory(
             JSON.parse(oldVal),
-            JSON.parse(editor.getValue())
+            JSON.parse(editor.getValue()),
+            constructorType
           );
           try {
             updateCurrentReduxJSON(JSON.parse(editor.getValue()));
@@ -872,7 +892,8 @@ const CodeMirrorEditor = ({
           console.log(oldVal);
           addMultipleLinesChangeToHistory(
             JSON.parse(oldVal),
-            JSON.parse(editor.getValue())
+            JSON.parse(editor.getValue()),
+            constructorType
           );
           try {
             updateCurrentReduxJSON(JSON.parse(editor.getValue()));
@@ -1142,13 +1163,17 @@ const mapStateToProps = createStructuredSelector<
     namespaceJSON: NamespaceConstructorInputs;
     rulePackJSON: RulePackConstructorInputs;
     taskSetJSON: TaskSetConstructorInputs;
-    currentHistoryChange: ConstructorHistoryItem | undefined;
+    currentTaskSetHistoryChange: ConstructorHistoryItem | undefined;
+    currentNamespaceHistoryChange: ConstructorHistoryItem | undefined;
+    currentRulePackHistoryChange: ConstructorHistoryItem | undefined;
   }
 >({
   namespaceJSON: selectNamespaceJSON,
   rulePackJSON: selectRulePackJSON,
   taskSetJSON: selectTaskSetJSON,
-  currentHistoryChange: selectCurrentTaskSetHistoryChange,
+  currentTaskSetHistoryChange: selectCurrentTaskSetHistoryChange,
+  currentNamespaceHistoryChange: selectCurrentNamespaceHistoryChange,
+  currentRulePackHistoryChange: selectCurrentRulePackHistoryChange,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<any>) => ({
@@ -1164,16 +1189,22 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) => ({
   // version control
   addOneLineChangeToHistory: (
     oldVal: ExpressionChange,
-    newVal: ExpressionChange
-  ) => dispatch(addOneLineChangeToHistory({ oldVal, newVal })),
+    newVal: ExpressionChange,
+    constructorType: ConstructorType
+  ) => dispatch(addOneLineChangeToHistory({ oldVal, newVal, constructorType })),
   addMultipleLinesChangeToHistory: (
     oldVal: TaskSetConstructorInputs,
-    newVal: TaskSetConstructorInputs
+    newVal: TaskSetConstructorInputs,
+    constructorType: ConstructorType
   ) => {
-    dispatch(addMultipleLinesChangeToHistory({ oldVal, newVal }));
+    dispatch(
+      addMultipleLinesChangeToHistory({ oldVal, newVal, constructorType })
+    );
   },
-  undo: () => dispatch(undoTaskSetHistory()),
-  redo: () => dispatch(redoTaskSetHistory()),
+  undo: (constructorType: ConstructorType) =>
+    dispatch(undoHistory(constructorType)),
+  redo: (constructorType: ConstructorType) =>
+    dispatch(redoHistory(constructorType)),
 });
 
 const connector = connect(mapStateToProps, mapDispatchToProps);

@@ -17,8 +17,8 @@ import {
 } from "../../redux/constructor-history/constructor-history.selectors";
 import {
   addOneLineChangeToHistory,
-  redoTaskSetHistory,
-  undoTaskSetHistory,
+  redoHistory,
+  undoHistory,
 } from "../../redux/constructor-history/constructor-history.actions";
 // lib components
 import Draggable from "react-draggable";
@@ -229,18 +229,21 @@ const TaskSetConstructor = ({
       type: "text",
       defaultValue: "",
       disabled: creationMode === ConstructorCreationMode.EDIT,
+      constructorType: "taskSet",
     },
     {
       name: "nameEn",
       label: "Имя en",
       type: "text",
       defaultValue: "",
+      constructorType: "taskSet",
     },
     {
       name: "nameRu",
       label: "Имя ru",
       type: "text",
       defaultValue: "",
+      constructorType: "taskSet",
     },
     {
       name: "subjectTypes",
@@ -256,6 +259,7 @@ const TaskSetConstructor = ({
       label: "Дополнительная информация",
       type: "text",
       defaultValue: "",
+      constructorType: "taskSet",
     },
   ];
 
@@ -412,7 +416,7 @@ const TaskSetConstructor = ({
                     ) => {
                       addItemToHistory(oldVal, newVal);
                     }}
-                    constructorType={ConstructorJSONsTypes.TASK_SET}
+                    constructorType={"taskSet"}
                   />
                   <div className="u-flex" style={{ alignItems: "center" }}>
                     <h3>Задачи</h3>
@@ -790,9 +794,11 @@ const mapDispatch = (
   updateTaskSetJSON: (taskSetJSON: TaskSetConstructorInputs) =>
     dispatch(updateTaskSetJSON(taskSetJSON)),
   addItemToHistory: (oldVal: ExpressionChange, newVal: ExpressionChange) =>
-    dispatch(addOneLineChangeToHistory({ oldVal, newVal })),
-  undo: () => dispatch(undoTaskSetHistory()),
-  redo: () => dispatch(redoTaskSetHistory()),
+    dispatch(
+      addOneLineChangeToHistory({ oldVal, newVal, constructorType: "taskSet" })
+    ),
+  undo: () => dispatch(undoHistory("taskSet")),
+  redo: () => dispatch(redoHistory("taskSet")),
 });
 
 const connector = connect(mapState, mapDispatch);

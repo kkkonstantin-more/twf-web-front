@@ -5,13 +5,14 @@ import {
   AddOneLineChangeToHistoryAction,
   MultipleLinesHistoryChange,
   OneLineHistoryChange,
-  REDO_TASK_SET_HISTORY,
+  REDO_HISTORY,
   RedoTaskSetHistoryAction,
-  UNDO_TASK_SET_HISTORY,
+  UNDO_HISTORY,
   UndoTaskSetHistoryAction,
-  UPDATE_TASK_SET_HISTORY_INDEX,
+  UPDATE_HISTORY_INDEX,
   UpdateTaskSetHistoryIndexAction,
 } from "./constructor-history.types";
+import { ConstructorType } from "../../pages/constructor-page/constructor-page.types";
 
 export const addOneLineChangeToHistory = (
   item: OneLineHistoryChange
@@ -27,17 +28,23 @@ export const addMultipleLinesChangeToHistory = (
   payload: item,
 });
 
-export const updateTaskSetHistoryIndex = (
-  idx: number
-): UpdateTaskSetHistoryIndexAction => ({
-  type: UPDATE_TASK_SET_HISTORY_INDEX,
-  payload: idx,
+// export const updateTaskSetHistoryIndex = (
+//   idx: number
+// ): UpdateTaskSetHistoryIndexAction => ({
+//   type: UPDATE_TASK_SET_HISTORY_INDEX,
+//   payload: idx,
+// });
+
+export const undoHistory = (
+  constructorType: ConstructorType
+): UndoTaskSetHistoryAction => ({
+  type: UNDO_HISTORY,
+  payload: constructorType,
 });
 
-export const undoTaskSetHistory = (): UndoTaskSetHistoryAction => ({
-  type: UNDO_TASK_SET_HISTORY,
-});
-
-export const redoTaskSetHistory = (): RedoTaskSetHistoryAction => ({
-  type: REDO_TASK_SET_HISTORY,
+export const redoHistory = (
+  constructorType: ConstructorType
+): RedoTaskSetHistoryAction => ({
+  type: REDO_HISTORY,
+  payload: constructorType,
 });

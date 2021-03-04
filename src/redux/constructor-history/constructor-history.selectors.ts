@@ -23,3 +23,19 @@ export const selectCurrentTaskSetHistoryChange = createSelector(
       ? histories.taskSet[histories.taskSetIdx]
       : undefined
 );
+
+export const selectCurrentNamespaceHistoryChange = createSelector(
+  [selectConstructorHistory],
+  (histories: ConstructorHistory) =>
+    histories.namespace.length > 0
+      ? histories.namespace[histories.namespaceIdx]
+      : undefined
+);
+
+export const selectCurrentRulePackHistoryChange = createSelector(
+  [selectConstructorHistory],
+  (histories: ConstructorHistory) =>
+    histories.rulePack.length > 0
+      ? histories.rulePack[histories.rulePackIdx]
+      : undefined
+);

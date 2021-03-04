@@ -11,90 +11,123 @@ const constructorHistoryReducer = (
   state: ConstructorHistory = CONSTRUCTOR_HISTORY_INITIAL_STATE,
   action: ConstructorHistoryActionTypes
 ): ConstructorHistory => {
+  const constructorType =
+    action.type === "ADD_ONE_LINE_CHANGE_TO_HISTORY" ||
+    action.type === "ADD_MULTIPLE_LINES_CHANGE_TO_HISTORY"
+      ? action.payload.constructorType
+      : action.payload;
+  const historyIdxType: string = constructorType + "Idx";
+
   switch (action.type) {
     case "ADD_ONE_LINE_CHANGE_TO_HISTORY":
       if (
-        deepEqual(state.taskSet[state.taskSet.length - 1], {
+        // @ts-ignore
+        deepEqual(state[constructorType][state[constructorType].length - 1], {
           item: { ...action.payload.newVal },
           type: "ONE_LINE_CHANGE",
         })
       ) {
         return state;
       } else if (
-        deepEqual(state.taskSet[state.taskSet.length - 1], {
+        // @ts-ignore
+        deepEqual(state[constructorType][state[constructorType].length - 1], {
           item: { ...action.payload.oldVal },
           type: "ONE_LINE_CHANGE",
         })
       ) {
         return {
           ...state,
-          taskSet: [
-            ...state.taskSet.slice(0, state.taskSetIdx + 1),
+          [constructorType]: [
+            //@ts-ignore
+            ...state[constructorType].slice(0, state[historyIdxType] + 1),
             { item: { ...action.payload.newVal }, type: "ONE_LINE_CHANGE" },
           ],
-          taskSetIdx: state.taskSetIdx + 1,
+          //@ts-ignore
+          [historyIdxType]: state[historyIdxType] + 1,
         };
       } else {
         return {
           ...state,
-          taskSet: [
-            ...state.taskSet.slice(0, state.taskSetIdx + 1).concat([
-              { item: { ...action.payload.oldVal }, type: "ONE_LINE_CHANGE" },
-              { item: { ...action.payload.newVal }, type: "ONE_LINE_CHANGE" },
-            ]),
+          [constructorType]: [
+            //@ts-ignore
+            ...state[constructorType]
+              // @ts-ignore
+              .slice(0, state[historyIdxType] + 1)
+              .concat([
+                { item: { ...action.payload.oldVal }, type: "ONE_LINE_CHANGE" },
+                { item: { ...action.payload.newVal }, type: "ONE_LINE_CHANGE" },
+              ]),
           ],
-          taskSetIdx: state.taskSetIdx + 2,
+          //@ts-ignore
+          [historyIdxType]: state[historyIdxType] + 2,
         };
       }
     case "ADD_MULTIPLE_LINES_CHANGE_TO_HISTORY":
+      // const historyIdxType: string = constructorType + "Idx";
       if (
-        deepEqual(state.taskSet[state.taskSet.length - 1], {
+        // @ts-ignore
+        deepEqual(state[constructorType][state[constructorType].length - 1], {
           item: { ...action.payload.oldVal },
           type: "MULTIPLE_LINES_CHANGE",
         })
       ) {
         return {
           ...state,
-          taskSet: [
-            ...state.taskSet.slice(0, state.taskSetIdx + 1),
+          [constructorType]: [
+            // @ts-ignore
+            ...state[constructorType].slice(0, state[historyIdxType] + 1),
             {
               item: { ...action.payload.newVal },
               type: "MULTIPLE_LINES_CHANGE",
             },
           ],
-          taskSetIdx: state.taskSetIdx + 1,
+          // @ts-ignore
+          taskSetIdx: state[historyIdxType] + 1,
         };
       } else {
         return {
           ...state,
-          taskSet: [
-            ...state.taskSet.slice(0, state.taskSetIdx + 1).concat([
-              {
-                item: { ...action.payload.oldVal },
-                type: "MULTIPLE_LINES_CHANGE",
-              },
-              {
-                item: { ...action.payload.newVal },
-                type: "MULTIPLE_LINES_CHANGE",
-              },
-            ]),
+          [constructorType]: [
+            // @ts-ignore
+            ...state[constructorType]
+              // @ts-ignore
+              .slice(0, state[historyIdxType] + 1)
+              .concat([
+                {
+                  item: { ...action.payload.oldVal },
+                  type: "MULTIPLE_LINES_CHANGE",
+                },
+                {
+                  item: { ...action.payload.newVal },
+                  type: "MULTIPLE_LINES_CHANGE",
+                },
+              ]),
           ],
-          taskSetIdx: state.taskSetIdx + 2,
+          // @ts-ignore
+          [constructorType]: state[historyIdxType] + 2,
         };
       }
-    case "REDO_TASK_SET_HISTORY":
+    case "REDO_HISTORY":
       return {
         ...state,
-        taskSetIdx:
-          state.taskSetIdx !== state.taskSet.length - 1
-            ? ++state.taskSetIdx
-            : state.taskSetIdx,
+        [historyIdxType]:
+        //@ts-ignore
+          state[historyIdxType] !== state[constructorType].length - 1
+            ? //@ts-ignore
+              ++state[historyIdxType]
+            : //@ts-ignore
+              state[historyIdxType],
       };
-    case "UNDO_TASK_SET_HISTORY":
+    case "UNDO_HISTORY":
       return {
         ...state,
-        taskSetIdx:
-          state.taskSetIdx >= 0 ? --state.taskSetIdx : state.taskSetIdx,
+        [historyIdxType]:
+        //@ts-ignore
+          state[historyIdxType] >= 0
+            ? //@ts-ignore
+              --state[historyIdxType]
+            : //@ts-ignore
+              state[historyIdxType],
       };
     default:
       return state;

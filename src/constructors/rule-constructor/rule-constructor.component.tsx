@@ -36,18 +36,21 @@ const RuleConstructor = ({
       label: "Название En",
       type: "text",
       defaultValue: defaultValue?.nameEn,
+      constructorType: "rulePack",
     },
     {
       name: `rules[${index}].nameRu`,
       label: "Название Ru",
       type: "text",
       defaultValue: defaultValue?.nameRu,
+      constructorType: "rulePack",
     },
     {
       name: `rules[${index}].code`,
       label: "Код",
       type: "text",
       defaultValue: defaultValue?.code,
+      constructorType: "rulePack",
     },
     {
       name: `rules[${index}].left`,
@@ -60,6 +63,7 @@ const RuleConstructor = ({
             format: MathInputFormat.TEX,
             expression: "",
           },
+      constructorType: "rulePack",
     },
     {
       name: `rules[${index}].right`,
@@ -72,12 +76,14 @@ const RuleConstructor = ({
             format: MathInputFormat.TEX,
             expression: "",
           },
+      constructorType: "rulePack",
     },
     {
       name: `rules[${index}].priority`,
       label: "Приоритет",
       type: "number",
       defaultValue: defaultValue?.priority,
+      constructorType: "rulePack",
     },
     {
       name: `rules[${index}].isExtending`,
@@ -88,6 +94,7 @@ const RuleConstructor = ({
         { value: "false", label: "нет" },
       ],
       defaultValue: defaultValue?.isExtending?.toString(),
+      constructorType: "rulePack",
     },
     {
       name: `rules[${index}].simpleAdditional`,
@@ -98,6 +105,7 @@ const RuleConstructor = ({
         { value: "false", label: "нет" },
       ],
       defaultValue: defaultValue?.simpleAdditional?.toString(),
+      constructorType: "rulePack",
     },
     {
       name: `rules[${index}].basedOnTaskContext`,
@@ -108,6 +116,7 @@ const RuleConstructor = ({
         { value: "false", label: "нет" },
       ],
       defaultValue: defaultValue?.basedOnTaskContext?.toString(),
+      constructorType: "rulePack",
     },
     {
       name: `rules[${index}].matchJumbledAndNested`,
@@ -118,6 +127,7 @@ const RuleConstructor = ({
         { value: "false", label: "нет" },
       ],
       defaultValue: defaultValue?.matchJumbledAndNested?.toString(),
+      constructorType: "rulePack",
     },
   ];
 
@@ -128,7 +138,7 @@ const RuleConstructor = ({
         register={register}
         // @ts-ignore
         updateJSON={() => updateRulePackJSON(getValues())}
-        constructorType={ConstructorJSONsTypes.RULE_PACK}
+        constructorType={"rulePack"}
       />
     </div>
   );

@@ -14,7 +14,10 @@ export const filterReactSelectOptions = (options: any[]) => {
 };
 
 export const isSelectInput = (
-  input: ConstructorInputProps | ConstructorSelectProps
+  input:
+    | ConstructorInputProps
+    | Partial<ConstructorInputProps>
+    | ConstructorSelectProps
 ): input is ConstructorSelectProps => {
   return (input as ConstructorSelectProps).options !== undefined;
 };
