@@ -508,7 +508,7 @@ const CodeMirrorEditor = ({
     query: string,
     start: Position,
     end: Position
-  ) => {
+  ): CodeMirrorWordPosition[] => {
     const res: CodeMirrorWordPosition[] = [];
     // @ts-ignore
     const cursor = editor.getSearchCursor(query, start);
@@ -566,8 +566,8 @@ const CodeMirrorEditor = ({
           // @ts-ignore
           updateCurrentReduxJSON(currentHistoryChange.item);
         }
-      } catch {
-        console.log("ERROR WHILE UNDO REDO");
+      } catch (e) {
+        console.log("ERROR WHILE UNDO/REDO", e.message);
         return;
       }
     }
@@ -624,13 +624,11 @@ const CodeMirrorEditor = ({
       };
       // setup editor's onchange actions
       editor.on("change", (editor, changeObject) => {
-        console.log(changeObject);
-        const numberOfChangedLines: number | undefined =
-          changeObject.text.length !== 0
-            ? changeObject.removed?.length
-            : changeObject.text.length;
+        // const numberOfChangedLines: number | undefined =
+        //   changeObject.text.length !== 0
+        //     ? changeObject.removed?.length
+        //     : changeObject.text.length;
         const changedLineNum: number = changeObject.from.line;
-        console.log(numberOfChangedLines);
         // one line change
         if (
           ((changeObject.origin === "+input" ||
@@ -665,39 +663,50 @@ const CodeMirrorEditor = ({
             }
           })();
 
+          console.log("New vals: ", newVal, newKey);
+          console.log("Old vals: ", oldVal, oldKey);
+
+          let expPrefix = "";
+
           const brackets: Bracket[] = [];
           let searchLine = 1;
           while (searchLine < changeObject.from.line) {
-            const lineValue = editor.getLine(++searchLine);
-            if (lineValue.includes("{")) {
-              brackets.push({
-                char: "{",
-                position: getPositions(
-                  editor,
-                  "{",
-                  { line: searchLine, ch: 0 },
-                  { line: searchLine, ch: 999 }
-                )[0],
-              });
-            } else if (lineValue.includes("[")) {
-              brackets.push({
-                char: "[",
-                position: getPositions(
-                  editor,
-                  "[",
-                  { line: searchLine, ch: 0 },
-                  { line: searchLine, ch: 999 }
-                )[0],
-              });
-            } else if (lineValue.includes("}")) {
-              if (brackets[brackets.length - 1].char === "{") {
-                brackets.pop();
-              }
-            } else if (lineValue.includes("]")) {
-              if (brackets[brackets.length - 1].char === "[") {
-                brackets.pop();
+            const lineValue = editor.getLine(searchLine);
+            if (
+              !(lineValue.includes("[") && lineValue.includes("]")) &&
+              !(lineValue.includes("{") && lineValue.includes("}"))
+            ) {
+              if (lineValue.includes("{")) {
+                brackets.push({
+                  char: "{",
+                  position: getPositions(
+                    editor,
+                    "{",
+                    { line: searchLine, ch: 0 },
+                    { line: searchLine, ch: 999 }
+                  )[0],
+                });
+              } else if (lineValue.includes("[")) {
+                brackets.push({
+                  char: "[",
+                  position: getPositions(
+                    editor,
+                    "[",
+                    { line: searchLine, ch: 0 },
+                    { line: searchLine, ch: 999 }
+                  )[0],
+                });
+              } else if (lineValue.includes("}")) {
+                if (brackets[brackets.length - 1].char === "{") {
+                  brackets.pop();
+                }
+              } else if (lineValue.includes("]")) {
+                if (brackets[brackets.length - 1].char === "[") {
+                  brackets.pop();
+                }
               }
             }
+            searchLine++;
           }
 
           const notMatchingOpeningBrackets = brackets
@@ -709,8 +718,6 @@ const CodeMirrorEditor = ({
                 return 0;
               }
             });
-
-          let expPrefix = "";
 
           notMatchingOpeningBrackets.forEach(
             (
@@ -760,12 +767,14 @@ const CodeMirrorEditor = ({
                     ch: 999,
                   }
                 );
+                console.log(propertyPath.split(".")[0]);
                 let occurrences = getPositions(
                   editor,
                   `"${propertyPath.split(".")[0]}":`,
                   item.from,
                   closingBracketPos.from
                 );
+                console.log(occurrences);
                 const nestingLevels = propertyPath.split(".");
                 if (nestingLevels.length !== 1) {
                   nestingLevels.slice(1).forEach((level: string) => {
@@ -797,11 +806,13 @@ const CodeMirrorEditor = ({
                     );
                   });
                 }
+                console.log(occurrences);
                 const currentIdx = occurrences.findIndex(
                   (pos: CodeMirrorWordPosition) => {
                     return pos.from.line === changeObject.from.line;
                   }
                 );
+                console.log(currentIdx);
                 expPrefix = `${parentKey}[${currentIdx}].${expPrefix}`;
               }
             }

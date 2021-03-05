@@ -82,7 +82,7 @@ const constructorHistoryReducer = (
             },
           ],
           // @ts-ignore
-          taskSetIdx: state[historyIdxType] + 1,
+          [historyIdxType]: state[historyIdxType] + 1,
         };
       } else {
         return {
@@ -104,7 +104,7 @@ const constructorHistoryReducer = (
               ]),
           ],
           // @ts-ignore
-          [constructorType]: state[historyIdxType] + 2,
+          [historyIdxType]: state[historyIdxType] + 2,
         };
       }
     case "REDO_HISTORY":
