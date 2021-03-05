@@ -61,10 +61,27 @@ import {
 } from "@mdi/js";
 // styles
 import "./rule-pack-constructor.scss";
+import {
+  ConstructorHistoryItem,
+  RedoTaskSetHistoryAction,
+  UndoTaskSetHistoryAction,
+} from "../../redux/constructor-history/constructor-history.types";
+import {
+  selectCurrentRulePackHistoryChange,
+  selectCurrentTaskSetHistoryChange,
+} from "../../redux/constructor-history/constructor-history.selectors";
+import {
+  redoHistory,
+  undoHistory,
+} from "../../redux/constructor-history/constructor-history.actions";
+import ConstructorUndoRedoPanel from "../../components/constructor-undo-redo-panel/constructor-undo-redo-panel.component";
 
 const RulePackConstructor = ({
   rulePackJSON,
   updateRulePackJSON,
+  currentHistoryChange,
+  undo,
+  redo,
 }: ConnectedProps<typeof connector>): JSX.Element => {
   // defining creation type and dependent vars
   const { code } = useParams();
@@ -180,6 +197,25 @@ const RulePackConstructor = ({
       }
     }
   }, []);
+
+  const [undoOrRedoIsTriggered, setUndoOrRedoIsTriggered] = useState(false);
+
+  useEffect(() => {
+    if (undoOrRedoIsTriggered) {
+      if (currentHistoryChange?.type === "ONE_LINE_CHANGE") {
+        setValue(
+          currentHistoryChange.item.propertyPath,
+          currentHistoryChange.item.value
+        );
+        updateRulePackJSON(getValues());
+      } else if (currentHistoryChange?.type === "MULTIPLE_LINES_CHANGE") {
+        reset(currentHistoryChange.item);
+        // @ts-ignore
+        updateRulePackJSON(currentHistoryChange?.item);
+      }
+      setUndoOrRedoIsTriggered(false);
+    }
+  }, [undoOrRedoIsTriggered]);
 
   const actionButtons: ActionButtonProps[] = [
     {
@@ -364,10 +400,25 @@ const RulePackConstructor = ({
   } else {
     return (
       <FormProvider {...formMethods}>
+        <div style={{ margin: "2rem" }}>
+          <ConstructorUndoRedoPanel
+            undo={() => {
+              undo();
+              setUndoOrRedoIsTriggered(true);
+            }}
+            redo={() => {
+              redo();
+              setUndoOrRedoIsTriggered(true);
+            }}
+          />
+        </div>
         <form
           onSubmit={handleSubmit((data: RulePackConstructorInputs) => {
             submit(data);
           })}
+          onBlur={() => {
+            updateRulePackJSON(getValues());
+          }}
           className="rule-pack-constructor"
         >
           <h2>{titleAndSubmitButtonText}</h2>
@@ -461,14 +512,26 @@ const RulePackConstructor = ({
 // connecting redux props
 const mapState = createStructuredSelector<
   RootState,
-  { rulePackJSON: RulePackConstructorInputs }
+  {
+    rulePackJSON: RulePackConstructorInputs;
+    currentHistoryChange: ConstructorHistoryItem | undefined;
+  }
 >({
   rulePackJSON: selectRulePackJSON,
+  currentHistoryChange: selectCurrentRulePackHistoryChange,
 });
 
-const mapDispatch = (dispatch: Dispatch<UpdateRulePackJSONAction>) => ({
+const mapDispatch = (
+  dispatch: Dispatch<
+    | UpdateRulePackJSONAction
+    | RedoTaskSetHistoryAction
+    | UndoTaskSetHistoryAction
+  >
+) => ({
   updateRulePackJSON: (rulePackJSON: RulePackConstructorInputs) =>
     dispatch(updateRulePackJSON(rulePackJSON)),
+  undo: () => dispatch(undoHistory("rulePack")),
+  redo: () => dispatch(redoHistory("rulePack")),
 });
 
 const connector = connect(mapState, mapDispatch);

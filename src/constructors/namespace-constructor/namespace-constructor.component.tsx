@@ -44,10 +44,24 @@ import {
 // styles
 import "./namespace-constructor.styles.scss";
 import { ClipLoader } from "react-spinners";
+import { selectCurrentNamespaceHistoryChange } from "../../redux/constructor-history/constructor-history.selectors";
+import {
+  ConstructorHistoryItem,
+  RedoTaskSetHistoryAction,
+  UndoTaskSetHistoryAction,
+} from "../../redux/constructor-history/constructor-history.types";
+import ConstructorUndoRedoPanel from "../../components/constructor-undo-redo-panel/constructor-undo-redo-panel.component";
+import {
+  redoHistory,
+  undoHistory,
+} from "../../redux/constructor-history/constructor-history.actions";
 
 const NamespaceConstructorComponent = ({
   namespaceJSON,
   updateNamespaceJSON,
+  currentHistoryChange,
+  undo,
+  redo,
 }: ConnectedProps<typeof connector>): JSX.Element => {
   // defining creation type and dependent vars
   const { code } = useParams();
@@ -162,6 +176,25 @@ const NamespaceConstructorComponent = ({
     })();
   }, [grantType]);
 
+  const [undoOrRedoIsTriggered, setUndoOrRedoIsTriggered] = useState(false);
+
+  useEffect(() => {
+    if (undoOrRedoIsTriggered) {
+      if (currentHistoryChange?.type === "ONE_LINE_CHANGE") {
+        setValue(
+          currentHistoryChange.item.propertyPath,
+          currentHistoryChange.item.value
+        );
+        updateNamespaceJSON(getValues());
+      } else if (currentHistoryChange?.type === "MULTIPLE_LINES_CHANGE") {
+        reset(currentHistoryChange.item);
+        // @ts-ignore
+        updateNamespaceJSON(currentHistoryChange?.item);
+      }
+      setUndoOrRedoIsTriggered(false);
+    }
+  }, [undoOrRedoIsTriggered]);
+
   const inputs: (ConstructorInputProps | ConstructorSelectProps)[] = [
     {
       name: "code",
@@ -241,11 +274,26 @@ const NamespaceConstructorComponent = ({
   } else {
     return (
       <FormProvider {...formMethods}>
+        <div style={{ margin: "2rem" }}>
+          <ConstructorUndoRedoPanel
+            undo={() => {
+              undo();
+              setUndoOrRedoIsTriggered(true);
+            }}
+            redo={() => {
+              redo();
+              setUndoOrRedoIsTriggered(true);
+            }}
+          />
+        </div>
         <form
           className="namespace-constructor"
           onSubmit={handleSubmit((data: NamespaceConstructorInputs) => {
             submit(data, creationMode);
           })}
+          onBlur={() => {
+            updateNamespaceJSON(getValues());
+          }}
         >
           <h1>{titleAndSubmitButtonText}</h1>
           <ConstructorForm
@@ -268,14 +316,26 @@ const NamespaceConstructorComponent = ({
 // connecting redux props
 const mapState = createStructuredSelector<
   RootState,
-  { namespaceJSON: NamespaceConstructorInputs }
+  {
+    namespaceJSON: NamespaceConstructorInputs;
+    currentHistoryChange: ConstructorHistoryItem | undefined;
+  }
 >({
   namespaceJSON: selectNamespaceJSON,
+  currentHistoryChange: selectCurrentNamespaceHistoryChange,
 });
 
-const mapDispatch = (dispatch: Dispatch<UpdateNamespaceJSONAction>) => ({
+const mapDispatch = (
+  dispatch: Dispatch<
+    | UpdateNamespaceJSONAction
+    | RedoTaskSetHistoryAction
+    | UndoTaskSetHistoryAction
+  >
+) => ({
   updateNamespaceJSON: (namespaceJSON: NamespaceConstructorInputs) =>
     dispatch(updateNamespaceJSON(namespaceJSON)),
+  undo: () => dispatch(undoHistory("namespace")),
+  redo: () => dispatch(redoHistory("namespace")),
 });
 
 const connector = connect(mapState, mapDispatch);
