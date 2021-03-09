@@ -5,6 +5,7 @@ import { useParams } from "react-router-dom";
 // custom hooks
 import useCreationMode from "../hooks/useCreationType";
 // lib components
+import { ClipLoader } from "react-spinners";
 // custom components
 import ConstructorForm from "../../components/constructor-form/constructor-form.component";
 import ServerResponseAlert from "../../components/server-response-alert/server-response-alert.component";
@@ -14,6 +15,17 @@ import { updateNamespaceJSON } from "../../redux/constructor-jsons/constructor-j
 import { connect, ConnectedProps } from "react-redux";
 import { createStructuredSelector } from "reselect";
 import CONSTRUCTOR_JSONS_INITIAL_STATE from "../../redux/constructor-jsons/constructor-jsons.state";
+import { selectCurrentNamespaceHistoryChange } from "../../redux/constructor-history/constructor-history.selectors";
+import {
+  ConstructorHistoryItem,
+  RedoTaskSetHistoryAction,
+  UndoTaskSetHistoryAction,
+} from "../../redux/constructor-history/constructor-history.types";
+import ConstructorUndoRedoPanel from "../../components/constructor-undo-redo-panel/constructor-undo-redo-panel.component";
+import {
+  redoHistory,
+  undoHistory,
+} from "../../redux/constructor-history/constructor-history.actions";
 // types
 import {
   NamespaceConstructorInputs,
@@ -27,8 +39,8 @@ import {
   ConstructorJSONsTypes,
   UpdateNamespaceJSONAction,
 } from "../../redux/constructor-jsons/constructor-jsons.types";
-// mock data
-import { usersDemoList } from "../../pages/constructor-menu-page/constructor-menu-page.component";
+import { FetchedUser } from "../common-server-requests";
+import { LabeledValue } from "antd/es/select";
 // utils
 import getConstructorSubmitButtonAndTitleText from "../utiils/get-constructor-submit-button-and-title-text";
 import { getGrantTypeUserReadableDescription } from "./namespace-constructor.utils";
@@ -41,20 +53,9 @@ import {
   setLastEditedCreationMode,
   setLastExampleConstructorCode,
 } from "../../utils/local-storage/last-edited-creation-type";
+import { getAllUsers } from "../common-server-requests";
 // styles
 import "./namespace-constructor.styles.scss";
-import { ClipLoader } from "react-spinners";
-import { selectCurrentNamespaceHistoryChange } from "../../redux/constructor-history/constructor-history.selectors";
-import {
-  ConstructorHistoryItem,
-  RedoTaskSetHistoryAction,
-  UndoTaskSetHistoryAction,
-} from "../../redux/constructor-history/constructor-history.types";
-import ConstructorUndoRedoPanel from "../../components/constructor-undo-redo-panel/constructor-undo-redo-panel.component";
-import {
-  redoHistory,
-  undoHistory,
-} from "../../redux/constructor-history/constructor-history.actions";
 
 const NamespaceConstructorComponent = ({
   namespaceJSON,
@@ -90,14 +91,25 @@ const NamespaceConstructorComponent = ({
     setValue,
   } = formMethods;
   // show spinner while fetching
-  const [showSpinner, setShowSpinner] = useState<boolean>(
-    creationMode !== ConstructorCreationMode.CREATE
+  const [showSpinner, setShowSpinner] = useState<boolean>(true);
+  const [isFormLoaded, setIsFormLoaded] = useState<boolean>(false);
+  const [areUsersLoaded, setAreUsersLoaded] = useState<boolean>(false);
+  // users options in select input
+  const [usersSelectOptions, setUsersSelectOptions] = useState<LabeledValue[]>(
+    []
   );
+  // destroy spinner only if users and form are both loaded
+  useEffect(() => {
+    if (isFormLoaded && areUsersLoaded) {
+      setShowSpinner(false);
+    }
+  }, [isFormLoaded, areUsersLoaded]);
   // set initial values due to creation mode
   useEffect(() => {
     if (creationMode === ConstructorCreationMode.CREATE) {
       if (lastEditedMode === ConstructorCreationMode.CREATE) {
         reset(namespaceJSON);
+        setIsFormLoaded(true);
       } else {
         (async () => {
           await reset(CONSTRUCTOR_JSONS_INITIAL_STATE.namespace);
@@ -106,6 +118,7 @@ const NamespaceConstructorComponent = ({
             creationMode
           );
           updateNamespaceJSON(getValues());
+          setIsFormLoaded(true);
         })();
       }
     } else if (creationMode === ConstructorCreationMode.EDIT) {
@@ -114,7 +127,7 @@ const NamespaceConstructorComponent = ({
         code === namespaceJSON.code
       ) {
         reset(namespaceJSON);
-        setShowSpinner(false);
+        setIsFormLoaded(true);
       } else {
         (async () => {
           const res = await NamespaceConstructorRequestHandler.getOne(code);
@@ -128,7 +141,7 @@ const NamespaceConstructorComponent = ({
             creationMode
           );
           updateNamespaceJSON(getValues());
-          setShowSpinner(false);
+          setIsFormLoaded(true);
         })();
       }
     } else if (creationMode === ConstructorCreationMode.CREATE_BY_EXAMPLE) {
@@ -137,7 +150,7 @@ const NamespaceConstructorComponent = ({
         getLastExampleConstructorCode(ConstructorJSONsTypes.NAMESPACE) === code
       ) {
         reset(namespaceJSON);
-        setShowSpinner(false);
+        setIsFormLoaded(true);
       } else {
         (async () => {
           const res = await NamespaceConstructorRequestHandler.getOne(code);
@@ -155,10 +168,21 @@ const NamespaceConstructorComponent = ({
           );
           setLastExampleConstructorCode(ConstructorJSONsTypes.NAMESPACE, code);
           updateNamespaceJSON(getValues());
-          setShowSpinner(false);
+          setIsFormLoaded(true);
         })();
       }
     }
+    getAllUsers()
+      .then((res: FetchedUser[]) => {
+        setUsersSelectOptions(
+          res.map((user: FetchedUser) => ({
+            label: user.login,
+            value: user.code,
+          }))
+        );
+        setAreUsersLoaded(true);
+      })
+      .catch(() => {});
   }, []);
   // readGrantedUsers and writeGrantedUsers are dependent on this value
   const grantType: NamespaceGrantType = watch("grantType");
@@ -223,7 +247,7 @@ const NamespaceConstructorComponent = ({
       name: "readGrantedUsers",
       label: "Пользователи с правом чтения",
       isMulti: true,
-      options: usersDemoList,
+      options: usersSelectOptions,
       isVisible: grantType === NamespaceGrantType.PRIVATE_READ_WRITE,
       constructorType: "namespace",
     },
@@ -231,7 +255,7 @@ const NamespaceConstructorComponent = ({
       name: "writeGrantedUsers",
       label: "Пользователи с правом редактирования",
       isMulti: true,
-      options: usersDemoList,
+      options: usersSelectOptions,
       isVisible:
         grantType === NamespaceGrantType.PUBLIC_READ_PRIVATE_WRITE ||
         grantType === NamespaceGrantType.PRIVATE_READ_WRITE,
