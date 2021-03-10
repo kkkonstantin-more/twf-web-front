@@ -1,6 +1,7 @@
 // libs and hooks
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import axios, { AxiosResponse } from "axios";
 // lib components
 import { Steps } from "antd";
 import { EditableMathField, MathField } from "react-mathquill";
@@ -11,11 +12,14 @@ import AppSpinner from "../../components/app-spinner/app-spinner";
 import TexEditorActionsTab from "../../components/tex-editor-actions-tab/tex-editor-actions-tab";
 // utils
 import { checkTex } from "../../utils/kotlin-lib-functions";
+import { getAuthToken } from "../../utils/local-storage/auth-token";
 import TaskSetConstructorRequestsHandler from "../../constructors/task-set-constructor/task-set-constructor.requests-handler";
 import { TaskSetConstructorReceivedForm } from "../../constructors/task-set-constructor/task-set-constructor.types";
 import { addStyles } from "react-mathquill";
 // types
 import { TaskConstructorReceivedForm } from "../../constructors/task-constructor/task-constructor.types";
+import { SendLogForm } from "./solve-math-page.types";
+
 // icons
 import { mdiArrowLeftBoldBox, mdiArrowRightBoldBox } from "@mdi/js";
 // styles
@@ -27,6 +31,7 @@ addStyles();
 
 const SolveMathPage: React.FC = () => {
   const { Step } = Steps;
+  const { taskSetCode } = useParams();
 
   const [isTaskSetFetched, setIsTaskSetFetched] = useState<boolean>(false);
   const [taskSet, setTaskSet] = useState<TaskSetConstructorReceivedForm>();
@@ -37,41 +42,49 @@ const SolveMathPage: React.FC = () => {
     ("Правильно!" | null)[]
   >([]);
   const [mathField, setMathField] = useState<MathField>();
+  const [lastSentLogSolution, setLastSentLogSolution] = useState<string>("");
 
-  const { taskSetCode } = useParams();
-
-  // fetching taskSet
-  useEffect(() => {
-    TaskSetConstructorRequestsHandler.getOne(taskSetCode).then(
-      (res: TaskSetConstructorReceivedForm) => {
-        setTaskSet(res);
-        setSolutions(
-          res.tasks.map(
-            (task: TaskConstructorReceivedForm) =>
-              task.originalExpressionTex + "=...=" + task.goalExpressionTex
-          )
-        );
-        setSolutions(
-          res.tasks.map((task: TaskConstructorReceivedForm) => {
-            return (
-              task.originalExpressionTex + "=...=" + task.goalExpressionTex
-            );
-          })
-        );
-        setIsTaskSetFetched(true);
-      }
-    );
-  }, []);
-
-  const updateSolutions = (solutionIdx: number, mathField: MathField) => {
-    setSolutions((prevState: string[]) =>
-      prevState.map((solution: string, i: number) =>
-        i === solutionIdx ? mathField.latex() : solution
-      )
-    );
+  // UTILS
+  const sendLog = (data: SendLogForm): Promise<AxiosResponse> => {
+    return axios({
+      method: "post",
+      url: process.env.REACT_APP_SERVER_API + "/activity_log/create",
+      data,
+      headers: {
+        Authorization: "Bearer " + getAuthToken(),
+      },
+    })
+      .then((res: AxiosResponse) => {
+        console.log("Log sent!", res);
+        return res;
+      })
+      .catch((e) => {
+        console.error("Error while sending log ", e.message, e.response);
+        throw e;
+      });
   };
 
-  const onCheckTex = (solutionInTex: string) => {
+  const prepareDataForLogging = (
+    activityTypeCode: "interim" | "win" | "loose",
+    solution: string,
+    taskSet: TaskSetConstructorReceivedForm,
+    currentTaskIdx: number
+  ): SendLogForm => ({
+    activityTypeCode,
+    appCode: "test_app_code",
+    clientActionTs: new Date().toISOString(),
+    currSolution: solution,
+    difficulty: taskSet.tasks[currentTaskIdx].difficulty,
+    goalExpression: taskSet.tasks[currentTaskIdx].goalExpressionTex,
+    originalExpression: taskSet.tasks[currentTaskIdx].originalExpressionTex,
+    taskCode: taskSet.tasks[currentTaskIdx].code,
+    tasksetCode: taskSet.code,
+    tasksetVersion: 0,
+    taskVersion: 0,
+  });
+
+  // USER ACTIONS
+  const onCheckTex = (solutionInTex: string): void => {
     if (taskSet?.tasks[currentTaskIdx]) {
       const res = checkTex(
         solutionInTex,
@@ -107,7 +120,126 @@ const SolveMathPage: React.FC = () => {
         )
       );
     }
+    // send log
+    if (taskSet && mathField && mathField.latex() !== lastSentLogSolution) {
+      sendLog(
+        prepareDataForLogging(
+          "interim",
+          mathField.latex(),
+          taskSet,
+          currentTaskIdx
+        )
+      ).then(() => {
+        setLastSentLogSolution(mathField.latex());
+      });
+    }
   };
+
+  const onChangeCurrentTask = (selectedTaskIdx: number): void => {
+    if (
+      mathField &&
+      taskSet &&
+      currentTaskIdx >= 0 &&
+      currentTaskIdx < taskSet?.tasks.length
+    ) {
+      setCurrentTaskIdx((prevIdx: number) => {
+        if (mathField.latex() !== lastSentLogSolution) {
+          sendLog(
+            prepareDataForLogging(
+              "interim",
+              mathField.latex(),
+              taskSet,
+              prevIdx
+            )
+          ).then(() => {
+            setLastSentLogSolution(mathField.latex());
+          });
+        }
+        setSolutions((prevState: string[]) =>
+          prevState.map((solution: string, i: number) =>
+            i === prevIdx ? mathField.latex() : solution
+          )
+        );
+        return selectedTaskIdx;
+      });
+    }
+  };
+
+  const onSendAllSolutions = async () => {
+    if (taskSet) {
+      let correctSolutions = 0;
+      for (let idx = 0; idx < solutions.length; idx++) {
+        const solution = solutions[idx];
+        const checkRes = checkTex(
+          solution,
+          taskSet.tasks[idx].originalExpressionTex,
+          taskSet.tasks[idx].goalExpressionTex
+        );
+        if (checkRes.errorMessage) {
+          await sendLog(prepareDataForLogging("loose", solution, taskSet, idx));
+        } else {
+          await sendLog(prepareDataForLogging("win", solution, taskSet, idx));
+          correctSolutions++;
+        }
+      }
+      alert(
+        "Вы решили правильно " +
+          correctSolutions +
+          " задач из " +
+          taskSet.tasks.length
+      );
+    }
+  };
+
+  // fetching taskSet
+  useEffect(() => {
+    TaskSetConstructorRequestsHandler.getOne(taskSetCode).then(
+      (res: TaskSetConstructorReceivedForm) => {
+        setTaskSet(res);
+        setSolutions(
+          res.tasks.map(
+            (task: TaskConstructorReceivedForm) =>
+              task.originalExpressionTex + "=...=" + task.goalExpressionTex
+          )
+        );
+        setSolutions(
+          res.tasks.map((task: TaskConstructorReceivedForm) => {
+            return (
+              task.originalExpressionTex + "=...=" + task.goalExpressionTex
+            );
+          })
+        );
+        setIsTaskSetFetched(true);
+      }
+    );
+  }, []);
+
+  // setting up logging interval
+  useEffect(() => {
+    const logInterval = setInterval(() => {
+      if (taskSet && mathField && mathField.latex() !== lastSentLogSolution) {
+        sendLog(
+          prepareDataForLogging(
+            "interim",
+            mathField.latex(),
+            taskSet,
+            currentTaskIdx
+          )
+        ).then(() => {
+          setLastSentLogSolution(mathField.latex());
+        });
+      }
+    }, 5000);
+    return () => {
+      clearInterval(logInterval);
+    };
+  }, [
+    isTaskSetFetched,
+    taskSet,
+    mathField,
+    lastSentLogSolution,
+    currentTaskIdx,
+  ]);
 
   if (isTaskSetFetched) {
     return (
@@ -126,12 +258,7 @@ const SolveMathPage: React.FC = () => {
                     key={i}
                     style={{ cursor: "pointer" }}
                     onClick={() => {
-                      setCurrentTaskIdx((prevIdx) => {
-                        if (mathField) {
-                          updateSolutions(prevIdx, mathField);
-                        }
-                        return i;
-                      });
+                      onChangeCurrentTask(i);
                     }}
                     title={<b>{task.nameRu}</b>}
                   />
@@ -164,19 +291,15 @@ const SolveMathPage: React.FC = () => {
               mdiIconPath={mdiArrowLeftBoldBox}
               size={2}
               margin={"0 1rem 0 0"}
-              action={async () => {
-                if (currentTaskIdx !== 0) {
-                  setCurrentTaskIdx((prevState) => --prevState);
-                }
+              action={() => {
+                onChangeCurrentTask(currentTaskIdx - 1);
               }}
             />
             <ActionButton
               mdiIconPath={mdiArrowRightBoldBox}
               size={2}
-              action={async () => {
-                if (currentTaskIdx !== solutions.length - 1) {
-                  setCurrentTaskIdx((prevState) => ++prevState);
-                }
+              action={() => {
+                onChangeCurrentTask(currentTaskIdx + 1);
               }}
             />
           </div>
@@ -193,8 +316,14 @@ const SolveMathPage: React.FC = () => {
             </button>
             <button
               className="btn"
-              onClick={() => {
-                console.log(solutions);
+              onClick={async () => {
+                if (
+                  window.confirm(
+                    "Вы точно уверены, что хотите отправить все решения?"
+                  )
+                ) {
+                  await onSendAllSolutions();
+                }
               }}
             >
               Завершить
