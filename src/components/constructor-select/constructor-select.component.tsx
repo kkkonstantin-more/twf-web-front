@@ -37,7 +37,7 @@ const ConstructorSelect = ({
     return value;
   };
 
-  const { register, watch } = useFormContext();
+  const { register, watch, setValue } = useFormContext();
 
   const value = watch(name, defaultValue);
 
@@ -81,6 +81,8 @@ const ConstructorSelect = ({
                 hiddenInputRef.current.value = value;
                 setLocalValue(parseValue(value, isMulti));
               }
+              // we need to update value in place to be able to update dependent fields
+              setValue(name, parseValue(value, isMulti));
             }}
           >
             {options.map((option: LabeledValue, i: number) => {

@@ -24,7 +24,8 @@ const RatingsSection: React.FC = () => {
   useEffect(() => {
     axios({
       method: "post",
-      url: `${process.env.REACT_APP_SERVER_API}/activity_log/find_win_log_users`,
+      url:
+        process.env.REACT_APP_SERVER_API + "/activity_log/find_win_log_users",
       data: {
         offset: 0,
         limit: 100,
