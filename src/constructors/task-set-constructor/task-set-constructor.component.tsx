@@ -295,6 +295,7 @@ const TaskSetConstructor = ({
         setShowSpinner(false);
       } else {
         (async () => {
+          console.log(await TaskSetConstructorRequestsHandler.getOne(code));
           await reset(
             TaskSetConstructorFormatter.convertReceivedFormToConstructorInputs(
               await TaskSetConstructorRequestsHandler.getOne(code)
@@ -352,7 +353,7 @@ const TaskSetConstructor = ({
       .then(() => {
         setErrorMsg(null);
         setSuccessMsg(
-          ConstructorCreationMode.CREATE_BY_EXAMPLE
+          creationMode === ConstructorCreationMode.EDIT
             ? "Набор задач успешно изменен!"
             : "Набор задач успешно создан!"
         );
@@ -400,7 +401,7 @@ const TaskSetConstructor = ({
               <TasksFieldArrayActionsContext.Provider value={fieldArrayMethods}>
                 <form
                   onSubmit={handleSubmit((data) => {
-                    submit(data);
+                    submit(getValues());
                   })}
                   onBlur={() => {
                     updateTaskSetJSON(getValues());

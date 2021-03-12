@@ -46,8 +46,15 @@ const ConstructorSelect = ({
   const hiddenInputRef: React.RefObject<HTMLInputElement> = React.createRef();
   const selectRef: React.RefObject<any> = React.createRef();
 
+  const [inputIsChanged, setInputIsChanged] = useState(false);
+
   useEffect(() => {
-    setLocalValue(parseValue(value, isMulti));
+    if (inputIsChanged) {
+      setLocalValue(parseValue(value, isMulti));
+    } else {
+      setLocalValue(parseValue(defaultValue, isMulti));
+      setValue(name, parseValue(defaultValue, isMulti));
+    }
   }, [value]);
 
   if (isRendered) {
@@ -72,6 +79,7 @@ const ConstructorSelect = ({
             mode={isMulti ? "multiple" : undefined}
             style={{ width: "100%" }}
             onChange={(value: any) => {
+              setInputIsChanged(true);
               // add focus when deleting value in order to trigger dependent events in parent components
               // for example: form onBlur
               if (selectRef && selectRef.current) {
