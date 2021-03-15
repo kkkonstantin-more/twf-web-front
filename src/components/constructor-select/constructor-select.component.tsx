@@ -48,14 +48,15 @@ const ConstructorSelect = ({
 
   const [inputIsChanged, setInputIsChanged] = useState(false);
 
-  useEffect(() => {
-    if (inputIsChanged) {
-      setLocalValue(parseValue(value, isMulti));
-    } else {
-      setLocalValue(parseValue(defaultValue, isMulti));
-      setValue(name, parseValue(defaultValue, isMulti));
-    }
-  }, [value]);
+  // useEffect(() => {
+  //   console.log(value);
+  //   if (inputIsChanged) {
+  //     setLocalValue(parseValue(value, isMulti));
+  //   } else {
+  //     setLocalValue(parseValue(defaultValue, isMulti));
+  //     setValue(name, parseValue(defaultValue, isMulti));
+  //   }
+  // }, [value, defaultValue]);
 
   if (isRendered) {
     return (
@@ -75,7 +76,7 @@ const ConstructorSelect = ({
           <Select
             ref={selectRef}
             disabled={disabled}
-            value={localValue}
+            value={parseValue(value, isMulti)}
             mode={isMulti ? "multiple" : undefined}
             style={{ width: "100%" }}
             onChange={(value: any) => {

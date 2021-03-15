@@ -27,7 +27,6 @@ import { updateConstructorJSON } from "../../redux/constructor-jsons/constructor
 import { addOneLineChangeToHistory } from "../../redux/constructor-history/constructor-history.actions";
 import { connect, ConnectedProps } from "react-redux";
 import { useFormContext } from "react-hook-form";
-import { ConstructorType } from "../../pages/constructor-page/constructor-page.types";
 
 // TODO: fix typescript and eslint errors
 
@@ -173,7 +172,7 @@ const mapDispatch = (dispatch: Dispatch<any>) => ({
   addItemToHistory: (
     oldVal: ExpressionChange,
     newVal: ExpressionChange,
-    constructorType: ConstructorType
+    constructorType: ConstructorJSONsTypes
   ) => dispatch(addOneLineChangeToHistory({ oldVal, newVal, constructorType })),
 });
 

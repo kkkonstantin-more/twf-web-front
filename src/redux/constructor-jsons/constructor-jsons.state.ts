@@ -4,6 +4,9 @@ import { MathInputFormat } from "../../utils/kotlin-lib-functions";
 import { NamespaceGrantType } from "../../constructors/namespace-constructor/namespace-constructor.types";
 
 const CONSTRUCTOR_JSONS_INITIAL_STATE: ConstructorJSONs = {
+  isNamespaceJSONValid: true,
+  isRulePackJSONValid: true,
+  isTaskSetJSONValid: true,
   namespace: {
     code: "",
     allowRead: "true",

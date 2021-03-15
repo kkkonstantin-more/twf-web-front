@@ -1,5 +1,6 @@
 // libs and hooks
-import React, { useEffect, useRef, useState } from "react";
+// types
+import React, { Dispatch, useEffect, useRef, useState } from "react";
 import CodeMirror, { Position, TextMarker } from "codemirror";
 import { v4 as uidv4 } from "uuid";
 // redux
@@ -7,11 +8,15 @@ import CONSTRUCTOR_JSONS_INITIAL_STATE from "../../redux/constructor-jsons/const
 import { connect, ConnectedProps } from "react-redux";
 import { createStructuredSelector } from "reselect";
 import {
+  selectIsNamespaceJSONValid,
+  selectIsRulePackJSONValid,
+  selectIsTaskSetJSONValid,
   selectNamespaceJSON,
   selectRulePackJSON,
   selectTaskSetJSON,
 } from "../../redux/constructor-jsons/constructor-jsons.selectors";
 import {
+  setJSONValidity,
   updateNamespaceJSON,
   updateRulePackJSON,
   updateTaskSetJSON,
@@ -38,14 +43,8 @@ import "codemirror/addon/hint/show-hint.css";
 import "codemirror/addon/lint/json-lint";
 import "codemirror/addon/lint/lint";
 import "codemirror/addon/lint/lint.css";
-// types
-import { Dispatch } from "react";
-import {
-  ConstructorInputs,
-  ConstructorJSONsActionTypes,
-} from "../../redux/constructor-jsons/constructor-jsons.types";
+import { ConstructorJSONsTypes } from "../../redux/constructor-jsons/constructor-jsons.types";
 import { NamespaceConstructorInputs } from "../../constructors/namespace-constructor/namespace-constructor.types";
-import { ConstructorType } from "../../pages/constructor-page/constructor-page.types";
 import { RootState } from "../../redux/root-reducer";
 import { RulePackConstructorInputs } from "../../constructors/rule-pack-constructor/rule-pack-constructor.types";
 import { TaskSetConstructorInputs } from "../../constructors/task-set-constructor/task-set-constructor.types";
@@ -79,7 +78,7 @@ const jsonlint = require("jsonlint-mod");
 window["jsonlint"] = jsonlint;
 
 export interface CodeMirrorProps {
-  constructorType: ConstructorType;
+  constructorType: ConstructorJSONsTypes;
 }
 
 export interface CodeMirrorWordPosition {
@@ -119,6 +118,10 @@ const CodeMirrorEditor = ({
   redo,
   addOneLineChangeToHistory,
   addMultipleLinesChangeToHistory,
+  isNamespaceJSONValid,
+  isRulePackJSONValid,
+  isTaskSetJSONValid,
+  setJSONValidity,
 }: CodeMirrorProps & ConnectedProps<typeof connector>): JSX.Element => {
   const [editor, setEditor] = useState<any>(null);
   const [dynamicErrors, setDynamicErrors] = useState<CMError[]>([]);
@@ -128,44 +131,44 @@ const CodeMirrorEditor = ({
 
   const currentReduxJSON = (() => {
     switch (constructorType) {
-      case "namespace":
+      case ConstructorJSONsTypes.NAMESPACE:
         return namespaceJSON;
-      case "rulePack":
+      case ConstructorJSONsTypes.RULE_PACK:
         return rulePackJSON;
-      case "taskSet":
+      case ConstructorJSONsTypes.TASK_SET:
         return taskSetJSON;
     }
   })();
 
   const initialReduxJSON = (() => {
     switch (constructorType) {
-      case "namespace":
+      case ConstructorJSONsTypes.NAMESPACE:
         return CONSTRUCTOR_JSONS_INITIAL_STATE.namespace;
-      case "rulePack":
+      case ConstructorJSONsTypes.RULE_PACK:
         return CONSTRUCTOR_JSONS_INITIAL_STATE.rulePack;
-      case "taskSet":
+      case ConstructorJSONsTypes.TASK_SET:
         return CONSTRUCTOR_JSONS_INITIAL_STATE.taskSet;
     }
   })();
 
   const currentHistoryChange = (() => {
     switch (constructorType) {
-      case "namespace":
+      case ConstructorJSONsTypes.NAMESPACE:
         return currentNamespaceHistoryChange;
-      case "rulePack":
+      case ConstructorJSONsTypes.RULE_PACK:
         return currentRulePackHistoryChange;
-      case "taskSet":
+      case ConstructorJSONsTypes.TASK_SET:
         return currentTaskSetHistoryChange;
     }
   })();
 
   const updateCurrentReduxJSON = (() => {
     switch (constructorType) {
-      case "namespace":
+      case ConstructorJSONsTypes.NAMESPACE:
         return updateNamespaceJSON;
-      case "rulePack":
+      case ConstructorJSONsTypes.RULE_PACK:
         return updateRulePackJSON;
-      case "taskSet":
+      case ConstructorJSONsTypes.TASK_SET:
         return updateTaskSetJSON;
     }
   })();
@@ -577,7 +580,7 @@ const CodeMirrorEditor = ({
 
   useEffect(() => {
     const initialValue = currentReduxJSON;
-    if (constructorType === "rulePack") {
+    if (constructorType === ConstructorJSONsTypes.RULE_PACK) {
       //@ts-ignore
       if (
         //@ts-ignore
@@ -624,6 +627,12 @@ const CodeMirrorEditor = ({
       };
       // setup editor's onchange actions
       editor.on("change", (editor, changeObject) => {
+        try {
+          JSON.parse(editor.getValue());
+          setJSONValidity(constructorType, true);
+        } catch {
+          setJSONValidity(constructorType, false);
+        }
         // const numberOfChangedLines: number | undefined =
         //   changeObject.text.length !== 0
         //     ? changeObject.removed?.length
@@ -1177,6 +1186,9 @@ const mapStateToProps = createStructuredSelector<
     currentTaskSetHistoryChange: ConstructorHistoryItem | undefined;
     currentNamespaceHistoryChange: ConstructorHistoryItem | undefined;
     currentRulePackHistoryChange: ConstructorHistoryItem | undefined;
+    isNamespaceJSONValid: boolean;
+    isTaskSetJSONValid: boolean;
+    isRulePackJSONValid: boolean;
   }
 >({
   namespaceJSON: selectNamespaceJSON,
@@ -1185,6 +1197,9 @@ const mapStateToProps = createStructuredSelector<
   currentTaskSetHistoryChange: selectCurrentTaskSetHistoryChange,
   currentNamespaceHistoryChange: selectCurrentNamespaceHistoryChange,
   currentRulePackHistoryChange: selectCurrentRulePackHistoryChange,
+  isNamespaceJSONValid: selectIsNamespaceJSONValid,
+  isTaskSetJSONValid: selectIsTaskSetJSONValid,
+  isRulePackJSONValid: selectIsRulePackJSONValid,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<any>) => ({
@@ -1201,21 +1216,23 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) => ({
   addOneLineChangeToHistory: (
     oldVal: ExpressionChange,
     newVal: ExpressionChange,
-    constructorType: ConstructorType
+    constructorType: ConstructorJSONsTypes
   ) => dispatch(addOneLineChangeToHistory({ oldVal, newVal, constructorType })),
   addMultipleLinesChangeToHistory: (
     oldVal: TaskSetConstructorInputs,
     newVal: TaskSetConstructorInputs,
-    constructorType: ConstructorType
+    constructorType: ConstructorJSONsTypes
   ) => {
     dispatch(
       addMultipleLinesChangeToHistory({ oldVal, newVal, constructorType })
     );
   },
-  undo: (constructorType: ConstructorType) =>
+  undo: (constructorType: ConstructorJSONsTypes) =>
     dispatch(undoHistory(constructorType)),
-  redo: (constructorType: ConstructorType) =>
+  redo: (constructorType: ConstructorJSONsTypes) =>
     dispatch(redoHistory(constructorType)),
+  setJSONValidity: (constructorType: ConstructorJSONsTypes, isValid: boolean) =>
+    dispatch(setJSONValidity(constructorType, isValid)),
 });
 
 const connector = connect(mapStateToProps, mapDispatchToProps);

@@ -39,7 +39,7 @@ import {
   ConstructorJSONsTypes,
   UpdateNamespaceJSONAction,
 } from "../../redux/constructor-jsons/constructor-jsons.types";
-import { FetchedUser } from "../common-server-requests";
+import { FetchedUser, getAllUsers } from "../common-server-requests";
 import { LabeledValue } from "antd/es/select";
 // utils
 import getConstructorSubmitButtonAndTitleText from "../utiils/get-constructor-submit-button-and-title-text";
@@ -53,7 +53,6 @@ import {
   setLastEditedCreationMode,
   setLastExampleConstructorCode,
 } from "../../utils/local-storage/last-edited-creation-type";
-import { getAllUsers } from "../common-server-requests";
 // styles
 import "./namespace-constructor.styles.scss";
 
@@ -225,7 +224,7 @@ const NamespaceConstructorComponent = ({
       label: "Код",
       type: "text",
       disabled: creationMode === ConstructorCreationMode.EDIT,
-      constructorType: "namespace",
+      constructorType: ConstructorJSONsTypes.NAMESPACE,
     },
     {
       name: "grantType",
@@ -241,7 +240,7 @@ const NamespaceConstructorComponent = ({
           value: accessMode,
         };
       }),
-      constructorType: "namespace",
+      constructorType: ConstructorJSONsTypes.NAMESPACE,
     },
     {
       name: "readGrantedUsers",
@@ -249,7 +248,7 @@ const NamespaceConstructorComponent = ({
       isMulti: true,
       options: usersSelectOptions,
       isVisible: grantType === NamespaceGrantType.PRIVATE_READ_WRITE,
-      constructorType: "namespace",
+      constructorType: ConstructorJSONsTypes.NAMESPACE,
     },
     {
       name: "writeGrantedUsers",
@@ -259,7 +258,7 @@ const NamespaceConstructorComponent = ({
       isVisible:
         grantType === NamespaceGrantType.PUBLIC_READ_PRIVATE_WRITE ||
         grantType === NamespaceGrantType.PRIVATE_READ_WRITE,
-      constructorType: "namespace",
+      constructorType: ConstructorJSONsTypes.NAMESPACE,
     },
   ];
 
@@ -325,7 +324,7 @@ const NamespaceConstructorComponent = ({
             register={register}
             // @ts-ignore
             updateJSON={() => updateNamespaceJSON(getValues())}
-            constructorType="namespace"
+            constructorType={ConstructorJSONsTypes.NAMESPACE}
           />
           <ServerResponseAlert errorMsg={errorMsg} successMsg={successMsg} />
           <button type="submit" className="btn">
@@ -358,8 +357,8 @@ const mapDispatch = (
 ) => ({
   updateNamespaceJSON: (namespaceJSON: NamespaceConstructorInputs) =>
     dispatch(updateNamespaceJSON(namespaceJSON)),
-  undo: () => dispatch(undoHistory("namespace")),
-  redo: () => dispatch(redoHistory("namespace")),
+  undo: () => dispatch(undoHistory(ConstructorJSONsTypes.NAMESPACE)),
+  redo: () => dispatch(redoHistory(ConstructorJSONsTypes.NAMESPACE)),
 });
 
 const connector = connect(mapState, mapDispatch);

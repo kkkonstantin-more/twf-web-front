@@ -8,7 +8,6 @@ import {
   ConstructorHistoryItem,
   ExpressionChange,
 } from "../../redux/constructor-history/constructor-history.types";
-import { ConstructorType } from "../../pages/constructor-page/constructor-page.types";
 import { ConstructorJSONsTypes } from "../../redux/constructor-jsons/constructor-jsons.types";
 
 interface ConstructorFormProps {
@@ -16,7 +15,7 @@ interface ConstructorFormProps {
   register?: () => void;
   updateJSON?: () => void;
   addToHistory?: (oldVal: ExpressionChange, newVal: ExpressionChange) => void;
-  constructorType: ConstructorType;
+  constructorType: ConstructorJSONsTypes;
 }
 
 const ConstructorForm = ({

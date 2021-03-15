@@ -5,6 +5,7 @@ import {
   GameTabsActionTypes,
   FetchGamesRequestData,
 } from "./game-tabs.types";
+import { getAuthToken } from "../../utils/local-storage/auth-token";
 
 export const fetchGameTabsStart = () => ({
   type: GameTabsActionTypes.FETCH_GAME_TABS_START,

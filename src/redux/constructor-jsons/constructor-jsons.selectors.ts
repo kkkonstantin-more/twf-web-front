@@ -20,3 +20,18 @@ export const selectTaskSetJSON = createSelector(
   [selectConstructorJSONs],
   (JSONs: ConstructorJSONs) => JSONs.taskSet
 );
+
+export const selectIsNamespaceJSONValid = createSelector(
+  [selectConstructorJSONs],
+  (JSONs: ConstructorJSONs) => JSONs.isNamespaceJSONValid
+);
+
+export const selectIsTaskSetJSONValid = createSelector(
+  [selectConstructorJSONs],
+  (JSONs: ConstructorJSONs) => JSONs.isTaskSetJSONValid
+);
+
+export const selectIsRulePackJSONValid = createSelector(
+  [selectConstructorJSONs],
+  (JSONs: ConstructorJSONs) => JSONs.isRulePackJSONValid
+);

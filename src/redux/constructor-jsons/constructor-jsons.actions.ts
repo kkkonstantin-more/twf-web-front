@@ -3,6 +3,8 @@ import { NamespaceConstructorInputs } from "../../constructors/namespace-constru
 import {
   ConstructorInputs,
   ConstructorJSONsTypes,
+  SET_JSON_VALIDITY,
+  SetJSONValidityAction,
   UPDATE_NAMESPACE_JSON,
   UPDATE_RULE_PACK_JSON,
   UPDATE_TASK_SET_JSON,
@@ -52,4 +54,15 @@ export const updateRulePackJSON = (
 ): UpdateRulePackJSONAction => ({
   type: UPDATE_RULE_PACK_JSON,
   payload: rulePackJSON,
+});
+
+export const setJSONValidity = (
+  JSONType: ConstructorJSONsTypes,
+  isValid: boolean
+): SetJSONValidityAction => ({
+  type: SET_JSON_VALIDITY,
+  payload: {
+    JSONType,
+    isValid,
+  },
 });

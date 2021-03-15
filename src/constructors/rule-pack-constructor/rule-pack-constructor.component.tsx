@@ -66,10 +66,7 @@ import {
   RedoTaskSetHistoryAction,
   UndoTaskSetHistoryAction,
 } from "../../redux/constructor-history/constructor-history.types";
-import {
-  selectCurrentRulePackHistoryChange,
-  selectCurrentTaskSetHistoryChange,
-} from "../../redux/constructor-history/constructor-history.selectors";
+import { selectCurrentRulePackHistoryChange } from "../../redux/constructor-history/constructor-history.selectors";
 import {
   redoHistory,
   undoHistory,
@@ -277,21 +274,21 @@ const RulePackConstructor = ({
       defaultValue: "____test_namespace_code" + uidv4().slice(0, 5),
       disabled: creationMode === ConstructorCreationMode.EDIT,
       onChange: () => setUserCodeChange(true),
-      constructorType: "rulePack",
+      constructorType: ConstructorJSONsTypes.RULE_PACK,
     },
     {
       name: "nameEn",
       label: "Название  En",
       type: "text",
       defaultValue: "",
-      constructorType: "rulePack",
+      constructorType: ConstructorJSONsTypes.RULE_PACK,
     },
     {
       name: "nameRu",
       label: "Название Ru",
       type: "text",
       defaultValue: "",
-      constructorType: "rulePack",
+      constructorType: ConstructorJSONsTypes.RULE_PACK,
     },
     {
       name: "rulePacks",
@@ -426,7 +423,7 @@ const RulePackConstructor = ({
             inputs={inputs}
             register={register}
             updateJSON={() => updateRulePackJSON(getValues())}
-            constructorType={"rulePack"}
+            constructorType={ConstructorJSONsTypes.RULE_PACK}
           />
           <h3>Правила:</h3>
           <div className="rule-pack-constructor__rules">
@@ -530,8 +527,8 @@ const mapDispatch = (
 ) => ({
   updateRulePackJSON: (rulePackJSON: RulePackConstructorInputs) =>
     dispatch(updateRulePackJSON(rulePackJSON)),
-  undo: () => dispatch(undoHistory("rulePack")),
-  redo: () => dispatch(redoHistory("rulePack")),
+  undo: () => dispatch(undoHistory(ConstructorJSONsTypes.RULE_PACK)),
+  redo: () => dispatch(redoHistory(ConstructorJSONsTypes.RULE_PACK)),
 });
 
 const connector = connect(mapState, mapDispatch);

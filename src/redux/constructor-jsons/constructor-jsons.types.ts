@@ -3,6 +3,9 @@ import { TaskSetConstructorInputs } from "../../constructors/task-set-constructo
 import { RulePackConstructorInputs } from "../../constructors/rule-pack-constructor/rule-pack-constructor.types";
 
 export interface ConstructorJSONs {
+  isNamespaceJSONValid: boolean;
+  isRulePackJSONValid: boolean;
+  isTaskSetJSONValid: boolean;
   namespace: NamespaceConstructorInputs;
   taskSet: TaskSetConstructorInputs;
   rulePack: RulePackConstructorInputs;
@@ -23,6 +26,7 @@ export type ConstructorInputs =
 export const UPDATE_NAMESPACE_JSON = "UPDATE_NAMESPACE_JSON";
 export const UPDATE_TASK_SET_JSON = "UPDATE_TASK_SET_JSON";
 export const UPDATE_RULE_PACK_JSON = "UPDATE_RULE_PACK_JSON";
+export const SET_JSON_VALIDITY = "SET_JSON_VALIDITY";
 
 export interface UpdateNamespaceJSONAction {
   type: typeof UPDATE_NAMESPACE_JSON;
@@ -39,7 +43,16 @@ export interface UpdateRulePackJSONAction {
   payload: RulePackConstructorInputs;
 }
 
+export interface SetJSONValidityAction {
+  type: typeof SET_JSON_VALIDITY;
+  payload: {
+    JSONType: ConstructorJSONsTypes;
+    isValid: boolean;
+  };
+}
+
 export type ConstructorJSONsActionTypes =
   | UpdateNamespaceJSONAction
   | UpdateTaskSetJSONAction
-  | UpdateRulePackJSONAction;
+  | UpdateRulePackJSONAction
+  | SetJSONValidityAction;

@@ -10,11 +10,7 @@ import { selectTaskSetJSON } from "../../redux/constructor-jsons/constructor-jso
 import { updateTaskSetJSON } from "../../redux/constructor-jsons/constructor-jsons.actions";
 import { connect, ConnectedProps } from "react-redux";
 import CONSTRUCTOR_JSONS_INITIAL_STATE from "../../redux/constructor-jsons/constructor-jsons.state";
-import {
-  selectCurrentTaskSetHistoryChange,
-  selectTaskSetHistory,
-  selectTaskSetHistoryIndex,
-} from "../../redux/constructor-history/constructor-history.selectors";
+import { selectCurrentTaskSetHistoryChange } from "../../redux/constructor-history/constructor-history.selectors";
 import {
   addOneLineChangeToHistory,
   redoHistory,
@@ -59,11 +55,7 @@ import {
   UpdateTaskSetHistoryIndexAction,
 } from "../../redux/constructor-history/constructor-history.types";
 import { ConstructorCreationMode } from "../common-types";
-import {
-  TaskSetConstructorInputs,
-  TaskSetConstructorReceivedForm,
-  TaskSetConstructorSendForm,
-} from "./task-set-constructor.types";
+import { TaskSetConstructorInputs } from "./task-set-constructor.types";
 import { NamespaceReceivedForm } from "../namespace-constructor/namespace-constructor.types";
 // data
 import { taskConstructorDefaultValues } from "./task-set-constructor.data";
@@ -229,21 +221,21 @@ const TaskSetConstructor = ({
       type: "text",
       defaultValue: "",
       disabled: creationMode === ConstructorCreationMode.EDIT,
-      constructorType: "taskSet",
+      constructorType: ConstructorJSONsTypes.TASK_SET,
     },
     {
       name: "nameEn",
       label: "Имя en",
       type: "text",
       defaultValue: "",
-      constructorType: "taskSet",
+      constructorType: ConstructorJSONsTypes.TASK_SET,
     },
     {
       name: "nameRu",
       label: "Имя ru",
       type: "text",
       defaultValue: "",
-      constructorType: "taskSet",
+      constructorType: ConstructorJSONsTypes.TASK_SET,
     },
     {
       name: "subjectTypes",
@@ -259,7 +251,7 @@ const TaskSetConstructor = ({
       label: "Дополнительная информация",
       type: "text",
       defaultValue: "",
-      constructorType: "taskSet",
+      constructorType: ConstructorJSONsTypes.TASK_SET,
     },
   ];
 
@@ -417,7 +409,7 @@ const TaskSetConstructor = ({
                     ) => {
                       addItemToHistory(oldVal, newVal);
                     }}
-                    constructorType={"taskSet"}
+                    constructorType={ConstructorJSONsTypes.TASK_SET}
                   />
                   <div className="u-flex" style={{ alignItems: "center" }}>
                     <h3>Задачи</h3>
@@ -796,10 +788,14 @@ const mapDispatch = (
     dispatch(updateTaskSetJSON(taskSetJSON)),
   addItemToHistory: (oldVal: ExpressionChange, newVal: ExpressionChange) =>
     dispatch(
-      addOneLineChangeToHistory({ oldVal, newVal, constructorType: "taskSet" })
+      addOneLineChangeToHistory({
+        oldVal,
+        newVal,
+        constructorType: ConstructorJSONsTypes.TASK_SET,
+      })
     ),
-  undo: () => dispatch(undoHistory("taskSet")),
-  redo: () => dispatch(redoHistory("taskSet")),
+  undo: () => dispatch(undoHistory(ConstructorJSONsTypes.TASK_SET)),
+  redo: () => dispatch(redoHistory(ConstructorJSONsTypes.TASK_SET)),
 });
 
 const connector = connect(mapState, mapDispatch);

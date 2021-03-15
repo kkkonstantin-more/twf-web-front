@@ -6,40 +6,84 @@ import {
 import CONSTRUCTOR_HISTORY_INITIAL_STATE from "./constructor-history.state";
 
 import deepEqual from "fast-deep-equal/es6";
+import { ConstructorJSONsTypes } from "../constructor-jsons/constructor-jsons.types";
 
 const constructorHistoryReducer = (
   state: ConstructorHistory = CONSTRUCTOR_HISTORY_INITIAL_STATE,
   action: ConstructorHistoryActionTypes
 ): ConstructorHistory => {
-  const constructorType =
-    action.type === "ADD_ONE_LINE_CHANGE_TO_HISTORY" ||
-    action.type === "ADD_MULTIPLE_LINES_CHANGE_TO_HISTORY"
-      ? action.payload.constructorType
-      : action.payload;
-  const historyIdxType: string = constructorType + "Idx";
+  const constructorTypePropertyKey: keyof ConstructorHistory | any = (() => {
+    if (
+      action.type === "ADD_ONE_LINE_CHANGE_TO_HISTORY" ||
+      action.type === "ADD_MULTIPLE_LINES_CHANGE_TO_HISTORY"
+    ) {
+      switch (action.payload.constructorType) {
+        case ConstructorJSONsTypes.TASK_SET:
+          return "taskSet";
+        case ConstructorJSONsTypes.RULE_PACK:
+          return "rulePack";
+        case ConstructorJSONsTypes.NAMESPACE:
+          return "namespace";
+        default:
+          return action.payload;
+      }
+    } else {
+      switch (action.payload) {
+        case ConstructorJSONsTypes.TASK_SET:
+          return "taskSet";
+        case ConstructorJSONsTypes.RULE_PACK:
+          return "rulePack";
+        case ConstructorJSONsTypes.NAMESPACE:
+          return "namespace";
+        default:
+          return action.payload;
+      }
+    }
+  })();
+
+  const historyIdxType: string = constructorTypePropertyKey + "Idx";
 
   switch (action.type) {
     case "ADD_ONE_LINE_CHANGE_TO_HISTORY":
       if (
         // @ts-ignore
-        deepEqual(state[constructorType][state[constructorType].length - 1], {
-          item: { ...action.payload.newVal },
-          type: "ONE_LINE_CHANGE",
-        })
+        deepEqual(
+          // @ts-ignore
+          state[constructorTypePropertyKey][
+            // @ts-ignore
+            state[constructorTypePropertyKey].length - 1
+          ],
+          {
+            item: { ...action.payload.newVal },
+            type: "ONE_LINE_CHANGE",
+          }
+        )
       ) {
         return state;
       } else if (
         // @ts-ignore
-        deepEqual(state[constructorType][state[constructorType].length - 1], {
-          item: { ...action.payload.oldVal },
-          type: "ONE_LINE_CHANGE",
-        })
+        deepEqual(
+          // @ts-ignore
+          state[constructorTypePropertyKey][
+            // @ts-ignore
+            state[constructorTypePropertyKey].length - 1
+          ],
+          {
+            item: { ...action.payload.oldVal },
+            type: "ONE_LINE_CHANGE",
+          }
+        )
       ) {
         return {
           ...state,
-          [constructorType]: [
+          // @ts-ignore
+          [constructorTypePropertyKey]: [
             //@ts-ignore
-            ...state[constructorType].slice(0, state[historyIdxType] + 1),
+            ...state[constructorTypePropertyKey].slice(
+              0,
+              // @ts-ignore
+              state[historyIdxType] + 1
+            ),
             { item: { ...action.payload.newVal }, type: "ONE_LINE_CHANGE" },
           ],
           //@ts-ignore
@@ -48,9 +92,10 @@ const constructorHistoryReducer = (
       } else {
         return {
           ...state,
-          [constructorType]: [
+          // @ts-ignore
+          [constructorTypePropertyKey]: [
             //@ts-ignore
-            ...state[constructorType]
+            ...state[constructorTypePropertyKey]
               // @ts-ignore
               .slice(0, state[historyIdxType] + 1)
               .concat([
@@ -66,16 +111,28 @@ const constructorHistoryReducer = (
       // const historyIdxType: string = constructorType + "Idx";
       if (
         // @ts-ignore
-        deepEqual(state[constructorType][state[constructorType].length - 1], {
-          item: { ...action.payload.oldVal },
-          type: "MULTIPLE_LINES_CHANGE",
-        })
+        deepEqual(
+          // @ts-ignore
+          state[constructorTypePropertyKey][
+            // @ts-ignore
+            state[constructorTypePropertyKey].length - 1
+          ],
+          {
+            item: { ...action.payload.oldVal },
+            type: "MULTIPLE_LINES_CHANGE",
+          }
+        )
       ) {
         return {
           ...state,
-          [constructorType]: [
+          // @ts-ignore
+          [constructorTypePropertyKey]: [
             // @ts-ignore
-            ...state[constructorType].slice(0, state[historyIdxType] + 1),
+            ...state[constructorTypePropertyKey].slice(
+              0,
+              // @ts-ignore
+              state[historyIdxType] + 1
+            ),
             {
               item: { ...action.payload.newVal },
               type: "MULTIPLE_LINES_CHANGE",
@@ -87,9 +144,10 @@ const constructorHistoryReducer = (
       } else {
         return {
           ...state,
-          [constructorType]: [
+          // @ts-ignore
+          [constructorTypePropertyKey]: [
             // @ts-ignore
-            ...state[constructorType]
+            ...state[constructorTypePropertyKey]
               // @ts-ignore
               .slice(0, state[historyIdxType] + 1)
               .concat([
@@ -112,7 +170,7 @@ const constructorHistoryReducer = (
         ...state,
         [historyIdxType]:
         //@ts-ignore
-          state[historyIdxType] !== state[constructorType].length - 1
+          state[historyIdxType] !== state[constructorTypePropertyKey].length - 1
             ? //@ts-ignore
               ++state[historyIdxType]
             : //@ts-ignore
