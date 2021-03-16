@@ -129,6 +129,17 @@ const CodeMirrorEditor = ({
 
   const entryPoint: React.Ref<any> = useRef();
 
+  const isCurrentJSONValid = (() => {
+    switch (constructorType) {
+      case ConstructorJSONsTypes.NAMESPACE:
+        return isNamespaceJSONValid;
+      case ConstructorJSONsTypes.RULE_PACK:
+        return isRulePackJSONValid;
+      case ConstructorJSONsTypes.TASK_SET:
+        return isTaskSetJSONValid;
+    }
+  })();
+
   const currentReduxJSON = (() => {
     switch (constructorType) {
       case ConstructorJSONsTypes.NAMESPACE:
@@ -625,13 +636,29 @@ const CodeMirrorEditor = ({
           updateCurrentReduxJSON(JSON.parse(editor.getValue()));
         } catch (e) {}
       };
+      let lastValidValue: any = null;
+      let isJSONValid: boolean = true;
       // setup editor's onchange actions
       editor.on("change", (editor, changeObject) => {
         try {
           JSON.parse(editor.getValue());
           setJSONValidity(constructorType, true);
+          if (!isJSONValid) {
+            addMultipleLinesChangeToHistory(
+              lastValidValue,
+              JSON.parse(editor.getValue()),
+              constructorType
+            );
+            lastValidValue = JSON.parse(editor.getValue());
+            isJSONValid = true;
+            return;
+          }
+          lastValidValue = JSON.parse(editor.getValue());
+          isJSONValid = true;
         } catch {
           setJSONValidity(constructorType, false);
+          isJSONValid = false;
+          return;
         }
         // const numberOfChangedLines: number | undefined =
         //   changeObject.text.length !== 0
