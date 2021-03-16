@@ -1,6 +1,5 @@
 // libs and hooks
-import React, { useEffect, useState } from "react";
-import useMergedRef from "@react-hook/merged-ref";
+import React from "react";
 import { useFormContext } from "react-hook-form";
 // lib components
 import { ConfigProvider, Select } from "antd";
@@ -21,42 +20,9 @@ const ConstructorSelect = ({
   isVisible = true,
   disabled = false,
 }: ConstructorSelectProps): JSX.Element => {
-  const parseValue = (
-    value: string | number | string[] | undefined,
-    isMulti: boolean
-  ) => {
-    if (typeof value === "undefined") {
-      return isMulti ? [] : "";
-    }
-    if (value === "") {
-      return isMulti ? [] : undefined;
-    }
-    if (typeof value === "string") {
-      return value.includes(",") ? value.split(",") : value;
-    }
-    return value;
-  };
-
-  const { register, watch, setValue } = useFormContext();
-
-  const value = watch(name, defaultValue);
-
-  const [localValue, setLocalValue] = useState<any>(parseValue(value, isMulti));
-
-  const hiddenInputRef: React.RefObject<HTMLInputElement> = React.createRef();
+  const { watch, setValue } = useFormContext();
+  const value = watch(name);
   const selectRef: React.RefObject<any> = React.createRef();
-
-  const [inputIsChanged, setInputIsChanged] = useState(false);
-
-  // useEffect(() => {
-  //   console.log(value);
-  //   if (inputIsChanged) {
-  //     setLocalValue(parseValue(value, isMulti));
-  //   } else {
-  //     setLocalValue(parseValue(defaultValue, isMulti));
-  //     setValue(name, parseValue(defaultValue, isMulti));
-  //   }
-  // }, [value, defaultValue]);
 
   if (isRendered) {
     return (
@@ -66,32 +32,19 @@ const ConstructorSelect = ({
           style={{ display: isVisible ? "block" : "none" }}
         >
           <h4>{label}</h4>
-          <input
-            // value={value}
-            name={name}
-            // eslint-disable-next-line react-hooks/rules-of-hooks
-            ref={useMergedRef(register(), hiddenInputRef)}
-            style={{ display: "none" }}
-          />
           <Select
             ref={selectRef}
             disabled={disabled}
-            value={parseValue(value, isMulti)}
+            value={value}
             mode={isMulti ? "multiple" : undefined}
             style={{ width: "100%" }}
             onChange={(value: any) => {
-              setInputIsChanged(true);
+              setValue(name, value);
               // add focus when deleting value in order to trigger dependent events in parent components
               // for example: form onBlur
               if (selectRef && selectRef.current) {
                 selectRef.current.focus();
               }
-              if (hiddenInputRef.current) {
-                hiddenInputRef.current.value = value;
-                setLocalValue(parseValue(value, isMulti));
-              }
-              // we need to update value in place to be able to update dependent fields
-              setValue(name, parseValue(value, isMulti));
             }}
           >
             {options.map((option: LabeledValue, i: number) => {
