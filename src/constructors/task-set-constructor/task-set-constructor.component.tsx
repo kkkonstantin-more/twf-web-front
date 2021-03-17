@@ -276,11 +276,8 @@ const TaskSetConstructor = ({
       if (lastEditedMode === ConstructorCreationMode.CREATE) {
         reset({ ...taskSetJSON });
       } else {
-        (async () => {
-          await reset(CONSTRUCTOR_JSONS_INITIAL_STATE.taskSet);
-          setLastEditedCreationMode(ConstructorJSONType.TASK_SET, creationMode);
-          // updateTaskSetJSON(getValues());
-        })();
+        reset(CONSTRUCTOR_JSONS_INITIAL_STATE.taskSet);
+        setLastEditedCreationMode(ConstructorJSONType.TASK_SET, creationMode);
       }
     } else if (creationMode === ConstructorCreationMode.EDIT) {
       if (
@@ -291,7 +288,6 @@ const TaskSetConstructor = ({
         setShowSpinner(false);
       } else {
         (async () => {
-          console.log(await TaskSetConstructorRequestsHandler.getOne(code));
           await reset(
             TaskSetConstructorFormatter.convertReceivedFormToConstructorInputs(
               await TaskSetConstructorRequestsHandler.getOne(code)

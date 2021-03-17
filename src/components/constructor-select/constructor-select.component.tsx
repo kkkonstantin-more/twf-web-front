@@ -1,14 +1,14 @@
 // libs and hooks
 import React from "react";
-import { useFormContext } from "react-hook-form";
 // lib components
 import { ConfigProvider, Select } from "antd";
 import ruRu from "antd/lib/locale/ru_RU";
+import { ClipLoader } from "react-spinners";
 // types
 import { ConstructorSelectProps } from "./constructor-select.types";
 import { LabeledValue } from "antd/es/select";
-
-const { Option } = Select;
+// styles
+import "./constructor-select-input.scss";
 
 const ConstructorSelect = ({
   name,
@@ -21,6 +21,8 @@ const ConstructorSelect = ({
   disabled = false,
   onChange,
 }: ConstructorSelectProps): JSX.Element => {
+  const { Option } = Select;
+
   const selectRef: React.RefObject<any> = React.createRef();
 
   if (isRendered) {
@@ -36,7 +38,13 @@ const ConstructorSelect = ({
             disabled={disabled}
             value={value}
             mode={isMulti ? "multiple" : undefined}
-            style={{ width: "100%" }}
+            showArrow={true}
+            loading={options.length === 0}
+            notFoundContent={
+              <div className="constructor-select-input__spinner-container">
+                <ClipLoader loading={true} color={"#007bff"} />
+              </div>
+            }
             onChange={(value: string | string[]) => {
               if (onChange) {
                 onChange(value);

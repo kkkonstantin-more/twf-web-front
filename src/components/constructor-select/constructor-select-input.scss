@@ -1,0 +1,10 @@
+.constructor-select-input {
+  & > * {
+    width: 100%;
+  }
+  &__spinner-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+}
