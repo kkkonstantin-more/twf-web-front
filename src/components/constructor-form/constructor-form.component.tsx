@@ -8,14 +8,14 @@ import {
   ConstructorHistoryItem,
   ExpressionChange,
 } from "../../redux/constructor-history/constructor-history.types";
-import { ConstructorJSONsTypes } from "../../redux/constructor-jsons/constructor-jsons.types";
+import { ConstructorJSONType } from "../../redux/constructor-jsons/constructor-jsons.types";
 
 interface ConstructorFormProps {
   inputs: (ConstructorInputProps | ConstructorSelectProps)[];
   register?: () => void;
   updateJSON?: () => void;
   addToHistory?: (oldVal: ExpressionChange, newVal: ExpressionChange) => void;
-  constructorType: ConstructorJSONsTypes;
+  constructorType: ConstructorJSONType;
 }
 
 const ConstructorForm = ({
@@ -33,13 +33,7 @@ const ConstructorForm = ({
         ): JSX.Element => {
           const { name } = input;
           if (isSelectInput(input)) {
-            return (
-              <ConstructorSelect
-                key={name}
-                updateJSON={updateJSON}
-                {...input}
-              />
-            );
+            return <ConstructorSelect key={name} {...input} />;
           } else {
             return (
               <ConstructorInput

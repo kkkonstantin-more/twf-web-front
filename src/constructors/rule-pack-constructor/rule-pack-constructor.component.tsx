@@ -42,7 +42,7 @@ import { ConstructorInputProps } from "../../components/constructor-input/constr
 import { ConstructorSelectProps } from "../../components/constructor-select/constructor-select.types";
 import { RootState } from "../../redux/root-reducer";
 import {
-  ConstructorJSONsTypes,
+  ConstructorJSONType,
   UpdateRulePackJSONAction,
 } from "../../redux/constructor-jsons/constructor-jsons.types";
 import { ActionButtonProps } from "../../components/action-button/action-button.types";
@@ -85,11 +85,11 @@ const RulePackConstructor = ({
   const creationMode: ConstructorCreationMode = useCreationMode();
   const titleAndSubmitButtonText: string = getConstructorSubmitButtonAndTitleText(
     creationMode,
-    ConstructorJSONsTypes.RULE_PACK,
+    ConstructorJSONType.RULE_PACK,
     code
   );
   const lastEditedMode: ConstructorCreationMode | null = getLastEditedCreationMode(
-    ConstructorJSONsTypes.RULE_PACK
+    ConstructorJSONType.RULE_PACK
   );
   // all rule-packs are used as select input values
   const [allRulePacks, setAllRulPacks] = useState<string[]>([]);
@@ -100,6 +100,7 @@ const RulePackConstructor = ({
   // react-hook-form utilities
   const formMethods = useForm<RulePackConstructorInputs>({
     mode: "onSubmit",
+    shouldUnregister: false,
   });
   const {
     register,
@@ -123,7 +124,7 @@ const RulePackConstructor = ({
   );
   // set valid values due to creation mode and relevant constructor state
   useEffect(() => {
-    // get all rulepacks for links
+    // get all rulePacks for links
     NamespaceConstructorRequestHandler.getAll().then(
       (res: NamespaceReceivedForm[]) =>
         setAllNamespaces(res.map((ns: NamespaceReceivedForm) => ns.code))
@@ -139,7 +140,7 @@ const RulePackConstructor = ({
         (async () => {
           await reset(CONSTRUCTOR_JSONS_INITIAL_STATE.rulePack);
           setLastEditedCreationMode(
-            ConstructorJSONsTypes.RULE_PACK,
+            ConstructorJSONType.RULE_PACK,
             creationMode
           );
           updateRulePackJSON(getValues());
@@ -160,7 +161,7 @@ const RulePackConstructor = ({
             )
           );
           setLastEditedCreationMode(
-            ConstructorJSONsTypes.RULE_PACK,
+            ConstructorJSONType.RULE_PACK,
             creationMode
           );
           updateRulePackJSON(getValues());
@@ -170,7 +171,7 @@ const RulePackConstructor = ({
     } else if (creationMode === ConstructorCreationMode.CREATE_BY_EXAMPLE) {
       if (
         lastEditedMode === ConstructorCreationMode.CREATE_BY_EXAMPLE &&
-        getLastExampleConstructorCode(ConstructorJSONsTypes.RULE_PACK) === code
+        getLastExampleConstructorCode(ConstructorJSONType.RULE_PACK) === code
       ) {
         reset(rulePackJSON);
         setShowSpinner(false);
@@ -184,10 +185,10 @@ const RulePackConstructor = ({
             code: rulePackInputs.code + "_new",
           });
           setLastEditedCreationMode(
-            ConstructorJSONsTypes.RULE_PACK,
+            ConstructorJSONType.RULE_PACK,
             creationMode
           );
-          setLastExampleConstructorCode(ConstructorJSONsTypes.RULE_PACK, code);
+          setLastExampleConstructorCode(ConstructorJSONType.RULE_PACK, code);
           updateRulePackJSON(getValues());
           setShowSpinner(false);
         })();
@@ -263,7 +264,8 @@ const RulePackConstructor = ({
       label: "Namespace",
       type: "text",
       options: allNamespaces.map((ns: string) => ({ label: ns, value: ns })),
-      defaultValue: "",
+      value: watch("namespaceCode"),
+      onChange: (value: string | string[]) => setValue("namespaceCode", value),
       isMulti: false,
       disabled: creationMode === ConstructorCreationMode.EDIT,
     },
@@ -274,27 +276,29 @@ const RulePackConstructor = ({
       defaultValue: "____test_namespace_code" + uidv4().slice(0, 5),
       disabled: creationMode === ConstructorCreationMode.EDIT,
       onChange: () => setUserCodeChange(true),
-      constructorType: ConstructorJSONsTypes.RULE_PACK,
+      constructorType: ConstructorJSONType.RULE_PACK,
     },
     {
       name: "nameEn",
       label: "Название  En",
       type: "text",
       defaultValue: "",
-      constructorType: ConstructorJSONsTypes.RULE_PACK,
+      constructorType: ConstructorJSONType.RULE_PACK,
     },
     {
       name: "nameRu",
       label: "Название Ru",
       type: "text",
       defaultValue: "",
-      constructorType: ConstructorJSONsTypes.RULE_PACK,
+      constructorType: ConstructorJSONType.RULE_PACK,
     },
     {
       name: "rulePacks",
       label: "Добавить существующие пакеты",
       isMulti: true,
       options: allRulePacks.map((rp: string) => ({ label: rp, value: rp })),
+      value: watch("rulePacks"),
+      onChange: (value: string | string[]) => setValue("rulePacks", value),
     },
   ];
 
@@ -423,7 +427,7 @@ const RulePackConstructor = ({
             inputs={inputs}
             register={register}
             updateJSON={() => updateRulePackJSON(getValues())}
-            constructorType={ConstructorJSONsTypes.RULE_PACK}
+            constructorType={ConstructorJSONType.RULE_PACK}
           />
           <h3>Правила:</h3>
           <div className="rule-pack-constructor__rules">
@@ -527,8 +531,8 @@ const mapDispatch = (
 ) => ({
   updateRulePackJSON: (rulePackJSON: RulePackConstructorInputs) =>
     dispatch(updateRulePackJSON(rulePackJSON)),
-  undo: () => dispatch(undoHistory(ConstructorJSONsTypes.RULE_PACK)),
-  redo: () => dispatch(redoHistory(ConstructorJSONsTypes.RULE_PACK)),
+  undo: () => dispatch(undoHistory(ConstructorJSONType.RULE_PACK)),
+  redo: () => dispatch(redoHistory(ConstructorJSONType.RULE_PACK)),
 });
 
 const connector = connect(mapState, mapDispatch);

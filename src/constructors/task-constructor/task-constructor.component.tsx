@@ -27,7 +27,7 @@ import { ConstructorSelectProps } from "../../components/constructor-select/cons
 import { RootState } from "../../redux/root-reducer";
 import { GoalType, TaskConstructorProps } from "./task-constructor.types";
 import { ExpressionChange } from "../../redux/constructor-history/constructor-history.types";
-import { ConstructorJSONsTypes } from "../../redux/constructor-jsons/constructor-jsons.types";
+import { ConstructorJSONType } from "../../redux/constructor-jsons/constructor-jsons.types";
 import { TaskSetConstructorInputs } from "../task-set-constructor/task-set-constructor.types";
 // data
 import {
@@ -73,7 +73,7 @@ const TaskConstructor = ({
   addToHistory,
   rulePacks,
 }: TaskConstructorProps & ConnectedProps<typeof connector>): JSX.Element => {
-  const { register, getValues, watch } = useFormContext();
+  const { register, getValues, watch, setValue } = useFormContext();
   // @ts-ignore
   const { append, swap, remove } = React.useContext(
     TasksFieldArrayActionsContext
@@ -158,28 +158,28 @@ const TaskConstructor = ({
       type: "text",
       defaultValue: namespaceCode,
       disabled: true,
-      constructorType: ConstructorJSONsTypes.TASK_SET,
+      constructorType: ConstructorJSONType.TASK_SET,
     },
     {
       name: `tasks[${index}].code`,
       label: "Код",
       type: "text",
       defaultValue: defaultValue.code,
-      constructorType: ConstructorJSONsTypes.TASK_SET,
+      constructorType: ConstructorJSONType.TASK_SET,
     },
     {
       name: `tasks[${index}].nameEn`,
       label: "Имя En",
       type: "text",
       defaultValue: defaultValue.nameEn,
-      constructorType: ConstructorJSONsTypes.TASK_SET,
+      constructorType: ConstructorJSONType.TASK_SET,
     },
     {
       name: `tasks[${index}].nameRu`,
       label: "Имя Ru",
       type: "text",
       defaultValue: defaultValue.nameRu,
-      constructorType: ConstructorJSONsTypes.TASK_SET,
+      constructorType: ConstructorJSONType.TASK_SET,
     },
     {
       name: `tasks[${index}].subjectTypes`,
@@ -190,7 +190,10 @@ const TaskConstructor = ({
         value: item,
       })),
       isMulti: true,
-      defaultValue: defaultValue.subjectTypes,
+      value: watch(`tasks[${index}].subjectTypes`),
+      onChange: (value: string | string[]) => {
+        setValue(`tasks[${index}].subjectTypes`, value);
+      },
     },
     {
       name: `tasks[${index}].originalExpression`,
@@ -198,7 +201,7 @@ const TaskConstructor = ({
       type: "text",
       expressionInput: true,
       defaultValue: defaultValue.originalExpression,
-      constructorType: ConstructorJSONsTypes.TASK_SET,
+      constructorType: ConstructorJSONType.TASK_SET,
     },
     {
       name: `tasks[${index}].goalType`,
@@ -209,14 +212,14 @@ const TaskConstructor = ({
         value: item,
       })),
       defaultValue: defaultValue.goalType,
-      constructorType: ConstructorJSONsTypes.TASK_SET,
+      constructorType: ConstructorJSONType.TASK_SET,
     },
     {
       name: `tasks[${index}].goalPattern`,
       label: "Патерн цели",
       type: "text",
       defaultValue: defaultValue.goalPattern,
-      constructorType: ConstructorJSONsTypes.TASK_SET,
+      constructorType: ConstructorJSONType.TASK_SET,
     },
     {
       name: `tasks[${index}].goalNumberProperty`,
@@ -225,7 +228,7 @@ const TaskConstructor = ({
       defaultValue: defaultValue.goalNumberProperty,
       isRendered:
         goalTypeValue === GoalType.CNF || goalTypeValue === GoalType.DNF,
-      constructorType: ConstructorJSONsTypes.TASK_SET,
+      constructorType: ConstructorJSONType.TASK_SET,
     },
     {
       name: `tasks[${index}].rulePacks`,
@@ -233,7 +236,10 @@ const TaskConstructor = ({
       type: "text",
       isMulti: true,
       options: rulePacks.map((rp: string) => ({ label: rp, value: rp })),
-      defaultValue: defaultValue.rulePacks,
+      value: watch(`tasks[${index}].rulePacks`),
+      onChange: (value: string | string[]) => {
+        setValue(`tasks[${index}].rulePacks`, value);
+      },
     },
     {
       name: `tasks[${index}].goalExpression`,
@@ -243,28 +249,28 @@ const TaskConstructor = ({
       defaultValue: defaultValue.goalExpression,
       isRendered:
         goalTypeValue !== GoalType.CNF && goalTypeValue !== GoalType.DNF,
-      constructorType: ConstructorJSONsTypes.TASK_SET,
+      constructorType: ConstructorJSONType.TASK_SET,
     },
     {
       name: `tasks[${index}].stepsNumber`,
       label: "Количество шагов",
       type: "number",
       defaultValue: defaultValue.stepsNumber,
-      constructorType: ConstructorJSONsTypes.TASK_SET,
+      constructorType: ConstructorJSONType.TASK_SET,
     },
     {
       name: `tasks[${index}].time`,
       label: "Время",
       type: "number",
       defaultValue: defaultValue.time,
-      constructorType: ConstructorJSONsTypes.TASK_SET,
+      constructorType: ConstructorJSONType.TASK_SET,
     },
     {
       name: `tasks[${index}].difficulty`,
       label: "Сложность",
       type: "number",
       defaultValue: defaultValue.difficulty,
-      constructorType: ConstructorJSONsTypes.TASK_SET,
+      constructorType: ConstructorJSONType.TASK_SET,
     },
     {
       name: `tasks[${index}].solution`,
@@ -272,35 +278,35 @@ const TaskConstructor = ({
       type: "text",
       expressionInput: true,
       defaultValue: defaultValue.solution,
-      constructorType: ConstructorJSONsTypes.TASK_SET,
+      constructorType: ConstructorJSONType.TASK_SET,
     },
     {
       name: `tasks[${index}].countOfAutoGeneratedTasks`,
       label: "Количество автогенерируемых подуровней",
       type: "number",
       defaultValue: defaultValue.countOfAutoGeneratedTasks,
-      constructorType: ConstructorJSONsTypes.TASK_SET,
+      constructorType: ConstructorJSONType.TASK_SET,
     },
     {
       name: `tasks[${index}].operations`,
       label: "Операции",
       type: "text",
       defaultValue: defaultValue.operations,
-      constructorType: ConstructorJSONsTypes.TASK_SET,
+      constructorType: ConstructorJSONType.TASK_SET,
     },
     {
       name: `tasks[${index}].stepsCountIntervals`,
       label: "Количество шагов",
       type: "number",
       defaultValue: defaultValue.stepsCountIntervals,
-      constructorType: ConstructorJSONsTypes.TASK_SET,
+      constructorType: ConstructorJSONType.TASK_SET,
     },
     {
       name: `tasks[${index}].implicitTransformationsCount`,
       label: "Нетривиальных правил на шаг",
       type: "number",
       defaultValue: defaultValue.implicitTransformationsCount,
-      constructorType: ConstructorJSONsTypes.TASK_SET,
+      constructorType: ConstructorJSONType.TASK_SET,
     },
     {
       name: `tasks[${index}].autoGeneratedRulePacks`,
@@ -308,70 +314,73 @@ const TaskConstructor = ({
       type: "text",
       isMulti: true,
       options: rulePacks.map((item: string) => ({ label: item, value: item })),
-      defaultValue: defaultValue.autoGenerationRulePacks,
+      value: watch(`tasks[${index}].autoGeneratedRulePacks`),
+      onChange: (value: string | string[]) => {
+        setValue(`tasks[${index}].autoGeneratedRulePacks`, value);
+      },
     },
     {
       name: `tasks[${index}].lightWeightOperations`,
       label: "lightWeightOperations",
       type: "text",
       defaultValue: defaultValue.lightWeightOperations,
-      constructorType: ConstructorJSONsTypes.TASK_SET,
+      constructorType: ConstructorJSONType.TASK_SET,
     },
     {
       name: `tasks[${index}].nullWeightOperations`,
       label: "nullWeightOperations",
       type: "text",
       defaultValue: defaultValue.nullWeightOperations,
-      constructorType: ConstructorJSONsTypes.TASK_SET,
+      constructorType: ConstructorJSONType.TASK_SET,
     },
     {
       name: `tasks[${index}].maxNumberOfAutogeneratedTasks`,
       label: "Максимальное количество автогенерируемых уровней",
       type: "text",
       defaultValue: defaultValue.maxNumberOfAutogeneratedTasks,
-      constructorType: ConstructorJSONsTypes.TASK_SET,
+      constructorType: ConstructorJSONType.TASK_SET,
     },
     {
       name: `tasks[${index}].numberOfAutogeneratedTasksToSolve`,
       label: "Количество автогенерируемых уровней для решения",
       type: "text",
       defaultValue: defaultValue.numberOfAutogeneratedTasksToSolve,
-      constructorType: ConstructorJSONsTypes.TASK_SET,
+      constructorType: ConstructorJSONType.TASK_SET,
     },
     {
       name: `tasks[${index}].otherGoalData`,
       label: "Дополнительная информация о цели задачи",
       type: "text",
       defaultValue: defaultValue.otherGoalData,
-      constructorType: ConstructorJSONsTypes.TASK_SET,
+      constructorType: ConstructorJSONType.TASK_SET,
     },
     {
       name: `tasks[${index}].otherCheckSolutionData`,
       label: "Дополнительная информация о проверке решения",
       type: "text",
       defaultValue: defaultValue.otherCheckSolutionData,
-      constructorType: ConstructorJSONsTypes.TASK_SET,
+      constructorType: ConstructorJSONType.TASK_SET,
     },
     {
       name: `tasks[${index}].otherAwardData`,
       label: "Дополнительная информация о награде",
       type: "text",
       defaultValue: defaultValue.otherAwardData,
-      constructorType: ConstructorJSONsTypes.TASK_SET,
+      constructorType: ConstructorJSONType.TASK_SET,
     },
     {
       name: `tasks[${index}].otherAutogenerationData`,
       label: "Дополнительная информация об автогенерации",
       type: "text",
       defaultValue: defaultValue.otherAutogenerationData,
-      constructorType: ConstructorJSONsTypes.TASK_SET,
+      constructorType: ConstructorJSONType.TASK_SET,
     },
     {
       name: `tasks[${index}].otherData`,
       label: "Дополнительная информация",
       type: "text",
       defaultValue: defaultValue.otherData,
-      constructorType: ConstructorJSONsTypes.TASK_SET,
+      constructorType: ConstructorJSONType.TASK_SET,
     },
   ];
 
@@ -553,7 +562,7 @@ const TaskConstructor = ({
               ? autoTaskBasicInputs.concat(autoTasksAddInputs)
               : manualTaskBasicInputs.concat(manualTasksAddInputs)
           }
-          constructorType={ConstructorJSONsTypes.TASK_SET}
+          constructorType={ConstructorJSONType.TASK_SET}
           // @ts-ignore
           updateJSON={() => updateTaskSetJSON(getValues())}
         />
@@ -625,7 +634,7 @@ const mapDispatchToProps = (dispatch: any) => ({
       addOneLineChangeToHistory({
         oldVal,
         newVal,
-        constructorType: ConstructorJSONsTypes.TASK_SET,
+        constructorType: ConstructorJSONType.TASK_SET,
       })
     ),
 });

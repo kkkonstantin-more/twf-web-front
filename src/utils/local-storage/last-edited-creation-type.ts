@@ -1,19 +1,19 @@
 // types
 import { ConstructorCreationMode } from "../../constructors/common-types";
-import { ConstructorJSONsTypes } from "../../redux/constructor-jsons/constructor-jsons.types";
+import { ConstructorJSONType } from "../../redux/constructor-jsons/constructor-jsons.types";
 // local storage keys prefixes
 const lastEditedModePrefix = "lastEditedCreationMode__";
 const lastExampleConstructorCodePrefix = "lastExampleConstructorCode__";
 
 export const setLastEditedCreationMode = (
-  constructorType: ConstructorJSONsTypes,
+  constructorType: ConstructorJSONType,
   creationMode: ConstructorCreationMode
 ): void => {
   localStorage.setItem(lastEditedModePrefix + constructorType, creationMode);
 };
 
 export const getLastEditedCreationMode = (
-  constructorType: ConstructorJSONsTypes
+  constructorType: ConstructorJSONType
 ): ConstructorCreationMode | null => {
   return localStorage.getItem(
     lastEditedModePrefix + constructorType
@@ -21,7 +21,7 @@ export const getLastEditedCreationMode = (
 };
 
 export const setLastExampleConstructorCode = (
-  constructorType: ConstructorJSONsTypes,
+  constructorType: ConstructorJSONType,
   code: string
 ): void => {
   localStorage.setItem(
@@ -31,7 +31,7 @@ export const setLastExampleConstructorCode = (
 };
 
 export const getLastExampleConstructorCode = (
-  constructorType: ConstructorJSONsTypes
+  constructorType: ConstructorJSONType
 ): string | null => {
   return localStorage.getItem(
     lastExampleConstructorCodePrefix + constructorType

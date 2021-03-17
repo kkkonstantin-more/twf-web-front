@@ -15,13 +15,12 @@ const ConstructorSelect = ({
   label,
   options,
   isMulti,
-  defaultValue,
+  value,
   isRendered = true,
   isVisible = true,
   disabled = false,
+  onChange,
 }: ConstructorSelectProps): JSX.Element => {
-  const { watch, setValue } = useFormContext();
-  const value = watch(name);
   const selectRef: React.RefObject<any> = React.createRef();
 
   if (isRendered) {
@@ -38,10 +37,11 @@ const ConstructorSelect = ({
             value={value}
             mode={isMulti ? "multiple" : undefined}
             style={{ width: "100%" }}
-            onChange={(value: any) => {
-              setValue(name, value);
+            onChange={(value: string | string[]) => {
+              if (onChange) {
+                onChange(value);
+              }
               // add focus when deleting value in order to trigger dependent events in parent components
-              // for example: form onBlur
               if (selectRef && selectRef.current) {
                 selectRef.current.focus();
               }

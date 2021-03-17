@@ -6,7 +6,7 @@ import {
 import CONSTRUCTOR_HISTORY_INITIAL_STATE from "./constructor-history.state";
 
 import deepEqual from "fast-deep-equal/es6";
-import { ConstructorJSONsTypes } from "../constructor-jsons/constructor-jsons.types";
+import { ConstructorJSONType } from "../constructor-jsons/constructor-jsons.types";
 
 const constructorHistoryReducer = (
   state: ConstructorHistory = CONSTRUCTOR_HISTORY_INITIAL_STATE,
@@ -18,22 +18,22 @@ const constructorHistoryReducer = (
       action.type === "ADD_MULTIPLE_LINES_CHANGE_TO_HISTORY"
     ) {
       switch (action.payload.constructorType) {
-        case ConstructorJSONsTypes.TASK_SET:
+        case ConstructorJSONType.TASK_SET:
           return "taskSet";
-        case ConstructorJSONsTypes.RULE_PACK:
+        case ConstructorJSONType.RULE_PACK:
           return "rulePack";
-        case ConstructorJSONsTypes.NAMESPACE:
+        case ConstructorJSONType.NAMESPACE:
           return "namespace";
         default:
           return action.payload;
       }
     } else {
       switch (action.payload) {
-        case ConstructorJSONsTypes.TASK_SET:
+        case ConstructorJSONType.TASK_SET:
           return "taskSet";
-        case ConstructorJSONsTypes.RULE_PACK:
+        case ConstructorJSONType.RULE_PACK:
           return "rulePack";
-        case ConstructorJSONsTypes.NAMESPACE:
+        case ConstructorJSONType.NAMESPACE:
           return "namespace";
         default:
           return action.payload;

@@ -36,7 +36,7 @@ import { ConstructorSelectProps } from "../../components/constructor-select/cons
 import { ConstructorCreationMode } from "../common-types";
 import { RootState } from "../../redux/root-reducer";
 import {
-  ConstructorJSONsTypes,
+  ConstructorJSONType,
   UpdateNamespaceJSONAction,
 } from "../../redux/constructor-jsons/constructor-jsons.types";
 import { FetchedUser, getAllUsers } from "../common-server-requests";
@@ -68,11 +68,11 @@ const NamespaceConstructorComponent = ({
   const creationMode: ConstructorCreationMode = useCreationMode();
   const titleAndSubmitButtonText: string = getConstructorSubmitButtonAndTitleText(
     creationMode,
-    ConstructorJSONsTypes.NAMESPACE,
+    ConstructorJSONType.NAMESPACE,
     code
   );
   const lastEditedMode: ConstructorCreationMode | null = getLastEditedCreationMode(
-    ConstructorJSONsTypes.NAMESPACE
+    ConstructorJSONType.NAMESPACE
   );
   // server response messages
   const [errorMsg, setErrorMsg] = useState<null | string>(null);
@@ -80,6 +80,7 @@ const NamespaceConstructorComponent = ({
   // react-hook-form core functions
   const formMethods = useForm<NamespaceConstructorInputs>({
     mode: "onSubmit",
+    shouldUnregister: false,
   });
   const {
     register,
@@ -113,7 +114,7 @@ const NamespaceConstructorComponent = ({
         (async () => {
           await reset(CONSTRUCTOR_JSONS_INITIAL_STATE.namespace);
           setLastEditedCreationMode(
-            ConstructorJSONsTypes.NAMESPACE,
+            ConstructorJSONType.NAMESPACE,
             creationMode
           );
           updateNamespaceJSON(getValues());
@@ -136,7 +137,7 @@ const NamespaceConstructorComponent = ({
             )
           );
           setLastEditedCreationMode(
-            ConstructorJSONsTypes.NAMESPACE,
+            ConstructorJSONType.NAMESPACE,
             creationMode
           );
           updateNamespaceJSON(getValues());
@@ -146,7 +147,7 @@ const NamespaceConstructorComponent = ({
     } else if (creationMode === ConstructorCreationMode.CREATE_BY_EXAMPLE) {
       if (
         lastEditedMode === ConstructorCreationMode.CREATE_BY_EXAMPLE &&
-        getLastExampleConstructorCode(ConstructorJSONsTypes.NAMESPACE) === code
+        getLastExampleConstructorCode(ConstructorJSONType.NAMESPACE) === code
       ) {
         reset(namespaceJSON);
         setIsFormLoaded(true);
@@ -162,10 +163,10 @@ const NamespaceConstructorComponent = ({
             )
           );
           setLastEditedCreationMode(
-            ConstructorJSONsTypes.NAMESPACE,
+            ConstructorJSONType.NAMESPACE,
             creationMode
           );
-          setLastExampleConstructorCode(ConstructorJSONsTypes.NAMESPACE, code);
+          setLastExampleConstructorCode(ConstructorJSONType.NAMESPACE, code);
           updateNamespaceJSON(getValues());
           setIsFormLoaded(true);
         })();
@@ -224,7 +225,7 @@ const NamespaceConstructorComponent = ({
       label: "Код",
       type: "text",
       disabled: creationMode === ConstructorCreationMode.EDIT,
-      constructorType: ConstructorJSONsTypes.NAMESPACE,
+      constructorType: ConstructorJSONType.NAMESPACE,
     },
     {
       name: "grantType",
@@ -240,7 +241,12 @@ const NamespaceConstructorComponent = ({
           value: accessMode,
         };
       }),
-      constructorType: ConstructorJSONsTypes.NAMESPACE,
+      constructorType: ConstructorJSONType.NAMESPACE,
+      value: watch("grantType"),
+      onChange: (value: string | string[]) => {
+        console.log("onChange triggered!");
+        setValue("grantType", value);
+      },
     },
     {
       name: "readGrantedUsers",
@@ -248,7 +254,11 @@ const NamespaceConstructorComponent = ({
       isMulti: true,
       options: usersSelectOptions,
       isVisible: grantType === NamespaceGrantType.PRIVATE_READ_WRITE,
-      constructorType: ConstructorJSONsTypes.NAMESPACE,
+      constructorType: ConstructorJSONType.NAMESPACE,
+      value: watch("readGrantedUsers"),
+      onChange: (value: string | string[]) => {
+        setValue("readGrantedUsers", value);
+      },
     },
     {
       name: "writeGrantedUsers",
@@ -258,7 +268,11 @@ const NamespaceConstructorComponent = ({
       isVisible:
         grantType === NamespaceGrantType.PUBLIC_READ_PRIVATE_WRITE ||
         grantType === NamespaceGrantType.PRIVATE_READ_WRITE,
-      constructorType: ConstructorJSONsTypes.NAMESPACE,
+      constructorType: ConstructorJSONType.NAMESPACE,
+      value: watch("writeGrantedUsers"),
+      onChange: (value: string | string[]) => {
+        setValue("writeGrantedUsers", value);
+      },
     },
   ];
 
@@ -324,11 +338,19 @@ const NamespaceConstructorComponent = ({
             register={register}
             // @ts-ignore
             updateJSON={() => updateNamespaceJSON(getValues())}
-            constructorType={ConstructorJSONsTypes.NAMESPACE}
+            constructorType={ConstructorJSONType.NAMESPACE}
           />
           <ServerResponseAlert errorMsg={errorMsg} successMsg={successMsg} />
           <button type="submit" className="btn">
             {titleAndSubmitButtonText}
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              console.log(getValues());
+            }}
+          >
+            get values
           </button>
         </form>
       </FormProvider>
@@ -357,8 +379,8 @@ const mapDispatch = (
 ) => ({
   updateNamespaceJSON: (namespaceJSON: NamespaceConstructorInputs) =>
     dispatch(updateNamespaceJSON(namespaceJSON)),
-  undo: () => dispatch(undoHistory(ConstructorJSONsTypes.NAMESPACE)),
-  redo: () => dispatch(redoHistory(ConstructorJSONsTypes.NAMESPACE)),
+  undo: () => dispatch(undoHistory(ConstructorJSONType.NAMESPACE)),
+  redo: () => dispatch(redoHistory(ConstructorJSONType.NAMESPACE)),
 });
 
 const connector = connect(mapState, mapDispatch);

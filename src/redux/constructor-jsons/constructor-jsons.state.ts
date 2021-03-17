@@ -11,8 +11,8 @@ const CONSTRUCTOR_JSONS_INITIAL_STATE: ConstructorJSONs = {
     code: "",
     allowRead: "true",
     grantType: NamespaceGrantType.PUBLIC_READ_PRIVATE_WRITE,
-    writeGrantedUsers: "",
-    readGrantedUsers: "",
+    writeGrantedUsers: [],
+    readGrantedUsers: [],
   },
   rulePack: {
     code: "",

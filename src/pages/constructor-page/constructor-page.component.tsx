@@ -13,7 +13,7 @@ import {
 } from "./constructor-page.types";
 // styles
 import "./constructor-page.styles.scss";
-import { ConstructorJSONsTypes } from "../../redux/constructor-jsons/constructor-jsons.types";
+import { ConstructorJSONType } from "../../redux/constructor-jsons/constructor-jsons.types";
 import { createStructuredSelector } from "reselect";
 import { RootState } from "../../redux/root-reducer";
 import { NamespaceConstructorInputs } from "../../constructors/namespace-constructor/namespace-constructor.types";
@@ -60,21 +60,21 @@ const ConstructorPage = ({
 
   const constructorType = (() => {
     if (pathname.includes("task-set")) {
-      return ConstructorJSONsTypes.TASK_SET;
+      return ConstructorJSONType.TASK_SET;
     } else if (pathname.includes("rule-pack")) {
-      return ConstructorJSONsTypes.RULE_PACK;
+      return ConstructorJSONType.RULE_PACK;
     } else {
-      return ConstructorJSONsTypes.NAMESPACE;
+      return ConstructorJSONType.NAMESPACE;
     }
   })();
 
   const isCurrentJSONValid = (() => {
     switch (constructorType) {
-      case ConstructorJSONsTypes.NAMESPACE:
+      case ConstructorJSONType.NAMESPACE:
         return isNamespaceJSONValid;
-      case ConstructorJSONsTypes.RULE_PACK:
+      case ConstructorJSONType.RULE_PACK:
         return isRulePackJSONValid;
-      case ConstructorJSONsTypes.TASK_SET:
+      case ConstructorJSONType.TASK_SET:
         return isTaskSetJSONValid;
     }
   })();
@@ -84,18 +84,18 @@ const ConstructorPage = ({
   );
 
   const renderConstructor = (
-    constructorType: ConstructorJSONsTypes,
+    constructorType: ConstructorJSONType,
     editingMode: EditingMode
   ): JSX.Element => {
     return editingMode === "forms" ? (
       <>
-        {constructorType === ConstructorJSONsTypes.NAMESPACE && (
+        {constructorType === ConstructorJSONType.NAMESPACE && (
           <NamespaceConstructor />
         )}
-        {constructorType === ConstructorJSONsTypes.RULE_PACK && (
+        {constructorType === ConstructorJSONType.RULE_PACK && (
           <RulePackConstructor />
         )}
-        {constructorType === ConstructorJSONsTypes.TASK_SET && (
+        {constructorType === ConstructorJSONType.TASK_SET && (
           <TaskSetConstructor />
         )}
       </>
@@ -149,30 +149,21 @@ const ConstructorPage = ({
           exact
           path={`${url}/task-set/:code?`}
           render={() =>
-            renderConstructor(
-              ConstructorJSONsTypes.TASK_SET,
-              currentEditingMode
-            )
+            renderConstructor(ConstructorJSONType.TASK_SET, currentEditingMode)
           }
         />
         <Route
           exact
           path={`${url}/namespace/:code?`}
           render={() =>
-            renderConstructor(
-              ConstructorJSONsTypes.NAMESPACE,
-              currentEditingMode
-            )
+            renderConstructor(ConstructorJSONType.NAMESPACE, currentEditingMode)
           }
         />
         <Route
           exact
           path={`${url}/rule-pack/:code?`}
           render={() =>
-            renderConstructor(
-              ConstructorJSONsTypes.RULE_PACK,
-              currentEditingMode
-            )
+            renderConstructor(ConstructorJSONType.RULE_PACK, currentEditingMode)
           }
         />
       </Switch>

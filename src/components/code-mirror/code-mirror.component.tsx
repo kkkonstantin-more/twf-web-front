@@ -43,7 +43,7 @@ import "codemirror/addon/hint/show-hint.css";
 import "codemirror/addon/lint/json-lint";
 import "codemirror/addon/lint/lint";
 import "codemirror/addon/lint/lint.css";
-import { ConstructorJSONsTypes } from "../../redux/constructor-jsons/constructor-jsons.types";
+import { ConstructorJSONType } from "../../redux/constructor-jsons/constructor-jsons.types";
 import { NamespaceConstructorInputs } from "../../constructors/namespace-constructor/namespace-constructor.types";
 import { RootState } from "../../redux/root-reducer";
 import { RulePackConstructorInputs } from "../../constructors/rule-pack-constructor/rule-pack-constructor.types";
@@ -78,7 +78,7 @@ const jsonlint = require("jsonlint-mod");
 window["jsonlint"] = jsonlint;
 
 export interface CodeMirrorProps {
-  constructorType: ConstructorJSONsTypes;
+  constructorType: ConstructorJSONType;
 }
 
 export interface CodeMirrorWordPosition {
@@ -131,55 +131,55 @@ const CodeMirrorEditor = ({
 
   const isCurrentJSONValid = (() => {
     switch (constructorType) {
-      case ConstructorJSONsTypes.NAMESPACE:
+      case ConstructorJSONType.NAMESPACE:
         return isNamespaceJSONValid;
-      case ConstructorJSONsTypes.RULE_PACK:
+      case ConstructorJSONType.RULE_PACK:
         return isRulePackJSONValid;
-      case ConstructorJSONsTypes.TASK_SET:
+      case ConstructorJSONType.TASK_SET:
         return isTaskSetJSONValid;
     }
   })();
 
   const currentReduxJSON = (() => {
     switch (constructorType) {
-      case ConstructorJSONsTypes.NAMESPACE:
+      case ConstructorJSONType.NAMESPACE:
         return namespaceJSON;
-      case ConstructorJSONsTypes.RULE_PACK:
+      case ConstructorJSONType.RULE_PACK:
         return rulePackJSON;
-      case ConstructorJSONsTypes.TASK_SET:
+      case ConstructorJSONType.TASK_SET:
         return taskSetJSON;
     }
   })();
 
   const initialReduxJSON = (() => {
     switch (constructorType) {
-      case ConstructorJSONsTypes.NAMESPACE:
+      case ConstructorJSONType.NAMESPACE:
         return CONSTRUCTOR_JSONS_INITIAL_STATE.namespace;
-      case ConstructorJSONsTypes.RULE_PACK:
+      case ConstructorJSONType.RULE_PACK:
         return CONSTRUCTOR_JSONS_INITIAL_STATE.rulePack;
-      case ConstructorJSONsTypes.TASK_SET:
+      case ConstructorJSONType.TASK_SET:
         return CONSTRUCTOR_JSONS_INITIAL_STATE.taskSet;
     }
   })();
 
   const currentHistoryChange = (() => {
     switch (constructorType) {
-      case ConstructorJSONsTypes.NAMESPACE:
+      case ConstructorJSONType.NAMESPACE:
         return currentNamespaceHistoryChange;
-      case ConstructorJSONsTypes.RULE_PACK:
+      case ConstructorJSONType.RULE_PACK:
         return currentRulePackHistoryChange;
-      case ConstructorJSONsTypes.TASK_SET:
+      case ConstructorJSONType.TASK_SET:
         return currentTaskSetHistoryChange;
     }
   })();
 
   const updateCurrentReduxJSON = (() => {
     switch (constructorType) {
-      case ConstructorJSONsTypes.NAMESPACE:
+      case ConstructorJSONType.NAMESPACE:
         return updateNamespaceJSON;
-      case ConstructorJSONsTypes.RULE_PACK:
+      case ConstructorJSONType.RULE_PACK:
         return updateRulePackJSON;
-      case ConstructorJSONsTypes.TASK_SET:
+      case ConstructorJSONType.TASK_SET:
         return updateTaskSetJSON;
     }
   })();
@@ -591,7 +591,7 @@ const CodeMirrorEditor = ({
 
   useEffect(() => {
     const initialValue = currentReduxJSON;
-    if (constructorType === ConstructorJSONsTypes.RULE_PACK) {
+    if (constructorType === ConstructorJSONType.RULE_PACK) {
       //@ts-ignore
       if (
         //@ts-ignore
@@ -1243,22 +1243,22 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) => ({
   addOneLineChangeToHistory: (
     oldVal: ExpressionChange,
     newVal: ExpressionChange,
-    constructorType: ConstructorJSONsTypes
+    constructorType: ConstructorJSONType
   ) => dispatch(addOneLineChangeToHistory({ oldVal, newVal, constructorType })),
   addMultipleLinesChangeToHistory: (
     oldVal: TaskSetConstructorInputs,
     newVal: TaskSetConstructorInputs,
-    constructorType: ConstructorJSONsTypes
+    constructorType: ConstructorJSONType
   ) => {
     dispatch(
       addMultipleLinesChangeToHistory({ oldVal, newVal, constructorType })
     );
   },
-  undo: (constructorType: ConstructorJSONsTypes) =>
+  undo: (constructorType: ConstructorJSONType) =>
     dispatch(undoHistory(constructorType)),
-  redo: (constructorType: ConstructorJSONsTypes) =>
+  redo: (constructorType: ConstructorJSONType) =>
     dispatch(redoHistory(constructorType)),
-  setJSONValidity: (constructorType: ConstructorJSONsTypes, isValid: boolean) =>
+  setJSONValidity: (constructorType: ConstructorJSONType, isValid: boolean) =>
     dispatch(setJSONValidity(constructorType, isValid)),
 });
 

@@ -9,12 +9,11 @@ export interface SelectOption {
 export interface ConstructorSelectProps {
   name: string;
   label: string;
-  disabled?: boolean;
-  register?: any;
   options: LabeledValue[];
-  defaultValue?: string | string[];
+  disabled?: boolean;
+  onChange?: (value: string | string[]) => void;
+  value?: string | string[];
   isMulti: boolean;
   isRendered?: boolean;
   isVisible?: boolean;
-  updateJSON?: () => void;
 }

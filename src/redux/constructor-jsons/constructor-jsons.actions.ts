@@ -2,7 +2,7 @@
 import { NamespaceConstructorInputs } from "../../constructors/namespace-constructor/namespace-constructor.types";
 import {
   ConstructorInputs,
-  ConstructorJSONsTypes,
+  ConstructorJSONType,
   SET_JSON_VALIDITY,
   SetJSONValidityAction,
   UPDATE_NAMESPACE_JSON,
@@ -16,16 +16,16 @@ import { TaskSetConstructorInputs } from "../../constructors/task-set-constructo
 import { RulePackConstructorInputs } from "../../constructors/rule-pack-constructor/rule-pack-constructor.types";
 
 export const updateConstructorJSON = (
-  constructorType: ConstructorJSONsTypes,
+  constructorType: ConstructorJSONType,
   JSON: ConstructorInputs
 ) => {
   const type = (() => {
     switch (constructorType) {
-      case ConstructorJSONsTypes.NAMESPACE:
+      case ConstructorJSONType.NAMESPACE:
         return UPDATE_NAMESPACE_JSON;
-      case ConstructorJSONsTypes.RULE_PACK:
+      case ConstructorJSONType.RULE_PACK:
         return UPDATE_RULE_PACK_JSON;
-      case ConstructorJSONsTypes.TASK_SET:
+      case ConstructorJSONType.TASK_SET:
         return UPDATE_TASK_SET_JSON;
     }
   })();
@@ -57,7 +57,7 @@ export const updateRulePackJSON = (
 });
 
 export const setJSONValidity = (
-  JSONType: ConstructorJSONsTypes,
+  JSONType: ConstructorJSONType,
   isValid: boolean
 ): SetJSONValidityAction => ({
   type: SET_JSON_VALIDITY,

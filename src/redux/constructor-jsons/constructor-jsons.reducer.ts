@@ -1,7 +1,7 @@
 import {
   ConstructorJSONs,
   ConstructorJSONsActionTypes,
-  ConstructorJSONsTypes,
+  ConstructorJSONType,
 } from "./constructor-jsons.types";
 import CONSTRUCTOR_JSONS_INITIAL_STATE from "./constructor-jsons.state";
 import { convertInputStringListSeparatedByCommasToArray } from "./constructor-jsons.utils";
@@ -78,17 +78,17 @@ const constructorJSONsReducer = (
       };
     case "SET_JSON_VALIDITY":
       switch (action.payload.JSONType) {
-        case ConstructorJSONsTypes.NAMESPACE:
+        case ConstructorJSONType.NAMESPACE:
           return {
             ...state,
             isNamespaceJSONValid: action.payload.isValid,
           };
-        case ConstructorJSONsTypes.RULE_PACK:
+        case ConstructorJSONType.RULE_PACK:
           return {
             ...state,
             isRulePackJSONValid: action.payload.isValid,
           };
-        case ConstructorJSONsTypes.TASK_SET:
+        case ConstructorJSONType.TASK_SET:
           return {
             ...state,
             isTaskSetJSONValid: action.payload.isValid,

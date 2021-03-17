@@ -21,7 +21,7 @@ import {
 } from "../../redux/constructor-history/constructor-history.selectors";
 import {
   ConstructorInputs,
-  ConstructorJSONsTypes,
+  ConstructorJSONType,
 } from "../../redux/constructor-jsons/constructor-jsons.types";
 import { updateConstructorJSON } from "../../redux/constructor-jsons/constructor-jsons.actions";
 import { addOneLineChangeToHistory } from "../../redux/constructor-history/constructor-history.actions";
@@ -165,14 +165,12 @@ const mapState = createStructuredSelector<
 });
 
 const mapDispatch = (dispatch: Dispatch<any>) => ({
-  updateJSON: (
-    constructorType: ConstructorJSONsTypes,
-    JSON: ConstructorInputs
-  ) => dispatch(updateConstructorJSON(constructorType, JSON)),
+  updateJSON: (constructorType: ConstructorJSONType, JSON: ConstructorInputs) =>
+    dispatch(updateConstructorJSON(constructorType, JSON)),
   addItemToHistory: (
     oldVal: ExpressionChange,
     newVal: ExpressionChange,
-    constructorType: ConstructorJSONsTypes
+    constructorType: ConstructorJSONType
   ) => dispatch(addOneLineChangeToHistory({ oldVal, newVal, constructorType })),
 });
 

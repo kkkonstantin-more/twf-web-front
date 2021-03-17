@@ -11,7 +11,7 @@ export interface ConstructorJSONs {
   rulePack: RulePackConstructorInputs;
 }
 
-export enum ConstructorJSONsTypes {
+export enum ConstructorJSONType {
   NAMESPACE = "NAMESPACE",
   TASK_SET = "TASK_SET",
   RULE_PACK = "RULE_PACK",
@@ -46,7 +46,7 @@ export interface UpdateRulePackJSONAction {
 export interface SetJSONValidityAction {
   type: typeof SET_JSON_VALIDITY;
   payload: {
-    JSONType: ConstructorJSONsTypes;
+    JSONType: ConstructorJSONType;
     isValid: boolean;
   };
 }

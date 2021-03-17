@@ -14,7 +14,7 @@ import { RulePackConstructorInputs } from "../rule-pack-constructor/rule-pack-co
 import { ConstructorInputProps } from "../../components/constructor-input/construcor-input.types";
 import { ConstructorSelectProps } from "../../components/constructor-select/constructor-select.types";
 import {
-  ConstructorJSONsTypes,
+  ConstructorJSONType,
   UpdateRulePackJSONAction,
 } from "../../redux/constructor-jsons/constructor-jsons.types";
 import { MathInputFormat } from "../../utils/kotlin-lib-functions";
@@ -36,21 +36,21 @@ const RuleConstructor = ({
       label: "Название En",
       type: "text",
       defaultValue: defaultValue?.nameEn,
-      constructorType: ConstructorJSONsTypes.RULE_PACK,
+      constructorType: ConstructorJSONType.RULE_PACK,
     },
     {
       name: `rules[${index}].nameRu`,
       label: "Название Ru",
       type: "text",
       defaultValue: defaultValue?.nameRu,
-      constructorType: ConstructorJSONsTypes.RULE_PACK,
+      constructorType: ConstructorJSONType.RULE_PACK,
     },
     {
       name: `rules[${index}].code`,
       label: "Код",
       type: "text",
       defaultValue: defaultValue?.code,
-      constructorType: ConstructorJSONsTypes.RULE_PACK,
+      constructorType: ConstructorJSONType.RULE_PACK,
     },
     {
       name: `rules[${index}].left`,
@@ -63,7 +63,7 @@ const RuleConstructor = ({
             format: MathInputFormat.TEX,
             expression: "",
           },
-      constructorType: ConstructorJSONsTypes.RULE_PACK,
+      constructorType: ConstructorJSONType.RULE_PACK,
     },
     {
       name: `rules[${index}].right`,
@@ -76,14 +76,14 @@ const RuleConstructor = ({
             format: MathInputFormat.TEX,
             expression: "",
           },
-      constructorType: ConstructorJSONsTypes.RULE_PACK,
+      constructorType: ConstructorJSONType.RULE_PACK,
     },
     {
       name: `rules[${index}].priority`,
       label: "Приоритет",
       type: "number",
       defaultValue: defaultValue?.priority,
-      constructorType: ConstructorJSONsTypes.RULE_PACK,
+      constructorType: ConstructorJSONType.RULE_PACK,
     },
     {
       name: `rules[${index}].isExtending`,
@@ -94,7 +94,7 @@ const RuleConstructor = ({
         { value: "false", label: "нет" },
       ],
       defaultValue: defaultValue?.isExtending?.toString(),
-      constructorType: ConstructorJSONsTypes.RULE_PACK,
+      constructorType: ConstructorJSONType.RULE_PACK,
     },
     {
       name: `rules[${index}].simpleAdditional`,
@@ -105,7 +105,7 @@ const RuleConstructor = ({
         { value: "false", label: "нет" },
       ],
       defaultValue: defaultValue?.simpleAdditional?.toString(),
-      constructorType: ConstructorJSONsTypes.RULE_PACK,
+      constructorType: ConstructorJSONType.RULE_PACK,
     },
     {
       name: `rules[${index}].basedOnTaskContext`,
@@ -116,7 +116,7 @@ const RuleConstructor = ({
         { value: "false", label: "нет" },
       ],
       defaultValue: defaultValue?.basedOnTaskContext?.toString(),
-      constructorType: ConstructorJSONsTypes.RULE_PACK,
+      constructorType: ConstructorJSONType.RULE_PACK,
     },
     {
       name: `rules[${index}].matchJumbledAndNested`,
@@ -127,7 +127,7 @@ const RuleConstructor = ({
         { value: "false", label: "нет" },
       ],
       defaultValue: defaultValue?.matchJumbledAndNested?.toString(),
-      constructorType: ConstructorJSONsTypes.RULE_PACK,
+      constructorType: ConstructorJSONType.RULE_PACK,
     },
   ];
 
@@ -138,7 +138,7 @@ const RuleConstructor = ({
         register={register}
         // @ts-ignore
         updateJSON={() => updateRulePackJSON(getValues())}
-        constructorType={ConstructorJSONsTypes.RULE_PACK}
+        constructorType={ConstructorJSONType.RULE_PACK}
       />
     </div>
   );

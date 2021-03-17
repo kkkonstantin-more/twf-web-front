@@ -12,7 +12,7 @@ import {
   UPDATE_HISTORY_INDEX,
   UpdateTaskSetHistoryIndexAction,
 } from "./constructor-history.types";
-import { ConstructorJSONsTypes } from "../constructor-jsons/constructor-jsons.types";
+import { ConstructorJSONType } from "../constructor-jsons/constructor-jsons.types";
 
 export const addOneLineChangeToHistory = (
   item: OneLineHistoryChange
@@ -36,14 +36,14 @@ export const addMultipleLinesChangeToHistory = (
 // });
 
 export const undoHistory = (
-  constructorType: ConstructorJSONsTypes
+  constructorType: ConstructorJSONType
 ): UndoTaskSetHistoryAction => ({
   type: UNDO_HISTORY,
   payload: constructorType,
 });
 
 export const redoHistory = (
-  constructorType: ConstructorJSONsTypes
+  constructorType: ConstructorJSONType
 ): RedoTaskSetHistoryAction => ({
   type: REDO_HISTORY,
   payload: constructorType,

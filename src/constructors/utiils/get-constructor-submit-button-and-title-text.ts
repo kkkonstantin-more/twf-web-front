@@ -1,29 +1,29 @@
 // types
 import { ConstructorCreationMode } from "../common-types";
-import { ConstructorJSONsTypes } from "../../redux/constructor-jsons/constructor-jsons.types";
+import { ConstructorJSONType } from "../../redux/constructor-jsons/constructor-jsons.types";
 
 const getConstructorSubmitButtonAndTitleText = (
   creationMode: ConstructorCreationMode,
-  constructorType: ConstructorJSONsTypes,
+  constructorType: ConstructorJSONType,
   code?: string
 ): string => {
   const entityName = (() => {
     switch (constructorType) {
-      case ConstructorJSONsTypes.NAMESPACE:
+      case ConstructorJSONType.NAMESPACE:
         return "namespace";
-      case ConstructorJSONsTypes.RULE_PACK:
+      case ConstructorJSONType.RULE_PACK:
         return "пакет правил";
-      case ConstructorJSONsTypes.TASK_SET:
+      case ConstructorJSONType.TASK_SET:
         return "набор задач";
     }
   })();
   const entityNameInGenitiveCast = (() => {
     switch (constructorType) {
-      case ConstructorJSONsTypes.NAMESPACE:
+      case ConstructorJSONType.NAMESPACE:
         return "namespace";
-      case ConstructorJSONsTypes.RULE_PACK:
+      case ConstructorJSONType.RULE_PACK:
         return "пакета правил";
-      case ConstructorJSONsTypes.TASK_SET:
+      case ConstructorJSONType.TASK_SET:
         return "набора задач";
     }
   })();

@@ -43,7 +43,7 @@ import { ConstructorInputProps } from "../../components/constructor-input/constr
 import { ConstructorSelectProps } from "../../components/constructor-select/constructor-select.types";
 import { TaskConstructorInputs } from "../task-constructor/task-constructor.types";
 import {
-  ConstructorJSONsTypes,
+  ConstructorJSONType,
   UpdateTaskSetJSONAction,
 } from "../../redux/constructor-jsons/constructor-jsons.types";
 import {
@@ -82,8 +82,6 @@ export const TasksFieldArrayActionsContext = React.createContext();
 const TaskSetConstructor = ({
   taskSetJSON,
   updateTaskSetJSON,
-  // history,
-  // historyIdx,
   addItemToHistory,
   undo,
   redo,
@@ -94,7 +92,7 @@ const TaskSetConstructor = ({
   const creationMode: ConstructorCreationMode = useCreationMode();
   const titleAndSubmitButtonText: string = getConstructorSubmitButtonAndTitleText(
     creationMode,
-    ConstructorJSONsTypes.TASK_SET,
+    ConstructorJSONType.TASK_SET,
     code
   );
   // state vars
@@ -107,11 +105,12 @@ const TaskSetConstructor = ({
   // server response messages
   const [errorMsg, setErrorMsg] = useState<null | string>(null);
   const [successMsg, setSuccessMsg] = useState<null | string>(null);
-  // react-hook-form core functions
+  // react-hook-form initialization
   const methods = useForm<TaskSetConstructorInputs>({
     mode: "onSubmit",
     shouldUnregister: false,
   });
+  // react-hook-form core functions
   const {
     register,
     getValues,
@@ -119,8 +118,9 @@ const TaskSetConstructor = ({
     setValue,
     reset,
     handleSubmit,
+    watch,
   } = methods;
-  // react-hook-form field-array core functions for managing task constructor
+  // react-hook-form fieldArray core functions for managing task constructors
   const fieldArrayMethods = useFieldArray<TaskConstructorInputs>({
     control,
     name: "tasks",
@@ -211,9 +211,12 @@ const TaskSetConstructor = ({
       label: "Namespace",
       type: "text",
       options: namespaces.map((ns: string) => ({ label: ns, value: ns })),
-      defaultValue: "",
+      value: watch("namespaceCode"),
       isMulti: false,
       disabled: creationMode === ConstructorCreationMode.EDIT,
+      onChange: (value: string | string[]) => {
+        setValue("namespaceCode", value);
+      },
     },
     {
       name: "code",
@@ -221,25 +224,29 @@ const TaskSetConstructor = ({
       type: "text",
       defaultValue: "",
       disabled: creationMode === ConstructorCreationMode.EDIT,
-      constructorType: ConstructorJSONsTypes.TASK_SET,
+      constructorType: ConstructorJSONType.TASK_SET,
     },
     {
       name: "nameEn",
       label: "Имя en",
       type: "text",
       defaultValue: "",
-      constructorType: ConstructorJSONsTypes.TASK_SET,
+      constructorType: ConstructorJSONType.TASK_SET,
     },
     {
       name: "nameRu",
       label: "Имя ru",
       type: "text",
       defaultValue: "",
-      constructorType: ConstructorJSONsTypes.TASK_SET,
+      constructorType: ConstructorJSONType.TASK_SET,
     },
     {
       name: "subjectTypes",
       label: "Предметные области",
+      onChange: (value: string | string[]) => {
+        setValue("subjectTypes", value);
+      },
+      value: watch("subjectTypes"),
       options: ["subjectType1", "subjectType2"].map((st: string) => ({
         label: st,
         value: st,
@@ -251,12 +258,12 @@ const TaskSetConstructor = ({
       label: "Дополнительная информация",
       type: "text",
       defaultValue: "",
-      constructorType: ConstructorJSONsTypes.TASK_SET,
+      constructorType: ConstructorJSONType.TASK_SET,
     },
   ];
 
   const lastEditedMode: ConstructorCreationMode | null = getLastEditedCreationMode(
-    ConstructorJSONsTypes.TASK_SET
+    ConstructorJSONType.TASK_SET
   );
 
   // show spinner while fetching
@@ -271,10 +278,7 @@ const TaskSetConstructor = ({
       } else {
         (async () => {
           await reset(CONSTRUCTOR_JSONS_INITIAL_STATE.taskSet);
-          setLastEditedCreationMode(
-            ConstructorJSONsTypes.TASK_SET,
-            creationMode
-          );
+          setLastEditedCreationMode(ConstructorJSONType.TASK_SET, creationMode);
           // updateTaskSetJSON(getValues());
         })();
       }
@@ -293,10 +297,7 @@ const TaskSetConstructor = ({
               await TaskSetConstructorRequestsHandler.getOne(code)
             )
           );
-          setLastEditedCreationMode(
-            ConstructorJSONsTypes.TASK_SET,
-            creationMode
-          );
+          setLastEditedCreationMode(ConstructorJSONType.TASK_SET, creationMode);
           updateTaskSetJSON(getValues());
           setShowSpinner(false);
         })();
@@ -304,7 +305,7 @@ const TaskSetConstructor = ({
     } else if (creationMode === ConstructorCreationMode.CREATE_BY_EXAMPLE) {
       if (
         lastEditedMode === ConstructorCreationMode.CREATE_BY_EXAMPLE &&
-        getLastExampleConstructorCode(ConstructorJSONsTypes.TASK_SET) === code
+        getLastExampleConstructorCode(ConstructorJSONType.TASK_SET) === code
       ) {
         reset(taskSetJSON);
         setShowSpinner(false);
@@ -321,11 +322,8 @@ const TaskSetConstructor = ({
               code: task.code + "_new",
             })),
           });
-          setLastEditedCreationMode(
-            ConstructorJSONsTypes.TASK_SET,
-            creationMode
-          );
-          setLastExampleConstructorCode(ConstructorJSONsTypes.TASK_SET, code);
+          setLastEditedCreationMode(ConstructorJSONType.TASK_SET, creationMode);
+          setLastExampleConstructorCode(ConstructorJSONType.TASK_SET, code);
           updateTaskSetJSON(getValues());
           setShowSpinner(false);
         })();
@@ -409,7 +407,7 @@ const TaskSetConstructor = ({
                     ) => {
                       addItemToHistory(oldVal, newVal);
                     }}
-                    constructorType={ConstructorJSONsTypes.TASK_SET}
+                    constructorType={ConstructorJSONType.TASK_SET}
                   />
                   <div className="u-flex" style={{ alignItems: "center" }}>
                     <h3>Задачи</h3>
@@ -791,11 +789,11 @@ const mapDispatch = (
       addOneLineChangeToHistory({
         oldVal,
         newVal,
-        constructorType: ConstructorJSONsTypes.TASK_SET,
+        constructorType: ConstructorJSONType.TASK_SET,
       })
     ),
-  undo: () => dispatch(undoHistory(ConstructorJSONsTypes.TASK_SET)),
-  redo: () => dispatch(redoHistory(ConstructorJSONsTypes.TASK_SET)),
+  undo: () => dispatch(undoHistory(ConstructorJSONType.TASK_SET)),
+  redo: () => dispatch(redoHistory(ConstructorJSONType.TASK_SET)),
 });
 
 const connector = connect(mapState, mapDispatch);

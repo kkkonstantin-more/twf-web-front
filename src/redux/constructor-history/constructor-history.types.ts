@@ -1,6 +1,6 @@
 import {
   ConstructorInputs,
-  ConstructorJSONsTypes,
+  ConstructorJSONType,
 } from "../constructor-jsons/constructor-jsons.types";
 
 export interface ExpressionChange {
@@ -11,13 +11,13 @@ export interface ExpressionChange {
 export interface MultipleLinesHistoryChange {
   oldVal: ConstructorInputs;
   newVal: ConstructorInputs;
-  constructorType: ConstructorJSONsTypes;
+  constructorType: ConstructorJSONType;
 }
 
 export interface OneLineHistoryChange {
   oldVal: ExpressionChange;
   newVal: ExpressionChange;
-  constructorType: ConstructorJSONsTypes;
+  constructorType: ConstructorJSONType;
 }
 
 export type ConstructorHistoryItem =
@@ -64,12 +64,12 @@ export interface UpdateTaskSetHistoryIndexAction {
 
 export interface UndoTaskSetHistoryAction {
   type: typeof UNDO_HISTORY;
-  payload: ConstructorJSONsTypes;
+  payload: ConstructorJSONType;
 }
 
 export interface RedoTaskSetHistoryAction {
   type: typeof REDO_HISTORY;
-  payload: ConstructorJSONsTypes;
+  payload: ConstructorJSONType;
 }
 
 export type ConstructorHistoryActionTypes =
