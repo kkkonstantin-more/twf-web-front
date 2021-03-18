@@ -19,7 +19,6 @@ import CONSTRUCTOR_JSONS_INITIAL_STATE from "../../redux/constructor-jsons/const
 // lib components
 import { ClipLoader } from "react-spinners";
 // custom components
-import ConstructorForm from "../../components/constructor-form/constructor-form.component";
 import ActionButton from "../../components/action-button/action-button.component";
 import RuleConstructor from "../rule-constructor/rule-constructor.component";
 // utils
@@ -72,6 +71,8 @@ import {
   undoHistory,
 } from "../../redux/constructor-history/constructor-history.actions";
 import ConstructorUndoRedoPanel from "../../components/constructor-undo-redo-panel/constructor-undo-redo-panel.component";
+import ConstructorFormAlt from "../../components/constructor-form/constructor-form";
+import { ConstructorFormInput } from "../../components/constructor-form/constructor-form.types";
 
 const RulePackConstructor = ({
   rulePackJSON,
@@ -258,6 +259,38 @@ const RulePackConstructor = ({
     },
   ];
 
+  const altInputs: ConstructorFormInput[] = [
+    {
+      name: "namespaceCode",
+      label: "Namespace",
+      options: allNamespaces.map((ns: string) => ({ label: ns, value: ns })),
+      isMulti: false,
+      disabled: creationMode === ConstructorCreationMode.EDIT,
+    },
+    {
+      name: "code",
+      label: "Код",
+      type: "text",
+      disabled: creationMode === ConstructorCreationMode.EDIT,
+    },
+    {
+      name: "nameEn",
+      label: "Название  En",
+      type: "text",
+    },
+    {
+      name: "nameRu",
+      label: "Название Ru",
+      type: "text",
+    },
+    {
+      name: "rulePacks",
+      label: "Добавить существующие пакеты",
+      isMulti: true,
+      options: allRulePacks.map((rp: string) => ({ label: rp, value: rp })),
+    },
+  ];
+
   const inputs: (ConstructorInputProps | ConstructorSelectProps)[] = [
     {
       name: "namespaceCode",
@@ -423,12 +456,16 @@ const RulePackConstructor = ({
           className="rule-pack-constructor"
         >
           <h2>{titleAndSubmitButtonText}</h2>
-          <ConstructorForm
-            inputs={inputs}
-            register={register}
-            updateJSON={() => updateRulePackJSON(getValues())}
+          <ConstructorFormAlt
+            inputs={altInputs}
             constructorType={ConstructorJSONType.RULE_PACK}
           />
+          {/*<ConstructorForm*/}
+          {/*  inputs={inputs}*/}
+          {/*  register={register}*/}
+          {/*  updateJSON={() => updateRulePackJSON(getValues())}*/}
+          {/*  constructorType={ConstructorJSONType.RULE_PACK}*/}
+          {/*/>*/}
           <h3>Правила:</h3>
           <div className="rule-pack-constructor__rules">
             {fields.map(

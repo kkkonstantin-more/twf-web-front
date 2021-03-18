@@ -7,7 +7,6 @@ import useCreationMode from "../hooks/useCreationType";
 // lib components
 import { ClipLoader } from "react-spinners";
 // custom components
-import ConstructorForm from "../../components/constructor-form/constructor-form.component";
 import ServerResponseAlert from "../../components/server-response-alert/server-response-alert.component";
 // redux
 import { selectNamespaceJSON } from "../../redux/constructor-jsons/constructor-jsons.selectors";
@@ -15,17 +14,7 @@ import { updateNamespaceJSON } from "../../redux/constructor-jsons/constructor-j
 import { connect, ConnectedProps } from "react-redux";
 import { createStructuredSelector } from "reselect";
 import CONSTRUCTOR_JSONS_INITIAL_STATE from "../../redux/constructor-jsons/constructor-jsons.state";
-import { selectCurrentNamespaceHistoryChange } from "../../redux/constructor-history/constructor-history.selectors";
-import {
-  ConstructorHistoryItem,
-  RedoTaskSetHistoryAction,
-  UndoTaskSetHistoryAction,
-} from "../../redux/constructor-history/constructor-history.types";
 import ConstructorUndoRedoPanel from "../../components/constructor-undo-redo-panel/constructor-undo-redo-panel.component";
-import {
-  redoHistory,
-  undoHistory,
-} from "../../redux/constructor-history/constructor-history.actions";
 // types
 import {
   NamespaceConstructorInputs,
@@ -34,7 +23,6 @@ import {
 import { ConstructorInputProps } from "../../components/constructor-input/construcor-input.types";
 import { ConstructorSelectProps } from "../../components/constructor-select/constructor-select.types";
 import { ConstructorCreationMode } from "../common-types";
-import { RootState } from "../../redux/root-reducer";
 import {
   ConstructorJSONType,
   UpdateNamespaceJSONAction,
@@ -55,6 +43,19 @@ import {
 } from "../../utils/local-storage/last-edited-creation-type";
 // styles
 import "./namespace-constructor.styles.scss";
+import ConstructorFormAlt from "../../components/constructor-form/constructor-form";
+import { RootState } from "../../redux/root-reducer";
+import {
+  redoHistory,
+  undoHistory,
+} from "../../redux/constructor-history/constructor-history.actions";
+import {
+  ConstructorHistoryItem,
+  RedoTaskSetHistoryAction,
+  UndoTaskSetHistoryAction,
+} from "../../redux/constructor-history/constructor-history.types";
+import { selectCurrentNamespaceHistoryChange } from "../../redux/constructor-history/constructor-history.selectors";
+import { ConstructorFormInput } from "../../components/constructor-form/constructor-form.types";
 
 const NamespaceConstructorComponent = ({
   namespaceJSON,
@@ -219,6 +220,46 @@ const NamespaceConstructorComponent = ({
     }
   }, [undoOrRedoIsTriggered]);
 
+  const altInputs: ConstructorFormInput[] = [
+    {
+      name: "code",
+      label: "Код",
+      type: "text",
+      disabled: creationMode === ConstructorCreationMode.EDIT,
+    },
+    {
+      name: "grantType",
+      label: "Доступ к чтению",
+      isMulti: false,
+      options: [
+        NamespaceGrantType.PUBLIC_READ_WRITE,
+        NamespaceGrantType.PRIVATE_READ_WRITE,
+        NamespaceGrantType.PUBLIC_READ_PRIVATE_WRITE,
+      ].map((accessMode: NamespaceGrantType) => {
+        return {
+          label: getGrantTypeUserReadableDescription(accessMode),
+          value: accessMode,
+        };
+      }),
+    },
+    {
+      name: "readGrantedUsers",
+      label: "Пользователи с правом чтения",
+      isMulti: true,
+      options: usersSelectOptions,
+      isVisible: grantType === NamespaceGrantType.PRIVATE_READ_WRITE,
+    },
+    {
+      name: "writeGrantedUsers",
+      label: "Пользователи с правом редактирования",
+      isMulti: true,
+      options: usersSelectOptions,
+      isVisible:
+        grantType === NamespaceGrantType.PUBLIC_READ_PRIVATE_WRITE ||
+        grantType === NamespaceGrantType.PRIVATE_READ_WRITE,
+    },
+  ];
+
   const inputs: (ConstructorInputProps | ConstructorSelectProps)[] = [
     {
       name: "code",
@@ -333,13 +374,17 @@ const NamespaceConstructorComponent = ({
           }}
         >
           <h1>{titleAndSubmitButtonText}</h1>
-          <ConstructorForm
-            inputs={inputs}
-            register={register}
-            // @ts-ignore
-            updateJSON={() => updateNamespaceJSON(getValues())}
+          <ConstructorFormAlt
+            inputs={altInputs}
             constructorType={ConstructorJSONType.NAMESPACE}
           />
+          {/*<ConstructorForm*/}
+          {/*  inputs={inputs}*/}
+          {/*  register={register}*/}
+          {/*  // @ts-ignore*/}
+          {/*  updateJSON={() => updateNamespaceJSON(getValues())}*/}
+          {/*  constructorType={ConstructorJSONType.NAMESPACE}*/}
+          {/*/>*/}
           <ServerResponseAlert errorMsg={errorMsg} successMsg={successMsg} />
           <button type="submit" className="btn">
             {titleAndSubmitButtonText}

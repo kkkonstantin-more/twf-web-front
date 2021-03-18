@@ -7,7 +7,6 @@ import { createStructuredSelector } from "reselect";
 import { selectRulePackJSON } from "../../redux/constructor-jsons/constructor-jsons.selectors";
 import { updateRulePackJSON } from "../../redux/constructor-jsons/constructor-jsons.actions";
 // components
-import ConstructorForm from "../../components/constructor-form/constructor-form.component";
 // types
 import { RuleConstructorProps } from "./rule-constructor.types";
 import { RulePackConstructorInputs } from "../rule-pack-constructor/rule-pack-constructor.types";
@@ -21,6 +20,8 @@ import { MathInputFormat } from "../../utils/kotlin-lib-functions";
 import { RootState } from "../../redux/root-reducer";
 // styles
 import "./rule-constructor.styles.scss";
+import ConstructorFormAlt from "../../components/constructor-form/constructor-form";
+import { ConstructorFormInput } from "../../components/constructor-form/constructor-form.types";
 
 const RuleConstructor = ({
   index,
@@ -29,6 +30,77 @@ const RuleConstructor = ({
   updateRulePackJSON,
 }: RuleConstructorProps & ConnectedProps<typeof connector>): JSX.Element => {
   const { register, getValues } = useFormContext();
+
+  const altInputs: ConstructorFormInput[] = [
+    {
+      name: `rules[${index}].nameEn`,
+      label: "Название En",
+      type: "text",
+    },
+    {
+      name: `rules[${index}].nameRu`,
+      label: "Название Ru",
+      type: "text",
+    },
+    {
+      name: `rules[${index}].code`,
+      label: "Код",
+      type: "text",
+    },
+    {
+      name: `rules[${index}].left`,
+      label: "Левая часть",
+      type: "text",
+      isExpressionInput: true,
+    },
+    {
+      name: `rules[${index}].right`,
+      label: "Правая часть",
+      type: "text",
+      isExpressionInput: true,
+    },
+    {
+      name: `rules[${index}].priority`,
+      label: "Приоритет",
+      type: "number",
+    },
+    {
+      name: `rules[${index}].isExtending`,
+      label: "isExtending",
+      options: [
+        { value: "true", label: "да" },
+        { value: "false", label: "нет" },
+      ],
+      isMulti: false,
+    },
+    {
+      name: `rules[${index}].simpleAdditional`,
+      label: "simpleAdditional",
+      options: [
+        { value: "true", label: "да" },
+        { value: "false", label: "нет" },
+      ],
+      isMulti: false,
+    },
+    {
+      name: `rules[${index}].basedOnTaskContext`,
+      label: "Based on task context",
+      options: [
+        { value: "true", label: "да" },
+        { value: "false", label: "нет" },
+      ],
+      isMulti: false,
+    },
+    {
+      name: `rules[${index}].matchJumbledAndNested`,
+      label: "Match jumbled and nested",
+      options: [
+        { value: "true", label: "да" },
+        { value: "false", label: "нет" },
+      ],
+      isMulti: false,
+    },
+  ];
 
   const inputs: (ConstructorInputProps | ConstructorSelectProps)[] = [
     {
@@ -56,7 +128,7 @@ const RuleConstructor = ({
       name: `rules[${index}].left`,
       label: "Левая часть",
       type: "text",
-      expressionInput: true,
+      isExpressionInput: true,
       defaultValue: defaultValue?.left
         ? defaultValue?.left
         : {
@@ -69,7 +141,7 @@ const RuleConstructor = ({
       name: `rules[${index}].right`,
       label: "Правая часть",
       type: "text",
-      expressionInput: true,
+      isExpressionInput: true,
       defaultValue: defaultValue?.right
         ? defaultValue?.right
         : {
@@ -133,13 +205,17 @@ const RuleConstructor = ({
 
   return (
     <div className="rule-constructor">
-      <ConstructorForm
-        inputs={inputs}
-        register={register}
-        // @ts-ignore
-        updateJSON={() => updateRulePackJSON(getValues())}
+      <ConstructorFormAlt
+        inputs={altInputs}
         constructorType={ConstructorJSONType.RULE_PACK}
       />
+      {/*<ConstructorForm*/}
+      {/*  inputs={inputs}*/}
+      {/*  register={register}*/}
+      {/*  // @ts-ignore*/}
+      {/*  updateJSON={() => updateRulePackJSON(getValues())}*/}
+      {/*  constructorType={ConstructorJSONType.RULE_PACK}*/}
+      {/*/>*/}
     </div>
   );
 };

@@ -121,6 +121,7 @@ const ConstructorPage = ({
         {editingModeSwitcherOptions.map((option: EditingModeSwitcherOption) => {
           return (
             <div
+              key={option.value}
               className={`constructor-page__editing-mode-switcher ${
                 currentEditingMode === option.value
                   ? "constructor-page__editing-mode-switcher--active"

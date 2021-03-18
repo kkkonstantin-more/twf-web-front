@@ -15,8 +15,9 @@ export interface ConstructorInputProps {
   isRendered?: boolean;
   isVisible?: boolean;
   defaultValue?: any;
-  expressionInput?: boolean;
-  onChange?: (...args: any) => any;
+  isExpressionInput?: boolean;
+  onChange?: (value: string) => any;
+  value?: any;
   // updateJSON?: () => void;
   addToHistory?: (oldVal: ExpressionChange, newVal: ExpressionChange) => void;
   constructorType: ConstructorJSONType;

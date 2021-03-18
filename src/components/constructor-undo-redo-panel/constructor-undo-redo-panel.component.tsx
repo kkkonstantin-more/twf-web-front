@@ -19,7 +19,12 @@ const ConstructorUndoRedoPanel = ({
             onClick={() => action()}
             className="undo-redo-panel__action"
           >
-            <Icon path={i === 0 ? mdiUndo : mdiRedo} size={2} />
+            <button
+              type="button"
+              style={{ border: "none", background: "none" }}
+            >
+              <Icon path={i === 0 ? mdiUndo : mdiRedo} size={2} />
+            </button>
           </div>
         );
       })}

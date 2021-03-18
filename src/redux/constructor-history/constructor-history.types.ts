@@ -5,7 +5,7 @@ import {
 
 export interface ExpressionChange {
   propertyPath: string;
-  value: string;
+  value: string | string[];
 }
 
 export interface MultipleLinesHistoryChange {

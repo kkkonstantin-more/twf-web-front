@@ -22,8 +22,6 @@ import Draggable from "react-draggable";
 import MathQuillEditor from "../../components/math-quill-editor/math-quill-editor";
 import TaskConstructor from "../task-constructor/task-constructor.component";
 import AppModal from "../../components/app-modal/app-modal.component";
-import ConstructorForm from "../../components/constructor-form/constructor-form.component";
-import ConstructorUndoRedoPanel from "../../components/constructor-undo-redo-panel/constructor-undo-redo-panel.component";
 import ServerResponseAlert from "../../components/server-response-alert/server-response-alert.component";
 // utils
 import getConstructorSubmitButtonAndTitleText from "../utiils/get-constructor-submit-button-and-title-text";
@@ -75,6 +73,9 @@ import "./task-set-constructor.styles.scss";
 import RulePackConstructorRequestsHandler from "../rule-pack-constructor/rule-pack-constructor.requests-handler";
 import { RulePackReceivedForm } from "../rule-pack-constructor/rule-pack-constructor.types";
 import { ClipLoader } from "react-spinners";
+import ConstructorFormAlt from "../../components/constructor-form/constructor-form";
+import { ConstructorFormInput } from "../../components/constructor-form/constructor-form.types";
+import { setConstructorValueDueToCreationMode } from "../utils";
 
 // @ts-ignore
 export const TasksFieldArrayActionsContext = React.createContext();
@@ -86,6 +87,7 @@ const TaskSetConstructor = ({
   undo,
   redo,
   currentHistoryChange,
+  addOneLineChangeToHistory,
 }: ConnectedProps<typeof connector>): JSX.Element => {
   // defining creation type and dependent vars
   const { code } = useParams();
@@ -186,67 +188,34 @@ const TaskSetConstructor = ({
     );
   }, []);
 
-  const [undoOrRedoIsTriggered, setUndoOrRedoIsTriggered] = useState(false);
-
-  useEffect(() => {
-    if (undoOrRedoIsTriggered) {
-      if (currentHistoryChange?.type === "ONE_LINE_CHANGE") {
-        setValue(
-          currentHistoryChange.item.propertyPath,
-          currentHistoryChange.item.value
-        );
-        updateTaskSetJSON(getValues());
-      } else if (currentHistoryChange?.type === "MULTIPLE_LINES_CHANGE") {
-        reset(currentHistoryChange.item);
-        // @ts-ignore
-        updateTaskSetJSON(currentHistoryChange?.item);
-      }
-      setUndoOrRedoIsTriggered(false);
-    }
-  }, [undoOrRedoIsTriggered]);
-
-  const inputs: (ConstructorInputProps | ConstructorSelectProps)[] = [
+  const alInputs: ConstructorFormInput[] = [
     {
       name: "namespaceCode",
       label: "Namespace",
       type: "text",
       options: namespaces.map((ns: string) => ({ label: ns, value: ns })),
-      value: watch("namespaceCode"),
       isMulti: false,
       disabled: creationMode === ConstructorCreationMode.EDIT,
-      onChange: (value: string | string[]) => {
-        setValue("namespaceCode", value);
-      },
     },
     {
       name: "code",
       label: "Код",
       type: "text",
-      defaultValue: "",
       disabled: creationMode === ConstructorCreationMode.EDIT,
-      constructorType: ConstructorJSONType.TASK_SET,
     },
     {
       name: "nameEn",
       label: "Имя en",
       type: "text",
-      defaultValue: "",
-      constructorType: ConstructorJSONType.TASK_SET,
     },
     {
       name: "nameRu",
       label: "Имя ru",
       type: "text",
-      defaultValue: "",
-      constructorType: ConstructorJSONType.TASK_SET,
     },
     {
       name: "subjectTypes",
       label: "Предметные области",
-      onChange: (value: string | string[]) => {
-        setValue("subjectTypes", value);
-      },
-      value: watch("subjectTypes"),
       options: ["subjectType1", "subjectType2"].map((st: string) => ({
         label: st,
         value: st,
@@ -257,8 +226,6 @@ const TaskSetConstructor = ({
       name: "otherData",
       label: "Дополнительная информация",
       type: "text",
-      defaultValue: "",
-      constructorType: ConstructorJSONType.TASK_SET,
     },
   ];
 
@@ -270,61 +237,31 @@ const TaskSetConstructor = ({
   const [showSpinner, setShowSpinner] = useState<boolean>(
     creationMode !== ConstructorCreationMode.CREATE
   );
-  // set valid values due to creation mode and relevant constructor state
+
+  // set values due to creation mode and relevant constructor state
   useEffect(() => {
-    if (creationMode === ConstructorCreationMode.CREATE) {
-      if (lastEditedMode === ConstructorCreationMode.CREATE) {
-        reset({ ...taskSetJSON });
-      } else {
-        reset(CONSTRUCTOR_JSONS_INITIAL_STATE.taskSet);
-        setLastEditedCreationMode(ConstructorJSONType.TASK_SET, creationMode);
-      }
-    } else if (creationMode === ConstructorCreationMode.EDIT) {
-      if (
-        lastEditedMode === ConstructorCreationMode.EDIT &&
-        code === taskSetJSON.code
-      ) {
-        reset(taskSetJSON);
-        setShowSpinner(false);
-      } else {
-        (async () => {
-          await reset(
-            TaskSetConstructorFormatter.convertReceivedFormToConstructorInputs(
-              await TaskSetConstructorRequestsHandler.getOne(code)
-            )
-          );
-          setLastEditedCreationMode(ConstructorJSONType.TASK_SET, creationMode);
-          updateTaskSetJSON(getValues());
-          setShowSpinner(false);
-        })();
-      }
-    } else if (creationMode === ConstructorCreationMode.CREATE_BY_EXAMPLE) {
-      if (
-        lastEditedMode === ConstructorCreationMode.CREATE_BY_EXAMPLE &&
-        getLastExampleConstructorCode(ConstructorJSONType.TASK_SET) === code
-      ) {
-        reset(taskSetJSON);
-        setShowSpinner(false);
-      } else {
-        (async () => {
-          const taskSetInputs = TaskSetConstructorFormatter.convertReceivedFormToConstructorInputs(
-            await TaskSetConstructorRequestsHandler.getOne(code)
-          );
-          await reset({
-            ...taskSetInputs,
-            code: taskSetInputs.code + "_new",
-            tasks: taskSetInputs.tasks.map((task: TaskConstructorInputs) => ({
-              ...task,
-              code: task.code + "_new",
-            })),
-          });
-          setLastEditedCreationMode(ConstructorJSONType.TASK_SET, creationMode);
-          setLastExampleConstructorCode(ConstructorJSONType.TASK_SET, code);
-          updateTaskSetJSON(getValues());
-          setShowSpinner(false);
-        })();
-      }
-    }
+    setConstructorValueDueToCreationMode(
+      ConstructorJSONType.TASK_SET,
+      creationMode,
+      lastEditedMode,
+      reset,
+      CONSTRUCTOR_JSONS_INITIAL_STATE.taskSet,
+      setLastEditedCreationMode,
+      taskSetJSON,
+      updateTaskSetJSON,
+      code,
+      async () => {
+        const res = await TaskSetConstructorRequestsHandler.getOne(code);
+        return TaskSetConstructorFormatter.convertReceivedFormToConstructorInputs(
+          res
+        );
+      },
+      getLastExampleConstructorCode(ConstructorJSONType.TASK_SET),
+      code,
+      setLastExampleConstructorCode
+    ).then(() => {
+      setShowSpinner(false);
+    });
   }, []);
 
   useEffect(() => {
@@ -372,16 +309,6 @@ const TaskSetConstructor = ({
                 : `calc(50% + ${hintsDeltaX}px)`,
           }}
         >
-          <ConstructorUndoRedoPanel
-            undo={() => {
-              undo();
-              setUndoOrRedoIsTriggered(true);
-            }}
-            redo={() => {
-              redo();
-              setUndoOrRedoIsTriggered(true);
-            }}
-          />
           <div className="task-set-constructor__form">
             <FormProvider {...methods}>
               <TasksFieldArrayActionsContext.Provider value={fieldArrayMethods}>
@@ -389,22 +316,26 @@ const TaskSetConstructor = ({
                   onSubmit={handleSubmit((data) => {
                     submit(getValues());
                   })}
-                  onBlur={() => {
-                    updateTaskSetJSON(getValues());
-                  }}
+                  // onBlur={() => {
+                  //   updateTaskSetJSON(getValues());
+                  // }}
                 >
                   <h2 className="u-mt-sm">{titleAndSubmitButtonText}</h2>
-                  <ConstructorForm
-                    inputs={inputs}
-                    register={register}
-                    addToHistory={(
-                      oldVal: ExpressionChange,
-                      newVal: ExpressionChange
-                    ) => {
-                      addItemToHistory(oldVal, newVal);
-                    }}
+                  <ConstructorFormAlt
+                    inputs={alInputs}
                     constructorType={ConstructorJSONType.TASK_SET}
                   />
+                  {/*<ConstructorForm*/}
+                  {/*  inputs={inputs}*/}
+                  {/*  register={register}*/}
+                  {/*  addToHistory={(*/}
+                  {/*    oldVal: ExpressionChange,*/}
+                  {/*    newVal: ExpressionChange*/}
+                  {/*  ) => {*/}
+                  {/*    addItemToHistory(oldVal, newVal);*/}
+                  {/*  }}*/}
+                  {/*  constructorType={ConstructorJSONType.TASK_SET}*/}
+                  {/*/>*/}
                   <div className="u-flex" style={{ alignItems: "center" }}>
                     <h3>Задачи</h3>
                     <div className="task-set-constructor__visualization-mode-switchers">
@@ -790,6 +721,25 @@ const mapDispatch = (
     ),
   undo: () => dispatch(undoHistory(ConstructorJSONType.TASK_SET)),
   redo: () => dispatch(redoHistory(ConstructorJSONType.TASK_SET)),
+  addOneLineChangeToHistory: (
+    name: string,
+    oldVal: string | string[],
+    newVal: string | string[]
+  ) => {
+    dispatch(
+      addOneLineChangeToHistory({
+        oldVal: {
+          propertyPath: name,
+          value: oldVal,
+        },
+        newVal: {
+          propertyPath: name,
+          value: newVal,
+        },
+        constructorType: ConstructorJSONType.TASK_SET,
+      })
+    );
+  },
 });
 
 const connector = connect(mapState, mapDispatch);

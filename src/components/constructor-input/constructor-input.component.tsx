@@ -38,19 +38,21 @@ const ConstructorInput = ({
   disabled = false,
   isVisible = true,
   isRendered = true,
-  expressionInput = false,
+  isExpressionInput = false,
   constructorType,
   addItemToHistory,
+  value,
+  onChange,
 }: ConstructorInputProps & ConnectedProps<typeof connector>): JSX.Element => {
-  const { register, setValue } = useFormContext();
-  const [inputValue, setInputValue] = useState(
-    expressionInput ? defaultValue.expression : defaultValue
-  );
-  // expression input deps
-  const expressionRef: React.RefObject<HTMLInputElement> = React.createRef();
-  const formatRef: React.RefObject<HTMLInputElement> = React.createRef();
-  const mergedExpressionRef = useMergedRef(register(), expressionRef);
-  const mergedFormatRef = useMergedRef(register(), formatRef);
+  // const { register, setValue } = useFormContext();
+  // const [inputValue, setInputValue] = useState(
+  //   isExpressionInput ? defaultValue.expression : defaultValue
+  // );
+  // // expression input deps
+  // const expressionRef: React.RefObject<HTMLInputElement> = React.createRef();
+  // const formatRef: React.RefObject<HTMLInputElement> = React.createRef();
+  // const mergedExpressionRef = useMergedRef(register(), expressionRef);
+  // const mergedFormatRef = useMergedRef(register(), formatRef);
 
   if (isRendered) {
     return (
@@ -58,88 +60,93 @@ const ConstructorInput = ({
         className="constructor-input"
         style={{
           display: isVisible ? "block" : "none",
-          marginBottom: expressionInput ? "2rem" : "1.5rem",
+          marginBottom: isExpressionInput ? "2rem" : "1.5rem",
         }}
       >
         <div
           style={{
-            marginBottom: expressionInput ? "0" : undefined,
+            marginBottom: isExpressionInput ? "0" : undefined,
           }}
         >
           <label>{label}</label>
-          {expressionInput && (
-            <>
-              <input
-                type="text"
-                name={name + ".format"}
-                defaultValue={defaultValue.format}
-                ref={mergedFormatRef}
-              />
-              <MixedInput
-                expressionRef={expressionRef}
-                expression={defaultValue.expression}
-                format={defaultValue.format}
-                style={{ width: "100%" }}
-                onChangeExpression={(value: string) => {
-                  setValue(name + ".expression", value);
-                  setInputValue((prevState: string) => {
-                    if (prevState !== value) {
-                      addItemToHistory(
-                        {
-                          propertyPath: name + ".expression",
-                          value: prevState,
-                        },
-                        {
-                          propertyPath: name + ".expression",
-                          value: value,
-                        },
-                        constructorType
-                      );
-                    }
-                    return value;
-                  });
-                }}
-                onChangeFormat={(value: string) => {
-                  if (formatRef && formatRef.current) {
-                    formatRef.current.value = value;
-                  }
-                }}
-                onBlur={(value: string) => {
-                  if (expressionRef && expressionRef.current) {
-                    expressionRef.current.value = value;
-                  }
-                }}
-              />
-            </>
-          )}
+          {/*{isExpressionInput && (*/}
+          {/*  <>*/}
+          {/*    <input*/}
+          {/*      type="text"*/}
+          {/*      name={name + ".format"}*/}
+          {/*      defaultValue={defaultValue.format}*/}
+          {/*      ref={mergedFormatRef}*/}
+          {/*    />*/}
+          {/*    <MixedInput*/}
+          {/*      expressionRef={expressionRef}*/}
+          {/*      expression={defaultValue.expression}*/}
+          {/*      format={defaultValue.format}*/}
+          {/*      style={{ width: "100%" }}*/}
+          {/*      onChangeExpression={(value: string) => {*/}
+          {/*        setValue(name + ".expression", value);*/}
+          {/*        setInputValue((prevState: string) => {*/}
+          {/*          if (prevState !== value) {*/}
+          {/*            addItemToHistory(*/}
+          {/*              {*/}
+          {/*                propertyPath: name + ".expression",*/}
+          {/*                value: prevState,*/}
+          {/*              },*/}
+          {/*              {*/}
+          {/*                propertyPath: name + ".expression",*/}
+          {/*                value: value,*/}
+          {/*              },*/}
+          {/*              constructorType*/}
+          {/*            );*/}
+          {/*          }*/}
+          {/*          return value;*/}
+          {/*        });*/}
+          {/*      }}*/}
+          {/*      onChangeFormat={(value: string) => {*/}
+          {/*        if (formatRef && formatRef.current) {*/}
+          {/*          formatRef.current.value = value;*/}
+          {/*        }*/}
+          {/*      }}*/}
+          {/*      onBlur={(value: string) => {*/}
+          {/*        if (expressionRef && expressionRef.current) {*/}
+          {/*          expressionRef.current.value = value;*/}
+          {/*        }*/}
+          {/*      }}*/}
+          {/*    />*/}
+          {/*  </>*/}
+          {/*)}*/}
           <input
             disabled={disabled}
             className="form-control"
             style={{
-              display: expressionInput ? "none" : "block",
+              display: isExpressionInput ? "none" : "block",
             }}
-            defaultValue={
-              expressionInput ? defaultValue.expression : defaultValue
-            }
-            name={expressionInput ? name + ".expression" : name}
+            // defaultValue={
+            //   isExpressionInput ? defaultValue.expression : defaultValue
+            // }
+            value={value}
+            name={isExpressionInput ? name + ".expression" : name}
             type={type}
             onChange={(event: ChangeEvent<HTMLInputElement>) => {
-              if (!expressionInput) {
-                addItemToHistory(
-                  {
-                    propertyPath: name,
-                    value: inputValue,
-                  },
-                  {
-                    propertyPath: name,
-                    value: event.target.value,
-                  },
-                  constructorType
-                );
-                setInputValue(event.target.value);
+              const value = event.target.value;
+              if (onChange) {
+                onChange(value);
               }
+              // if (!isExpressionInput) {
+              //   addItemToHistory(
+              //     {
+              //       propertyPath: name,
+              //       value: inputValue,
+              //     },
+              //     {
+              //       propertyPath: name,
+              //       value: event.target.value,
+              //     },
+              //     constructorType
+              //   );
+              //   setInputValue(event.target.value);
+              // }
             }}
-            ref={mergedExpressionRef}
+            // ref={mergedExpressionRef}
           />
         </div>
       </div>
