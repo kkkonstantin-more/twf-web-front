@@ -9,19 +9,18 @@ import {
   MathInputFormat,
 } from "../../utils/kotlin-lib-functions";
 // types
-import { MixedInputProps } from "./mixed-input.types";
+import { MixedInputProps, ModeTab } from "./mixed-input.types";
 // styles
 import "./mixed-input.styles.scss";
 
 const MixedInput = ({
+  style,
   format,
-  onBlur,
   expression,
   onChangeExpression,
   onChangeFormat,
-  style,
 }: MixedInputProps) => {
-  const modeTabs: { label: string; format: MathInputFormat }[] = [
+  const modeTabs: ModeTab[] = [
     {
       label: "TEX",
       format: MathInputFormat.TEX,
@@ -38,20 +37,20 @@ const MixedInput = ({
 
   const [currentVisibleFormat, setCurrentVisibleFormat] = useState<
     MathInputFormat
-  >(format ? format : MathInputFormat.TEX);
+  >(format || MathInputFormat.TEX);
   const [currentInputFormat, setCurrentInputFormat] = useState<MathInputFormat>(
-    format ? format : MathInputFormat.TEX
+    format || MathInputFormat.TEX
   );
   const [currentValue, setCurrentValue] = useState<string>(
     expression ? expression : ""
   );
+  const [error, setError] = useState<null | string>(null);
 
   const getVisibleInputValue = (format: MathInputFormat): string => {
     return currentVisibleFormat === currentInputFormat
       ? currentValue
       : convertMathInput(currentInputFormat, format, currentValue);
   };
-  const [error, setError] = useState<null | string>(null);
 
   useEffect(() => {
     if (expression) {
@@ -60,9 +59,9 @@ const MixedInput = ({
   }, [expression]);
 
   return (
-    <div className="mixed-input" style={style}>
+    <div className="mixed-input" style={style || {}}>
       <div className="mixed-input__mode-tabs">
-        {modeTabs.map((tab: { label: string; format: MathInputFormat }) => {
+        {modeTabs.map((tab: ModeTab) => {
           const { label, format } = tab;
           return (
             <div
@@ -84,114 +83,73 @@ const MixedInput = ({
         })}
       </div>
       {currentVisibleFormat === MathInputFormat.TEX && (
-        <>
-          {/*<MathQuillEditor/>*/}
-          <EditableMathField
-            latex={getVisibleInputValue(MathInputFormat.TEX)}
-            style={{
-              width: "100%",
-            }}
-            onChange={(mathField: MathField) => {
-              // check if mathquill input is focused
+        <EditableMathField
+          latex={getVisibleInputValue(MathInputFormat.TEX)}
+          style={{
+            width: "100%",
+          }}
+          onChange={(mathField: MathField) => {
+            // check if mathquill input is focused
+            if (
+              mathField.el().childNodes[0].childNodes[0] ===
+              document.activeElement
+            ) {
+              setCurrentValue(mathField.latex());
+              setCurrentInputFormat(MathInputFormat.TEX);
+              if (onChangeExpression) {
+                onChangeExpression(mathField.latex());
+              }
               if (
-                mathField.el().childNodes[0].childNodes[0] ===
-                document.activeElement
+                onChangeFormat &&
+                currentInputFormat !== MathInputFormat.TEX
               ) {
-                setCurrentValue(mathField.latex());
                 setCurrentInputFormat(MathInputFormat.TEX);
+                onChangeFormat(MathInputFormat.TEX);
+              }
+            }
+          }}
+          onBlur={() => {
+            if (currentInputFormat === MathInputFormat.TEX) {
+              setError(
+                getErrorFromMathInput(MathInputFormat.TEX, currentValue)
+              );
+            }
+          }}
+        />
+      )}
+      {[MathInputFormat.PLAIN_TEXT, MathInputFormat.STRUCTURE_STRING]
+        .filter(
+          (inputFormat: MathInputFormat) => inputFormat === currentVisibleFormat
+        )
+        .map((inputFormat: MathInputFormat) => {
+          return (
+            <input
+              key={inputFormat}
+              style={{ width: "100%" }}
+              type="text"
+              className={`mixed-input__input form-control ${
+                error ? "is-invalid" : ""
+              }`}
+              value={getVisibleInputValue(inputFormat)}
+              onChange={(event: ChangeEvent<HTMLInputElement>) => {
+                setCurrentValue(event.target.value);
+                setCurrentInputFormat(inputFormat);
                 if (onChangeExpression) {
-                  onChangeExpression(mathField.latex());
+                  onChangeExpression(event.target.value);
                 }
-                if (
-                  onChangeFormat &&
-                  currentInputFormat !== MathInputFormat.TEX
-                ) {
-                  setCurrentInputFormat(MathInputFormat.TEX);
-                  onChangeFormat(MathInputFormat.TEX);
+                if (onChangeFormat && currentInputFormat !== inputFormat) {
+                  setCurrentInputFormat(inputFormat);
+                  onChangeFormat(inputFormat);
                 }
-              }
-            }}
-            onBlur={() => {
-              if (onBlur && currentInputFormat === MathInputFormat.TEX) {
+              }}
+              onBlur={(event: React.FocusEvent<HTMLInputElement>) => {
                 setError(
-                  getErrorFromMathInput(MathInputFormat.TEX, currentValue)
+                  getErrorFromMathInput(inputFormat, event.target.value)
                 );
-                onBlur(currentValue);
-              }
-            }}
-          />
-        </>
-      )}
-      {currentVisibleFormat === MathInputFormat.PLAIN_TEXT && (
-        <input
-          style={{ width: "100%" }}
-          type="text"
-          className={`mixed-input__input form-control ${
-            error !== null && "is-invalid"
-          }`}
-          value={getVisibleInputValue(MathInputFormat.PLAIN_TEXT)}
-          onChange={(event: ChangeEvent<HTMLInputElement>) => {
-            setCurrentValue(event.target.value);
-            setCurrentInputFormat(MathInputFormat.PLAIN_TEXT);
-            if (onChangeExpression) {
-              onChangeExpression(event.target.value);
-            }
-            if (
-              onChangeFormat &&
-              currentInputFormat !== MathInputFormat.PLAIN_TEXT
-            ) {
-              setCurrentInputFormat(MathInputFormat.PLAIN_TEXT);
-              onChangeFormat(MathInputFormat.PLAIN_TEXT);
-            }
-          }}
-          onBlur={(event: React.FocusEvent<HTMLInputElement>) => {
-            setError(
-              getErrorFromMathInput(
-                MathInputFormat.PLAIN_TEXT,
-                event.target.value
-              )
-            );
-            if (onBlur) {
-              onBlur(event.target.value);
-            }
-          }}
-        />
-      )}
-      {currentVisibleFormat === MathInputFormat.STRUCTURE_STRING && (
-        <input
-          style={{ width: "100%" }}
-          type="text"
-          className={`mixed-input__input form-control ${
-            error !== null && "is-invalid"
-          }`}
-          value={getVisibleInputValue(MathInputFormat.STRUCTURE_STRING)}
-          onChange={(event: ChangeEvent<HTMLInputElement>) => {
-            setCurrentValue(event.target.value);
-            setCurrentInputFormat(MathInputFormat.STRUCTURE_STRING);
-            if (onChangeExpression) {
-              onChangeExpression(event.target.value);
-            }
-            if (
-              onChangeFormat &&
-              currentInputFormat !== MathInputFormat.STRUCTURE_STRING
-            ) {
-              setCurrentInputFormat(MathInputFormat.STRUCTURE_STRING);
-              onChangeFormat(MathInputFormat.STRUCTURE_STRING);
-            }
-          }}
-          onBlur={(event: React.FocusEvent<HTMLInputElement>) => {
-            setError(
-              getErrorFromMathInput(
-                MathInputFormat.STRUCTURE_STRING,
-                event.target.value
-              )
-            );
-            if (onBlur) {
-              onBlur(event.target.value);
-            }
-          }}
-        />
-      )}
+              }}
+            />
+          );
+        })}
       {error !== null && (
         <div className="mixed-input__error-message">{error}</div>
       )}

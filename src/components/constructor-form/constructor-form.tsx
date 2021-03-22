@@ -5,12 +5,12 @@ import { useFormContext } from "react-hook-form";
 import ConstructorSelect from "../constructor-select/constructor-select.component";
 import ConstructorInput from "../constructor-input/constructor-input.component";
 // redux
+import { connect, ConnectedProps } from "react-redux";
 import {
   addOneLineChangeToHistory,
   redoHistory,
   undoHistory,
 } from "../../redux/constructor-history/constructor-history.actions";
-import { connect, ConnectedProps } from "react-redux";
 // types
 import { LabeledValue } from "antd/es/select";
 import {
@@ -24,7 +24,7 @@ import {
   RedoTaskSetHistoryAction,
   UndoTaskSetHistoryAction,
 } from "../../redux/constructor-history/constructor-history.types";
-import MixedInputAlt from "../mixed-input-alt/mixed-input-alt.component";
+import MixedInput from "../mixed-input/mixed-input.component";
 import { MathInputFormat } from "../../utils/kotlin-lib-functions";
 import ConstructorUndoRedoPanel from "../constructor-undo-redo-panel/constructor-undo-redo-panel.component";
 import { createStructuredSelector } from "reselect";
@@ -49,17 +49,6 @@ import {
   ConstructorFormProps,
   ConstructorFormSelectInput,
 } from "./constructor-form.types";
-import { ConstructorCreationMode } from "../../constructors/common-types";
-import CONSTRUCTOR_JSONS_INITIAL_STATE from "../../redux/constructor-jsons/constructor-jsons.state";
-import {
-  getLastEditedCreationMode,
-  getLastExampleConstructorCode,
-  setLastEditedCreationMode,
-  setLastExampleConstructorCode,
-} from "../../utils/local-storage/last-edited-creation-type";
-import TaskSetConstructorFormatter from "../../constructors/task-set-constructor/task-set-constructor.formatter";
-import TaskSetConstructorRequestsHandler from "../../constructors/task-set-constructor/task-set-constructor.requests-handler";
-import { TaskConstructorInputs } from "../../constructors/task-constructor/task-constructor.types";
 
 const ConstructorForm = ({
   // constructor form props
@@ -77,7 +66,7 @@ const ConstructorForm = ({
   updateNamespaceJSON,
   updateRulePackJSON,
 }: ConstructorFormProps & ConnectedProps<typeof connector>) => {
-  // react-hook-form core functions from parent component
+  // react-hook-form core functions from parent component's context
   // ConstructorForm should be wrapped inside FormProvider component
   const { setValue, watch, reset, getValues } = useFormContext();
 
@@ -187,7 +176,7 @@ const ConstructorForm = ({
           );
         } else if (isExpressionInput(input)) {
           return (
-            <MixedInputAlt
+            <MixedInput
               {...input}
               key={name}
               expression={watch(name + ".expression")}
