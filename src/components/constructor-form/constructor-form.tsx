@@ -4,51 +4,44 @@ import { useFormContext } from "react-hook-form";
 // custom components
 import ConstructorSelect from "../constructor-select/constructor-select.component";
 import ConstructorInput from "../constructor-input/constructor-input.component";
+import MixedInput from "../mixed-input/mixed-input.component";
+import ConstructorUndoRedoPanel from "../constructor-undo-redo-panel/constructor-undo-redo-panel.component";
 // redux
 import { connect, ConnectedProps } from "react-redux";
-import {
-  addOneLineChangeToHistory,
-  redoHistory,
-  undoHistory,
-} from "../../redux/constructor-history/constructor-history.actions";
-// types
-import { LabeledValue } from "antd/es/select";
-import {
-  ConstructorInputs,
-  ConstructorJSONType,
-} from "../../redux/constructor-jsons/constructor-jsons.types";
-import {
-  AddOneLineChangeToHistoryAction,
-  ConstructorHistoryItem,
-  OneLineHistoryChange,
-  RedoTaskSetHistoryAction,
-  UndoTaskSetHistoryAction,
-} from "../../redux/constructor-history/constructor-history.types";
-import MixedInput from "../mixed-input/mixed-input.component";
-import { MathInputFormat } from "../../utils/kotlin-lib-functions";
-import ConstructorUndoRedoPanel from "../constructor-undo-redo-panel/constructor-undo-redo-panel.component";
 import { createStructuredSelector } from "reselect";
-import { RootState } from "../../redux/root-reducer";
-import { TaskSetConstructorInputs } from "../../constructors/task-set-constructor/task-set-constructor.types";
+import { selectCurrentTaskSetHistoryChange } from "../../redux/constructor-history/constructor-history.selectors";
 import {
   selectNamespaceJSON,
   selectRulePackJSON,
   selectTaskSetJSON,
 } from "../../redux/constructor-jsons/constructor-jsons.selectors";
-import { selectCurrentTaskSetHistoryChange } from "../../redux/constructor-history/constructor-history.selectors";
+import {
+  addOneLineChangeToHistory,
+  redoHistory,
+  undoHistory,
+} from "../../redux/constructor-history/constructor-history.actions";
 import {
   updateNamespaceJSON,
   updateRulePackJSON,
   updateTaskSetJSON,
 } from "../../redux/constructor-jsons/constructor-jsons.actions";
+// types
+import { ConstructorJSONType } from "../../redux/constructor-jsons/constructor-jsons.types";
+import { MathInputFormat } from "../../utils/kotlin-lib-functions";
+import { RootState } from "../../redux/root-reducer";
+import { TaskSetConstructorInputs } from "../../constructors/task-set-constructor/task-set-constructor.types";
 import { RulePackConstructorInputs } from "../../constructors/rule-pack-constructor/rule-pack-constructor.types";
 import { NamespaceConstructorInputs } from "../../constructors/namespace-constructor/namespace-constructor.types";
 import {
-  ConstructorFormExpressionInput,
+  ConstructorHistoryItem,
+  OneLineHistoryChange,
+} from "../../redux/constructor-history/constructor-history.types";
+import {
   ConstructorFormInput,
   ConstructorFormProps,
-  ConstructorFormSelectInput,
 } from "./constructor-form.types";
+// utils
+import { isExpressionInput, isSelectInput } from "../../constructors/utils";
 
 const ConstructorForm = ({
   // constructor form props
@@ -59,9 +52,6 @@ const ConstructorForm = ({
   addOneLineChangeToHistory,
   undo,
   redo,
-  taskSetJSON,
-  namespaceJSON,
-  rulePackJSON,
   updateTaskSetJSON,
   updateNamespaceJSON,
   updateRulePackJSON,
@@ -70,19 +60,7 @@ const ConstructorForm = ({
   // ConstructorForm should be wrapped inside FormProvider component
   const { setValue, watch, reset, getValues } = useFormContext();
 
-  const isSelectInput = (
-    input: ConstructorFormInput
-  ): input is ConstructorFormSelectInput => {
-    return (input as ConstructorFormSelectInput).options !== undefined;
-  };
-
-  const isExpressionInput = (
-    input: ConstructorFormInput
-  ): input is ConstructorFormExpressionInput => {
-    return (
-      (input as ConstructorFormExpressionInput).isExpressionInput !== undefined
-    );
-  };
+  const [undoOrRedoIsTriggered, setUndoOrRedoIsTriggered] = useState(false);
 
   const addToHistory = (
     name: string,
@@ -123,8 +101,6 @@ const ConstructorForm = ({
     addToHistory(name, oldVal, newVal, constructorType);
     setValue(name, newVal);
   };
-
-  const [undoOrRedoIsTriggered, setUndoOrRedoIsTriggered] = useState(false);
 
   useEffect(() => {
     if (undoOrRedoIsTriggered) {

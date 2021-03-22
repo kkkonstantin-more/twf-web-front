@@ -1,13 +1,14 @@
-import { ConstructorInputProps } from "../components/constructor-input/construcor-input.types";
-import {
-  ConstructorSelectProps,
-  SelectOption,
-} from "../components/constructor-select/constructor-select.types";
+import { SelectOption } from "../components/constructor-select/constructor-select.types";
 import { ConstructorCreationMode } from "./common-types";
 import {
   ConstructorInputs,
   ConstructorJSONType,
 } from "../redux/constructor-jsons/constructor-jsons.types";
+import {
+  ConstructorFormExpressionInput,
+  ConstructorFormInput,
+  ConstructorFormSelectInput,
+} from "../components/constructor-form/constructor-form.types";
 
 export const filterReactSelectOptions = (options: any[]) => {
   return options.map((option: any) => {
@@ -18,12 +19,17 @@ export const filterReactSelectOptions = (options: any[]) => {
 };
 
 export const isSelectInput = (
-  input:
-    | ConstructorInputProps
-    | Partial<ConstructorInputProps>
-    | ConstructorSelectProps
-): input is ConstructorSelectProps => {
-  return (input as ConstructorSelectProps).options !== undefined;
+  input: ConstructorFormInput
+): input is ConstructorFormSelectInput => {
+  return (input as ConstructorFormSelectInput).options !== undefined;
+};
+
+export const isExpressionInput = (
+  input: ConstructorFormInput
+): input is ConstructorFormExpressionInput => {
+  return (
+    (input as ConstructorFormExpressionInput).isExpressionInput !== undefined
+  );
 };
 
 export const formatConstructorSelect = (
