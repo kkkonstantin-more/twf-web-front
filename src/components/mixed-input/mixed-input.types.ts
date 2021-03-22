@@ -2,11 +2,14 @@ import React from "react";
 import { MathInputFormat } from "../../utils/kotlin-lib-functions";
 
 export interface MixedInputProps {
-  style?: React.CSSProperties;
   format: MathInputFormat;
   expression: string;
-  onChangeExpression?: (value: string) => void;
   onChangeFormat?: (format: MathInputFormat) => void;
+  onChangeExpression?: (value: string) => void;
+  label?: string;
+  style?: React.CSSProperties;
+  isRendered?: boolean;
+  isVisible?: boolean;
 }
 
 export interface ModeTab {

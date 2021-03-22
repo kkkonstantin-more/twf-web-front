@@ -1,38 +1,30 @@
 .task-constructor-table {
   display: flex;
   align-items: flex-end;
-  margin-bottom: 2rem;
-  & > * {
-    min-width: 20rem !important;
-    margin-right: 1.5rem;
-    margin-bottom: 0 !important;
-  }
-  &__icon {
-    min-width: 2rem !important;
-    width: 2rem !important;
+  overflow-x: auto;
+  padding-bottom: 3rem;
+
+  &__inputs {
+    display: flex;
+    align-items: flex-end;
+
+    & > * {
+      min-width: 25rem;
+      margin-bottom: 0 !important;
+      margin-right: 1rem;
+    }
   }
 }
 
 .task-constructor-list {
   display: flex;
   flex-direction: column;
-  &__manual-fields,
-  &__add-fields {
-    display: flex;
-    flex-direction: column;
-    & > * {
-      margin-bottom: 1.5rem !important;
-    }
-  }
+
   &__top-action-buttons {
     margin-bottom: 1rem;
+
     & > *:not(:last-child) {
       margin-right: 1rem;
     }
   }
-}
-
-.hidden-levels-fields-table {
-  border-collapse: separate;
-  border-spacing: 2rem;
 }

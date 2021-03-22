@@ -83,11 +83,6 @@ export const TasksFieldArrayActionsContext = React.createContext();
 const TaskSetConstructor = ({
   taskSetJSON,
   updateTaskSetJSON,
-  addItemToHistory,
-  undo,
-  redo,
-  currentHistoryChange,
-  addOneLineChangeToHistory,
 }: ConnectedProps<typeof connector>): JSX.Element => {
   // defining creation type and dependent vars
   const { code } = useParams();
@@ -188,7 +183,7 @@ const TaskSetConstructor = ({
     );
   }, []);
 
-  const alInputs: ConstructorFormInput[] = [
+  const inputs: ConstructorFormInput[] = [
     {
       name: "namespaceCode",
       label: "Namespace",
@@ -322,7 +317,7 @@ const TaskSetConstructor = ({
                 >
                   <h2 className="u-mt-sm">{titleAndSubmitButtonText}</h2>
                   <ConstructorFormAlt
-                    inputs={alInputs}
+                    inputs={inputs}
                     constructorType={ConstructorJSONType.TASK_SET}
                   />
                   {/*<ConstructorForm*/}
@@ -469,7 +464,7 @@ const TaskSetConstructor = ({
                             }
                             updateDemo={() => {}}
                             visualizationMode={visualizationMode}
-                            hidden={
+                            isRendered={
                               visualizationMode === "list" &&
                               index !== selectedLevel
                             }

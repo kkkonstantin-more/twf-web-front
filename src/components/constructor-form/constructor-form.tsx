@@ -47,6 +47,9 @@ const ConstructorForm = ({
   // constructor form props
   inputs,
   constructorType,
+  showUndoRedoPanel = true,
+  style,
+  className,
   // redux props
   currentHistoryChange,
   addOneLineChangeToHistory,
@@ -123,17 +126,21 @@ const ConstructorForm = ({
         // @ts-ignore
         updateReduxJSON(getValues());
       }}
+      style={style || {}}
+      className={className || ""}
     >
-      <ConstructorUndoRedoPanel
-        undo={() => {
-          undo(constructorType);
-          setUndoOrRedoIsTriggered(true);
-        }}
-        redo={() => {
-          redo(constructorType);
-          setUndoOrRedoIsTriggered(true);
-        }}
-      />
+      {showUndoRedoPanel && (
+        <ConstructorUndoRedoPanel
+          undo={() => {
+            undo(constructorType);
+            setUndoOrRedoIsTriggered(true);
+          }}
+          redo={() => {
+            redo(constructorType);
+            setUndoOrRedoIsTriggered(true);
+          }}
+        />
+      )}
       {inputs.map((input: ConstructorFormInput) => {
         const { name } = input;
         // current value from react-hook-form

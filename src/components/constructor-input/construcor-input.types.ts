@@ -1,5 +1,4 @@
 import { Dispatch } from "react";
-import { HistoryItem } from "../../constructors/task-constructor/task-constructor.component";
 import {
   ConstructorHistoryItem,
   ExpressionChange,

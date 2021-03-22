@@ -22,7 +22,7 @@ export interface TaskConstructorProps {
   defaultValue: any;
   updateDemo: (index: number) => void;
   visualizationMode: "table" | "list";
-  hidden?: boolean;
+  isRendered?: boolean;
   updateName?: (index: number, newName: string) => void;
   rulePacks: string[];
 }

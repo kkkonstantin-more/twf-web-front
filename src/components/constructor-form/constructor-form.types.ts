@@ -1,6 +1,6 @@
 import { LabeledValue } from "antd/es/select";
 import { ConstructorJSONType } from "../../redux/constructor-jsons/constructor-jsons.types";
-import { ConstructorCreationMode } from "../../constructors/common-types";
+import CSS from "csstype";
 
 export interface ConstructorFormDefaultInput {
   name: string;
@@ -38,4 +38,7 @@ export type ConstructorFormInput =
 export interface ConstructorFormProps {
   inputs: ConstructorFormInput[];
   constructorType: ConstructorJSONType;
+  showUndoRedoPanel?: boolean;
+  style?: CSS.Properties;
+  className?: string;
 }
