@@ -10,19 +10,15 @@ import { selectTaskSetJSON } from "../../redux/constructor-jsons/constructor-jso
 import { updateTaskSetJSON } from "../../redux/constructor-jsons/constructor-jsons.actions";
 import { connect, ConnectedProps } from "react-redux";
 import CONSTRUCTOR_JSONS_INITIAL_STATE from "../../redux/constructor-jsons/constructor-jsons.state";
-import { selectCurrentTaskSetHistoryChange } from "../../redux/constructor-history/constructor-history.selectors";
-import {
-  addOneLineChangeToHistory,
-  redoHistory,
-  undoHistory,
-} from "../../redux/constructor-history/constructor-history.actions";
 // lib components
 import Draggable from "react-draggable";
 // custom components
-import MathQuillEditor from "../../components/math-quill-editor/math-quill-editor";
 import TaskConstructor from "../task-constructor/task-constructor.component";
 import AppModal from "../../components/app-modal/app-modal.component";
 import ServerResponseAlert from "../../components/server-response-alert/server-response-alert.component";
+import { ClipLoader } from "react-spinners";
+import ConstructorForm from "../../components/constructor-form/constructor-form";
+import HintsBlock from "../../components/hints-block/hints-block.component";
 // utils
 import getConstructorSubmitButtonAndTitleText from "../utiils/get-constructor-submit-button-and-title-text";
 import {
@@ -35,26 +31,21 @@ import NamespaceConstructorRequestHandler from "../namespace-constructor/namespa
 import TaskSetConstructorRequestsHandler from "./task-set-constructor.requests-handler";
 import TaskSetConstructorFormatter from "./task-set-constructor.formatter";
 import { addLastEditedConstructorItemToLocalStorage } from "../../utils/last-edited-constructor-items-local-storage";
+import RulePackConstructorRequestsHandler from "../rule-pack-constructor/rule-pack-constructor.requests-handler";
+import { setConstructorValueDueToCreationMode } from "../utils";
 // types
+import { RulePackReceivedForm } from "../rule-pack-constructor/rule-pack-constructor.types";
 import { RootState } from "../../redux/root-reducer";
-import { ConstructorInputProps } from "../../components/constructor-input/construcor-input.types";
-import { ConstructorSelectProps } from "../../components/constructor-select/constructor-select.types";
 import { TaskConstructorInputs } from "../task-constructor/task-constructor.types";
 import {
   ConstructorJSONType,
   UpdateTaskSetJSONAction,
 } from "../../redux/constructor-jsons/constructor-jsons.types";
-import {
-  AddOneLineChangeToHistoryAction,
-  ConstructorHistoryItem,
-  ExpressionChange,
-  RedoTaskSetHistoryAction,
-  UndoTaskSetHistoryAction,
-  UpdateTaskSetHistoryIndexAction,
-} from "../../redux/constructor-history/constructor-history.types";
 import { ConstructorCreationMode } from "../common-types";
 import { TaskSetConstructorInputs } from "./task-set-constructor.types";
 import { NamespaceReceivedForm } from "../namespace-constructor/namespace-constructor.types";
+import { ConstructorFormInput } from "../../components/constructor-form/constructor-form.types";
+import { MathInputFormat } from "../../utils/kotlin-lib-functions";
 // data
 import { taskConstructorDefaultValues } from "./task-set-constructor.data";
 // icons
@@ -70,13 +61,8 @@ import {
 } from "@mdi/js";
 // styles
 import "./task-set-constructor.styles.scss";
-import RulePackConstructorRequestsHandler from "../rule-pack-constructor/rule-pack-constructor.requests-handler";
-import { RulePackReceivedForm } from "../rule-pack-constructor/rule-pack-constructor.types";
-import { ClipLoader } from "react-spinners";
-import ConstructorFormAlt from "../../components/constructor-form/constructor-form";
-import { ConstructorFormInput } from "../../components/constructor-form/constructor-form.types";
-import { setConstructorValueDueToCreationMode } from "../utils";
 
+// creating context with FieldArray functions that will be used in task constructors
 // @ts-ignore
 export const TasksFieldArrayActionsContext = React.createContext();
 
@@ -84,92 +70,76 @@ const TaskSetConstructor = ({
   taskSetJSON,
   updateTaskSetJSON,
 }: ConnectedProps<typeof connector>): JSX.Element => {
-  // defining creation type and dependent vars
+  // get code from url
   const { code } = useParams();
+
+  // get creation mode using custom hook
   const creationMode: ConstructorCreationMode = useCreationMode();
-  const titleAndSubmitButtonText: string = getConstructorSubmitButtonAndTitleText(
-    creationMode,
-    ConstructorJSONType.TASK_SET,
-    code
-  );
-  // state vars
-  const [showHintsBlock, setShowHintsBlock] = useState(false);
-  const [startExpressionHint, setStartExpressionHint] = useState("");
-  const [goalExpressionHint, setGoalExpressionHint] = useState("");
-  const [hintsDeltaX, setHintsDeltaX] = useState(0);
-  const [showSelectModal, setShowSelectModal] = useState(false);
-  const [levelNames, setLevelNames] = useState<string[]>([]);
-  // server response messages
-  const [errorMsg, setErrorMsg] = useState<null | string>(null);
-  const [successMsg, setSuccessMsg] = useState<null | string>(null);
-  // react-hook-form initialization
-  const methods = useForm<TaskSetConstructorInputs>({
+
+  // react-hook-form initialization and getting its needed tools
+  const reactHookFormFunctions = useForm<TaskSetConstructorInputs>({
     mode: "onSubmit",
     shouldUnregister: false,
   });
-  // react-hook-form core functions
   const {
-    register,
     getValues,
     control,
-    setValue,
     reset,
     handleSubmit,
     watch,
-  } = methods;
-  // react-hook-form fieldArray core functions for managing task constructors
+  } = reactHookFormFunctions;
+
+  // react-hook-form's fieldArray initialization and getting its needed tools
+  // in order to manage task constructors
   const fieldArrayMethods = useFieldArray<TaskConstructorInputs>({
     control,
     name: "tasks",
   });
   const { fields, append } = fieldArrayMethods;
 
-  const currentEditedLevelRef: React.RefObject<HTMLInputElement> = React.createRef();
-  // const updateDemo = (index: number) => {
-  //   setStartExpressionHint(getValues().tasks[index].startExpression);
-  //   setGoalExpressionHint(getValues().tasks[index].goalExpression);
-  //   if (!showHintsBlock) setShowHintsBlock(true);
-  // };
+  const titleAndSubmitButtonText: string = getConstructorSubmitButtonAndTitleText(
+    creationMode,
+    ConstructorJSONType.TASK_SET,
+    code
+  );
+
+  // hints block dependencies
+  const isHintsBlockInMobileMode = window.innerWidth <= 650;
+  const [hintsDeltaX, setHintsDeltaX] = useState(0);
+  const [showHintsBlock, setShowHintsBlock] = useState(false);
+
+  const getHintsBlockSolutionInput = () => {
+    return (
+      watch(`tasks[${selectedTask}].originalExpression.expression`) +
+      "=...=" +
+      watch(`tasks[${selectedTask}].goalExpression.expression`)
+    );
+  };
+
+  // server response messages
+  const [errorMsg, setErrorMsg] = useState<null | string>(null);
+  const [successMsg, setSuccessMsg] = useState<null | string>(null);
+
+  // items to fetch from the server
   const [namespaces, setNamespaces] = useState<string[]>([]);
   const [rulePacks, setRulePacks] = useState<string[]>([]);
-
-  const updateName = (index: number, newName: string): void => {
-    setLevelNames((prevState: string[]) => {
-      return prevState.map((name: string, i: number) => {
-        return i === index ? newName : name;
-      });
-    });
-  };
 
   const [visualizationMode, setVisualizationMode] = useState<"table" | "list">(
     "list"
   );
+  const [selectedTask, setSelectedTask] = useState<number | null>(null);
 
-  const [selectedLevel, setSelectedLevel] = useState<number | null>(null);
-
-  const mobileHintsRef: React.RefObject<HTMLDivElement> = React.createRef();
-  const [isMobile, setIsMobile] = useState(false);
-
+  // select last task as current when rendered or when task added/removed
   useEffect(() => {
-    if (mobileHintsRef.current) {
-      if (window.getComputedStyle(mobileHintsRef.current).display === "block") {
-        setIsMobile(true);
-      } else {
-        setIsMobile(false);
-      }
+    if (fields.length !== 0) {
+      setSelectedTask(fields.length - 1);
+    } else {
+      setSelectedTask(null);
     }
-  }, [mobileHintsRef]);
+  }, [fields]);
 
-  useEffect(() => {
-    if (
-      selectedLevel === null &&
-      getValues().tasks &&
-      getValues().tasks.length !== 0
-    ) {
-      setSelectedLevel(getValues().tasks.length - 1);
-    }
-  }, []);
-
+  // fetching all necessary entities
+  // TODO: catch blocks
   useEffect(() => {
     NamespaceConstructorRequestHandler.getAll().then(
       (res: NamespaceReceivedForm[]) => {
@@ -224,10 +194,6 @@ const TaskSetConstructor = ({
     },
   ];
 
-  const lastEditedMode: ConstructorCreationMode | null = getLastEditedCreationMode(
-    ConstructorJSONType.TASK_SET
-  );
-
   // show spinner while fetching
   const [showSpinner, setShowSpinner] = useState<boolean>(
     creationMode !== ConstructorCreationMode.CREATE
@@ -238,7 +204,7 @@ const TaskSetConstructor = ({
     setConstructorValueDueToCreationMode(
       ConstructorJSONType.TASK_SET,
       creationMode,
-      lastEditedMode,
+      getLastEditedCreationMode(ConstructorJSONType.TASK_SET),
       reset,
       CONSTRUCTOR_JSONS_INITIAL_STATE.taskSet,
       setLastEditedCreationMode,
@@ -259,11 +225,7 @@ const TaskSetConstructor = ({
     });
   }, []);
 
-  useEffect(() => {
-    setSelectedLevel(0);
-  }, []);
-
-  const submit = async (data: TaskSetConstructorInputs) => {
+  const submitTaskSet = (data: TaskSetConstructorInputs) => {
     TaskSetConstructorRequestsHandler.submitOne(
       TaskSetConstructorFormatter.convertConstructorInputsToSendForm(data),
       creationMode === ConstructorCreationMode.EDIT ? "patch" : "post"
@@ -299,38 +261,24 @@ const TaskSetConstructor = ({
           className="task-set-constructor__form-container"
           style={{
             width:
-              !showHintsBlock || isMobile
+              !showHintsBlock || isHintsBlockInMobileMode
                 ? "100%"
                 : `calc(50% + ${hintsDeltaX}px)`,
           }}
         >
           <div className="task-set-constructor__form">
-            <FormProvider {...methods}>
+            <FormProvider {...reactHookFormFunctions}>
               <TasksFieldArrayActionsContext.Provider value={fieldArrayMethods}>
                 <form
-                  onSubmit={handleSubmit((data) => {
-                    submit(getValues());
+                  onSubmit={handleSubmit(() => {
+                    submitTaskSet(getValues());
                   })}
-                  // onBlur={() => {
-                  //   updateTaskSetJSON(getValues());
-                  // }}
                 >
                   <h2 className="u-mt-sm">{titleAndSubmitButtonText}</h2>
-                  <ConstructorFormAlt
+                  <ConstructorForm
                     inputs={inputs}
                     constructorType={ConstructorJSONType.TASK_SET}
                   />
-                  {/*<ConstructorForm*/}
-                  {/*  inputs={inputs}*/}
-                  {/*  register={register}*/}
-                  {/*  addToHistory={(*/}
-                  {/*    oldVal: ExpressionChange,*/}
-                  {/*    newVal: ExpressionChange*/}
-                  {/*  ) => {*/}
-                  {/*    addItemToHistory(oldVal, newVal);*/}
-                  {/*  }}*/}
-                  {/*  constructorType={ConstructorJSONType.TASK_SET}*/}
-                  {/*/>*/}
                   <div className="u-flex" style={{ alignItems: "center" }}>
                     <h3>Задачи</h3>
                     <div className="task-set-constructor__visualization-mode-switchers">
@@ -371,9 +319,9 @@ const TaskSetConstructor = ({
                           return (
                             <div
                               key={field.id}
-                              onClick={() => setSelectedLevel(index)}
+                              onClick={() => setSelectedTask(index)}
                               className={`form-levels-list__select-option ${
-                                index === selectedLevel &&
+                                index === selectedTask &&
                                 "form-levels-list__select-option--active"
                               }`}
                             >
@@ -387,7 +335,8 @@ const TaskSetConstructor = ({
                                 style={{ marginRight: "1rem" }}
                               />
                               <span>
-                                Уровень {index + 1}. {levelNames[index]}
+                                Задача {index + 1}.{" "}
+                                {watch(`tasks[${index}].nameRu`)}
                               </span>
                             </div>
                           );
@@ -401,7 +350,6 @@ const TaskSetConstructor = ({
                                 ...taskConstructorDefaultValues,
                                 taskCreationType: "manual",
                               });
-                              setSelectedLevel(fields.length);
                               updateTaskSetJSON(getValues());
                             }}
                           >
@@ -418,7 +366,6 @@ const TaskSetConstructor = ({
                                 ...taskConstructorDefaultValues,
                                 taskCreationType: "auto",
                               });
-                              setSelectedLevel(fields.length);
                               updateTaskSetJSON(getValues());
                             }}
                           >
@@ -428,9 +375,7 @@ const TaskSetConstructor = ({
                           <button
                             type="button"
                             className="btn form-levels-list__action-button u-mr-sm"
-                            onClick={() => {
-                              setShowSelectModal(true);
-                            }}
+                            onClick={() => {}}
                           >
                             <Icon path={mdiPlus} size={1.2} />
                             <span>существующая задача</span>
@@ -440,7 +385,7 @@ const TaskSetConstructor = ({
                             className="btn form-levels-list__action-button"
                             onClick={() => console.log(getValues())}
                           >
-                            get values
+                            log values
                           </button>
                         </div>
                       </div>
@@ -466,9 +411,8 @@ const TaskSetConstructor = ({
                             visualizationMode={visualizationMode}
                             isRendered={
                               visualizationMode === "list" &&
-                              index !== selectedLevel
+                              index !== selectedTask
                             }
-                            updateName={updateName}
                             rulePacks={rulePacks}
                           />
                         );
@@ -484,7 +428,7 @@ const TaskSetConstructor = ({
                               ...taskConstructorDefaultValues,
                               taskCreationType: "manual",
                             });
-                            // updateTaskSetJSON(getValues());
+                            updateTaskSetJSON(getValues());
                           }}
                         >
                           <Icon path={mdiPlus} size={1.2} />
@@ -509,9 +453,7 @@ const TaskSetConstructor = ({
                         <button
                           type="button"
                           className="btn form-levels-table__action-button"
-                          onClick={() => {
-                            setShowSelectModal(true);
-                          }}
+                          onClick={() => {}}
                         >
                           <Icon path={mdiPlus} size={1.2} />
                           <span>существующая задача</span>
@@ -537,54 +479,6 @@ const TaskSetConstructor = ({
               </TasksFieldArrayActionsContext.Provider>
             </FormProvider>
           </div>
-
-          {/*<AppModal*/}
-          {/*  isOpen={showSelectModal}*/}
-          {/*  close={() => setShowSelectModal(false)}*/}
-          {/*  width="80vw"*/}
-          {/*  height="80vh"*/}
-          {/*>*/}
-          {/*  <SelectConstructorItemList*/}
-          {/*    items={Object.keys(mockTasks).map(*/}
-          {/*      (code: string): FilterableSelectListItem => {*/}
-          {/*        const { nameRu, namespace } = mockTasks[code];*/}
-          {/*        return {*/}
-          {/*          name: nameRu,*/}
-          {/*          namespace,*/}
-          {/*          code,*/}
-          {/*          taskSet: (() => {*/}
-          {/*            const arr = [*/}
-          {/*              "интересная игра",*/}
-          {/*              "очень сложно",*/}
-          {/*              "просто",*/}
-          {/*              "ЕГЭ",*/}
-          {/*            ];*/}
-          {/*            const startIdx = Math.floor(Math.random() * 4);*/}
-          {/*            const endIdx = Math.floor(Math.random() * 5) + startIdx + 1;*/}
-          {/*            return arr.slice(startIdx, endIdx);*/}
-          {/*          })(),*/}
-          {/*          subjectType: (() => {*/}
-          {/*            const arr = [*/}
-          {/*              "тригонометрия",*/}
-          {/*              "логарифмы",*/}
-          {/*              "теория вероятности",*/}
-          {/*              "производные",*/}
-          {/*            ];*/}
-          {/*            const startIdx = Math.floor(Math.random() * 4);*/}
-          {/*            const endIdx = Math.floor(Math.random() * 5) + startIdx + 1;*/}
-          {/*            return arr.slice(startIdx, endIdx);*/}
-          {/*          })(),*/}
-          {/*          onSelect: () => {*/}
-          {/*            append(mockTasks[code], true);*/}
-          {/*            setShowSelectModal(false);*/}
-          {/*            setSelectedLevel(fields.length);*/}
-          {/*          },*/}
-          {/*        };*/}
-          {/*      }*/}
-          {/*    )}*/}
-          {/*    propsToFilter={["namespace", "taskSet", "subjectType"]}*/}
-          {/*  />*/}
-          {/*</AppModal>*/}
         </div>
         {/*HINTS BLOCK*/}
         <div
@@ -620,57 +514,31 @@ const TaskSetConstructor = ({
           >
             <span />
           </Draggable>
-          <div className="task-set-constructor__math-quill-hint">
-            {showHintsBlock && (
-              <>
-                <h1>Как писать в TEX:</h1>
-                <img
-                  src={require("../../assets/math-quill-hint.gif")}
-                  alt="latex editor hint"
-                  width="100%"
-                  height="auto"
-                />
-              </>
-            )}
-          </div>
-          <div className="current-edited-level">
-            <h1>Редактируемая задача:</h1>
-            <input type="text" ref={currentEditedLevelRef} />
-            <MathQuillEditor
-              inputRef={currentEditedLevelRef}
-              startingLatexExpression={`${startExpressionHint}=..=${goalExpressionHint}`}
+          {showHintsBlock && (
+            <HintsBlock
+              format={
+                watch(
+                  `tasks[${selectedTask}].originalExpression.format`
+                ) as MathInputFormat
+              }
+              expression={getHintsBlockSolutionInput()}
             />
-          </div>
+          )}
         </div>
-        <div ref={mobileHintsRef} className="task-set-constructor__hints-phone">
-          {isMobile && (
+        <div className="task-set-constructor__hints-phone">
+          {isHintsBlockInMobileMode && (
             <AppModal
               isOpen={showHintsBlock}
               close={() => setShowHintsBlock(false)}
             >
-              <>
-                <div className="task-set-constructor__math-quill-hint">
-                  {showHintsBlock && (
-                    <>
-                      <h1>Как писать в TEX:</h1>
-                      <img
-                        src={require("../../assets/math-quill-hint.gif")}
-                        alt="latex editor hint"
-                        width="100%"
-                        height="auto"
-                      />
-                    </>
-                  )}
-                </div>
-                <div className="current-edited-level">
-                  <h1>Редактируемая задача:</h1>
-                  <input type="text" ref={currentEditedLevelRef} />
-                  <MathQuillEditor
-                    inputRef={currentEditedLevelRef}
-                    startingLatexExpression={`${startExpressionHint}=..=${goalExpressionHint}`}
-                  />
-                </div>
-              </>
+              <HintsBlock
+                format={
+                  watch(
+                    `tasks[${selectedTask}].originalExpression.format`
+                  ) as MathInputFormat
+                }
+                expression={getHintsBlockSolutionInput()}
+              />
             </AppModal>
           )}
         </div>
@@ -684,57 +552,14 @@ const mapState = createStructuredSelector<
   RootState,
   {
     taskSetJSON: TaskSetConstructorInputs;
-    // history: ConstructorHistoryItem[];
-    // historyIdx: number;
-    currentHistoryChange: ConstructorHistoryItem | undefined;
   }
 >({
   taskSetJSON: selectTaskSetJSON,
-  // history: selectTaskSetHistory,
-  // historyIdx: selectTaskSetHistoryIndex,
-  currentHistoryChange: selectCurrentTaskSetHistoryChange,
 });
 
-const mapDispatch = (
-  dispatch: Dispatch<
-    | UpdateTaskSetJSONAction
-    | AddOneLineChangeToHistoryAction
-    | UpdateTaskSetHistoryIndexAction
-    | RedoTaskSetHistoryAction
-    | UndoTaskSetHistoryAction
-  >
-) => ({
+const mapDispatch = (dispatch: Dispatch<UpdateTaskSetJSONAction>) => ({
   updateTaskSetJSON: (taskSetJSON: TaskSetConstructorInputs) =>
     dispatch(updateTaskSetJSON(taskSetJSON)),
-  addItemToHistory: (oldVal: ExpressionChange, newVal: ExpressionChange) =>
-    dispatch(
-      addOneLineChangeToHistory({
-        oldVal,
-        newVal,
-        constructorType: ConstructorJSONType.TASK_SET,
-      })
-    ),
-  undo: () => dispatch(undoHistory(ConstructorJSONType.TASK_SET)),
-  redo: () => dispatch(redoHistory(ConstructorJSONType.TASK_SET)),
-  addOneLineChangeToHistory: (
-    name: string,
-    oldVal: string | string[],
-    newVal: string | string[]
-  ) => {
-    dispatch(
-      addOneLineChangeToHistory({
-        oldVal: {
-          propertyPath: name,
-          value: oldVal,
-        },
-        newVal: {
-          propertyPath: name,
-          value: newVal,
-        },
-        constructorType: ConstructorJSONType.TASK_SET,
-      })
-    );
-  },
 });
 
 const connector = connect(mapState, mapDispatch);

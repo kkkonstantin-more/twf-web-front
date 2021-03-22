@@ -40,12 +40,14 @@ import {
 import "./task-constructor.styles.scss";
 
 const TaskConstructor = ({
+  // task constructor props
   index,
   defaultValue,
   isRendered,
   visualizationMode,
-  updateTaskSetJSON,
   rulePacks,
+  // redux props
+  updateTaskSetJSON,
 }: TaskConstructorProps & ConnectedProps<typeof connector>): JSX.Element => {
   const { taskCreationType } = defaultValue;
 
