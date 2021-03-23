@@ -9,7 +9,11 @@ import ConstructorUndoRedoPanel from "../constructor-undo-redo-panel/constructor
 // redux
 import { connect, ConnectedProps } from "react-redux";
 import { createStructuredSelector } from "reselect";
-import { selectCurrentTaskSetHistoryChange } from "../../redux/constructor-history/constructor-history.selectors";
+import {
+  selectCurrentNamespaceHistoryChange,
+  selectCurrentRulePackHistoryChange,
+  selectCurrentTaskSetHistoryChange,
+} from "../../redux/constructor-history/constructor-history.selectors";
 import {
   selectNamespaceJSON,
   selectRulePackJSON,
@@ -51,10 +55,12 @@ const ConstructorForm = ({
   style,
   className,
   // redux props
-  currentHistoryChange,
   addOneLineChangeToHistory,
   undo,
   redo,
+  currentTaskSetHistoryChange,
+  currentRulePackHistoryChange,
+  currentNamespaceHistoryChange,
   updateTaskSetJSON,
   updateNamespaceJSON,
   updateRulePackJSON,
@@ -92,6 +98,17 @@ const ConstructorForm = ({
         return updateRulePackJSON;
       case ConstructorJSONType.TASK_SET:
         return updateTaskSetJSON;
+    }
+  })();
+
+  const currentHistoryChange = (() => {
+    switch (constructorType) {
+      case ConstructorJSONType.NAMESPACE:
+        return currentNamespaceHistoryChange;
+      case ConstructorJSONType.RULE_PACK:
+        return currentRulePackHistoryChange;
+      case ConstructorJSONType.TASK_SET:
+        return currentTaskSetHistoryChange;
     }
   })();
 
@@ -191,7 +208,7 @@ const ConstructorForm = ({
               onChange={(value: string | string[]) => {
                 onChangeInputValue(name, watchValue, value, constructorType);
               }}
-              constructorType={ConstructorJSONType.TASK_SET}
+              constructorType={constructorType}
             />
           );
         }
@@ -204,13 +221,17 @@ const ConstructorForm = ({
 const mapState = createStructuredSelector<
   RootState,
   {
-    currentHistoryChange: ConstructorHistoryItem | undefined;
+    currentTaskSetHistoryChange: ConstructorHistoryItem | undefined;
+    currentNamespaceHistoryChange: ConstructorHistoryItem | undefined;
+    currentRulePackHistoryChange: ConstructorHistoryItem | undefined;
     taskSetJSON: TaskSetConstructorInputs;
     namespaceJSON: NamespaceConstructorInputs;
     rulePackJSON: RulePackConstructorInputs;
   }
 >({
-  currentHistoryChange: selectCurrentTaskSetHistoryChange,
+  currentTaskSetHistoryChange: selectCurrentTaskSetHistoryChange,
+  currentNamespaceHistoryChange: selectCurrentNamespaceHistoryChange,
+  currentRulePackHistoryChange: selectCurrentRulePackHistoryChange,
   taskSetJSON: selectTaskSetJSON,
   namespaceJSON: selectNamespaceJSON,
   rulePackJSON: selectRulePackJSON,

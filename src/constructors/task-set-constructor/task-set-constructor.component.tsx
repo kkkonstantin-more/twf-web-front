@@ -71,7 +71,7 @@ const TaskSetConstructor = ({
   updateTaskSetJSON,
 }: ConnectedProps<typeof connector>): JSX.Element => {
   // get code from url
-  const { code } = useParams();
+  const { code: taskSetCode } = useParams();
 
   // get creation mode using custom hook
   const creationMode: ConstructorCreationMode = useCreationMode();
@@ -100,7 +100,7 @@ const TaskSetConstructor = ({
   const titleAndSubmitButtonText: string = getConstructorSubmitButtonAndTitleText(
     creationMode,
     ConstructorJSONType.TASK_SET,
-    code
+    taskSetCode
   );
 
   // hints block dependencies
@@ -138,20 +138,10 @@ const TaskSetConstructor = ({
     }
   }, [fields]);
 
-  // fetching all necessary entities
-  // TODO: catch blocks
-  useEffect(() => {
-    NamespaceConstructorRequestHandler.getAll().then(
-      (res: NamespaceReceivedForm[]) => {
-        setNamespaces(res.map((ns: NamespaceReceivedForm) => ns.code));
-      }
-    );
-    RulePackConstructorRequestsHandler.getAll().then(
-      (res: RulePackReceivedForm[]) => {
-        setRulePacks(res.map((rp: RulePackReceivedForm) => rp.code));
-      }
-    );
-  }, []);
+  // show spinner while fetching
+  const [showSpinner, setShowSpinner] = useState<boolean>(
+    creationMode !== ConstructorCreationMode.CREATE
+  );
 
   const inputs: ConstructorFormInput[] = [
     {
@@ -194,10 +184,20 @@ const TaskSetConstructor = ({
     },
   ];
 
-  // show spinner while fetching
-  const [showSpinner, setShowSpinner] = useState<boolean>(
-    creationMode !== ConstructorCreationMode.CREATE
-  );
+  // fetching all necessary entities
+  // TODO: catch blocks
+  useEffect(() => {
+    NamespaceConstructorRequestHandler.getAll().then(
+      (res: NamespaceReceivedForm[]) => {
+        setNamespaces(res.map((ns: NamespaceReceivedForm) => ns.code));
+      }
+    );
+    RulePackConstructorRequestsHandler.getAll().then(
+      (res: RulePackReceivedForm[]) => {
+        setRulePacks(res.map((rp: RulePackReceivedForm) => rp.code));
+      }
+    );
+  }, []);
 
   // set values due to creation mode and relevant constructor state
   useEffect(() => {
@@ -210,15 +210,15 @@ const TaskSetConstructor = ({
       setLastEditedCreationMode,
       taskSetJSON,
       updateTaskSetJSON,
-      code,
+      taskSetCode,
       async () => {
-        const res = await TaskSetConstructorRequestsHandler.getOne(code);
+        const res = await TaskSetConstructorRequestsHandler.getOne(taskSetCode);
         return TaskSetConstructorFormatter.convertReceivedFormToConstructorInputs(
           res
         );
       },
       getLastExampleConstructorCode(ConstructorJSONType.TASK_SET),
-      code,
+      taskSetCode,
       setLastExampleConstructorCode
     ).then(() => {
       setShowSpinner(false);
@@ -480,6 +480,7 @@ const TaskSetConstructor = ({
             </FormProvider>
           </div>
         </div>
+
         {/*HINTS BLOCK*/}
         <div
           className="task-set-constructor__icon"

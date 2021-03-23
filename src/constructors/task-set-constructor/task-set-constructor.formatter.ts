@@ -189,6 +189,7 @@ class TaskSetConstructorFormatter {
             task[key] = null;
           }
         });
+        task.namespaceCode = data.namespaceCode;
       });
     }
     if (!data.subjectTypes) {
@@ -197,6 +198,7 @@ class TaskSetConstructorFormatter {
     if (!data.otherData) {
       data.otherData = null;
     }
+    console.log(JSON.stringify(data));
     // @ts-ignore
     return data;
   }
