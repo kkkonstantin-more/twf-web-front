@@ -1,3 +1,5 @@
+// types
+import { ConstructorJSONType } from "../constructor-jsons/constructor-jsons.types";
 import {
   ADD_MULTIPLE_LINES_CHANGE_TO_HISTORY,
   ADD_ONE_LINE_CHANGE_TO_HISTORY,
@@ -9,10 +11,7 @@ import {
   RedoTaskSetHistoryAction,
   UNDO_HISTORY,
   UndoTaskSetHistoryAction,
-  UPDATE_HISTORY_INDEX,
-  UpdateTaskSetHistoryIndexAction,
 } from "./constructor-history.types";
-import { ConstructorJSONType } from "../constructor-jsons/constructor-jsons.types";
 
 export const addOneLineChangeToHistory = (
   item: OneLineHistoryChange
@@ -27,13 +26,6 @@ export const addMultipleLinesChangeToHistory = (
   type: ADD_MULTIPLE_LINES_CHANGE_TO_HISTORY,
   payload: item,
 });
-
-// export const updateTaskSetHistoryIndex = (
-//   idx: number
-// ): UpdateTaskSetHistoryIndexAction => ({
-//   type: UPDATE_TASK_SET_HISTORY_INDEX,
-//   payload: idx,
-// });
 
 export const undoHistory = (
   constructorType: ConstructorJSONType

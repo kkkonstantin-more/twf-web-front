@@ -43,7 +43,6 @@ export interface ConstructorHistory {
 export const ADD_ONE_LINE_CHANGE_TO_HISTORY = "ADD_ONE_LINE_CHANGE_TO_HISTORY";
 export const ADD_MULTIPLE_LINES_CHANGE_TO_HISTORY =
   "ADD_MULTIPLE_LINES_CHANGE_TO_HISTORY";
-export const UPDATE_HISTORY_INDEX = "UPDATE_HISTORY_INDEX";
 export const UNDO_HISTORY = "UNDO_HISTORY";
 export const REDO_HISTORY = "REDO_HISTORY";
 
@@ -55,11 +54,6 @@ export interface AddOneLineChangeToHistoryAction {
 export interface AddMultipleLinesChangeToHistoryAction {
   type: typeof ADD_MULTIPLE_LINES_CHANGE_TO_HISTORY;
   payload: MultipleLinesHistoryChange;
-}
-
-export interface UpdateTaskSetHistoryIndexAction {
-  type: typeof UPDATE_HISTORY_INDEX;
-  payload: number;
 }
 
 export interface UndoTaskSetHistoryAction {
@@ -75,6 +69,5 @@ export interface RedoTaskSetHistoryAction {
 export type ConstructorHistoryActionTypes =
   | AddOneLineChangeToHistoryAction
   | AddMultipleLinesChangeToHistoryAction
-  | UpdateTaskSetHistoryIndexAction
   | UndoTaskSetHistoryAction
   | RedoTaskSetHistoryAction;
