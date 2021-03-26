@@ -41,22 +41,7 @@ const constructorJSONsReducer = (
     case "UPDATE_RULE_PACK_JSON":
       return {
         ...state,
-        rulePack: {
-          ...convertAllStringListsInObjToArrays(action.payload, ["rulePacks"]),
-          rules: action.payload.rules?.map((rule: RuleConstructorInputs) => {
-            return {
-              ...rule,
-              matchJumbledAndNested: convertStringBoolToBool(
-                rule.matchJumbledAndNested
-              ),
-              basedOnTaskContext: convertStringBoolToBool(
-                rule.basedOnTaskContext
-              ),
-              isExtending: convertStringBoolToBool(rule.isExtending),
-              simpleAdditional: convertStringBoolToBool(rule.simpleAdditional),
-            };
-          }),
-        },
+        rulePack: action.payload,
       };
     case "UPDATE_TASK_SET_JSON":
       return {

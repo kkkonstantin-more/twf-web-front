@@ -129,15 +129,6 @@ const TaskSetConstructor = ({
   );
   const [selectedTask, setSelectedTask] = useState<number | null>(null);
 
-  // select last task as current when rendered or when task added/removed
-  useEffect(() => {
-    if (fields.length !== 0) {
-      setSelectedTask(fields.length - 1);
-    } else {
-      setSelectedTask(null);
-    }
-  }, [fields]);
-
   // show spinner while fetching
   const [showSpinner, setShowSpinner] = useState<boolean>(
     creationMode !== ConstructorCreationMode.CREATE
@@ -184,6 +175,38 @@ const TaskSetConstructor = ({
     },
   ];
 
+  const submitTaskSet = (data: TaskSetConstructorInputs) => {
+    TaskSetConstructorRequestsHandler.submitOne(
+      TaskSetConstructorFormatter.convertConstructorInputsToSendForm(data),
+      creationMode === ConstructorCreationMode.EDIT ? "patch" : "post"
+    )
+      .then(() => {
+        setErrorMsg(null);
+        setSuccessMsg(
+          creationMode === ConstructorCreationMode.EDIT
+            ? "Набор задач успешно изменен!"
+            : "Набор задач успешно создан!"
+        );
+        addLastEditedConstructorItemToLocalStorage(
+          "last-edited-task-sets",
+          data.code
+        );
+      })
+      .catch(() => {
+        setSuccessMsg(null);
+        setErrorMsg("Произошла ошибка!");
+      });
+  };
+
+  // select last task as current when rendered or when task added/removed
+  useEffect(() => {
+    if (fields.length !== 0) {
+      setSelectedTask(fields.length - 1);
+    } else {
+      setSelectedTask(null);
+    }
+  }, [fields]);
+
   // fetching all necessary entities
   // TODO: catch blocks
   useEffect(() => {
@@ -224,29 +247,6 @@ const TaskSetConstructor = ({
       setShowSpinner(false);
     });
   }, []);
-
-  const submitTaskSet = (data: TaskSetConstructorInputs) => {
-    TaskSetConstructorRequestsHandler.submitOne(
-      TaskSetConstructorFormatter.convertConstructorInputsToSendForm(data),
-      creationMode === ConstructorCreationMode.EDIT ? "patch" : "post"
-    )
-      .then(() => {
-        setErrorMsg(null);
-        setSuccessMsg(
-          creationMode === ConstructorCreationMode.EDIT
-            ? "Набор задач успешно изменен!"
-            : "Набор задач успешно создан!"
-        );
-        addLastEditedConstructorItemToLocalStorage(
-          "last-edited-task-sets",
-          data.code
-        );
-      })
-      .catch(() => {
-        setSuccessMsg(null);
-        setErrorMsg("Произошла ошибка!");
-      });
-  };
 
   if (showSpinner) {
     return (
