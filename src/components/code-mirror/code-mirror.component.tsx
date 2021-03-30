@@ -640,6 +640,7 @@ const CodeMirrorEditor = ({
       let isJSONValid: boolean = true;
       // setup editor's onchange actions
       editor.on("change", (editor, changeObject) => {
+        console.log(changeObject);
         try {
           JSON.parse(editor.getValue());
           setJSONValidity(constructorType, true);
@@ -869,7 +870,8 @@ const CodeMirrorEditor = ({
             updateCurrentReduxJSON(JSON.parse(editor.getValue()));
           } catch {}
         } else if (
-          changeObject.origin === "cut" &&
+          (changeObject.origin === "cut" ||
+            changeObject.origin === "+delete") &&
           changeObject.removed &&
           changeObject.removed.length > 1
         ) {
