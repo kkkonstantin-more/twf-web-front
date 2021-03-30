@@ -30,5 +30,9 @@ export interface TaskSetConstructorInputs {
   recommendedByCommunity: boolean;
   otherData?: any;
 }
+export interface VisualizationMode {
+  name: "list" | "table";
+  iconUrl: string;
+}
 
 export type TaskSetConstructorSendForm = TaskSetConstructorReceivedForm;

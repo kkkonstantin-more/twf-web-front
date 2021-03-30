@@ -42,7 +42,10 @@ import {
   UpdateTaskSetJSONAction,
 } from "../../redux/constructor-jsons/constructor-jsons.types";
 import { ConstructorCreationMode } from "../common-types";
-import { TaskSetConstructorInputs } from "./task-set-constructor.types";
+import {
+  TaskSetConstructorInputs,
+  VisualizationMode,
+} from "./task-set-constructor.types";
 import { NamespaceReceivedForm } from "../namespace-constructor/namespace-constructor.types";
 import { ConstructorFormInput } from "../../components/constructor-form/constructor-form.types";
 import { MathInputFormat } from "../../utils/kotlin-lib-functions";
@@ -124,9 +127,9 @@ const TaskSetConstructor = ({
   const [namespaces, setNamespaces] = useState<string[]>([]);
   const [rulePacks, setRulePacks] = useState<string[]>([]);
 
-  const [visualizationMode, setVisualizationMode] = useState<"table" | "list">(
-    "list"
-  );
+  const [currentVisualizationMode, setCurrentVisualizationMode] = useState<
+    "table" | "list"
+  >("list");
   const [selectedTask, setSelectedTask] = useState<number | null>(null);
 
   // show spinner while fetching
@@ -172,6 +175,17 @@ const TaskSetConstructor = ({
       name: "otherData",
       label: "Дополнительная информация",
       type: "text",
+    },
+  ];
+
+  const visualizationModes: VisualizationMode[] = [
+    {
+      name: "list",
+      iconUrl: mdiFormatListBulleted,
+    },
+    {
+      name: "table",
+      iconUrl: mdiTableLarge,
     },
   ];
 
@@ -282,38 +296,33 @@ const TaskSetConstructor = ({
                   <div className="u-flex" style={{ alignItems: "center" }}>
                     <h3>Задачи</h3>
                     <div className="task-set-constructor__visualization-mode-switchers">
-                      <div
-                        className={`task-set-constructor__visualization-mode-switcher ${
-                          visualizationMode === "list" &&
-                          "task-set-constructor__visualization-mode-switcher--active"
-                        }`}
-                        onClick={() => {
-                          setVisualizationMode("list");
-                        }}
-                      >
-                        <Icon path={mdiFormatListBulleted} size={1.5} />
-                      </div>
-                      <div
-                        className={`task-set-constructor__visualization-mode-switcher ${
-                          visualizationMode === "table" &&
-                          "task-set-constructor__visualization-mode-switcher--active"
-                        }`}
-                        onClick={() => {
-                          setVisualizationMode("table");
-                        }}
-                      >
-                        <Icon path={mdiTableLarge} size={1.5} />
-                      </div>
+                      {visualizationModes.map((mode: VisualizationMode) => {
+                        const { name, iconUrl } = mode;
+                        return (
+                          <div
+                            className={`task-set-constructor__visualization-mode-switcher ${
+                              name === currentVisualizationMode
+                                ? "task-set-constructor__visualization-mode-switcher--active"
+                                : ""
+                            }`}
+                            onClick={() => {
+                              setCurrentVisualizationMode(name);
+                            }}
+                          >
+                            <Icon path={iconUrl} size={1.5} />
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                   <div
                     className={`${
-                      visualizationMode === "table"
+                      currentVisualizationMode === "table"
                         ? "form-levels-table"
                         : "form-levels-list"
                     }`}
                   >
-                    {visualizationMode === "list" && (
+                    {currentVisualizationMode === "list" && (
                       <div className="form-levels-list__select">
                         {fields.map((field, index) => {
                           return (
@@ -392,7 +401,7 @@ const TaskSetConstructor = ({
                     )}
                     <div
                       className={`${
-                        visualizationMode === "list"
+                        currentVisualizationMode === "list"
                           ? "form-levels-list__selected-level"
                           : ""
                       }`}
@@ -408,9 +417,9 @@ const TaskSetConstructor = ({
                                 : fields[index]
                             }
                             updateDemo={() => {}}
-                            visualizationMode={visualizationMode}
+                            visualizationMode={currentVisualizationMode}
                             isRendered={
-                              visualizationMode === "list" &&
+                              currentVisualizationMode === "list" &&
                               index !== selectedTask
                             }
                             rulePacks={rulePacks}
@@ -418,7 +427,7 @@ const TaskSetConstructor = ({
                         );
                       })}
                     </div>
-                    {visualizationMode === "table" && (
+                    {currentVisualizationMode === "table" && (
                       <div className="form-levels-table__action-buttons">
                         <button
                           type="button"
