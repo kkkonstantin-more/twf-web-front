@@ -636,7 +636,7 @@ const CodeMirrorEditor = ({
           updateCurrentReduxJSON(JSON.parse(editor.getValue()));
         } catch (e) {}
       };
-      let lastValidValue: any = null;
+      let lastValidValue: any = JSON.parse(editor.getValue());
       let isJSONValid: boolean = true;
       // setup editor's onchange actions
       editor.on("change", (editor, changeObject) => {
@@ -652,6 +652,7 @@ const CodeMirrorEditor = ({
             );
             lastValidValue = JSON.parse(editor.getValue());
             isJSONValid = true;
+            updateTaskSetJSON(JSON.parse(editor.getValue()));
             return;
           }
           lastValidValue = JSON.parse(editor.getValue());
