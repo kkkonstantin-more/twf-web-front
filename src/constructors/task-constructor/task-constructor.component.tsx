@@ -38,6 +38,7 @@ import {
 } from "@mdi/js";
 // styles
 import "./task-constructor.styles.scss";
+import { addMultipleLinesChangeToHistory } from "../../redux/constructor-history/constructor-history.actions";
 
 const TaskConstructor = ({
   // task constructor props
@@ -48,6 +49,7 @@ const TaskConstructor = ({
   rulePacks,
   // redux props
   updateTaskSetJSON,
+  addMultipleLinesChangeToHistory,
 }: TaskConstructorProps & ConnectedProps<typeof connector>): JSX.Element => {
   const { taskCreationType } = defaultValue;
 
@@ -282,17 +284,26 @@ const TaskConstructor = ({
       });
   });
 
+  const updateTasks = async (action: () => Promise<void>) => {
+    const oldValue = await getValues();
+    await action();
+    // @ts-ignore
+    addMultipleLinesChangeToHistory(oldValue, getValues());
+    // @ts-ignore
+    updateTaskSetJSON(getValues());
+  };
+
   const tableActionButtonsLeft: ActionButtonProps[] = [
     {
       mdiIconPath: mdiContentCopy,
       size: 1.5,
       async action() {
-        await append({
-          taskCreationType: taskCreationType,
-          ...getValues().tasks[index],
+        await updateTasks(async () => {
+          await append({
+            taskCreationType: taskCreationType,
+            ...getValues().tasks[index],
+          });
         });
-        // @ts-ignore
-        updateTaskSetJSON(getValues());
       },
     },
     {
@@ -300,9 +311,9 @@ const TaskConstructor = ({
       size: 1.5,
       async action() {
         if (index !== 0) {
-          await swap(index, index - 1);
-          // @ts-ignore
-          updateTaskSetJSON(getValues());
+          await updateTasks(async () => {
+            await swap(index, index - 1);
+          });
         }
       },
     },
@@ -311,9 +322,9 @@ const TaskConstructor = ({
       size: 1.5,
       async action() {
         if (index !== getValues().tasks.length - 1) {
-          await swap(index, index + 1);
-          // @ts-ignore
-          updateTaskSetJSON(getValues());
+          await updateTasks(async () => {
+            await swap(index, index + 1);
+          });
         }
       },
     },
@@ -325,9 +336,7 @@ const TaskConstructor = ({
       size: 2,
       async action() {
         if (window.confirm(`Вы точно хотите удалить уровень ${index + 1}?`)) {
-          await remove(index);
-          // @ts-ignore
-          updateTaskSetJSON(getValues());
+          await updateTasks(async () => await remove(index));
         }
       },
     },
@@ -440,6 +449,17 @@ const TaskConstructor = ({
 const mapDispatchToProps = (dispatch: any) => ({
   updateTaskSetJSON: (taskSetJSON: TaskSetConstructorInputs) =>
     dispatch(updateTaskSetJSON(taskSetJSON)),
+  addMultipleLinesChangeToHistory: (
+    oldVal: TaskSetConstructorInputs,
+    newVal: TaskSetConstructorInputs
+  ) =>
+    dispatch(
+      addMultipleLinesChangeToHistory({
+        oldVal,
+        newVal,
+        constructorType: ConstructorJSONType.TASK_SET,
+      })
+    ),
 });
 
 const connector = connect(null, mapDispatchToProps);

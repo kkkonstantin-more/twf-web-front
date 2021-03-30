@@ -9,6 +9,7 @@ import { createStructuredSelector } from "reselect";
 import { selectTaskSetJSON } from "../../redux/constructor-jsons/constructor-jsons.selectors";
 import { updateTaskSetJSON } from "../../redux/constructor-jsons/constructor-jsons.actions";
 import { connect, ConnectedProps } from "react-redux";
+import { addMultipleLinesChangeToHistory } from "../../redux/constructor-history/constructor-history.actions";
 import CONSTRUCTOR_JSONS_INITIAL_STATE from "../../redux/constructor-jsons/constructor-jsons.state";
 // lib components
 import Draggable from "react-draggable";
@@ -49,6 +50,7 @@ import {
 import { NamespaceReceivedForm } from "../namespace-constructor/namespace-constructor.types";
 import { ConstructorFormInput } from "../../components/constructor-form/constructor-form.types";
 import { MathInputFormat } from "../../utils/kotlin-lib-functions";
+import { AddMultipleLinesChangeToHistoryAction } from "../../redux/constructor-history/constructor-history.types";
 // data
 import { taskConstructorDefaultValues } from "./task-set-constructor.data";
 // icons
@@ -70,8 +72,10 @@ import "./task-set-constructor.styles.scss";
 export const TasksFieldArrayActionsContext = React.createContext();
 
 const TaskSetConstructor = ({
+  // redux props
   taskSetJSON,
   updateTaskSetJSON,
+  addMultipleLinesChangeToHistory,
 }: ConnectedProps<typeof connector>): JSX.Element => {
   // get code from url
   const { code: taskSetCode } = useParams();
@@ -210,6 +214,16 @@ const TaskSetConstructor = ({
         setSuccessMsg(null);
         setErrorMsg("Произошла ошибка!");
       });
+  };
+
+  const onAddTask = async (taskType: "auto" | "manual") => {
+    const oldValue = await getValues();
+    await append({
+      ...taskConstructorDefaultValues,
+      taskCreationType: taskType,
+    });
+    addMultipleLinesChangeToHistory(oldValue, getValues());
+    updateTaskSetJSON(getValues());
   };
 
   // select last task as current when rendered or when task added/removed
@@ -355,11 +369,7 @@ const TaskSetConstructor = ({
                             type="button"
                             className="btn form-levels-list__action-button"
                             onClick={async () => {
-                              await append({
-                                ...taskConstructorDefaultValues,
-                                taskCreationType: "manual",
-                              });
-                              updateTaskSetJSON(getValues());
+                              await onAddTask("manual");
                             }}
                           >
                             <Icon path={mdiPlus} size={1.2} />
@@ -371,11 +381,7 @@ const TaskSetConstructor = ({
                             type="button"
                             className="btn form-levels-list__action-button"
                             onClick={async () => {
-                              await append({
-                                ...taskConstructorDefaultValues,
-                                taskCreationType: "auto",
-                              });
-                              updateTaskSetJSON(getValues());
+                              await onAddTask("auto");
                             }}
                           >
                             <Icon path={mdiPlus} size={1.2} />
@@ -433,11 +439,7 @@ const TaskSetConstructor = ({
                           type="button"
                           className="btn form-levels-table__action-button"
                           onClick={async () => {
-                            await append({
-                              ...taskConstructorDefaultValues,
-                              taskCreationType: "manual",
-                            });
-                            updateTaskSetJSON(getValues());
+                            await onAddTask("manual");
                           }}
                         >
                           <Icon path={mdiPlus} size={1.2} />
@@ -449,11 +451,7 @@ const TaskSetConstructor = ({
                           type="button"
                           className="btn form-levels-table__action-button"
                           onClick={async () => {
-                            await append({
-                              ...taskConstructorDefaultValues,
-                              taskCreationType: "auto",
-                            });
-                            updateTaskSetJSON(getValues());
+                            await onAddTask("auto");
                           }}
                         >
                           <Icon path={mdiPlus} size={1.2} />
@@ -567,9 +565,24 @@ const mapState = createStructuredSelector<
   taskSetJSON: selectTaskSetJSON,
 });
 
-const mapDispatch = (dispatch: Dispatch<UpdateTaskSetJSONAction>) => ({
+const mapDispatch = (
+  dispatch: Dispatch<
+    UpdateTaskSetJSONAction | AddMultipleLinesChangeToHistoryAction
+  >
+) => ({
   updateTaskSetJSON: (taskSetJSON: TaskSetConstructorInputs) =>
     dispatch(updateTaskSetJSON(taskSetJSON)),
+  addMultipleLinesChangeToHistory: (
+    oldVal: TaskSetConstructorInputs,
+    newVal: TaskSetConstructorInputs
+  ) =>
+    dispatch(
+      addMultipleLinesChangeToHistory({
+        oldVal,
+        newVal,
+        constructorType: ConstructorJSONType.TASK_SET,
+      })
+    ),
 });
 
 const connector = connect(mapState, mapDispatch);
