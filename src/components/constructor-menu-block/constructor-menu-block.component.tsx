@@ -12,6 +12,14 @@ const ConstructorMenuBlock = ({
   options,
   isDataFetched,
 }: ConstructorMenuBlockProps) => {
+  const createFromScratchBlock = (() => {
+    if (options[0].name === "С нуля") {
+      return options.shift();
+    } else {
+      return null;
+    }
+  })();
+
   return (
     <div className="constructor-menu-block">
       <div className="constructor-menu-block__title">
@@ -19,6 +27,14 @@ const ConstructorMenuBlock = ({
         <h1>{title}</h1>
       </div>
       <div className="constructor-menu-block__options">
+        {createFromScratchBlock && (
+          <div
+            className="constructor-menu-block__option"
+            onClick={(): any => createFromScratchBlock.action()}
+          >
+            {createFromScratchBlock.name}
+          </div>
+        )}
         {isDataFetched ? (
           options.map(
             (option: { name: string; action: () => any }, i: number) => {
