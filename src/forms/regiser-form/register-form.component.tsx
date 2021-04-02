@@ -78,28 +78,31 @@ const RegisterForm = ({ hideModal }: { hideModal: () => void }) => {
       });
   };
 
-  // const responseGoogle = (response: any) => {
-  //   if (response.hasOwnProperty("error")) {
-  //     setRegistered(false);
-  //   } else {
-  //     console.log(response);
-  //     const idTokenString = response.tokenId;
-  //     axios({
-  //       method: "get",
-  //       url: `localhost:8080/api/auth/google_sing_in`,
-  //       params: { idTokenString },
-  //     })
-  //       .then((res) => {
-  //         console.log(res);
-  //         // setAuthorized(res.status === 200);
-  //       })
-  //       .catch((e) => {
-  //         // setAuthorized(false);
-  //         console.log(e);
-  //         console.log(e.message);
-  //       });
-  //   }
-  // };
+  const responseGoogle = (response: any) => {
+    if (response.hasOwnProperty("error")) {
+      setRegistered(false);
+    } else {
+      console.log(response);
+      const idTokenString = response.tokenId;
+      axios({
+        method: "get",
+        url: `localhost:8080/api/auth/google_sign_in`,
+        params: { idTokenString },
+        headers: {
+          ["Access-Control-Allow-Origin"]: "*",
+        },
+      })
+        .then((res) => {
+          console.log(res);
+          // setAuthorized(res.status === 200);
+        })
+        .catch((e) => {
+          // setAuthorized(false);
+          console.log(e);
+          console.log(e.message);
+        });
+    }
+  };
 
   if (registered) {
     return <Redirect to={"/constructor-menu"} />;
@@ -181,14 +184,14 @@ const RegisterForm = ({ hideModal }: { hideModal: () => void }) => {
           <button type="submit" className="btn">
             {translate(registerButtonTextId)}
           </button>
-          {/*<GoogleLogin*/}
-          {/*  // this is demo client id*/}
-          {/*  clientId="977771799310-42c14i973bbuo8nnquld6houe6mfa2t1.apps.googleusercontent.com"*/}
-          {/*  buttonText={intl.formatMessage({ id: googleButtonTextId })}*/}
-          {/*  onSuccess={responseGoogle}*/}
-          {/*  onFailure={responseGoogle}*/}
-          {/*  cookiePolicy={"single_host_origin"}*/}
-          {/*/>*/}
+          <GoogleLogin
+            // this is demo client id
+            clientId="977771799310-42c14i973bbuo8nnquld6houe6mfa2t1.apps.googleusercontent.com"
+            buttonText={intl.formatMessage({ id: googleButtonTextId })}
+            onSuccess={responseGoogle}
+            onFailure={responseGoogle}
+            cookiePolicy={"single_host_origin"}
+          />
         </div>
       </form>
     );
