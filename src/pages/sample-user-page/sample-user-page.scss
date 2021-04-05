@@ -1,7 +1,9 @@
 @import "../../styles/abstracts/variables";
 .sample-user-page {
+  padding: 2rem;
   display: flex;
-
+  justify-content: space-around;
+  align-items: flex-start;
   &__info {
     display: flex;
     justify-content: center;
@@ -18,7 +20,14 @@
   }
 
   &__progress {
-    width: 30rem;
-    margin-right: 1rem;
+    margin: auto;
+    width: 50rem;
+  }
+
+  &__achieve {
+    display: flex;
+    flex-wrap: wrap;
+    padding-top: 2rem;
+    margin-left: 15rem;
   }
 }
