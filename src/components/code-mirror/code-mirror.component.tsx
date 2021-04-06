@@ -72,6 +72,7 @@ import {
   selectCurrentRulePackHistoryChange,
   selectCurrentTaskSetHistoryChange,
 } from "../../redux/constructor-history/constructor-history.selectors";
+import { ExpressionInput } from "../../constructors/task-constructor/task-constructor.types";
 // jsonlint config
 const jsonlint = require("jsonlint-mod");
 // @ts-ignore
@@ -94,7 +95,7 @@ enum CMErrorType {
 
 interface CMError {
   type: CMErrorType;
-  position: CodeMirrorWordPosition;
+  invalidValue: string;
   gutterId: string;
 }
 
@@ -126,6 +127,7 @@ const CodeMirrorEditor = ({
   const [editor, setEditor] = useState<any>(null);
   const [dynamicErrors, setDynamicErrors] = useState<CMError[]>([]);
   let errors: CMError[] = [];
+  let currentErrors: CMError[] = [];
 
   const entryPoint: React.Ref<any> = useRef();
 
@@ -220,7 +222,7 @@ const CodeMirrorEditor = ({
     findOne?: boolean,
     specificLine?: number,
     withParentheses: boolean = false
-  ): CodeMirrorWordPosition[] | CodeMirrorWordPosition | undefined => {
+  ): CodeMirrorWordPosition[] => {
     // initializing cursor at the start of the document
     // @ts-ignore *getSearchCursor method is an addon and not type checked in original CodeMirror
     const cursor = editor.getSearchCursor(
@@ -236,12 +238,14 @@ const CodeMirrorEditor = ({
     while (cursor.from() && cursor.to()) {
       if (specificLine) {
         if (cursor.from().line === specificLine) {
-          return {
-            from: cursor.from(),
-            to: cursor.to(),
-          };
+          return [
+            {
+              from: cursor.from(),
+              to: cursor.to(),
+            },
+          ];
         } else {
-          return;
+          return [];
         }
       } else {
         wordPositions.push({
@@ -251,7 +255,7 @@ const CodeMirrorEditor = ({
       }
       cursor.findNext();
     }
-    if (wordPositions.length === 0) return undefined;
+    if (wordPositions.length === 0) return [];
     return wordPositions;
   };
 
@@ -294,37 +298,35 @@ const CodeMirrorEditor = ({
   const setErrorLineAndGutter = (
     editor: CodeMirror.Editor,
     wordPosition: CodeMirrorWordPosition,
+    invalidValue: string,
     msg: string,
     errorType: CMErrorType
   ): void => {
     const { from, to } = wordPosition;
+    const id = uidv4();
     editor.markText(from, to, {
       className: "CodeMirror-lint-mark-error",
       title: msg,
     });
+    // @ts-ignore
+    editor.getAllMarks()[editor.getAllMarks().length - 1].errorId = id;
+    // @ts-ignore
+    editor.getAllMarks()[editor.getAllMarks().length - 1].errorType = errorType;
+
     const marker: HTMLDivElement = document.createElement("div");
+    marker.setAttribute("error-type", errorType);
     marker.setAttribute("class", "CodeMirror-lint-marker-error");
     marker.setAttribute("data-toggle", "tooltip");
     marker.setAttribute("data-placement", "right");
     marker.setAttribute("title", msg);
-    const id = uidv4();
     marker.setAttribute("id", id);
     editor.setGutterMarker(from.line, "gutter-error", marker);
 
-    errors = [
-      ...errors.filter((error: CMError) => {
-        return (
-          error.position.from.line !== from.line &&
-          error.position.to.line !== to.line
-        );
-      }),
-      {
-        type: errorType,
-        gutterId: id,
-        position: wordPosition,
-      },
-    ];
-    setDynamicErrors(errors);
+    currentErrors.push({
+      invalidValue,
+      gutterId: id,
+      type: CMErrorType.WRONG_EXP_FORMAT,
+    });
   };
 
   const destroyAllErrors = (editor: CodeMirror.Editor): void => {
@@ -335,146 +337,146 @@ const CodeMirrorEditor = ({
   };
 
   // TODO: refactor function, remove inner function, make it clean
-  const getAllExpressions = (
-    editor: CodeMirror.Editor
-  ): { format: string; expression: string }[] => {
-    try {
-      JSON.parse(editor.getValue());
-    } catch {
-      return [];
-    }
-    const editorObj = JSON.parse(editor.getValue());
-    const expressions: { format: string; expression: string }[] = [];
-    const appendExpressions = (obj: any) => {
-      if (typeof obj === "object") {
-        if (obj.hasOwnProperty("format") && obj.hasOwnProperty("expression")) {
-          expressions.push({
-            format: obj.format,
-            expression: obj.expression,
-          });
-        } else {
-          Object.keys(obj).forEach((prop: string) => {
-            if (typeof obj[prop] === "object") {
-              if (
-                obj[prop].hasOwnProperty("format") &&
-                obj[prop].hasOwnProperty("expression")
-              ) {
-                expressions.push({
-                  format: obj[prop].format,
-                  expression: obj[prop].expression,
-                });
-              } else {
-                appendExpressions(obj[prop]);
-              }
-            }
-          });
-        }
-      }
-    };
-    appendExpressions(editorObj);
-    return expressions;
-  };
+  // const getAllExpressions = (
+  //   editor: CodeMirror.Editor
+  // ): { format: string; expression: string }[] => {
+  //   try {
+  //     JSON.parse(editor.getValue());
+  //   } catch {
+  //     return [];
+  //   }
+  //   const editorObj = JSON.parse(editor.getValue());
+  //   const expressions: { format: string; expression: string }[] = [];
+  //   const appendExpressions = (obj: any) => {
+  //     if (typeof obj === "object") {
+  //       if (obj.hasOwnProperty("format") && obj.hasOwnProperty("expression")) {
+  //         expressions.push({
+  //           format: obj.format,
+  //           expression: obj.expression,
+  //         });
+  //       } else {
+  //         Object.keys(obj).forEach((prop: string) => {
+  //           if (typeof obj[prop] === "object") {
+  //             if (
+  //               obj[prop].hasOwnProperty("format") &&
+  //               obj[prop].hasOwnProperty("expression")
+  //             ) {
+  //               expressions.push({
+  //                 format: obj[prop].format,
+  //                 expression: obj[prop].expression,
+  //               });
+  //             } else {
+  //               appendExpressions(obj[prop]);
+  //             }
+  //           }
+  //         });
+  //       }
+  //     }
+  //   };
+  //   appendExpressions(editorObj);
+  //   return expressions;
+  // };
 
-  const destroyError = (error: CMError, editor: CodeMirror.Editor) => {
-    const marker = document.getElementById(error.gutterId);
-    marker?.parentNode?.removeChild(marker);
-    editor.getAllMarks().forEach((mark: TextMarker) => {
-      if (
-        // @ts-ignore
-        mark.lines[0].lineNo() === error.position.from.line &&
-        // @ts-ignore
-        mark.lines[0].markedSpans[0].from === error.position.from.ch
-      ) {
-        mark.clear();
-      }
-    });
-    errors = errors.filter((prevStateError: CMError) => {
-      return (
-        prevStateError.position.from.line !== error.position.from.line &&
-        prevStateError.position.from.ch !== error.position.from.ch &&
-        prevStateError.position.to.line !== error.position.to.line &&
-        prevStateError.position.to.ch !== error.position.to.ch
-      );
-    });
-    setDynamicErrors(errors);
-  };
+  // const destroyError = (error: CMError, editor: CodeMirror.Editor) => {
+  //   const marker = document.getElementById(error.gutterId);
+  //   marker?.parentNode?.removeChild(marker);
+  //   editor.getAllMarks().forEach((mark: TextMarker) => {
+  //     if (
+  //       // @ts-ignore
+  //       mark.lines[0].lineNo() === error.position.from.line &&
+  //       // @ts-ignore
+  //       mark.lines[0].markedSpans[0].from === error.position.from.ch
+  //     ) {
+  //       mark.clear();
+  //     }
+  //   });
+  //   errors = errors.filter((prevStateError: CMError) => {
+  //     return (
+  //       prevStateError.position.from.line !== error.position.from.line &&
+  //       prevStateError.position.from.ch !== error.position.from.ch &&
+  //       prevStateError.position.to.line !== error.position.to.line &&
+  //       prevStateError.position.to.ch !== error.position.to.ch
+  //     );
+  //   });
+  //   setDynamicErrors(errors);
+  // };
 
-  const checkActiveErrors = (editor: CodeMirror.Editor) => {
-    // active errors checking
-    if (errors.length !== 0) {
-      const excessiveProps = getExcessiveProps(editor.getValue());
-      const expressions = getAllExpressions(editor);
-      errors.forEach((error: CMError) => {
-        if (error.type === CMErrorType.EXCESSIVE_PROP) {
-          if (
-            excessiveProps.every((excessiveProp: string) => {
-              const excessivePropOnCurrentLine = getWordPositions(
-                editor,
-                excessiveProp,
-                true,
-                error.position.from.line,
-                true
-              );
-              console.log(error, excessivePropOnCurrentLine);
-              return !excessivePropOnCurrentLine;
-            })
-          ) {
-            console.log("Error destroyed");
-            destroyError(error, editor);
-          } else {
-            console.log("ERROR FOUND");
-          }
-        } else if (error.type === CMErrorType.WRONG_EXP_FORMAT) {
-          if (
-            expressions.every((expression) => {
-              const formatOnCurrentLine = getWordPositions(
-                editor,
-                expression.format,
-                true,
-                error.position.from.line,
-                true
-              );
-              return (
-                formatOnCurrentLine === undefined ||
-                expression.format === MathInputFormat.PLAIN_TEXT ||
-                expression.format === MathInputFormat.STRUCTURE_STRING ||
-                expression.format === MathInputFormat.TEX
-              );
-            })
-          ) {
-            destroyError(error, editor);
-          }
-        } else if (error.type === CMErrorType.INVALID_EXP) {
-          if (
-            expressions.every((expression) => {
-              const expressionOnCurrentLine = getWordPositions(
-                editor,
-                expression.expression,
-                true,
-                error.position.from.line,
-                true
-              );
-              if (expressionOnCurrentLine === undefined) {
-                return true;
-              } else {
-                return (
-                  (expression.format === MathInputFormat.PLAIN_TEXT ||
-                    expression.format === MathInputFormat.STRUCTURE_STRING ||
-                    expression.format === MathInputFormat.TEX) &&
-                  getErrorFromMathInput(
-                    expression.format as MathInputFormat,
-                    expression.expression
-                  ) === null
-                );
-              }
-            })
-          ) {
-            destroyError(error, editor);
-          }
-        }
-      });
-    }
-  };
+  // const checkActiveErrors = (editor: CodeMirror.Editor) => {
+  //   // active errors checking
+  //   if (errors.length !== 0) {
+  //     const excessiveProps = getExcessiveProps(editor.getValue());
+  //     const expressions = getAllExpressions(editor);
+  //     errors.forEach((error: CMError) => {
+  //       if (error.type === CMErrorType.EXCESSIVE_PROP) {
+  //         if (
+  //           excessiveProps.every((excessiveProp: string) => {
+  //             const excessivePropOnCurrentLine = getWordPositions(
+  //               editor,
+  //               excessiveProp,
+  //               true,
+  //               error.position.from.line,
+  //               true
+  //             );
+  //             console.log(error, excessivePropOnCurrentLine);
+  //             return !excessivePropOnCurrentLine;
+  //           })
+  //         ) {
+  //           console.log("Error destroyed");
+  //           destroyError(error, editor);
+  //         } else {
+  //           console.log("ERROR FOUND");
+  //         }
+  //       } else if (error.type === CMErrorType.WRONG_EXP_FORMAT) {
+  //         if (
+  //           expressions.every((expression) => {
+  //             const formatOnCurrentLine = getWordPositions(
+  //               editor,
+  //               expression.format,
+  //               true,
+  //               error.position.from.line,
+  //               true
+  //             );
+  //             return (
+  //               formatOnCurrentLine === undefined ||
+  //               expression.format === MathInputFormat.PLAIN_TEXT ||
+  //               expression.format === MathInputFormat.STRUCTURE_STRING ||
+  //               expression.format === MathInputFormat.TEX
+  //             );
+  //           })
+  //         ) {
+  //           destroyError(error, editor);
+  //         }
+  //       } else if (error.type === CMErrorType.INVALID_EXP) {
+  //         if (
+  //           expressions.every((expression) => {
+  //             const expressionOnCurrentLine = getWordPositions(
+  //               editor,
+  //               expression.expression,
+  //               true,
+  //               error.position.from.line,
+  //               true
+  //             );
+  //             if (expressionOnCurrentLine === undefined) {
+  //               return true;
+  //             } else {
+  //               return (
+  //                 (expression.format === MathInputFormat.PLAIN_TEXT ||
+  //                   expression.format === MathInputFormat.STRUCTURE_STRING ||
+  //                   expression.format === MathInputFormat.TEX) &&
+  //                 getErrorFromMathInput(
+  //                   expression.format as MathInputFormat,
+  //                   expression.expression
+  //                 ) === null
+  //               );
+  //             }
+  //           })
+  //         ) {
+  //           destroyError(error, editor);
+  //         }
+  //       }
+  //     });
+  //   }
+  // };
 
   const removeNotActualGutters = (errors: CMError[]): void => {
     Array.from(
@@ -490,32 +492,40 @@ const CodeMirrorEditor = ({
     });
   };
 
-  const checkExcessivePropInLine = (
-    editor: CodeMirror.Editor,
-    excessiveProps: string[],
-    line: number
-  ) => {
-    excessiveProps.forEach((excessiveProp: string) => {
-      const excessivePropOnCurrentLinePos = getWordPositions(
-        editor,
-        excessiveProp,
-        true,
-        line,
-        true
-      );
-      if (
-        excessivePropOnCurrentLinePos &&
-        !Array.isArray(excessivePropOnCurrentLinePos)
-      ) {
-        setErrorLineAndGutter(
-          editor,
-          excessivePropOnCurrentLinePos,
-          "unexpected property",
-          CMErrorType.EXCESSIVE_PROP
-        );
-      }
+  const removeAllGutters = () => {
+    Array.from(
+      document.querySelectorAll("div .CodeMirror-lint-marker-error")
+    ).forEach((element: Element) => {
+      element?.parentNode?.removeChild(element);
     });
   };
+
+  // const checkExcessivePropInLine = (
+  //   editor: CodeMirror.Editor,
+  //   excessiveProps: string[],
+  //   line: number
+  // ) => {
+  //   excessiveProps.forEach((excessiveProp: string) => {
+  //     const excessivePropOnCurrentLinePos = getWordPositions(
+  //       editor,
+  //       excessiveProp,
+  //       true,
+  //       line,
+  //       true
+  //     );
+  //     if (
+  //       excessivePropOnCurrentLinePos &&
+  //       !Array.isArray(excessivePropOnCurrentLinePos)
+  //     ) {
+  //       setErrorLineAndGutter(
+  //         editor,
+  //         excessivePropOnCurrentLinePos,
+  //         "unexpected property",
+  //         CMErrorType.EXCESSIVE_PROP
+  //       );
+  //     }
+  //   });
+  // };
 
   const getPositions = (
     editor: CodeMirror.Editor,
@@ -589,6 +599,240 @@ const CodeMirrorEditor = ({
 
   const [undoOrRedoIsTriggered, setUndoOrRedoIsTriggered] = useState(false);
 
+  const getAllExpressions = (editor: CodeMirror.Editor): ExpressionInput[] => {
+    try {
+      const editorValue = JSON.parse(editor.getValue());
+      const expressions: ExpressionInput[] = [];
+      const findAndAddExpressionsInObj = (obj: any) => {
+        for (const key in obj) {
+          if (
+            obj[key].hasOwnProperty("format") &&
+            obj[key].hasOwnProperty("expression")
+          ) {
+            expressions.push({ ...obj[key] });
+          } else if (Array.isArray(obj[key])) {
+            findAndAddExpressionsInObj(Object.assign({}, obj[key]));
+          } else if (typeof obj[key] === "object") {
+            findAndAddExpressionsInObj(obj[key]);
+          }
+        }
+      };
+      findAndAddExpressionsInObj(editorValue);
+      return expressions;
+    } catch (e) {
+      return [];
+    }
+  };
+
+  const getAllGutters = (): Element[] => {
+    return Array.from(
+      document.querySelectorAll("div .CodeMirror-lint-marker-error")
+    );
+  };
+
+  const removeAllErrorsOfType = (
+    editor: CodeMirror.Editor,
+    errorType: CMErrorType | "all"
+  ) => {
+    getAllGutters().forEach((element: Element) => {
+      if (
+        element.getAttribute("error-type") === errorType ||
+        errorType === "all"
+      ) {
+        element?.parentNode?.removeChild(element);
+      }
+    });
+    editor.getAllMarks().forEach((mark: TextMarker) => {
+      // @ts-ignore
+      if (errorType === mark.errorType || errorType === "all") {
+        mark.clear();
+      }
+    });
+  };
+
+  const checkAllExpressionsInputExpressions = (
+    editor: CodeMirror.Editor,
+    expressions: ExpressionInput[]
+  ) => {
+    removeAllErrorsOfType(editor, CMErrorType.INVALID_EXP);
+    const positions = getWordPositions(editor, '"expression"');
+  };
+
+  const isExpressionFormatValid = (
+    format: string | MathInputFormat
+  ): boolean => {
+    return (
+      format === MathInputFormat.STRUCTURE_STRING ||
+      format === MathInputFormat.PLAIN_TEXT ||
+      format === MathInputFormat.TEX
+    );
+  };
+  //
+  // const checkAllExpressions = (
+  //   editor: CodeMirror.Editor,
+  //   expressions: ExpressionInput[]
+  // ) => {
+  //   removeAllErrorsOfType(editor, CMErrorType.INVALID_EXP);
+  //   const expPositions = getWordPositions(editor, '"expression"');
+  //   expressions.forEach((expression: ExpressionInput, idx: number) => {
+  //     if (
+  //       isExpressionFormatValid(expression.format) &&
+  //       expression.expression !== ""
+  //     ) {
+  //       if (
+  //         getErrorFromMathInput(expression.format, expression.expression) !==
+  //         null
+  //       ) {
+  //         const expPosition = expPositions[idx];
+  //         const [errUnderlinePosition] = getWordPositions(
+  //           editor,
+  //           expression.expression,
+  //           true,
+  //           expPosition.from.line
+  //         );
+  //         setErrorLineAndGutter(
+  //           editor,
+  //           errUnderlinePosition,
+  //           "invalid expression",
+  //           CMErrorType.INVALID_EXP
+  //         );
+  //         // currentErrors.push({
+  //         //   gutterId: uidv4(),
+  //         //   position: errUnderlinePosition,
+  //         //   type: CMErrorType.INVALID_EXP,
+  //         // });
+  //       }
+  //     }
+  //   });
+  // };
+
+  // const checkAllExpressionsInputFormats = (
+  //   editor: CodeMirror.Editor,
+  //   expressions: ExpressionInput[]
+  // ) => {
+  //   removeAllErrorsOfType(editor, "all");
+  //   const formatPositions = getWordPositions(editor, '"format"');
+  //   expressions.forEach((expression: ExpressionInput, idx: number) => {
+  //     if (!isExpressionFormatValid(expression.format)) {
+  //       const formatPosition = formatPositions[idx];
+  //       const [errUnderlinePosition] = getWordPositions(
+  //         editor,
+  //         expression.format,
+  //         true,
+  //         formatPosition.from.line
+  //       );
+  //       setErrorLineAndGutter(
+  //         editor,
+  //         errUnderlinePosition,
+  //         "wrong format",
+  //         CMErrorType.WRONG_EXP_FORMAT
+  //       );
+  //       // currentErrors.push({
+  //       //   gutterId: uidv4(),
+  //       //   position: errUnderlinePosition,
+  //       //   type: CMErrorType.WRONG_EXP_FORMAT,
+  //       // });
+  //     }
+  //   });
+  // };
+
+  const removeErrorById = (editor: CodeMirror.Editor, id: string) => {
+    currentErrors = currentErrors.filter((error) => {
+      return error.gutterId === id;
+    });
+    getAllGutters().forEach((element: Element) => {
+      if (element.getAttribute("id") === id) {
+        element?.parentNode?.removeChild(element);
+      }
+    });
+    editor.getAllMarks().forEach((mark: TextMarker) => {
+      // @ts-ignore
+      if (mark.errorId === id) {
+        mark.clear();
+      }
+    });
+  };
+
+  const checkFormatInLine = (
+    editor: CodeMirror.Editor,
+    lineValue: string,
+    lineNumber: number
+  ): void => {
+    if (!lineValue.includes('"format"')) {
+      return;
+    }
+    const { value: format } = getKeyValuePairFromLine(lineValue);
+    // remove duplicate error
+    editor.getAllMarks().forEach((mark: TextMarker) => {
+      // @ts-ignore
+      if (mark.lines[0].lineNo() === lineNumber) {
+        // @ts-ignore
+        removeErrorById(editor, mark.errorId);
+      }
+    });
+    if (!isExpressionFormatValid(format)) {
+      setErrorLineAndGutter(
+        editor,
+        getWordPositions(editor, format, true, lineNumber)[0],
+        format,
+        "invalid format",
+        CMErrorType.WRONG_EXP_FORMAT
+      );
+    }
+  };
+
+  const checkExpressionInLine = (
+    editor: CodeMirror.Editor,
+    lineValue: string,
+    lineNumber: number
+  ): void => {
+    if (!lineValue.includes('"expression"')) {
+      return;
+    }
+    let format: string | null = null;
+    let searchLine = lineNumber;
+    while (
+      !editor.getLine(searchLine).includes('"format"') &&
+      !editor.getLine(searchLine).includes("{")
+    ) {
+      searchLine--;
+    }
+    if (!editor.getLine(searchLine).includes('"format"')) {
+      searchLine = lineNumber;
+      while (
+        !editor.getLine(searchLine).includes('"format"') &&
+        !editor.getLine(searchLine).includes("}")
+      ) {
+        searchLine++;
+      }
+    }
+    if (editor.getLine(searchLine).includes('"format"')) {
+      const { value } = getKeyValuePairFromLine(editor.getLine(searchLine));
+      format = value;
+    }
+    if (format === null || !isExpressionFormatValid(format)) {
+      return;
+    }
+    const { value: expression } = getKeyValuePairFromLine(lineValue);
+    // remove duplicate error
+    editor.getAllMarks().forEach((mark: TextMarker) => {
+      // @ts-ignore
+      if (mark.lines[0].lineNo() === lineNumber) {
+        // @ts-ignore
+        removeErrorById(editor, mark.errorId);
+      }
+    });
+    if (getErrorFromMathInput(format as MathInputFormat, expression) !== null) {
+      setErrorLineAndGutter(
+        editor,
+        getWordPositions(editor, expression, true, lineNumber)[0],
+        expression,
+        "invalid expression",
+        CMErrorType.INVALID_EXP
+      );
+    }
+  };
+
   useEffect(() => {
     const initialValue = currentReduxJSON;
     if (constructorType === ConstructorJSONType.RULE_PACK) {
@@ -605,6 +849,7 @@ const CodeMirrorEditor = ({
         initialValue.rulePacks = initialValue.rulePacks.split(",");
       }
     }
+
     if (entryPoint.current) {
       // setup editor
       const editor = CodeMirror(entryPoint.current, {
@@ -640,7 +885,22 @@ const CodeMirrorEditor = ({
       let isJSONValid: boolean = true;
       // setup editor's onchange actions
       editor.on("change", (editor, changeObject) => {
-        console.log(changeObject);
+        // checkAllExpressionsInputFormats(editor, getAllExpressions(editor));
+        // console.log(changeObject);
+        if (editor.getLine(changeObject.from.line).includes('"format"')) {
+          checkFormatInLine(
+            editor,
+            editor.getLine(changeObject.from.line),
+            changeObject.from.line
+          );
+        }
+        if (editor.getLine(changeObject.from.line).includes('"expression"')) {
+          checkExpressionInLine(
+            editor,
+            editor.getLine(changeObject.from.line),
+            changeObject.from.line
+          );
+        }
         try {
           JSON.parse(editor.getValue());
           setJSONValidity(constructorType, true);
@@ -958,138 +1218,138 @@ const CodeMirrorEditor = ({
         // }
 
         // excessive props check
-        checkExcessivePropInLine(
-          editor,
-          getExcessiveProps(editor.getValue()),
-          editor.getCursor().line
-        );
-        // console.log(allExpressions);
-        // check format on current line
-        const line = editor.getLine(editor.getCursor().line);
-        if (line.includes('"format":')) {
-          const [_, formatOnCurrentLine] = editor
-            .getLine(changeObject.from.line)
-            .split(":")
-            .map((item: string) => {
-              item = item.trim();
-              if (item.endsWith('",')) {
-                item = item.slice(0, -1);
-              }
-              return item.replace(/\"/g, "");
-            });
-          if (
-            formatOnCurrentLine &&
-            formatOnCurrentLine !== MathInputFormat.STRUCTURE_STRING &&
-            formatOnCurrentLine !== MathInputFormat.PLAIN_TEXT &&
-            formatOnCurrentLine !== MathInputFormat.TEX
-          ) {
-            const wordPosition = getWordPositions(
-              editor,
-              formatOnCurrentLine,
-              true,
-              editor.getCursor().line,
-              true
-            ) as CodeMirrorWordPosition | undefined;
-            if (wordPosition) {
-              setErrorLineAndGutter(
-                editor,
-                wordPosition,
-                "invalid expression format",
-                CMErrorType.WRONG_EXP_FORMAT
-              );
-            }
-          }
-        }
-        if (line.includes('"expression":')) {
-          const [_, expressionOnCurrentLine] = editor
-            .getLine(changeObject.from.line)
-            .split(":")
-            .map((item: string) => {
-              item = item.trim();
-              if (item.endsWith('",')) {
-                item = item.slice(0, -1);
-              }
-              return item.replace(/\"/g, "");
-            });
-          let format: string = "";
-          let searchLine = changeObject.from.line;
-          while (!editor.getLine(searchLine).includes("{")) {
-            if (editor.getLine(searchLine).includes('"format":')) {
-              format = editor
-                .getLine(searchLine)
-                .split(":")
-                .map((item: string) => {
-                  item = item.trim();
-                  if (item.endsWith('",')) {
-                    item = item.slice(0, -1);
-                  }
-                  return item.replace(/\"/g, "");
-                })[1];
-              break;
-            } else {
-              searchLine--;
-            }
-          }
-          if (!format) {
-            searchLine = changeObject.from.line;
-            while (!editor.getLine(searchLine).includes("}")) {
-              if (editor.getLine(searchLine).includes('"format":')) {
-                format = editor
-                  .getLine(searchLine)
-                  .split(":")
-                  .map((item: string) => {
-                    item = item.trim();
-                    if (item.endsWith('",')) {
-                      item = item.slice(0, -1);
-                    }
-                    return item.replace(/\"/g, "");
-                  })[1];
-                break;
-              } else {
-                searchLine++;
-              }
-            }
-          }
-          if (
-            format === MathInputFormat.STRUCTURE_STRING ||
-            format === MathInputFormat.PLAIN_TEXT ||
-            format === MathInputFormat.TEX
-          ) {
-            const errorMsg: string | null = getErrorFromMathInput(
-              format as MathInputFormat,
-              expressionOnCurrentLine
-            );
-            if (
-              expressionOnCurrentLine &&
-              !Array.isArray(expressionOnCurrentLine) &&
-              errorMsg !== null
-            ) {
-              setErrorLineAndGutter(
-                editor,
-                {
-                  from: {
-                    line: changeObject.from.line,
-                    ch: editor
-                      .getLine(changeObject.from.line)
-                      .indexOf(expressionOnCurrentLine[0]),
-                  },
-                  to: {
-                    line: changeObject.from.line,
-                    ch: editor
-                      .getLine(changeObject.from.line)
-                      .indexOf(
-                        expressionOnCurrentLine[
-                          expressionOnCurrentLine.length - 1
-                        ]
-                      ),
-                  },
-                },
-                errorMsg,
-                CMErrorType.INVALID_EXP
-              );
-            }
-          }
-        }
+        // checkExcessivePropInLine(
+        //   editor,
+        //   getExcessiveProps(editor.getValue()),
+        //   editor.getCursor().line
+        // );
+        // // console.log(allExpressions);
+        // // check format on current line
+        // const line = editor.getLine(editor.getCursor().line);
+        // if (line.includes('"format":')) {
+        //   const [_, formatOnCurrentLine] = editor
+        //     .getLine(changeObject.from.line)
+        //     .split(":")
+        //     .map((item: string) => {
+        //       item = item.trim();
+        //       if (item.endsWith('",')) {
+        //         item = item.slice(0, -1);
+        //       }
+        //       return item.replace(/\"/g, "");
+        //     });
+        //   if (
+        //     formatOnCurrentLine &&
+        //     formatOnCurrentLine !== MathInputFormat.STRUCTURE_STRING &&
+        //     formatOnCurrentLine !== MathInputFormat.PLAIN_TEXT &&
+        //     formatOnCurrentLine !== MathInputFormat.TEX
+        //   ) {
+        //     const wordPosition = getWordPositions(
+        //       editor,
+        //       formatOnCurrentLine,
+        //       true,
+        //       editor.getCursor().line,
+        //       true
+        //     ) as CodeMirrorWordPosition | undefined;
+        //     if (wordPosition) {
+        //       setErrorLineAndGutter(
+        //         editor,
+        //         wordPosition,
+        //         "invalid expression format",
+        //         CMErrorType.WRONG_EXP_FORMAT
+        //       );
+        //     }
+        //   }
+        // }
+        // if (line.includes('"expression":')) {
+        //   const [_, expressionOnCurrentLine] = editor
+        //     .getLine(changeObject.from.line)
+        //     .split(":")
+        //     .map((item: string) => {
+        //       item = item.trim();
+        //       if (item.endsWith('",')) {
+        //         item = item.slice(0, -1);
+        //       }
+        //       return item.replace(/\"/g, "");
+        //     });
+        //   let format: string = "";
+        //   let searchLine = changeObject.from.line;
+        //   while (!editor.getLine(searchLine).includes("{")) {
+        //     if (editor.getLine(searchLine).includes('"format":')) {
+        //       format = editor
+        //         .getLine(searchLine)
+        //         .split(":")
+        //         .map((item: string) => {
+        //           item = item.trim();
+        //           if (item.endsWith('",')) {
+        //             item = item.slice(0, -1);
+        //           }
+        //           return item.replace(/\"/g, "");
+        //         })[1];
+        //       break;
+        //     } else {
+        //       searchLine--;
+        //     }
+        //   }
+        //   if (!format) {
+        //     searchLine = changeObject.from.line;
+        //     while (!editor.getLine(searchLine).includes("}")) {
+        //       if (editor.getLine(searchLine).includes('"format":')) {
+        //         format = editor
+        //           .getLine(searchLine)
+        //           .split(":")
+        //           .map((item: string) => {
+        //             item = item.trim();
+        //             if (item.endsWith('",')) {
+        //               item = item.slice(0, -1);
+        //             }
+        //             return item.replace(/\"/g, "");
+        //           })[1];
+        //         break;
+        //       } else {
+        //         searchLine++;
+        //       }
+        //     }
+        //   }
+        //   if (
+        //     format === MathInputFormat.STRUCTURE_STRING ||
+        //     format === MathInputFormat.PLAIN_TEXT ||
+        //     format === MathInputFormat.TEX
+        //   ) {
+        //     const errorMsg: string | null = getErrorFromMathInput(
+        //       format as MathInputFormat,
+        //       expressionOnCurrentLine
+        //     );
+        //     if (
+        //       expressionOnCurrentLine &&
+        //       !Array.isArray(expressionOnCurrentLine) &&
+        //       errorMsg !== null
+        //     ) {
+        //       setErrorLineAndGutter(
+        //         editor,
+        //         {
+        //           from: {
+        //             line: changeObject.from.line,
+        //             ch: editor
+        //               .getLine(changeObject.from.line)
+        //               .indexOf(expressionOnCurrentLine[0]),
+        //           },
+        //           to: {
+        //             line: changeObject.from.line,
+        //             ch: editor
+        //               .getLine(changeObject.from.line)
+        //               .indexOf(
+        //                 expressionOnCurrentLine[
+        //                   expressionOnCurrentLine.length - 1
+        //                 ]
+        //               ),
+        //           },
+        //         },
+        //         errorMsg,
+        //         CMErrorType.INVALID_EXP
+        //       );
+        //     }
+        //   }
+        // }
         // check expression on current line
         // allExpressions.forEach((expression) => {
         //   // check formats
@@ -1139,8 +1399,8 @@ const CodeMirrorEditor = ({
         //     }
         //   }
         // });
-        checkActiveErrors(editor);
-        removeNotActualGutters(errors);
+        // checkActiveErrors(editor);
+        // removeNotActualGutters(errors);
       });
       setEditor(editor);
     }
