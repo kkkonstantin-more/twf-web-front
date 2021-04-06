@@ -9,6 +9,7 @@ import GoogleLogin from "react-google-login";
 import { useIntl } from "react-intl";
 import translate from "../../translations/translate";
 import {
+  googleButtonTextId,
   loginButtonText,
   loginErrorText,
   loginFormInputs,
@@ -50,30 +51,30 @@ const LoginForm = ({ hideModal }: { hideModal: () => void }) => {
       });
   };
 
-  // const responseGoogle = (response: any) => {
-  //   if (response.hasOwnProperty("error")) {
-  //     setAuthorized(false);
-  //   } else {
-  //     // setAuthorized(true);
-  //     // hideModal();
-  //     // send google's token to server
-  //     const idTokenString = response.tokenId;
-  //     console.log(response.tokenId);
-  //     axios({
-  //       method: "get",
-  //       url: `http://localhost:8080/api/auth/google_sing_in`,
-  //       params: { idTokenString },
-  //     })
-  //       .then((res) => {
-  //         console.log(res);
-  //         setAuthorized(res.status === 200);
-  //       })
-  //       .catch((e) => {
-  //         setAuthorized(false);
-  //         console.log(e.message);
-  //       });
-  //   }
-  // };
+  const responseGoogle = (response: any) => {
+    if (response.hasOwnProperty("error")) {
+      setAuthorized(false);
+    } else {
+      // setAuthorized(true);
+      // hideModal();
+      // send google's token to server
+      const idTokenString = response.tokenId;
+      console.log(response.tokenId);
+      axios({
+        method: "get",
+        url: process.env.REACT_APP_SERVER_API + "/google_sing_in",
+        params: { idTokenString },
+      })
+        .then((res) => {
+          console.log(res);
+          setAuthorized(res.status === 200);
+        })
+        .catch((e) => {
+          setAuthorized(false);
+          console.log(e.message);
+        });
+    }
+  };
 
   if (authorized) {
     return <Redirect to={"/constructor-menu"} />;
@@ -118,14 +119,14 @@ const LoginForm = ({ hideModal }: { hideModal: () => void }) => {
           <button type="submit" className="btn">
             {translate(loginButtonText)}
           </button>
-          {/*<GoogleLogin*/}
-          {/*  // this is demo client id*/}
-          {/*  clientId="977771799310-42c14i973bbuo8nnquld6houe6mfa2t1.apps.googleusercontent.com"*/}
-          {/*  buttonText={intl.formatMessage({ id: googleButtonTextId })}*/}
-          {/*  onSuccess={responseGoogle}*/}
-          {/*  onFailure={responseGoogle}*/}
-          {/*  cookiePolicy={"single_host_origin"}*/}
-          {/*/>*/}
+          <GoogleLogin
+            // this is demo client id
+            clientId="977771799310-42c14i973bbuo8nnquld6houe6mfa2t1.apps.googleusercontent.com"
+            buttonText={intl.formatMessage({ id: googleButtonTextId })}
+            onSuccess={responseGoogle}
+            onFailure={responseGoogle}
+            cookiePolicy={"single_host_origin"}
+          />
         </div>
       </form>
     );

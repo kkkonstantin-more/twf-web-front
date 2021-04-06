@@ -86,7 +86,7 @@ const RegisterForm = ({ hideModal }: { hideModal: () => void }) => {
       const idTokenString = response.tokenId;
       axios({
         method: "get",
-        url: `localhost:8080/api/auth/google_sign_in`,
+        url: process.env.REACT_APP_SERVER_API + "/auth/google_sign_in",
         params: { idTokenString },
         headers: {
           ["Access-Control-Allow-Origin"]: "*",
