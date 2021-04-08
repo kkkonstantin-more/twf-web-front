@@ -479,6 +479,11 @@ const CodeMirrorEditor = ({
   // };
 
   const removeNotActualGutters = (errors: CMError[]): void => {
+    console.log(document.querySelectorAll("div .CodeMirror-lint-marker-error"));
+    console.log(
+      Array.from(document.querySelectorAll("div .CodeMirror-lint-marker-error"))
+    );
+    console.log(errors);
     Array.from(
       document.querySelectorAll("div .CodeMirror-lint-marker-error")
     ).forEach((element: Element) => {
@@ -738,7 +743,7 @@ const CodeMirrorEditor = ({
 
   const removeErrorById = (editor: CodeMirror.Editor, id: string) => {
     currentErrors = currentErrors.filter((error) => {
-      return error.gutterId === id;
+      return error.gutterId !== id;
     });
     getAllGutters().forEach((element: Element) => {
       if (element.getAttribute("id") === id) {
@@ -753,24 +758,50 @@ const CodeMirrorEditor = ({
     });
   };
 
+  const findDuplicateErrorIdInLine = (
+    editor: CodeMirror.Editor,
+    lineNumber: number
+  ): string | null => {
+    let errorId: string | null = null;
+    editor.getAllMarks().forEach((mark: TextMarker) => {
+      // @ts-ignore
+      mark.lines.forEach((line) => {
+        if (line.lineNo() === lineNumber) {
+          // @ts-ignore
+          errorId = mark.errorId;
+        }
+      });
+    });
+    return errorId;
+  };
+
   const checkFormatInLine = (
     editor: CodeMirror.Editor,
     lineValue: string,
     lineNumber: number
   ): void => {
+    const duplicateErrorId: string | null = findDuplicateErrorIdInLine(
+      editor,
+      lineNumber
+    );
+    if (duplicateErrorId !== null) {
+      removeErrorById(editor, duplicateErrorId);
+      editor.setGutterMarker(lineNumber, "gutter-error", null);
+    }
     if (!lineValue.includes('"format"')) {
       return;
     }
     const { value: format } = getKeyValuePairFromLine(lineValue);
-    // remove duplicate error
-    editor.getAllMarks().forEach((mark: TextMarker) => {
-      // @ts-ignore
-      if (mark.lines[0].lineNo() === lineNumber) {
-        // @ts-ignore
-        removeErrorById(editor, mark.errorId);
-      }
-    });
+    console.log(lineNumber, format);
+    // const duplicateErrorId: string | null = findDuplicateErrorIdInLine(
+    //   editor,
+    //   lineNumber
+    // );
+    // if (duplicateErrorId !== null) {
+    //   removeErrorById(editor, duplicateErrorId);
+    // }
     if (!isExpressionFormatValid(format)) {
+      console.log("FORMAT IS INVALID");
       setErrorLineAndGutter(
         editor,
         getWordPositions(editor, format, true, lineNumber)[0],
@@ -779,6 +810,7 @@ const CodeMirrorEditor = ({
         CMErrorType.WRONG_EXP_FORMAT
       );
     }
+    console.log(getAllGutters());
   };
 
   const checkExpressionInLine = (
@@ -814,14 +846,14 @@ const CodeMirrorEditor = ({
       return;
     }
     const { value: expression } = getKeyValuePairFromLine(lineValue);
-    // remove duplicate error
-    editor.getAllMarks().forEach((mark: TextMarker) => {
-      // @ts-ignore
-      if (mark.lines[0].lineNo() === lineNumber) {
-        // @ts-ignore
-        removeErrorById(editor, mark.errorId);
-      }
-    });
+    const duplicateErrorId: string | null = findDuplicateErrorIdInLine(
+      editor,
+      lineNumber
+    );
+    if (duplicateErrorId !== null) {
+      removeErrorById(editor, duplicateErrorId);
+      editor.setGutterMarker(lineNumber, "gutter-error", null);
+    }
     if (getErrorFromMathInput(format as MathInputFormat, expression) !== null) {
       setErrorLineAndGutter(
         editor,
@@ -885,22 +917,21 @@ const CodeMirrorEditor = ({
       let isJSONValid: boolean = true;
       // setup editor's onchange actions
       editor.on("change", (editor, changeObject) => {
+        // @ts-ignore
+        window.editor = editor;
         // checkAllExpressionsInputFormats(editor, getAllExpressions(editor));
         // console.log(changeObject);
-        if (editor.getLine(changeObject.from.line).includes('"format"')) {
-          checkFormatInLine(
-            editor,
-            editor.getLine(changeObject.from.line),
-            changeObject.from.line
-          );
-        }
-        if (editor.getLine(changeObject.from.line).includes('"expression"')) {
-          checkExpressionInLine(
-            editor,
-            editor.getLine(changeObject.from.line),
-            changeObject.from.line
-          );
-        }
+        checkFormatInLine(
+          editor,
+          editor.getLine(changeObject.from.line),
+          changeObject.from.line
+        );
+
+        checkExpressionInLine(
+          editor,
+          editor.getLine(changeObject.from.line),
+          changeObject.from.line
+        );
         try {
           JSON.parse(editor.getValue());
           setJSONValidity(constructorType, true);
@@ -1007,126 +1038,185 @@ const CodeMirrorEditor = ({
             searchLine++;
           }
 
-          const notMatchingOpeningBrackets = brackets
-            .map((bracket: Bracket) => bracket.position)
-            .sort((a: CodeMirrorWordPosition, b: CodeMirrorWordPosition) => {
-              if (a.from.line > b.from.line) {
-                return -1;
+          const notMatchingOpeningBrackets = brackets.sort(
+            (a: Bracket, b: Bracket) => {
+              if (a.position.from.line > b.position.from.line) {
+                return 1;
               } else {
-                return 0;
-              }
-            });
-
-          notMatchingOpeningBrackets.forEach(
-            (
-              item: CodeMirrorWordPosition,
-              idx: number,
-              arr: CodeMirrorWordPosition[]
-            ) => {
-              if (
-                arr[idx + 1] &&
-                editor.getRange(arr[idx + 1].from, arr[idx + 1].to) === "["
-              ) {
-                return;
-              }
-              if (editor.getRange(item.from, item.to) === "{") {
-                let currentSearchLine = item.from.line;
-                let currentLine = editor.getLine(currentSearchLine);
-                while (!currentLine.match(/\"[A-Za-z]*\":/g)) {
-                  currentLine = editor.getLine(--currentSearchLine);
-                }
-                if (
-                  getKeyAndValueFromLine(editor, currentSearchLine)[1] === "["
-                ) {
-                  return;
-                } else {
-                  expPrefix =
-                    getKeyAndValueFromLine(editor, currentSearchLine)[0] +
-                    expPrefix +
-                    ".";
-                }
-              } else if (editor.getRange(item.from, item.to) === "[") {
-                let currentSearchLine = item.from.line;
-                let currentLine = editor.getLine(currentSearchLine);
-                while (!currentLine.match(/\"[A-Za-z]*\":/g)) {
-                  currentLine = editor.getLine(--currentSearchLine);
-                }
-                const parentKey = getKeyAndValueFromLine(
-                  editor,
-                  currentSearchLine
-                )[0];
-                const propertyPath = expPrefix + newKey;
-                const [closingBracketPos] = getPositions(
-                  editor,
-                  "]",
-                  item.from,
-                  {
-                    line: editor.lastLine(),
-                    ch: 999,
-                  }
-                );
-                console.log(propertyPath.split(".")[0]);
-                let occurrences = getPositions(
-                  editor,
-                  `"${propertyPath.split(".")[0]}":`,
-                  item.from,
-                  closingBracketPos.from
-                );
-                console.log(occurrences);
-                const nestingLevels = propertyPath.split(".");
-                if (nestingLevels.length !== 1) {
-                  nestingLevels.slice(1).forEach((level: string) => {
-                    occurrences.filter((occ: CodeMirrorWordPosition) => {
-                      return (
-                        getPositions(
-                          editor,
-                          `"${level}":`,
-                          occ.from,
-                          getPositions(editor, "}", occ.from, {
-                            line: editor.lastLine(),
-                            ch: 999,
-                          })[0].from
-                        ).length !== 0
-                      );
-                    });
-                    occurrences = occurrences.map(
-                      (occ: CodeMirrorWordPosition) => {
-                        return getPositions(
-                          editor,
-                          `"${level}":`,
-                          occ.from,
-                          getPositions(editor, "}", occ.from, {
-                            line: editor.lastLine(),
-                            ch: 999,
-                          })[0].from
-                        )[0];
-                      }
-                    );
-                  });
-                }
-                console.log(occurrences);
-                const currentIdx = occurrences.findIndex(
-                  (pos: CodeMirrorWordPosition) => {
-                    return pos.from.line === changeObject.from.line;
-                  }
-                );
-                console.log(currentIdx);
-                expPrefix = `${parentKey}[${currentIdx}].${expPrefix}`;
+                return -1;
               }
             }
           );
 
+          const findClosingBracket = (
+            editor: CodeMirror.Editor,
+            bracket: Bracket,
+            endLine?: number
+          ): Bracket => {
+            if (endLine === undefined) {
+              endLine = editor.lastLine();
+            }
+            const openingBracketChar = bracket.char;
+            const closingBracketChar = openingBracketChar === "{" ? "}" : "]";
+            let searchLine = bracket.position.from.line;
+            if (
+              editor.getLine(searchLine).includes(openingBracketChar) &&
+              editor.getLine(searchLine).includes(closingBracketChar)
+            ) {
+              return {
+                position: getWordPositions(
+                  editor,
+                  closingBracketChar,
+                  true,
+                  searchLine
+                )[0],
+                char: closingBracketChar,
+              };
+            }
+            searchLine++;
+            let bracketsStack = [];
+            let closingBracketLine: number | null = null;
+            while (closingBracketLine === null && searchLine !== endLine) {
+              const lineValue = editor.getLine(searchLine);
+              if (
+                lineValue.includes(openingBracketChar) &&
+                lineValue.includes(closingBracketChar)
+              ) {
+              } else if (lineValue.includes(openingBracketChar)) {
+                bracketsStack.push(openingBracketChar);
+              } else if (lineValue.includes(closingBracketChar)) {
+                if (
+                  bracketsStack[bracketsStack.length - 1] === openingBracketChar
+                ) {
+                  bracketsStack.pop();
+                } else {
+                  closingBracketLine = searchLine;
+                  break;
+                }
+              }
+              searchLine++;
+            }
+            if (closingBracketLine !== null) {
+              return {
+                position: getWordPositions(
+                  editor,
+                  closingBracketChar,
+                  true,
+                  searchLine
+                )[0],
+                char: closingBracketChar,
+              };
+            } else {
+              return bracket;
+            }
+          };
+
+          console.log(
+            "Not matching opening brackets",
+            notMatchingOpeningBrackets
+          );
+
+          notMatchingOpeningBrackets.forEach((bracket) =>
+            console.log(findClosingBracket(editor, bracket))
+          );
+
+          notMatchingOpeningBrackets.forEach(
+            (bracket: Bracket, i: number, brackets: Bracket[]) => {
+              if (brackets[i - 1] && brackets[i - 1].char === "[") {
+                const closingArrayBracketLine = findClosingBracket(
+                  editor,
+                  brackets[i - 1]
+                ).position.from.line;
+                // find first opening bracket after opened array
+                const findFirstOpeningBracketAfterLine = (
+                  searchLine: number,
+                  bracketChar: string,
+                  endLine?: number
+                ) => {
+                  if (endLine === undefined) {
+                    endLine = editor.lastLine();
+                  }
+                  while (
+                    !editor.getLine(searchLine).includes(openingBracketChar) &&
+                    searchLine !== endLine
+                  ) {
+                    searchLine++;
+                  }
+                  if (searchLine === endLine) {
+                    return null;
+                  }
+                  return {
+                    position: getWordPositions(
+                      editor,
+                      openingBracketChar,
+                      true,
+                      searchLine
+                    )[0],
+                    char: openingBracketChar,
+                  };
+                };
+                const openingBracketChar = bracket.char;
+                let idxCounter: number = -1;
+                let searchIdxsLine = brackets[i - 1].position.from.line;
+                while (
+                  findFirstOpeningBracketAfterLine(
+                    searchIdxsLine,
+                    openingBracketChar,
+                    closingArrayBracketLine
+                  ) !== null
+                ) {
+                  idxCounter++;
+                  searchIdxsLine = findClosingBracket(
+                    editor,
+                    // @ts-ignore
+                    findFirstOpeningBracketAfterLine(
+                      searchIdxsLine,
+                      openingBracketChar,
+                      closingArrayBracketLine
+                    ),
+                    closingArrayBracketLine
+                  ).position.from.line;
+                }
+                console.log("idx " + idxCounter);
+                expPrefix += `[${idxCounter}]`;
+              } else if (bracket.char === "[" || bracket.char === "{") {
+                // find key of opening bracket
+                let searchKeyLine = bracket.position.from.line;
+                while (
+                  !editor.getLine(searchKeyLine).match(/\"[A-Za-z]*\":/g)
+                ) {
+                  searchKeyLine--;
+                }
+                const { key } = getKeyValuePairFromLine(
+                  editor.getLine(searchKeyLine)
+                );
+                if (expPrefix) {
+                  expPrefix += `.${key}`;
+                } else {
+                  expPrefix = key;
+                }
+              }
+            }
+          );
+
+          const newPropertyPath = expPrefix ? expPrefix + `.${newKey}` : newKey;
+          const oldPropertyPath = expPrefix ? expPrefix + `.${oldKey}` : oldKey;
+
+          console.log("new property path ", newPropertyPath);
+          console.log("old property path ", oldPropertyPath);
+
           addOneLineChangeToHistory(
             {
-              propertyPath: expPrefix + oldKey,
+              propertyPath: newPropertyPath,
               value: oldVal,
             },
             {
-              propertyPath: expPrefix + newKey,
+              propertyPath: oldPropertyPath,
               value: newVal,
             },
             constructorType
           );
+
           try {
             updateCurrentReduxJSON(JSON.parse(editor.getValue()));
           } catch {}
@@ -1400,7 +1490,9 @@ const CodeMirrorEditor = ({
         //   }
         // });
         // checkActiveErrors(editor);
-        // removeNotActualGutters(errors);
+        // setTimeout(() => {
+        // removeNotActualGutters(currentErrors);
+        // }, 0);
       });
       setEditor(editor);
     }
