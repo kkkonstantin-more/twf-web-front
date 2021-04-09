@@ -19,6 +19,7 @@ import {
 import { FormInput } from "../types";
 // styles
 import "./login-form.styles.scss";
+import { errorUnknown, success } from "../regiser-form/register-form.data";
 
 const LoginForm = ({ hideModal }: { hideModal: () => void }) => {
   // hooks
@@ -55,23 +56,24 @@ const LoginForm = ({ hideModal }: { hideModal: () => void }) => {
     if (response.hasOwnProperty("error")) {
       setAuthorized(false);
     } else {
-      // setAuthorized(true);
-      // hideModal();
-      // send google's token to server
       const idTokenString = response.tokenId;
-      console.log(response.tokenId);
       axios({
         method: "get",
-        url: process.env.REACT_APP_SERVER_API + "/google_sing_in",
+        url: process.env.REACT_APP_SERVER_API + "/auth/google_sign_in",
         params: { idTokenString },
       })
         .then((res) => {
-          console.log(res);
           setAuthorized(res.status === 200);
+          setErrorMessage(false);
+          window.localStorage.setItem("token", res.data.token);
+          hideModal();
         })
         .catch((e) => {
-          setAuthorized(false);
+          console.log(e);
           console.log(e.message);
+          setAuthorized(false);
+          setErrorMessage(true);
+          window.localStorage.removeItem("token");
         });
     }
   };

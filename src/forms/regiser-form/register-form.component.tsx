@@ -82,7 +82,6 @@ const RegisterForm = ({ hideModal }: { hideModal: () => void }) => {
     if (response.hasOwnProperty("error")) {
       setRegistered(false);
     } else {
-      console.log(response);
       const idTokenString = response.tokenId;
       axios({
         method: "get",
@@ -93,13 +92,19 @@ const RegisterForm = ({ hideModal }: { hideModal: () => void }) => {
         },
       })
         .then((res) => {
-          console.log(res);
-          // setAuthorized(res.status === 200);
+          setRegistered(res.status === 200);
+          window.localStorage.setItem("token", res.data.token);
+          setErrorMessage(null);
+          setSuccessMessage(success);
+          reset();
+          hideModal();
         })
         .catch((e) => {
-          // setAuthorized(false);
+          setRegistered(false);
           console.log(e);
           console.log(e.message);
+          setErrorMessage(errorUnknown);
+          window.localStorage.removeItem("token");
         });
     }
   };
