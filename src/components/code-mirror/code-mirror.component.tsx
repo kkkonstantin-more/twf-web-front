@@ -1,8 +1,13 @@
 // libs and hooks
-// types
 import React, { Dispatch, useEffect, useRef, useState } from "react";
-import CodeMirror, { Position, TextMarker } from "codemirror";
 import { v4 as uidv4 } from "uuid";
+// custom components
+import ActionButton from "../action-button/action-button.component";
+// utils
+import {
+  getErrorFromMathInput,
+  MathInputFormat,
+} from "../../utils/kotlin-lib-functions";
 // redux
 import CONSTRUCTOR_JSONS_INITIAL_STATE from "../../redux/constructor-jsons/constructor-jsons.state";
 import { connect, ConnectedProps } from "react-redux";
@@ -21,6 +26,32 @@ import {
   updateRulePackJSON,
   updateTaskSetJSON,
 } from "../../redux/constructor-jsons/constructor-jsons.actions";
+import {
+  addMultipleLinesChangeToHistory,
+  addOneLineChangeToHistory,
+  redoHistory,
+  undoHistory,
+} from "../../redux/constructor-history/constructor-history.actions";
+import {
+  ConstructorHistoryItem,
+  ExpressionChange,
+} from "../../redux/constructor-history/constructor-history.types";
+import {
+  selectCurrentNamespaceHistoryChange,
+  selectCurrentRulePackHistoryChange,
+  selectCurrentTaskSetHistoryChange,
+} from "../../redux/constructor-history/constructor-history.selectors";
+// types
+import CodeMirror, { Position, TextMarker } from "codemirror";
+import { ActionButtonProps } from "../action-button/action-button.types";
+import { ExpressionInput } from "../../constructors/task-constructor/task-constructor.types";
+import {
+  Bracket,
+  CMError,
+  CMErrorType,
+  CodeMirrorProps,
+  CodeMirrorWordPosition,
+} from "./code-mirror.types";
 // codemirror core addons
 import "codemirror/mode/javascript/javascript";
 import "codemirror/lib/codemirror.css";
@@ -48,61 +79,15 @@ import { NamespaceConstructorInputs } from "../../constructors/namespace-constru
 import { RootState } from "../../redux/root-reducer";
 import { RulePackConstructorInputs } from "../../constructors/rule-pack-constructor/rule-pack-constructor.types";
 import { TaskSetConstructorInputs } from "../../constructors/task-set-constructor/task-set-constructor.types";
+// assets
+import { mdiFindReplace, mdiMagnify } from "@mdi/js";
 // styles
 import "./code-mirror.styles.scss";
-import {
-  getErrorFromMathInput,
-  MathInputFormat,
-} from "../../utils/kotlin-lib-functions";
-import ActionButton from "../action-button/action-button.component";
-import { mdiFindReplace, mdiMagnify } from "@mdi/js";
-import { ActionButtonProps } from "../action-button/action-button.types";
-import {
-  addMultipleLinesChangeToHistory,
-  addOneLineChangeToHistory,
-  redoHistory,
-  undoHistory,
-} from "../../redux/constructor-history/constructor-history.actions";
-import {
-  ConstructorHistoryItem,
-  ExpressionChange,
-} from "../../redux/constructor-history/constructor-history.types";
-import {
-  selectCurrentNamespaceHistoryChange,
-  selectCurrentRulePackHistoryChange,
-  selectCurrentTaskSetHistoryChange,
-} from "../../redux/constructor-history/constructor-history.selectors";
-import { ExpressionInput } from "../../constructors/task-constructor/task-constructor.types";
-// jsonlint config
+
+// setup json linter
 const jsonlint = require("jsonlint-mod");
 // @ts-ignore
 window["jsonlint"] = jsonlint;
-
-export interface CodeMirrorProps {
-  constructorType: ConstructorJSONType;
-}
-
-export interface CodeMirrorWordPosition {
-  from: Position;
-  to: Position;
-}
-
-enum CMErrorType {
-  EXCESSIVE_PROP = "excessive prop",
-  INVALID_EXP = "invalid expression",
-  WRONG_EXP_FORMAT = "wrong expression format",
-}
-
-interface CMError {
-  type: CMErrorType;
-  invalidValue: string;
-  gutterId: string;
-}
-
-interface Bracket {
-  char: "{" | "[" | "}" | "]";
-  position: CodeMirrorWordPosition;
-}
 
 const CodeMirrorEditor = ({
   constructorType,
@@ -119,28 +104,11 @@ const CodeMirrorEditor = ({
   redo,
   addOneLineChangeToHistory,
   addMultipleLinesChangeToHistory,
-  isNamespaceJSONValid,
-  isRulePackJSONValid,
-  isTaskSetJSONValid,
   setJSONValidity,
 }: CodeMirrorProps & ConnectedProps<typeof connector>): JSX.Element => {
   const [editor, setEditor] = useState<any>(null);
-  const [dynamicErrors, setDynamicErrors] = useState<CMError[]>([]);
-  let errors: CMError[] = [];
   let currentErrors: CMError[] = [];
-
   const entryPoint: React.Ref<any> = useRef();
-
-  const isCurrentJSONValid = (() => {
-    switch (constructorType) {
-      case ConstructorJSONType.NAMESPACE:
-        return isNamespaceJSONValid;
-      case ConstructorJSONType.RULE_PACK:
-        return isRulePackJSONValid;
-      case ConstructorJSONType.TASK_SET:
-        return isTaskSetJSONValid;
-    }
-  })();
 
   const currentReduxJSON = (() => {
     switch (constructorType) {
@@ -259,42 +227,6 @@ const CodeMirrorEditor = ({
     return wordPositions;
   };
 
-  // TODO: refactor function, remove inner function, make it clean
-  const getExcessiveProps = (doc: string): string[] => {
-    try {
-      JSON.parse(doc);
-    } catch {
-      return [];
-    }
-    const excessiveProps: string[] = [];
-    const addExcessiveProps = (editorValue: any, initialValue: any) => {
-      const editorProps = Object.keys(editorValue);
-      const allowedProps = Object.keys(initialValue);
-      editorProps.forEach((prop: string) => {
-        if (!allowedProps.includes(prop)) {
-          excessiveProps.push(prop);
-        } else if (
-          Array.isArray(editorValue[prop]) &&
-          Array.isArray(initialValue[prop]) &&
-          editorValue[prop].length !== 0 &&
-          initialValue[prop].length !== 0
-        ) {
-          editorValue[prop].forEach((value: any) => {
-            addExcessiveProps(value, initialValue[prop][0]);
-          });
-        } else if (typeof editorValue[prop] === "object") {
-          addExcessiveProps(editorValue[prop], initialValue[prop]);
-        }
-      });
-    };
-    try {
-      addExcessiveProps(JSON.parse(doc), initialReduxJSON);
-    } catch {
-      return [];
-    }
-    return excessiveProps;
-  };
-
   const setErrorLineAndGutter = (
     editor: CodeMirror.Editor,
     wordPosition: CodeMirrorWordPosition,
@@ -325,41 +257,7 @@ const CodeMirrorEditor = ({
     currentErrors.push({
       invalidValue,
       gutterId: id,
-      type: CMErrorType.WRONG_EXP_FORMAT,
-    });
-  };
-
-  const destroyAllErrors = (editor: CodeMirror.Editor): void => {
-    editor.clearGutter("gutter-error");
-    editor.getAllMarks().forEach((mark: TextMarker) => {
-      mark.clear();
-    });
-  };
-
-  const removeNotActualGutters = (errors: CMError[]): void => {
-    console.log(document.querySelectorAll("div .CodeMirror-lint-marker-error"));
-    console.log(
-      Array.from(document.querySelectorAll("div .CodeMirror-lint-marker-error"))
-    );
-    console.log(errors);
-    Array.from(
-      document.querySelectorAll("div .CodeMirror-lint-marker-error")
-    ).forEach((element: Element) => {
-      if (
-        !errors.some((error: CMError) => {
-          return error.gutterId === element.id;
-        })
-      ) {
-        element?.parentNode?.removeChild(element);
-      }
-    });
-  };
-
-  const removeAllGutters = () => {
-    Array.from(
-      document.querySelectorAll("div .CodeMirror-lint-marker-error")
-    ).forEach((element: Element) => {
-      element?.parentNode?.removeChild(element);
+      type: errorType,
     });
   };
 
@@ -383,81 +281,25 @@ const CodeMirrorEditor = ({
     return res;
   };
 
-  const getKeyAndValueFromLine = (
-    editor: CodeMirror.Editor,
-    line: number
-  ): string[] => {
-    return editor
-      .getLine(line)
-      .split(":")
-      .map((item: string) => {
-        return item.replace(/\"|\,/g, "").trim();
-      });
-  };
-
-  useEffect(() => {
-    if (editor && currentHistoryChange && undoOrRedoIsTriggered) {
-      try {
-        if (currentHistoryChange.type === "ONE_LINE_CHANGE") {
-          const cursorPos = editor.getCursor();
-          const setToValue = (obj: any, value: any, path: any) => {
-            console.log(path);
-            console.log(value);
-            let i;
-            path = path.split(".");
-            for (i = 0; i < path.length - 1; i++) {
-              obj = obj[path[i]];
-            }
-            obj[path[i]] = value;
-          };
-          const newEditorVal = JSON.parse(editor.getValue());
-          setToValue(
-            newEditorVal,
-            currentHistoryChange.item.value,
-            currentHistoryChange.item.propertyPath
-              .replace("[", ".")
-              .replace("]", "")
-          );
-          console.log(newEditorVal);
-          editor.setValue(JSON.stringify(newEditorVal, null, 2));
-          editor.setCursor(cursorPos);
-        } else if (currentHistoryChange.type === "MULTIPLE_LINES_CHANGE") {
-          editor.setValue(JSON.stringify(currentHistoryChange.item, null, 2));
-          // @ts-ignore
-          updateCurrentReduxJSON(currentHistoryChange.item);
-        }
-      } catch (e) {
-        console.log("ERROR WHILE UNDO/REDO", e.message);
-        return;
-      }
-    }
-  }, [currentHistoryChange]);
-
-  const [undoOrRedoIsTriggered, setUndoOrRedoIsTriggered] = useState(false);
-
   const getAllExpressions = (editor: CodeMirror.Editor): ExpressionInput[] => {
-    try {
-      const editorValue = JSON.parse(editor.getValue());
-      const expressions: ExpressionInput[] = [];
-      const findAndAddExpressionsInObj = (obj: any) => {
-        for (const key in obj) {
-          if (
-            obj[key].hasOwnProperty("format") &&
-            obj[key].hasOwnProperty("expression")
-          ) {
-            expressions.push({ ...obj[key] });
-          } else if (Array.isArray(obj[key])) {
-            findAndAddExpressionsInObj(Object.assign({}, obj[key]));
-          } else if (typeof obj[key] === "object") {
-            findAndAddExpressionsInObj(obj[key]);
-          }
+    const editorValue = JSON.parse(editor.getValue());
+    const expressions: ExpressionInput[] = [];
+    const findAndAddExpressionsInObj = (obj: any) => {
+      for (const key in obj) {
+        if (
+          obj[key].hasOwnProperty("format") &&
+          obj[key].hasOwnProperty("expression")
+        ) {
+          expressions.push({ ...obj[key] });
+        } else if (Array.isArray(obj[key])) {
+          findAndAddExpressionsInObj(Object.assign({}, obj[key]));
+        } else if (typeof obj[key] === "object") {
+          findAndAddExpressionsInObj(obj[key]);
         }
-      };
-      findAndAddExpressionsInObj(editorValue);
-      return expressions;
-    } catch (e) {
-      return [];
-    }
+      }
+    };
+    findAndAddExpressionsInObj(editorValue);
+    return expressions;
   };
 
   const getAllGutters = (): Element[] => {
@@ -486,14 +328,6 @@ const CodeMirrorEditor = ({
     });
   };
 
-  const checkAllExpressionsInputExpressions = (
-    editor: CodeMirror.Editor,
-    expressions: ExpressionInput[]
-  ) => {
-    removeAllErrorsOfType(editor, CMErrorType.INVALID_EXP);
-    const positions = getWordPositions(editor, '"expression"');
-  };
-
   const isExpressionFormatValid = (
     format: string | MathInputFormat
   ): boolean => {
@@ -503,74 +337,6 @@ const CodeMirrorEditor = ({
       format === MathInputFormat.TEX
     );
   };
-  //
-  // const checkAllExpressions = (
-  //   editor: CodeMirror.Editor,
-  //   expressions: ExpressionInput[]
-  // ) => {
-  //   removeAllErrorsOfType(editor, CMErrorType.INVALID_EXP);
-  //   const expPositions = getWordPositions(editor, '"expression"');
-  //   expressions.forEach((expression: ExpressionInput, idx: number) => {
-  //     if (
-  //       isExpressionFormatValid(expression.format) &&
-  //       expression.expression !== ""
-  //     ) {
-  //       if (
-  //         getErrorFromMathInput(expression.format, expression.expression) !==
-  //         null
-  //       ) {
-  //         const expPosition = expPositions[idx];
-  //         const [errUnderlinePosition] = getWordPositions(
-  //           editor,
-  //           expression.expression,
-  //           true,
-  //           expPosition.from.line
-  //         );
-  //         setErrorLineAndGutter(
-  //           editor,
-  //           errUnderlinePosition,
-  //           "invalid expression",
-  //           CMErrorType.INVALID_EXP
-  //         );
-  //         // currentErrors.push({
-  //         //   gutterId: uidv4(),
-  //         //   position: errUnderlinePosition,
-  //         //   type: CMErrorType.INVALID_EXP,
-  //         // });
-  //       }
-  //     }
-  //   });
-  // };
-
-  // const checkAllExpressionsInputFormats = (
-  //   editor: CodeMirror.Editor,
-  //   expressions: ExpressionInput[]
-  // ) => {
-  //   removeAllErrorsOfType(editor, "all");
-  //   const formatPositions = getWordPositions(editor, '"format"');
-  //   expressions.forEach((expression: ExpressionInput, idx: number) => {
-  //     if (!isExpressionFormatValid(expression.format)) {
-  //       const formatPosition = formatPositions[idx];
-  //       const [errUnderlinePosition] = getWordPositions(
-  //         editor,
-  //         expression.format,
-  //         true,
-  //         formatPosition.from.line
-  //       );
-  //       setErrorLineAndGutter(
-  //         editor,
-  //         errUnderlinePosition,
-  //         "wrong format",
-  //         CMErrorType.WRONG_EXP_FORMAT
-  //       );
-  //       // currentErrors.push({
-  //       //   gutterId: uidv4(),
-  //       //   position: errUnderlinePosition,
-  //       //   type: CMErrorType.WRONG_EXP_FORMAT,
-  //       // });
-  //     }
-  //   });
-  // };
 
   const removeErrorById = (editor: CodeMirror.Editor, id: string) => {
     currentErrors = currentErrors.filter((error) => {
@@ -613,7 +379,228 @@ const CodeMirrorEditor = ({
     return errorId;
   };
 
-  const checkFormatInLine = (
+  const isOneLineChange = (changeObject: CodeMirror.EditorChange): boolean => {
+    return (
+      ((changeObject.origin === "+input" || changeObject.origin === "paste") &&
+        changeObject.text.length === 1) ||
+      ((changeObject.origin === "+delete" || changeObject.origin === "cut") &&
+        changeObject.removed?.length === 1)
+    );
+  };
+
+  const isMultipleLineDelete = (
+    changeObject: CodeMirror.EditorChange
+  ): boolean => {
+    return !!(
+      (changeObject.origin === "cut" || changeObject.origin === "+delete") &&
+      changeObject.removed &&
+      changeObject.removed.length > 1
+    );
+  };
+
+  const isMultipleLineAdd = (
+    changeObject: CodeMirror.EditorChange
+  ): boolean => {
+    return changeObject.origin === "paste" && changeObject.text.length > 1;
+  };
+
+  const getNotMatchingOpeningBracketsBeforeLine = (
+    editor: CodeMirror.Editor,
+    lineNum: number
+  ): Bracket[] => {
+    const brackets: Bracket[] = [];
+    let searchLine = 1;
+    while (searchLine < lineNum) {
+      const lineValue = editor.getLine(searchLine);
+      if (
+        !(lineValue.includes("[") && lineValue.includes("]")) &&
+        !(lineValue.includes("{") && lineValue.includes("}"))
+      ) {
+        if (lineValue.includes("{")) {
+          brackets.push({
+            char: "{",
+            position: getPositions(
+              editor,
+              "{",
+              { line: searchLine, ch: 0 },
+              { line: searchLine, ch: 999 }
+            )[0],
+          });
+        } else if (lineValue.includes("[")) {
+          brackets.push({
+            char: "[",
+            position: getPositions(
+              editor,
+              "[",
+              { line: searchLine, ch: 0 },
+              { line: searchLine, ch: 999 }
+            )[0],
+          });
+        } else if (lineValue.includes("}")) {
+          if (brackets[brackets.length - 1].char === "{") {
+            brackets.pop();
+          }
+        } else if (lineValue.includes("]")) {
+          if (brackets[brackets.length - 1].char === "[") {
+            brackets.pop();
+          }
+        }
+      }
+      searchLine++;
+    }
+    return brackets;
+  };
+
+  const findClosingBracketForOpeningBracket = (
+    editor: CodeMirror.Editor,
+    openingBracket: Bracket,
+    endLine?: number
+  ): Bracket => {
+    if (endLine === undefined) {
+      endLine = editor.lastLine();
+    }
+    const openingBracketChar = openingBracket.char;
+    const closingBracketChar = openingBracketChar === "{" ? "}" : "]";
+    let searchLine = openingBracket.position.from.line;
+    if (
+      editor.getLine(searchLine).includes(openingBracketChar) &&
+      editor.getLine(searchLine).includes(closingBracketChar)
+    ) {
+      return {
+        position: getWordPositions(
+          editor,
+          closingBracketChar,
+          true,
+          searchLine
+        )[0],
+        char: closingBracketChar,
+      };
+    }
+    searchLine++;
+    let bracketsStack = [];
+    let closingBracketLine: number | null = null;
+    while (closingBracketLine === null && searchLine !== endLine) {
+      const lineValue = editor.getLine(searchLine);
+      if (
+        lineValue.includes(openingBracketChar) &&
+        lineValue.includes(closingBracketChar)
+      ) {
+      } else if (lineValue.includes(openingBracketChar)) {
+        bracketsStack.push(openingBracketChar);
+      } else if (lineValue.includes(closingBracketChar)) {
+        if (bracketsStack[bracketsStack.length - 1] === openingBracketChar) {
+          bracketsStack.pop();
+        } else {
+          closingBracketLine = searchLine;
+          break;
+        }
+      }
+      searchLine++;
+    }
+    if (closingBracketLine !== null) {
+      return {
+        position: getWordPositions(
+          editor,
+          closingBracketChar,
+          true,
+          searchLine
+        )[0],
+        char: closingBracketChar,
+      };
+    } else {
+      return openingBracket;
+    }
+  };
+
+  const findPositionByPropertyPath = (
+    editor: CodeMirror.Editor,
+    propertyPath: string
+  ): CodeMirrorWordPosition => {
+    let currentCursor: any;
+    let currentBottomLine: number = 0;
+    const traverseKeys: string[] = propertyPath
+      .replace(/\[/g, ".")
+      .replace(/\]/g, ".")
+      .replace("..", ".")
+      .split(".");
+
+    traverseKeys.forEach((key: string, i: number, arr: string[]) => {
+      if (!isNaN(parseInt(key))) {
+        return;
+      }
+      if (arr[i - 1] && !isNaN(parseInt(arr[i - 1]))) {
+        const idx = parseInt(arr[i - 1]);
+        // @ts-ignore
+        currentCursor = editor.getSearchCursor("{", {
+          line: currentBottomLine,
+          ch: 0,
+        });
+        currentCursor.find();
+        currentBottomLine = currentCursor.from().line;
+        for (let i = 0; i < idx; i++) {
+          // @ts-ignore
+          currentCursor = editor.getSearchCursor("{", {
+            line: findClosingBracketForOpeningBracket(editor, {
+              char: "{",
+              position: {
+                from: currentCursor.from(),
+                to: currentCursor.to(),
+              },
+            }).position.from.line,
+            ch: 0,
+          });
+          currentCursor.find();
+          currentBottomLine = currentCursor.from().line;
+        }
+        // @ts-ignore
+        currentCursor = editor.getSearchCursor(`"${key}"`, {
+          line: currentBottomLine,
+          ch: 0,
+        });
+        currentCursor.find();
+        currentBottomLine = currentCursor.from().line;
+      } else {
+        // @ts-ignore
+        currentCursor = editor.getSearchCursor(`"${key}"`, {
+          line: currentBottomLine,
+          ch: 0,
+        });
+        currentCursor.find();
+        currentBottomLine = currentCursor.from().line;
+      }
+    });
+
+    return {
+      from: currentCursor.from(),
+      to: currentCursor.to(),
+    };
+  };
+
+  const findFirstOpeningBracketAfterLine = (
+    editor: CodeMirror.Editor,
+    searchLine: number,
+    bracketChar: string,
+    endLine?: number
+  ) => {
+    if (endLine === undefined) {
+      endLine = editor.lastLine();
+    }
+    while (
+      !editor.getLine(searchLine).includes(bracketChar) &&
+      searchLine !== endLine
+    ) {
+      searchLine++;
+    }
+    if (searchLine === endLine) {
+      return null;
+    }
+    return {
+      position: getWordPositions(editor, bracketChar, true, searchLine)[0],
+      char: bracketChar,
+    };
+  };
+
+  const checkExpressionFormatInLine = (
     editor: CodeMirror.Editor,
     lineValue: string,
     lineNumber: number
@@ -632,16 +619,7 @@ const CodeMirrorEditor = ({
       return;
     }
     const { value: format } = getKeyValuePairFromLine(lineValue);
-    console.log(lineNumber, format);
-    // const duplicateErrorId: string | null = findDuplicateErrorIdInLine(
-    //   editor,
-    //   lineNumber
-    // );
-    // if (duplicateErrorId !== null) {
-    //   removeErrorById(editor, duplicateErrorId);
-    // }
     if (!isExpressionFormatValid(format)) {
-      console.log("FORMAT IS INVALID");
       setErrorLineAndGutter(
         editor,
         getWordPositions(editor, format, true, lineNumber)[0],
@@ -650,7 +628,6 @@ const CodeMirrorEditor = ({
         CMErrorType.WRONG_EXP_FORMAT
       );
     }
-    console.log(getAllGutters());
   };
 
   const checkExpressionInLine = (
@@ -658,6 +635,16 @@ const CodeMirrorEditor = ({
     lineValue: string,
     lineNumber: number
   ): void => {
+    const duplicateErrorId: string | null = findDuplicateErrorIdInLine(
+      editor,
+      lineNumber,
+      CMErrorType.INVALID_EXP,
+      currentErrors
+    );
+    if (duplicateErrorId !== null) {
+      removeErrorById(editor, duplicateErrorId);
+      editor.setGutterMarker(lineNumber, "gutter-error", null);
+    }
     if (!lineValue.includes('"expression"')) {
       return;
     }
@@ -686,16 +673,6 @@ const CodeMirrorEditor = ({
       return;
     }
     const { value: expression } = getKeyValuePairFromLine(lineValue);
-    const duplicateErrorId: string | null = findDuplicateErrorIdInLine(
-      editor,
-      lineNumber,
-      CMErrorType.INVALID_EXP,
-      currentErrors
-    );
-    if (duplicateErrorId !== null) {
-      removeErrorById(editor, duplicateErrorId);
-      editor.setGutterMarker(lineNumber, "gutter-error", null);
-    }
     if (getErrorFromMathInput(format as MathInputFormat, expression) !== null) {
       setErrorLineAndGutter(
         editor,
@@ -707,23 +684,207 @@ const CodeMirrorEditor = ({
     }
   };
 
-  useEffect(() => {
-    const initialValue = currentReduxJSON;
-    if (constructorType === ConstructorJSONType.RULE_PACK) {
-      //@ts-ignore
-      if (
-        //@ts-ignore
-        initialValue.rulePacks &&
-        //@ts-ignore
-        typeof initialValue.rulePacks === "string" &&
-        //@ts-ignore
-        initialValue.rulePacks.includes(",")
-      ) {
+  const checkExcessivePropInLine = (
+    editor: CodeMirror.Editor,
+    key: string,
+    propertyPath: string,
+    lineNumber: number,
+    initialRedux: any
+  ): void => {
+    const traverseKeys: string[] = propertyPath
+      .replace(/\[[0-9]+\]/g, ".0.")
+      .replace("..", ".")
+      .split(".");
+    let isError = false;
+    traverseKeys.forEach((key: string) => {
+      if (key === "0") {
+        if (Array.isArray(initialRedux)) {
+          initialRedux = initialRedux[0];
+        } else {
+          setErrorLineAndGutter(
+            editor,
+            getWordPositions(editor, key, true, lineNumber)[0],
+            key,
+            "unexpected property",
+            CMErrorType.EXCESSIVE_PROP
+          );
+          isError = true;
+        }
+      } else if (initialRedux.hasOwnProperty(key)) {
         // @ts-ignore
-        initialValue.rulePacks = initialValue.rulePacks.split(",");
+        initialRedux = initialRedux[key];
+      } else {
+        setErrorLineAndGutter(
+          editor,
+          getWordPositions(editor, key, true, lineNumber)[0],
+          key,
+          "unexpected property",
+          CMErrorType.EXCESSIVE_PROP
+        );
+        isError = true;
+      }
+    });
+
+    if (!isError) {
+      const duplicateErrorId: string | null = findDuplicateErrorIdInLine(
+        editor,
+        lineNumber,
+        CMErrorType.EXCESSIVE_PROP,
+        currentErrors
+      );
+      if (duplicateErrorId !== null) {
+        removeErrorById(editor, duplicateErrorId);
+        editor.setGutterMarker(lineNumber, "gutter-error", null);
       }
     }
+  };
 
+  const checkAllExcessiveProps = (editor: CodeMirror.Editor) => {
+    const editorValue = JSON.parse(editor.getValue());
+    const excessiveProps: string[] = [];
+
+    const compareKeys = (obj: any, exampleObj: any, prefix: string) => {
+      const exampleKeys = Object.keys(exampleObj);
+
+      Object.keys(obj).forEach((key: string) => {
+        if (!exampleKeys.includes(key)) {
+          excessiveProps.push(prefix + key);
+        } else if (
+          Array.isArray(obj[key]) &&
+          obj[key].length !== 0 &&
+          typeof obj[key][0] === "object"
+        ) {
+          obj[key].forEach((item: any, i: number) => {
+            compareKeys(
+              obj[key][i],
+              exampleObj[key][0],
+              prefix + key + `[${i}].`
+            );
+          });
+        } else if (typeof obj[key] === "object") {
+          compareKeys(obj[key], exampleObj[key], prefix + key + ".");
+        }
+      });
+    };
+
+    compareKeys(editorValue, initialReduxJSON, "");
+
+    excessiveProps.forEach((prop: string) => {
+      setErrorLineAndGutter(
+        editor,
+        findPositionByPropertyPath(editor, prop),
+        prop.split(".")[prop.split(".").length - 1],
+        "unexpected property",
+        CMErrorType.EXCESSIVE_PROP
+      );
+    });
+  };
+
+  const checkAllExpressions = (
+    editor: CodeMirror.Editor,
+    expressions: ExpressionInput[]
+  ) => {
+    removeAllErrorsOfType(editor, CMErrorType.INVALID_EXP);
+    const expPositions = getWordPositions(editor, '"expression"');
+    expressions.forEach((expression: ExpressionInput, idx: number) => {
+      if (
+        isExpressionFormatValid(expression.format) &&
+        expression.expression !== ""
+      ) {
+        if (
+          getErrorFromMathInput(expression.format, expression.expression) !==
+          null
+        ) {
+          const expPosition = expPositions[idx];
+          const [errUnderlinePosition] = getWordPositions(
+            editor,
+            expression.expression,
+            true,
+            expPosition.from.line
+          );
+          setErrorLineAndGutter(
+            editor,
+            errUnderlinePosition,
+            expression.expression,
+            "invalid expression",
+            CMErrorType.INVALID_EXP
+          );
+        }
+      }
+    });
+  };
+
+  const checkAllExpressionsInputFormats = (
+    editor: CodeMirror.Editor,
+    expressions: ExpressionInput[]
+  ) => {
+    removeAllErrorsOfType(editor, "all");
+    const formatPositions = getWordPositions(editor, '"format"');
+    expressions.forEach((expression: ExpressionInput, idx: number) => {
+      if (!isExpressionFormatValid(expression.format)) {
+        const formatPosition = formatPositions[idx];
+        const [errUnderlinePosition] = getWordPositions(
+          editor,
+          expression.format,
+          true,
+          formatPosition.from.line
+        );
+        setErrorLineAndGutter(
+          editor,
+          errUnderlinePosition,
+          expression.format,
+          "wrong format",
+          CMErrorType.WRONG_EXP_FORMAT
+        );
+      }
+    });
+  };
+
+  const checkAllErrors = (editor: CodeMirror.Editor) => {
+    checkAllExpressionsInputFormats(editor, getAllExpressions(editor));
+    checkAllExpressions(editor, getAllExpressions(editor));
+    checkAllExcessiveProps(editor);
+  };
+
+  // undo redo handling
+  const [undoOrRedoIsTriggered, setUndoOrRedoIsTriggered] = useState(false);
+
+  useEffect(() => {
+    if (editor && currentHistoryChange && undoOrRedoIsTriggered) {
+      try {
+        if (currentHistoryChange.type === "ONE_LINE_CHANGE") {
+          const cursorPos = editor.getCursor();
+          const setToValue = (obj: any, value: any, path: any) => {
+            let i;
+            path = path.split(".");
+            for (i = 0; i < path.length - 1; i++) {
+              obj = obj[path[i]];
+            }
+            obj[path[i]] = value;
+          };
+          const newEditorVal = JSON.parse(editor.getValue());
+          setToValue(
+            newEditorVal,
+            currentHistoryChange.item.value,
+            currentHistoryChange.item.propertyPath
+              .replace("[", ".")
+              .replace("]", "")
+          );
+          editor.setValue(JSON.stringify(newEditorVal, null, 2));
+          editor.setCursor(cursorPos);
+        } else if (currentHistoryChange.type === "MULTIPLE_LINES_CHANGE") {
+          editor.setValue(JSON.stringify(currentHistoryChange.item, null, 2));
+          // @ts-ignore
+          updateCurrentReduxJSON(currentHistoryChange.item);
+        }
+      } catch (e) {
+        console.error("ERROR WHILE UNDO/REDO", e.message);
+        return;
+      }
+    }
+  }, [currentHistoryChange]);
+
+  useEffect(() => {
     if (entryPoint.current) {
       // setup editor
       const editor = CodeMirror(entryPoint.current, {
@@ -738,6 +899,7 @@ const CodeMirrorEditor = ({
         lineWrapping: true,
         autoCloseBrackets: true,
       });
+
       // setup undo redo logic
       editor.undo = () => {
         setUndoOrRedoIsTriggered(true);
@@ -755,24 +917,14 @@ const CodeMirrorEditor = ({
           updateCurrentReduxJSON(JSON.parse(editor.getValue()));
         } catch (e) {}
       };
+
+      // validity chek vars
       let lastValidValue: any = JSON.parse(editor.getValue());
       let isJSONValid: boolean = true;
-      // setup editor's onchange actions
+
+      // setup editor's onchange logic
       editor.on("change", (editor, changeObject) => {
-        // @ts-ignore
-        window.editor = editor;
-        // checkAllExpressionsInputFormats(editor, getAllExpressions(editor));
-        // console.log(changeObject);
-        checkFormatInLine(
-          editor,
-          editor.getLine(changeObject.from.line),
-          changeObject.from.line
-        );
-        checkExpressionInLine(
-          editor,
-          editor.getLine(changeObject.from.line),
-          changeObject.from.line
-        );
+        // handle changes only if JSON is valid, store the last valid JSON while invalid
         try {
           JSON.parse(editor.getValue());
           setJSONValidity(constructorType, true);
@@ -785,6 +937,7 @@ const CodeMirrorEditor = ({
             lastValidValue = JSON.parse(editor.getValue());
             isJSONValid = true;
             updateTaskSetJSON(JSON.parse(editor.getValue()));
+            checkAllErrors(editor);
             return;
           }
           lastValidValue = JSON.parse(editor.getValue());
@@ -794,231 +947,84 @@ const CodeMirrorEditor = ({
           isJSONValid = false;
           return;
         }
-        // const numberOfChangedLines: number | undefined =
-        //   changeObject.text.length !== 0
-        //     ? changeObject.removed?.length
-        //     : changeObject.text.length;
-        const changedLineNum: number = changeObject.from.line;
-        // one line change
-        if (
-          ((changeObject.origin === "+input" ||
-            changeObject.origin === "paste") &&
-            changeObject.text.length === 1) ||
-          ((changeObject.origin === "+delete" ||
-            changeObject.origin === "cut") &&
-            changeObject.removed?.length === 1)
-        ) {
+
+        if (isOneLineChange(changeObject)) {
+          const changedLineNum: number = changeObject.from.line;
+          const changedLineValue: string = editor.getLine(changedLineNum);
+
+          // calculate values after and before change
           const { key: newKey, value: newVal } = getKeyValuePairFromLine(
-            editor.getLine(changedLineNum)
+            changedLineValue
           );
           const { key: oldKey, value: oldVal } = (() => {
-            const changedLineText: string = editor.getLine(changedLineNum);
             if (
               changeObject.origin === "+input" ||
               changeObject.origin === "paste"
             ) {
               return getKeyValuePairFromLine(
-                changedLineText.slice(0, changeObject.from.ch) +
-                  changedLineText.slice(
+                changedLineValue.slice(0, changeObject.from.ch) +
+                  changedLineValue.slice(
                     changeObject.from.ch + changeObject.text[0].length
                   )
               );
             } else {
               return getKeyValuePairFromLine(
-                changedLineText.slice(0, changeObject.from.ch) +
+                changedLineValue.slice(0, changeObject.from.ch) +
                   // @ts-ignore
                   changeObject.removed[0] +
-                  changedLineText.slice(changeObject.from.ch)
+                  changedLineValue.slice(changeObject.from.ch)
               );
             }
           })();
 
+          // important for debug
           console.log("New vals: ", newVal, newKey);
           console.log("Old vals: ", oldVal, oldKey);
 
-          let expPrefix = "";
-
-          const brackets: Bracket[] = [];
-          let searchLine = 1;
-          while (searchLine < changeObject.from.line) {
-            const lineValue = editor.getLine(searchLine);
-            if (
-              !(lineValue.includes("[") && lineValue.includes("]")) &&
-              !(lineValue.includes("{") && lineValue.includes("}"))
-            ) {
-              if (lineValue.includes("{")) {
-                brackets.push({
-                  char: "{",
-                  position: getPositions(
-                    editor,
-                    "{",
-                    { line: searchLine, ch: 0 },
-                    { line: searchLine, ch: 999 }
-                  )[0],
-                });
-              } else if (lineValue.includes("[")) {
-                brackets.push({
-                  char: "[",
-                  position: getPositions(
-                    editor,
-                    "[",
-                    { line: searchLine, ch: 0 },
-                    { line: searchLine, ch: 999 }
-                  )[0],
-                });
-              } else if (lineValue.includes("}")) {
-                if (brackets[brackets.length - 1].char === "{") {
-                  brackets.pop();
-                }
-              } else if (lineValue.includes("]")) {
-                if (brackets[brackets.length - 1].char === "[") {
-                  brackets.pop();
-                }
-              }
-            }
-            searchLine++;
-          }
-
-          const notMatchingOpeningBrackets = brackets.sort(
-            (a: Bracket, b: Bracket) => {
-              if (a.position.from.line > b.position.from.line) {
-                return 1;
-              } else {
-                return -1;
-              }
-            }
-          );
-
-          const findClosingBracket = (
-            editor: CodeMirror.Editor,
-            bracket: Bracket,
-            endLine?: number
-          ): Bracket => {
-            if (endLine === undefined) {
-              endLine = editor.lastLine();
-            }
-            const openingBracketChar = bracket.char;
-            const closingBracketChar = openingBracketChar === "{" ? "}" : "]";
-            let searchLine = bracket.position.from.line;
-            if (
-              editor.getLine(searchLine).includes(openingBracketChar) &&
-              editor.getLine(searchLine).includes(closingBracketChar)
-            ) {
-              return {
-                position: getWordPositions(
-                  editor,
-                  closingBracketChar,
-                  true,
-                  searchLine
-                )[0],
-                char: closingBracketChar,
-              };
-            }
-            searchLine++;
-            let bracketsStack = [];
-            let closingBracketLine: number | null = null;
-            while (closingBracketLine === null && searchLine !== endLine) {
-              const lineValue = editor.getLine(searchLine);
-              if (
-                lineValue.includes(openingBracketChar) &&
-                lineValue.includes(closingBracketChar)
-              ) {
-              } else if (lineValue.includes(openingBracketChar)) {
-                bracketsStack.push(openingBracketChar);
-              } else if (lineValue.includes(closingBracketChar)) {
-                if (
-                  bracketsStack[bracketsStack.length - 1] === openingBracketChar
-                ) {
-                  bracketsStack.pop();
-                } else {
-                  closingBracketLine = searchLine;
-                  break;
-                }
-              }
-              searchLine++;
-            }
-            if (closingBracketLine !== null) {
-              return {
-                position: getWordPositions(
-                  editor,
-                  closingBracketChar,
-                  true,
-                  searchLine
-                )[0],
-                char: closingBracketChar,
-              };
+          const notMatchingOpeningBrackets = getNotMatchingOpeningBracketsBeforeLine(
+            editor,
+            changedLineNum
+          ).sort((a: Bracket, b: Bracket) => {
+            if (a.position.from.line > b.position.from.line) {
+              return 1;
             } else {
-              return bracket;
+              return -1;
             }
-          };
+          });
 
-          console.log(
-            "Not matching opening brackets",
-            notMatchingOpeningBrackets
-          );
-
-          notMatchingOpeningBrackets.forEach((bracket) =>
-            console.log(findClosingBracket(editor, bracket))
-          );
+          let expPrefix = "";
 
           notMatchingOpeningBrackets.forEach(
             (bracket: Bracket, i: number, brackets: Bracket[]) => {
               if (brackets[i - 1] && brackets[i - 1].char === "[") {
-                const closingArrayBracketLine = findClosingBracket(
+                const closingArrayBracketLine = findClosingBracketForOpeningBracket(
                   editor,
                   brackets[i - 1]
                 ).position.from.line;
                 // find first opening bracket after opened array
-                const findFirstOpeningBracketAfterLine = (
-                  searchLine: number,
-                  bracketChar: string,
-                  endLine?: number
-                ) => {
-                  if (endLine === undefined) {
-                    endLine = editor.lastLine();
-                  }
-                  while (
-                    !editor.getLine(searchLine).includes(openingBracketChar) &&
-                    searchLine !== endLine
-                  ) {
-                    searchLine++;
-                  }
-                  if (searchLine === endLine) {
-                    return null;
-                  }
-                  return {
-                    position: getWordPositions(
-                      editor,
-                      openingBracketChar,
-                      true,
-                      searchLine
-                    )[0],
-                    char: openingBracketChar,
-                  };
-                };
                 const openingBracketChar = bracket.char;
                 let idxCounter: number = -1;
                 let searchIdxsLine = brackets[i - 1].position.from.line;
                 while (
                   findFirstOpeningBracketAfterLine(
+                    editor,
                     searchIdxsLine,
                     openingBracketChar,
                     closingArrayBracketLine
                   ) !== null
                 ) {
                   idxCounter++;
-                  searchIdxsLine = findClosingBracket(
+                  searchIdxsLine = findClosingBracketForOpeningBracket(
                     editor,
-                    // @ts-ignore
                     findFirstOpeningBracketAfterLine(
+                      editor,
                       searchIdxsLine,
                       openingBracketChar,
                       closingArrayBracketLine
-                    ),
+                    ) as Bracket,
                     closingArrayBracketLine
                   ).position.from.line;
                 }
-                console.log("idx " + idxCounter);
                 expPrefix += `[${idxCounter}]`;
               } else if (bracket.char === "[" || bracket.char === "{") {
                 // find key of opening bracket
@@ -1058,143 +1064,79 @@ const CodeMirrorEditor = ({
             constructorType
           );
 
-          // check for excessive prop
-          if (newKey !== "") {
-            const traverseKeys: string[] = newPropertyPath
-              .replace(/\[[0-9]+\]/g, ".0.")
-              .replace("..", ".")
-              .split(".");
-            let traverseObj = initialReduxJSON;
-            let isError = false;
-            traverseKeys.forEach((key: string) => {
-              if (key === "0") {
-                if (Array.isArray(traverseObj)) {
-                  traverseObj = traverseObj[0];
-                } else {
-                  setErrorLineAndGutter(
-                    editor,
-                    getWordPositions(editor, newKey, true, changedLineNum)[0],
-                    newKey,
-                    "unexpected property",
-                    CMErrorType.EXCESSIVE_PROP
-                  );
-                  isError = true;
-                  console.log("ERROR");
-                }
-              } else if (traverseObj.hasOwnProperty(key)) {
-                // @ts-ignore
-                traverseObj = traverseObj[key];
-              } else {
-                setErrorLineAndGutter(
-                  editor,
-                  getWordPositions(editor, newKey, true, changedLineNum)[0],
-                  newKey,
-                  "unexpected property",
-                  CMErrorType.EXCESSIVE_PROP
-                );
-                isError = true;
-              }
-            });
-
-            if (!isError) {
-              const duplicateErrorId:
-                | string
-                | null = findDuplicateErrorIdInLine(
-                editor,
-                changedLineNum,
-                CMErrorType.EXCESSIVE_PROP,
-                currentErrors
-              );
-              if (duplicateErrorId !== null) {
-                removeErrorById(editor, duplicateErrorId);
-                editor.setGutterMarker(changedLineNum, "gutter-error", null);
-              }
-            }
-          }
-
-          try {
-            updateCurrentReduxJSON(JSON.parse(editor.getValue()));
-          } catch {}
-        } else if (
-          (changeObject.origin === "cut" ||
-            changeObject.origin === "+delete") &&
-          changeObject.removed &&
-          changeObject.removed.length > 1
-        ) {
-          const oldVal =
-            editor.getRange(
-              {
-                line: 0,
-                ch: 0,
-              },
-              changeObject.from
-            ) +
-            changeObject.removed.join("") +
-            editor.getRange(changeObject.from, {
-              line: editor.lastLine(),
-              ch: 999,
-            });
-          addMultipleLinesChangeToHistory(
-            JSON.parse(oldVal),
-            JSON.parse(editor.getValue()),
-            constructorType
-          );
-          try {
-            updateCurrentReduxJSON(JSON.parse(editor.getValue()));
-          } catch {}
-        } else if (
-          changeObject.origin === "paste" &&
-          changeObject.text.length > 1
-        ) {
-          // const pastedPiece = changeObject.text.reduce(
-          //   (acc: string, line: string, i: number) => {
-          //     return acc + "\n" + line;
-          //   }
-          // );
-          const removedPiece = changeObject.removed
-            ? changeObject.removed.reduce(
-                (acc: string, line: string, i: number) => {
-                  return acc + "\n" + line;
-                }
-              )
-            : null;
-          let oldVal =
-            editor.getRange({ line: 0, ch: 0 }, changeObject.from) +
-            (removedPiece ? removedPiece : "") +
-            editor.getRange(
-              {
-                line: changeObject.to.line + changeObject.text.length,
-                ch: 0,
-              },
-              {
-                line: editor.lastLine(),
-                ch: 999,
-              }
+          // check possible errors
+          if (changedLineValue.includes('"format"')) {
+            checkExpressionFormatInLine(
+              editor,
+              changedLineValue,
+              changedLineNum
             );
-          try {
-            JSON.parse(oldVal);
-          } catch (e) {
-            // error usually occurs when user pastes new element into the end of array
-            // if (e.message.includes("Unexpected token , in JSON at position ")) {
-            //   const commaPosition: number = parseInt(
-            //     e.message.replace("Unexpected token , in JSON at position ", "")
-            //   );
-            //   oldVal =
-            //     oldVal.slice(0, commaPosition) +
-            //     oldVal.slice(commaPosition + 1);
-            // }
           }
-          console.log(oldVal);
+          if (changedLineValue.includes('"expression"')) {
+            checkExpressionInLine(editor, changedLineValue, changedLineNum);
+          }
+          if (newKey !== "") {
+            checkExcessivePropInLine(
+              editor,
+              newKey,
+              newPropertyPath,
+              changedLineNum,
+              initialReduxJSON
+            );
+          }
+        } else if (
+          isMultipleLineDelete(changeObject) ||
+          isMultipleLineAdd(changeObject)
+        ) {
+          const oldVal = (() => {
+            if (isMultipleLineDelete(changeObject)) {
+              return (
+                editor.getRange(
+                  {
+                    line: 0,
+                    ch: 0,
+                  },
+                  changeObject.from
+                ) +
+                // @ts-ignore
+                changeObject.removed.join("") +
+                editor.getRange(changeObject.from, {
+                  line: editor.lastLine(),
+                  ch: 999,
+                })
+              );
+            } else {
+              const removedPiece = changeObject.removed
+                ? changeObject.removed.reduce((acc: string, line: string) => {
+                    return acc + "\n" + line;
+                  })
+                : null;
+              return (
+                editor.getRange({ line: 0, ch: 0 }, changeObject.from) +
+                (removedPiece ? removedPiece : "") +
+                editor.getRange(
+                  {
+                    line: changeObject.to.line + changeObject.text.length,
+                    ch: 0,
+                  },
+                  {
+                    line: editor.lastLine(),
+                    ch: 999,
+                  }
+                )
+              );
+            }
+          })();
+
+          checkAllErrors(editor);
           addMultipleLinesChangeToHistory(
             JSON.parse(oldVal),
             JSON.parse(editor.getValue()),
             constructorType
           );
-          try {
-            updateCurrentReduxJSON(JSON.parse(editor.getValue()));
-          } catch {}
         }
       });
+      updateCurrentReduxJSON(JSON.parse(editor.getValue()));
       setEditor(editor);
     }
   }, []);
@@ -1202,30 +1144,16 @@ const CodeMirrorEditor = ({
   const actionButtons: ActionButtonProps[] = [
     {
       size: 2,
-      action: (editor: CodeMirror.Editor, errors: CMError[]): void => {
+      action: (editor: CodeMirror.Editor): void => {
         editor.execCommand("find");
-        removeNotActualGutters(errors);
-        const closeButton = document.querySelector(
-          ".CodeMirror-find-and-replace-dialog--close"
-        );
-        closeButton?.addEventListener("click", () => {
-          removeNotActualGutters(errors);
-        });
       },
       mdiIconPath: mdiMagnify,
       tooltip: "Найти (ctrl + f / cmd + f)",
     },
     {
       size: 2,
-      action: (editor: CodeMirror.Editor, errors: CMError[]): void => {
+      action: (editor: CodeMirror.Editor): void => {
         editor.execCommand("replace");
-        removeNotActualGutters(errors);
-        const closeButton = document.querySelector(
-          ".CodeMirror-find-and-replace-dialog--close"
-        );
-        closeButton?.addEventListener("click", () => {
-          removeNotActualGutters(errors);
-        });
       },
       mdiIconPath: mdiFindReplace,
       tooltip: "Найти и заменить (ctrl + shift + f / cmd + opt + f)",
@@ -1240,22 +1168,12 @@ const CodeMirrorEditor = ({
             <ActionButton
               key={i}
               {...button}
-              action={() => button.action(editor, dynamicErrors)}
+              action={() => button.action(editor)}
             />
           );
         })}
       </div>
       <div className="code-mirror__editor-entry-point" ref={entryPoint} />
-      <button
-        onClick={() => {
-          if (editor) {
-            console.log(editor.getOption("gutters"));
-            // editor.setOption("gutters", []);
-          }
-        }}
-      >
-        clear errors
-      </button>
     </div>
   );
 };
@@ -1295,6 +1213,8 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) => ({
   updateRulePackJSON: (rulePackJSON: RulePackConstructorInputs) => {
     return dispatch(updateRulePackJSON(rulePackJSON));
   },
+  setJSONValidity: (constructorType: ConstructorJSONType, isValid: boolean) =>
+    dispatch(setJSONValidity(constructorType, isValid)),
   // version control
   addOneLineChangeToHistory: (
     oldVal: ExpressionChange,
@@ -1314,8 +1234,6 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) => ({
     dispatch(undoHistory(constructorType)),
   redo: (constructorType: ConstructorJSONType) =>
     dispatch(redoHistory(constructorType)),
-  setJSONValidity: (constructorType: ConstructorJSONType, isValid: boolean) =>
-    dispatch(setJSONValidity(constructorType, isValid)),
 });
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
