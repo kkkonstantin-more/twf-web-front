@@ -347,12 +347,14 @@ const CodeMirrorEditor = ({
         element?.parentNode?.removeChild(element);
       }
     });
+    // editor.setGutterMarker(lineNumber, "gutter-error", null);
     editor.getAllMarks().forEach((mark: TextMarker) => {
       // @ts-ignore
       if (mark.errorId === id) {
         mark.clear();
       }
     });
+    // editor.setGutterMarker(lineNumber, "gutter-error", null);
   };
 
   const findDuplicateErrorIdInLine = (
@@ -364,17 +366,22 @@ const CodeMirrorEditor = ({
     let errorId: string | null = null;
     editor.getAllMarks().forEach((mark: TextMarker) => {
       // @ts-ignore
-      mark.lines.forEach((line) => {
-        if (
-          line.lineNo() === lineNumber &&
-          currentErrors.findIndex(
-            (error: CMError) => error.type === errorType
-          ) !== -1
-        ) {
-          // @ts-ignore
-          errorId = mark.errorId;
-        }
-      });
+      if (mark.lines) {
+        // @ts-ignore
+        mark.lines.forEach((line) => {
+          if (
+            line.lineNo() === lineNumber &&
+            currentErrors.findIndex(
+              (error: CMError) => error.type === errorType
+            ) !== -1 &&
+            // @ts-ignore
+            mark.errorId
+          ) {
+            // @ts-ignore
+            errorId = mark.errorId;
+          }
+        });
+      }
     });
     return errorId;
   };
@@ -605,21 +612,23 @@ const CodeMirrorEditor = ({
     lineValue: string,
     lineNumber: number
   ): void => {
-    const duplicateErrorId: string | null = findDuplicateErrorIdInLine(
-      editor,
-      lineNumber,
-      CMErrorType.WRONG_EXP_FORMAT,
-      currentErrors
-    );
-    if (duplicateErrorId !== null) {
-      removeErrorById(editor, duplicateErrorId);
-      editor.setGutterMarker(lineNumber, "gutter-error", null);
-    }
+    // const duplicateErrorId: string | null = findDuplicateErrorIdInLine(
+    //   editor,
+    //   lineNumber,
+    //   CMErrorType.WRONG_EXP_FORMAT,
+    //   currentErrors
+    // );
+    // if (duplicateErrorId !== null) {
+    //   removeErrorById(editor, duplicateErrorId);
+    //   editor.setGutterMarker(lineNumber, "gutter-error", null);
+    // }
     if (!lineValue.includes('"format"')) {
       return;
     }
     const { value: format } = getKeyValuePairFromLine(lineValue);
+    console.log(format);
     if (!isExpressionFormatValid(format)) {
+      console.log("set error!");
       setErrorLineAndGutter(
         editor,
         getWordPositions(editor, format, true, lineNumber)[0],
@@ -627,6 +636,7 @@ const CodeMirrorEditor = ({
         "invalid format",
         CMErrorType.WRONG_EXP_FORMAT
       );
+      console.log("INVALID FORMAT", currentErrors);
     }
   };
 
@@ -635,16 +645,16 @@ const CodeMirrorEditor = ({
     lineValue: string,
     lineNumber: number
   ): void => {
-    const duplicateErrorId: string | null = findDuplicateErrorIdInLine(
-      editor,
-      lineNumber,
-      CMErrorType.INVALID_EXP,
-      currentErrors
-    );
-    if (duplicateErrorId !== null) {
-      removeErrorById(editor, duplicateErrorId);
-      editor.setGutterMarker(lineNumber, "gutter-error", null);
-    }
+    // const duplicateErrorId: string | null = findDuplicateErrorIdInLine(
+    //   editor,
+    //   lineNumber,
+    //   CMErrorType.INVALID_EXP,
+    //   currentErrors
+    // );
+    // if (duplicateErrorId !== null) {
+    //   removeErrorById(editor, duplicateErrorId);
+    //   editor.setGutterMarker(lineNumber, "gutter-error", null);
+    // }
     if (!lineValue.includes('"expression"')) {
       return;
     }
@@ -673,6 +683,8 @@ const CodeMirrorEditor = ({
       return;
     }
     const { value: expression } = getKeyValuePairFromLine(lineValue);
+    console.log(format, expression);
+    console.log(getErrorFromMathInput(format as MathInputFormat, expression));
     if (getErrorFromMathInput(format as MathInputFormat, expression) !== null) {
       setErrorLineAndGutter(
         editor,
@@ -724,19 +736,6 @@ const CodeMirrorEditor = ({
         isError = true;
       }
     });
-
-    if (!isError) {
-      const duplicateErrorId: string | null = findDuplicateErrorIdInLine(
-        editor,
-        lineNumber,
-        CMErrorType.EXCESSIVE_PROP,
-        currentErrors
-      );
-      if (duplicateErrorId !== null) {
-        removeErrorById(editor, duplicateErrorId);
-        editor.setGutterMarker(lineNumber, "gutter-error", null);
-      }
-    }
   };
 
   const checkAllExcessiveProps = (editor: CodeMirror.Editor) => {
@@ -761,7 +760,7 @@ const CodeMirrorEditor = ({
               prefix + key + `[${i}].`
             );
           });
-        } else if (typeof obj[key] === "object") {
+        } else if (!Array.isArray(obj[key]) && typeof obj[key] === "object") {
           compareKeys(obj[key], exampleObj[key], prefix + key + ".");
         }
       });
@@ -784,7 +783,6 @@ const CodeMirrorEditor = ({
     editor: CodeMirror.Editor,
     expressions: ExpressionInput[]
   ) => {
-    removeAllErrorsOfType(editor, CMErrorType.INVALID_EXP);
     const expPositions = getWordPositions(editor, '"expression"');
     expressions.forEach((expression: ExpressionInput, idx: number) => {
       if (
@@ -818,7 +816,6 @@ const CodeMirrorEditor = ({
     editor: CodeMirror.Editor,
     expressions: ExpressionInput[]
   ) => {
-    removeAllErrorsOfType(editor, "all");
     const formatPositions = getWordPositions(editor, '"format"');
     expressions.forEach((expression: ExpressionInput, idx: number) => {
       if (!isExpressionFormatValid(expression.format)) {
@@ -840,7 +837,37 @@ const CodeMirrorEditor = ({
     });
   };
 
+  const removeAllErrors = (editor: CodeMirror.Editor) => {
+    console.log("REMOVE ALL ERRORS");
+    editor.clearGutter("gutter-error");
+    editor.getAllMarks().forEach((mark: TextMarker) => {
+      // @ts-ignore
+      mark.clear();
+    });
+  };
+
+  const removeAllErrorsInLine = (
+    editor: CodeMirror.Editor,
+    lineNumber: number
+  ) => {
+    console.log("removeAllErrorsInLine");
+    editor.setGutterMarker(lineNumber, "gutter-error", null);
+    editor.getAllMarks().forEach((mark: TextMarker) => {
+      // @ts-ignore
+      if (mark.lines) {
+        // @ts-ignore
+        mark.lines.forEach((line) => {
+          if (line.lineNo() === lineNumber) {
+            // @ts-ignore
+            mark.clear();
+          }
+        });
+      }
+    });
+  };
+
   const checkAllErrors = (editor: CodeMirror.Editor) => {
+    removeAllErrors(editor);
     checkAllExpressionsInputFormats(editor, getAllExpressions(editor));
     checkAllExpressions(editor, getAllExpressions(editor));
     checkAllExcessiveProps(editor);
@@ -908,6 +935,7 @@ const CodeMirrorEditor = ({
         try {
           updateCurrentReduxJSON(JSON.parse(editor.getValue()));
         } catch (e) {}
+        checkAllErrors(editor);
       };
       editor.redo = () => {
         setUndoOrRedoIsTriggered(true);
@@ -916,6 +944,7 @@ const CodeMirrorEditor = ({
         try {
           updateCurrentReduxJSON(JSON.parse(editor.getValue()));
         } catch (e) {}
+        checkAllErrors(editor);
       };
 
       // validity chek vars
@@ -1065,14 +1094,21 @@ const CodeMirrorEditor = ({
           );
 
           // check possible errors
-          if (changedLineValue.includes('"format"')) {
+          removeAllErrorsInLine(editor, changedLineNum);
+          if (
+            changedLineValue.includes('"format"') &&
+            getKeyValuePairFromLine(changedLineValue).value
+          ) {
             checkExpressionFormatInLine(
               editor,
               changedLineValue,
               changedLineNum
             );
           }
-          if (changedLineValue.includes('"expression"')) {
+          if (
+            changedLineValue.includes('"expression"') &&
+            getKeyValuePairFromLine(changedLineValue).value
+          ) {
             checkExpressionInLine(editor, changedLineValue, changedLineNum);
           }
           if (newKey !== "") {
@@ -1135,8 +1171,8 @@ const CodeMirrorEditor = ({
             constructorType
           );
         }
+        updateCurrentReduxJSON(JSON.parse(editor.getValue()));
       });
-      updateCurrentReduxJSON(JSON.parse(editor.getValue()));
       setEditor(editor);
     }
   }, []);
@@ -1154,6 +1190,42 @@ const CodeMirrorEditor = ({
       size: 2,
       action: (editor: CodeMirror.Editor): void => {
         editor.execCommand("replace");
+        let oldEditorValue: any;
+        try {
+          oldEditorValue = JSON.parse(editor.getValue());
+        } catch {
+          oldEditorValue = null;
+        }
+        const replaceAllButton: HTMLButtonElement | null = document.querySelector(
+          ".CodeMirror-find-and-replace-dialog--replace-all"
+        );
+        const replaceButton: HTMLButtonElement | null = document.querySelector(
+          ".CodeMirror-find-and-replace-dialog--replace"
+        );
+        if (replaceAllButton !== null && replaceButton !== null) {
+          [replaceButton, replaceAllButton].forEach(
+            (button: HTMLButtonElement) => {
+              button.addEventListener("click", () => {
+                setTimeout(() => {
+                  checkAllErrors(editor);
+                  let newEditorValue;
+                  try {
+                    newEditorValue = JSON.parse(editor.getValue());
+                  } catch {
+                    newEditorValue = null;
+                  }
+                  if (oldEditorValue !== null && newEditorValue !== null) {
+                    addMultipleLinesChangeToHistory(
+                      oldEditorValue,
+                      newEditorValue,
+                      constructorType
+                    );
+                  }
+                });
+              });
+            }
+          );
+        }
       },
       mdiIconPath: mdiFindReplace,
       tooltip: "Найти и заменить (ctrl + shift + f / cmd + opt + f)",
