@@ -45,6 +45,11 @@ import {
 import CodeMirror, { Position, TextMarker } from "codemirror";
 import { ActionButtonProps } from "../action-button/action-button.types";
 import { ExpressionInput } from "../../constructors/task-constructor/task-constructor.types";
+import { ConstructorJSONType } from "../../redux/constructor-jsons/constructor-jsons.types";
+import { NamespaceConstructorInputs } from "../../constructors/namespace-constructor/namespace-constructor.types";
+import { RootState } from "../../redux/root-reducer";
+import { RulePackConstructorInputs } from "../../constructors/rule-pack-constructor/rule-pack-constructor.types";
+import { TaskSetConstructorInputs } from "../../constructors/task-set-constructor/task-set-constructor.types";
 import {
   Bracket,
   CMError,
@@ -74,11 +79,6 @@ import "codemirror/addon/hint/show-hint.css";
 import "codemirror/addon/lint/json-lint";
 import "codemirror/addon/lint/lint";
 import "codemirror/addon/lint/lint.css";
-import { ConstructorJSONType } from "../../redux/constructor-jsons/constructor-jsons.types";
-import { NamespaceConstructorInputs } from "../../constructors/namespace-constructor/namespace-constructor.types";
-import { RootState } from "../../redux/root-reducer";
-import { RulePackConstructorInputs } from "../../constructors/rule-pack-constructor/rule-pack-constructor.types";
-import { TaskSetConstructorInputs } from "../../constructors/task-set-constructor/task-set-constructor.types";
 // assets
 import { mdiFindReplace, mdiMagnify } from "@mdi/js";
 // styles
@@ -234,6 +234,9 @@ const CodeMirrorEditor = ({
     msg: string,
     errorType: CMErrorType
   ): void => {
+    if (!wordPosition) {
+      return;
+    }
     const { from, to } = wordPosition;
     const id = uidv4();
     editor.markText(from, to, {
@@ -302,32 +305,6 @@ const CodeMirrorEditor = ({
     return expressions;
   };
 
-  const getAllGutters = (): Element[] => {
-    return Array.from(
-      document.querySelectorAll("div .CodeMirror-lint-marker-error")
-    );
-  };
-
-  const removeAllErrorsOfType = (
-    editor: CodeMirror.Editor,
-    errorType: CMErrorType | "all"
-  ) => {
-    getAllGutters().forEach((element: Element) => {
-      if (
-        element.getAttribute("error-type") === errorType ||
-        errorType === "all"
-      ) {
-        element?.parentNode?.removeChild(element);
-      }
-    });
-    editor.getAllMarks().forEach((mark: TextMarker) => {
-      // @ts-ignore
-      if (errorType === mark.errorType || errorType === "all") {
-        mark.clear();
-      }
-    });
-  };
-
   const isExpressionFormatValid = (
     format: string | MathInputFormat
   ): boolean => {
@@ -336,54 +313,6 @@ const CodeMirrorEditor = ({
       format === MathInputFormat.PLAIN_TEXT ||
       format === MathInputFormat.TEX
     );
-  };
-
-  const removeErrorById = (editor: CodeMirror.Editor, id: string) => {
-    currentErrors = currentErrors.filter((error) => {
-      return error.gutterId !== id;
-    });
-    getAllGutters().forEach((element: Element) => {
-      if (element.getAttribute("id") === id) {
-        element?.parentNode?.removeChild(element);
-      }
-    });
-    // editor.setGutterMarker(lineNumber, "gutter-error", null);
-    editor.getAllMarks().forEach((mark: TextMarker) => {
-      // @ts-ignore
-      if (mark.errorId === id) {
-        mark.clear();
-      }
-    });
-    // editor.setGutterMarker(lineNumber, "gutter-error", null);
-  };
-
-  const findDuplicateErrorIdInLine = (
-    editor: CodeMirror.Editor,
-    lineNumber: number,
-    errorType: CMErrorType,
-    currentErrors: CMError[]
-  ): string | null => {
-    let errorId: string | null = null;
-    editor.getAllMarks().forEach((mark: TextMarker) => {
-      // @ts-ignore
-      if (mark.lines) {
-        // @ts-ignore
-        mark.lines.forEach((line) => {
-          if (
-            line.lineNo() === lineNumber &&
-            currentErrors.findIndex(
-              (error: CMError) => error.type === errorType
-            ) !== -1 &&
-            // @ts-ignore
-            mark.errorId
-          ) {
-            // @ts-ignore
-            errorId = mark.errorId;
-          }
-        });
-      }
-    });
-    return errorId;
   };
 
   const isOneLineChange = (changeObject: CodeMirror.EditorChange): boolean => {
@@ -612,23 +541,11 @@ const CodeMirrorEditor = ({
     lineValue: string,
     lineNumber: number
   ): void => {
-    // const duplicateErrorId: string | null = findDuplicateErrorIdInLine(
-    //   editor,
-    //   lineNumber,
-    //   CMErrorType.WRONG_EXP_FORMAT,
-    //   currentErrors
-    // );
-    // if (duplicateErrorId !== null) {
-    //   removeErrorById(editor, duplicateErrorId);
-    //   editor.setGutterMarker(lineNumber, "gutter-error", null);
-    // }
     if (!lineValue.includes('"format"')) {
       return;
     }
     const { value: format } = getKeyValuePairFromLine(lineValue);
-    console.log(format);
     if (!isExpressionFormatValid(format)) {
-      console.log("set error!");
       setErrorLineAndGutter(
         editor,
         getWordPositions(editor, format, true, lineNumber)[0],
@@ -636,7 +553,32 @@ const CodeMirrorEditor = ({
         "invalid format",
         CMErrorType.WRONG_EXP_FORMAT
       );
-      console.log("INVALID FORMAT", currentErrors);
+    }
+    // find and check expression due to new format
+    let searchLine = lineNumber;
+    while (
+      !editor.getLine(searchLine).includes('"expression"') &&
+      !editor.getLine(searchLine).includes("{")
+    ) {
+      searchLine--;
+    }
+    if (!editor.getLine(searchLine).includes('"expression"')) {
+      searchLine = lineNumber;
+      while (
+        !editor.getLine(searchLine).includes('"expression"') &&
+        !editor.getLine(searchLine).includes("}")
+      ) {
+        searchLine++;
+      }
+    }
+    if (editor.getLine(searchLine).includes('"expression"')) {
+      removeAllErrorsInLine(editor, searchLine);
+      if (isExpressionFormatValid(format)) {
+        const { value } = getKeyValuePairFromLine(editor.getLine(searchLine));
+        if (value) {
+          checkExpressionInLine(editor, editor.getLine(searchLine), searchLine);
+        }
+      }
     }
   };
 
@@ -645,16 +587,6 @@ const CodeMirrorEditor = ({
     lineValue: string,
     lineNumber: number
   ): void => {
-    // const duplicateErrorId: string | null = findDuplicateErrorIdInLine(
-    //   editor,
-    //   lineNumber,
-    //   CMErrorType.INVALID_EXP,
-    //   currentErrors
-    // );
-    // if (duplicateErrorId !== null) {
-    //   removeErrorById(editor, duplicateErrorId);
-    //   editor.setGutterMarker(lineNumber, "gutter-error", null);
-    // }
     if (!lineValue.includes('"expression"')) {
       return;
     }
@@ -683,8 +615,6 @@ const CodeMirrorEditor = ({
       return;
     }
     const { value: expression } = getKeyValuePairFromLine(lineValue);
-    console.log(format, expression);
-    console.log(getErrorFromMathInput(format as MathInputFormat, expression));
     if (getErrorFromMathInput(format as MathInputFormat, expression) !== null) {
       setErrorLineAndGutter(
         editor,
@@ -838,7 +768,6 @@ const CodeMirrorEditor = ({
   };
 
   const removeAllErrors = (editor: CodeMirror.Editor) => {
-    console.log("REMOVE ALL ERRORS");
     editor.clearGutter("gutter-error");
     editor.getAllMarks().forEach((mark: TextMarker) => {
       // @ts-ignore
@@ -1202,30 +1131,49 @@ const CodeMirrorEditor = ({
         const replaceButton: HTMLButtonElement | null = document.querySelector(
           ".CodeMirror-find-and-replace-dialog--replace"
         );
-        if (replaceAllButton !== null && replaceButton !== null) {
-          [replaceButton, replaceAllButton].forEach(
-            (button: HTMLButtonElement) => {
-              button.addEventListener("click", () => {
-                setTimeout(() => {
-                  checkAllErrors(editor);
-                  let newEditorValue;
-                  try {
-                    newEditorValue = JSON.parse(editor.getValue());
-                  } catch {
-                    newEditorValue = null;
-                  }
-                  if (oldEditorValue !== null && newEditorValue !== null) {
-                    addMultipleLinesChangeToHistory(
-                      oldEditorValue,
-                      newEditorValue,
-                      constructorType
-                    );
-                  }
-                });
-              });
+
+        const handleReplace = () => {
+          setTimeout(() => {
+            checkAllErrors(editor);
+            let newEditorValue;
+            try {
+              newEditorValue = JSON.parse(editor.getValue());
+            } catch {
+              newEditorValue = null;
             }
-          );
-        }
+            if (oldEditorValue !== null && newEditorValue !== null) {
+              addMultipleLinesChangeToHistory(
+                oldEditorValue,
+                newEditorValue,
+                constructorType
+              );
+            }
+          });
+        };
+
+        const handleEnterReplace = (event: KeyboardEvent) => {
+          if (event.keyCode === 13 || event.code === "Enter") {
+            if (
+              document.querySelector(
+                ".CodeMirror-find-and-replace-dialog--replace"
+              ) !== null
+            ) {
+              handleReplace();
+            }
+          }
+
+          if (replaceAllButton !== null && replaceButton !== null) {
+            [replaceButton, replaceAllButton].forEach(
+              (button: HTMLButtonElement) => {
+                button.addEventListener("click", handleReplace);
+              }
+            );
+          }
+        };
+
+        // handle replace triggered with Enter
+        window.removeEventListener("keyup", handleEnterReplace, true);
+        window.addEventListener("keyup", handleEnterReplace, true);
       },
       mdiIconPath: mdiFindReplace,
       tooltip: "Найти и заменить (ctrl + shift + f / cmd + opt + f)",

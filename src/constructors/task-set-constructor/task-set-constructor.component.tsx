@@ -52,7 +52,10 @@ import { ConstructorFormInput } from "../../components/constructor-form/construc
 import { MathInputFormat } from "../../utils/kotlin-lib-functions";
 import { AddMultipleLinesChangeToHistoryAction } from "../../redux/constructor-history/constructor-history.types";
 // data
-import { taskConstructorDefaultValues } from "./task-set-constructor.data";
+import {
+  mockTaskSetSubjectTypes,
+  taskConstructorDefaultValues,
+} from "./task-set-constructor.data";
 // icons
 import Icon from "@mdi/react";
 import {
@@ -169,7 +172,7 @@ const TaskSetConstructor = ({
     {
       name: "subjectTypes",
       label: "Предметные области",
-      options: ["subjectType1", "subjectType2"].map((st: string) => ({
+      options: mockTaskSetSubjectTypes.map((st: string) => ({
         label: st,
         value: st,
       })),
