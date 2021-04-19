@@ -20,6 +20,8 @@ import Icon from "@mdi/react";
 import { mdiPencil, mdiPlus } from "@mdi/js";
 // styles
 import "./constructor-menu-page.styles.scss";
+import RulePackConstructorRequestsHandler from "../../constructors/rule-pack-constructor/rule-pack-constructor.requests-handler";
+import { RulePackReceivedForm } from "../../constructors/rule-pack-constructor/rule-pack-constructor.types";
 
 export const demoList = [
   "Alison Park",
@@ -66,7 +68,7 @@ const ConstructorMenuPageComponent: React.FC = () => {
     }
   }, [activeTab]);
 
-  const [rulePacks, setRulePacks] = useState([]);
+  const [rulePacks, setRulePacks] = useState<RulePackReceivedForm[]>([]);
   const [taskSets, setTaskSets] = useState<TaskSetConstructorReceivedForm[]>(
     []
   );
@@ -78,23 +80,23 @@ const ConstructorMenuPageComponent: React.FC = () => {
   useEffect(() => {
     setIsFetched(false);
     if (currentTab === "taskSet") {
-      TaskSetConstructorRequestsHandler.getAll().then(
-        (res: TaskSetConstructorReceivedForm[]) => {
+      TaskSetConstructorRequestsHandler.getAll()
+        .then((res: TaskSetConstructorReceivedForm[]) => {
           setTaskSets(res);
           setIsFetched(true);
-        }
-      );
+        })
+        .catch((e: AxiosError) => {
+          console.error("Error fetching task-sets", e.message);
+          setIsFetched(true);
+        });
     } else if (currentTab === "rulePack") {
-      axios({
-        method: "get",
-        url: "http://localhost:8080/api/rule-pack",
-      })
-        .then((res) => {
-          console.log(res.data);
-          setRulePacks(res.data);
+      RulePackConstructorRequestsHandler.getAll()
+        .then((res: RulePackReceivedForm[]) => {
+          setRulePacks(res);
           setIsFetched(true);
         })
-        .catch((e) => {
+        .catch((e: AxiosError) => {
+          setIsFetched(true);
           console.error("Error fetching rule-packs", e.message);
         });
     } else if (currentTab === "namespace") {
@@ -105,7 +107,8 @@ const ConstructorMenuPageComponent: React.FC = () => {
           setIsFetched(true);
         })
         .catch((e: AxiosError) => {
-          setErrorMsg("Ошибка при получении актуальных namespace");
+          setIsFetched(true);
+          console.error("Error fetching rule-packs", e.message);
         });
     }
   }, [currentTab]);

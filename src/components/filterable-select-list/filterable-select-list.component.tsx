@@ -25,12 +25,14 @@ const FilterableSelectList = ({
   items,
   propsToFilter,
 }: FilterableSelectListProps): JSX.Element => {
-  const searchKeys: string[] = [
-    ...Object.keys(items[0]).filter((prop: string) => {
-      return prop !== "onSelect";
-    }),
-    "all",
-  ];
+  const searchKeys: string[] =
+    items.length === 0
+      ? []
+      : Object.keys(items[0])
+          .filter((prop: string) => {
+            return prop !== "onSelect";
+          })
+          .concat(["all"]);
   const allSortTokens: FilterableSelectListSortTokens = getSortTokensFromItems(
     items,
     propsToFilter

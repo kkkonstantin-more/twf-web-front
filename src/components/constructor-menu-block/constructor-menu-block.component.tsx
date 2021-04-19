@@ -35,7 +35,7 @@ const ConstructorMenuBlock = ({
             {createFromScratchBlock.name}
           </div>
         )}
-        {isDataFetched ? (
+        {isDataFetched &&
           options.map(
             (option: { name: string; action: () => any }, i: number) => {
               return (
@@ -48,10 +48,8 @@ const ConstructorMenuBlock = ({
                 </div>
               );
             }
-          )
-        ) : (
-          <AppSpinner loading={!isDataFetched} />
-        )}
+          )}
+        {!isDataFetched && <AppSpinner loading={!isDataFetched} />}
       </div>
     </div>
   );
