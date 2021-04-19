@@ -107,8 +107,8 @@ const CodeMirrorEditor = ({
   setJSONValidity,
 }: CodeMirrorProps & ConnectedProps<typeof connector>): JSX.Element => {
   const [editor, setEditor] = useState<any>(null);
-  let currentErrors: CMError[] = [];
   const entryPoint: React.Ref<any> = useRef();
+  let currentErrors: CMError[] = [];
 
   const currentReduxJSON = (() => {
     switch (constructorType) {
@@ -615,12 +615,16 @@ const CodeMirrorEditor = ({
       return;
     }
     const { value: expression } = getKeyValuePairFromLine(lineValue);
-    if (getErrorFromMathInput(format as MathInputFormat, expression) !== null) {
+    const mathInputError = getErrorFromMathInput(
+      format as MathInputFormat,
+      expression
+    );
+    if (mathInputError !== null) {
       setErrorLineAndGutter(
         editor,
         getWordPositions(editor, expression, true, lineNumber)[0],
         expression,
-        "invalid expression",
+        mathInputError,
         CMErrorType.INVALID_EXP
       );
     }
@@ -719,10 +723,11 @@ const CodeMirrorEditor = ({
         isExpressionFormatValid(expression.format) &&
         expression.expression !== ""
       ) {
-        if (
-          getErrorFromMathInput(expression.format, expression.expression) !==
-          null
-        ) {
+        const mathInputError = getErrorFromMathInput(
+          expression.format,
+          expression.expression
+        );
+        if (mathInputError !== null) {
           const expPosition = expPositions[idx];
           const [errUnderlinePosition] = getWordPositions(
             editor,
@@ -734,7 +739,7 @@ const CodeMirrorEditor = ({
             editor,
             errUnderlinePosition,
             expression.expression,
-            "invalid expression",
+            mathInputError,
             CMErrorType.INVALID_EXP
           );
         }
@@ -779,7 +784,6 @@ const CodeMirrorEditor = ({
     editor: CodeMirror.Editor,
     lineNumber: number
   ) => {
-    console.log("removeAllErrorsInLine");
     editor.setGutterMarker(lineNumber, "gutter-error", null);
     editor.getAllMarks().forEach((mark: TextMarker) => {
       // @ts-ignore
