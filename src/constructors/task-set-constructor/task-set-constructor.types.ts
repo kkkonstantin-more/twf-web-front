@@ -14,10 +14,14 @@ export interface TaskSetConstructorReceivedForm {
   namespaceCode: string;
   nameEn: string;
   nameRu: string;
-  subjectTypes: string[];
-  tasks: TaskConstructorReceivedForm[];
+  descriptionShortRu: string;
+  descriptionShortEn: string;
+  descriptionRu: string;
+  descriptionEn: string;
+  subjectType: string;
   recommendedByCommunity: boolean;
-  otherData?: any;
+  otherData: any;
+  tasks: TaskConstructorReceivedForm[];
 }
 
 export interface TaskSetConstructorInputs {
@@ -31,7 +35,7 @@ export interface TaskSetConstructorInputs {
   descriptionRu: string;
   subjectType: string;
   recommendedByCommunity: boolean;
-  otherData?: any;
+  otherData: any;
   tasks: TaskConstructorInputs[];
 }
 export interface VisualizationMode {

@@ -80,9 +80,11 @@ import "codemirror/addon/lint/json-lint";
 import "codemirror/addon/lint/lint";
 import "codemirror/addon/lint/lint.css";
 // assets
-import { mdiFindReplace, mdiMagnify } from "@mdi/js";
+import { mdiContentCopy, mdiFindReplace, mdiMagnify } from "@mdi/js";
 // styles
 import "./code-mirror.styles.scss";
+import TaskSetConstructorFormatter from "../../constructors/task-set-constructor/task-set-constructor.formatter";
+import copyToClipboard from "../../utils/copy-to-clipboard/copy-to-clipboard";
 
 // setup json linter
 const jsonlint = require("jsonlint-mod");
@@ -350,7 +352,7 @@ const CodeMirrorEditor = ({
       const lineValue = editor.getLine(searchLine);
       if (
         !(lineValue.includes("[") && lineValue.includes("]")) &&
-        !(lineValue.includes("{") && lineValue.includes("}"))  // TODO: find last position of '"' and position of '{', then if '"' is righter than '}' - ignore it
+        !(lineValue.includes("{") && lineValue.includes("}")) // TODO: find last position of '"' and position of '{', then if '"' is righter than '}' - ignore it
       ) {
         if (lineValue.includes("{")) {
           brackets.push({
@@ -1181,6 +1183,27 @@ const CodeMirrorEditor = ({
       },
       mdiIconPath: mdiFindReplace,
       tooltip: "Найти и заменить (ctrl + shift + f / cmd + opt + f)",
+    },
+    {
+      action: () => {
+        try {
+          const editorValue = JSON.parse(editor.getValue());
+          copyToClipboard(
+            JSON.stringify(
+              TaskSetConstructorFormatter.convertConstructorInputsToSendForm(
+                editorValue
+              ),
+              null,
+              2
+            )
+          );
+        } catch {
+          console.log("ERROR WHILE COPY");
+        }
+      },
+      mdiIconPath: mdiContentCopy,
+      size: 2,
+      tooltip: "Скопировать для экспорта",
     },
   ];
 
