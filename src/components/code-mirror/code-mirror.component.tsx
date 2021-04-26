@@ -350,7 +350,7 @@ const CodeMirrorEditor = ({
       const lineValue = editor.getLine(searchLine);
       if (
         !(lineValue.includes("[") && lineValue.includes("]")) &&
-        !(lineValue.includes("{") && lineValue.includes("}"))
+        !(lineValue.includes("{") && lineValue.includes("}"))  // TODO: find last position of '"' and position of '{', then if '"' is righter than '}' - ignore it
       ) {
         if (lineValue.includes("{")) {
           brackets.push({
