@@ -14,6 +14,7 @@ class TaskSetConstructorFormatter {
   public static convertReceivedFormToConstructorInputs(
     data: TaskSetConstructorReceivedForm
   ): TaskSetConstructorInputs {
+    // @ts-ignore
     return {
       ...data,
       tasks: data.tasks.map((task: TaskConstructorReceivedForm) => {
@@ -182,7 +183,7 @@ class TaskSetConstructorFormatter {
           "otherGoalData",
           "otherCheckSolutionData",
           "otherAwardData",
-          "otherAutogenerationData",
+          "otherAutoGenerationData",
           "otherData",
         ].forEach((key: string) => {
           if (task[key] === "") {
@@ -192,7 +193,9 @@ class TaskSetConstructorFormatter {
         task.namespaceCode = data.namespaceCode;
       });
     }
+    // @ts-ignore
     if (!data.subjectTypes) {
+      // @ts-ignore
       data.subjectTypes = [];
     }
     if (!data.otherData) {

@@ -25,10 +25,14 @@ export interface TaskSetConstructorInputs {
   namespaceCode: string;
   nameEn: string;
   nameRu: string;
-  subjectTypes: string[] | string;
-  tasks: TaskConstructorInputs[];
+  descriptionShortEn: string;
+  descriptionShortRu: string;
+  descriptionEn: string;
+  descriptionRu: string;
+  subjectType: string;
   recommendedByCommunity: boolean;
   otherData?: any;
+  tasks: TaskConstructorInputs[];
 }
 export interface VisualizationMode {
   name: "list" | "table";

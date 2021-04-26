@@ -9,15 +9,11 @@ export interface ConstructorInputProps {
   name: string;
   type: string;
   disabled?: boolean;
-  register?: (...args: any) => void;
   label?: string;
   isRendered?: boolean;
   isVisible?: boolean;
-  defaultValue?: any;
   isExpressionInput?: boolean;
   onChange?: (value: string) => any;
   value?: any;
-  // updateJSON?: () => void;
-  addToHistory?: (oldVal: ExpressionChange, newVal: ExpressionChange) => void;
-  constructorType: ConstructorJSONType;
+  isTextArea?: boolean;
 }

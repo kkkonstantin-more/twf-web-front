@@ -9,6 +9,7 @@ export interface ConstructorFormDefaultInput {
   disabled?: boolean;
   isRendered?: boolean;
   isVisible?: boolean;
+  isTextArea?: boolean;
 }
 
 export interface ConstructorFormSelectInput {

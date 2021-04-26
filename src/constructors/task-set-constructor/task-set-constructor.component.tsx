@@ -146,17 +146,17 @@ const TaskSetConstructor = ({
 
   const inputs: ConstructorFormInput[] = [
     {
+      name: "code",
+      label: "Код",
+      type: "text",
+      disabled: creationMode === ConstructorCreationMode.EDIT,
+    },
+    {
       name: "namespaceCode",
       label: "Namespace",
       type: "text",
       options: namespaces.map((ns: string) => ({ label: ns, value: ns })),
       isMulti: false,
-      disabled: creationMode === ConstructorCreationMode.EDIT,
-    },
-    {
-      name: "code",
-      label: "Код",
-      type: "text",
       disabled: creationMode === ConstructorCreationMode.EDIT,
     },
     {
@@ -170,18 +170,37 @@ const TaskSetConstructor = ({
       type: "text",
     },
     {
-      name: "subjectTypes",
-      label: "Предметные области",
-      options: mockTaskSetSubjectTypes.map((st: string) => ({
-        label: st,
-        value: st,
-      })),
-      isMulti: true,
+      name: "shortDescriptionRu",
+      label: "Краткое описание Ru",
+      type: "text",
+    },
+    {
+      name: "shortDescriptionEn",
+      label: "Краткое описание En",
+      type: "text",
+    },
+    {
+      name: "descriptionEn",
+      label: "Описание Ru",
+      type: "text",
+      isTextArea: true,
+    },
+    {
+      name: "descriptionEn",
+      label: "Описание En",
+      type: "text",
+      isTextArea: true,
+    },
+    {
+      name: "subjectType",
+      label: "Предметная область",
+      type: "text",
     },
     {
       name: "otherData",
       label: "Дополнительная информация",
       type: "text",
+      isTextArea: true,
     },
   ];
 

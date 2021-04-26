@@ -208,7 +208,6 @@ const ConstructorForm = ({
               onChange={(value: string | string[]) => {
                 onChangeInputValue(name, watchValue, value, constructorType);
               }}
-              constructorType={constructorType}
             />
           );
         }

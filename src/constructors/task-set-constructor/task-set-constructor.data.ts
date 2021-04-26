@@ -8,7 +8,7 @@ export const taskConstructorDefaultValues: TaskConstructorInputs = {
   code: "",
   nameEn: "",
   nameRu: "",
-  subjectTypes: [],
+  subjectType: "",
   originalExpression: {
     format: MathInputFormat.TEX,
     expression: "",
@@ -40,8 +40,17 @@ export const taskConstructorDefaultValues: TaskConstructorInputs = {
   otherGoalData: "",
   otherCheckSolutionData: "",
   otherAwardData: "",
-  otherAutogenerationData: "",
+  otherAutoGenerationData: "",
   otherData: "",
+  hints: "",
+  rules: "",
+  descriptionEn: "",
+  descriptionRu: "",
+  interestingFacts: "",
+  nextRecommendedTasks: "",
+  solutionsStepsTree: "",
+  descriptionShortEn: "",
+  descriptionShortRu: "",
 };
 
 export const mockTaskSetSubjectTypes = [

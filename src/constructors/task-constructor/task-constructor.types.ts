@@ -69,7 +69,11 @@ export interface TaskConstructorInputs {
   code: string;
   nameEn: string;
   nameRu: string;
-  subjectTypes: string[] | string;
+  descriptionShortEn: string;
+  descriptionShortRu: string;
+  descriptionEn: string;
+  descriptionRu: string;
+  subjectType: string;
   originalExpression: ExpressionInput;
   goalType: GoalType;
   goalExpression: ExpressionInput;
@@ -92,6 +96,11 @@ export interface TaskConstructorInputs {
   otherGoalData?: any;
   otherCheckSolutionData?: any;
   otherAwardData?: any;
-  otherAutogenerationData?: any;
+  otherAutoGenerationData?: any;
   otherData?: any;
+  rules: string;
+  solutionsStepsTree: string;
+  hints: string;
+  interestingFacts: string;
+  nextRecommendedTasks: string;
 }
