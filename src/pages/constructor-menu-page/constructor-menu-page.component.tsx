@@ -21,7 +21,7 @@ import { mdiPencil, mdiPlus } from "@mdi/js";
 // styles
 import "./constructor-menu-page.styles.scss";
 import RulePackConstructorRequestsHandler from "../../constructors/rule-pack-constructor/rule-pack-constructor.requests-handler";
-import { RulePackReceivedForm } from "../../constructors/rule-pack-constructor/rule-pack-constructor.types";
+import { RulePackConstructorReceivedForm } from "../../constructors/rule-pack-constructor/rule-pack-constructor.types";
 
 export const demoList = [
   "Alison Park",
@@ -68,7 +68,9 @@ const ConstructorMenuPageComponent: React.FC = () => {
     }
   }, [activeTab]);
 
-  const [rulePacks, setRulePacks] = useState<RulePackReceivedForm[]>([]);
+  const [rulePacks, setRulePacks] = useState<RulePackConstructorReceivedForm[]>(
+    []
+  );
   const [taskSets, setTaskSets] = useState<TaskSetConstructorReceivedForm[]>(
     []
   );
@@ -91,7 +93,7 @@ const ConstructorMenuPageComponent: React.FC = () => {
         });
     } else if (currentTab === "rulePack") {
       RulePackConstructorRequestsHandler.getAll()
-        .then((res: RulePackReceivedForm[]) => {
+        .then((res: RulePackConstructorReceivedForm[]) => {
           setRulePacks(res);
           setIsFetched(true);
         })

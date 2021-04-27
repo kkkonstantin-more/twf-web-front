@@ -2,13 +2,13 @@ import axios, { AxiosError, AxiosResponse } from "axios";
 import { getAuthToken } from "../../utils/local-storage/auth-token";
 import {
   RulePackConstructorSendForm,
-  RulePackReceivedForm,
+  RulePackConstructorReceivedForm,
 } from "./rule-pack-constructor.types";
 
 class RulePackConstructorRequestsHandler {
   private static url = process.env.REACT_APP_SERVER_API + "/rule-pack/";
 
-  public static async getAll(): Promise<RulePackReceivedForm[]> {
+  public static async getAll(): Promise<RulePackConstructorReceivedForm[]> {
     return axios({
       method: "get",
       url: this.url,
@@ -16,7 +16,7 @@ class RulePackConstructorRequestsHandler {
         Authorization: "Bearer " + getAuthToken(),
       },
     })
-      .then((res: AxiosResponse<RulePackReceivedForm[]>) => {
+      .then((res: AxiosResponse<RulePackConstructorReceivedForm[]>) => {
         console.log(res.data);
         return res.data;
       })
@@ -26,7 +26,7 @@ class RulePackConstructorRequestsHandler {
       });
   }
 
-  public static getOne(code: string): Promise<RulePackReceivedForm> {
+  public static getOne(code: string): Promise<RulePackConstructorReceivedForm> {
     return axios({
       method: "get",
       url: this.url + code,
@@ -34,7 +34,7 @@ class RulePackConstructorRequestsHandler {
         Authorization: "Bearer " + getAuthToken(),
       },
     })
-      .then((res: AxiosResponse<RulePackReceivedForm>) => {
+      .then((res: AxiosResponse<RulePackConstructorReceivedForm>) => {
         return res.data;
       })
       .catch((e: AxiosError) => {

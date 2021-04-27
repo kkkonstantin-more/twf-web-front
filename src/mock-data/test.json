@@ -1,0 +1,55 @@
+{
+  "code": "",
+  "descriptionEn": "",
+  "descriptionRu": "",
+  "descriptionShortEn": "",
+  "descriptionShortRu": "",
+  "nameEn": "",
+  "nameRu": "",
+  "namespaceCode": "",
+  "rulePacks": [],
+  "rules": [
+    {
+      "nameRu": "",
+      "nameEn": "",
+      "code": "",
+      "basedOnTaskContext": "true",
+      "descriptionEn": "",
+      "descriptionRu": "",
+      "descriptionShortEn": "",
+      "descriptionShortRu": "",
+      "normalizationType": "",
+      "isExtending": "true",
+      "weight": 0,
+      "matchJumbledAndNested": "true",
+      "right": {
+        "expression": "13x+y",
+        "format": "TEX"
+      },
+      "left": {
+        "expression": "\\frac{2x}{y}",
+        "format": "TEX"
+      },
+      "priority": 0,
+      "simpleAdditional": "true",
+      "leftStructureString": "(/(*(2;x);y))",
+      "rightStructureString": "(+(*(13;x);y))"
+    },
+    {
+      "left": {
+        "format": "TEX",
+        "expression": ""
+      },
+      "right": {
+        "format": "TEX",
+        "expression": ""
+      },
+      "basedOnTaskContext": "true",
+      "matchJumbledAndNested": "true",
+      "isExtending": "true",
+      "simpleAdditional": "true",
+      "leftStructureString": "()",
+      "rightStructureString": "()"
+    }
+  ]
+}

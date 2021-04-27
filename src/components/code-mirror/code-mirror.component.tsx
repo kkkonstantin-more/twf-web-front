@@ -85,6 +85,7 @@ import { mdiContentCopy, mdiFindReplace, mdiMagnify } from "@mdi/js";
 import "./code-mirror.styles.scss";
 import TaskSetConstructorFormatter from "../../constructors/task-set-constructor/task-set-constructor.formatter";
 import copyToClipboard from "../../utils/copy-to-clipboard/copy-to-clipboard";
+import RulePackConstructorFormatter from "../../constructors/rule-pack-constructor/rule-pack-constructor.formatter";
 
 // setup json linter
 const jsonlint = require("jsonlint-mod");
@@ -1188,15 +1189,33 @@ const CodeMirrorEditor = ({
       action: () => {
         try {
           const editorValue = JSON.parse(editor.getValue());
-          copyToClipboard(
-            JSON.stringify(
-              TaskSetConstructorFormatter.convertConstructorInputsToSendForm(
-                editorValue
-              ),
-              null,
-              2
-            )
-          );
+          switch (constructorType) {
+            case ConstructorJSONType.NAMESPACE:
+              copyToClipboard(JSON.stringify(editor.getValue()));
+              break;
+            case ConstructorJSONType.RULE_PACK:
+              copyToClipboard(
+                JSON.stringify(
+                  RulePackConstructorFormatter.convertConstructorInputsToSendForm(
+                    editorValue
+                  ),
+                  null,
+                  2
+                )
+              );
+              break;
+            case ConstructorJSONType.TASK_SET:
+              copyToClipboard(
+                JSON.stringify(
+                  TaskSetConstructorFormatter.convertConstructorInputsToSendForm(
+                    editorValue
+                  ),
+                  null,
+                  2
+                )
+              );
+              break;
+          }
         } catch {
           console.log("ERROR WHILE COPY");
         }

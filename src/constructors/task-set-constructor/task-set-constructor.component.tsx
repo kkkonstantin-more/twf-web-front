@@ -35,7 +35,7 @@ import { addLastEditedConstructorItemToLocalStorage } from "../../utils/last-edi
 import RulePackConstructorRequestsHandler from "../rule-pack-constructor/rule-pack-constructor.requests-handler";
 import { setConstructorValueDueToCreationMode } from "../utils";
 // types
-import { RulePackReceivedForm } from "../rule-pack-constructor/rule-pack-constructor.types";
+import { RulePackConstructorReceivedForm } from "../rule-pack-constructor/rule-pack-constructor.types";
 import { RootState } from "../../redux/root-reducer";
 import { TaskConstructorInputs } from "../task-constructor/task-constructor.types";
 import {
@@ -170,17 +170,17 @@ const TaskSetConstructor = ({
       type: "text",
     },
     {
-      name: "shortDescriptionRu",
+      name: "descriptionShortRu",
       label: "Краткое описание Ru",
       type: "text",
     },
     {
-      name: "shortDescriptionEn",
+      name: "descriptionShortEn",
       label: "Краткое описание En",
       type: "text",
     },
     {
-      name: "descriptionEn",
+      name: "descriptionRu",
       label: "Описание Ru",
       type: "text",
       isTextArea: true,
@@ -266,8 +266,8 @@ const TaskSetConstructor = ({
       }
     );
     RulePackConstructorRequestsHandler.getAll().then(
-      (res: RulePackReceivedForm[]) => {
-        setRulePacks(res.map((rp: RulePackReceivedForm) => rp.code));
+      (res: RulePackConstructorReceivedForm[]) => {
+        setRulePacks(res.map((rp: RulePackConstructorReceivedForm) => rp.code));
       }
     );
   }, []);

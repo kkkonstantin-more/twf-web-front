@@ -37,7 +37,7 @@ import {
 // types
 import {
   RulePackConstructorInputs,
-  RulePackReceivedForm,
+  RulePackConstructorReceivedForm,
 } from "./rule-pack-constructor.types";
 import { RootState } from "../../redux/root-reducer";
 import {
@@ -121,14 +121,36 @@ const RulePackConstructor = ({
       disabled: creationMode === ConstructorCreationMode.EDIT,
     },
     {
+      name: "nameRu",
+      label: "Название Ru",
+      type: "text",
+    },
+    {
       name: "nameEn",
       label: "Название  En",
       type: "text",
     },
     {
-      name: "nameRu",
-      label: "Название Ru",
+      name: "descriptionShortRu",
+      label: "Краткое описание Ru",
       type: "text",
+    },
+    {
+      name: "descriptionShortEn",
+      label: "Краткое описание En",
+      type: "text",
+    },
+    {
+      name: "descriptionRu",
+      label: "Описание Ru",
+      type: "text",
+      isTextArea: true,
+    },
+    {
+      name: "descriptionEn",
+      label: "Описание En",
+      type: "text",
+      isTextArea: true,
     },
     {
       name: "rulePacks",
@@ -204,8 +226,10 @@ const RulePackConstructor = ({
         setAllNamespaces(res.map((ns: NamespaceReceivedForm) => ns.code))
     );
     RulePackConstructorRequestsHandler.getAll().then(
-      (res: RulePackReceivedForm[]) =>
-        setAllRulPacks(res.map((rp: RulePackReceivedForm) => rp.code))
+      (res: RulePackConstructorReceivedForm[]) =>
+        setAllRulPacks(
+          res.map((rp: RulePackConstructorReceivedForm) => rp.code)
+        )
     );
   }, []);
 
@@ -298,21 +322,10 @@ const RulePackConstructor = ({
                 type="button"
                 className="btn u-mr-sm"
                 onClick={async () => {
-                  await append({
-                    left: {
-                      format: MathInputFormat.TEX,
-                      expression: "",
-                    },
-                    right: {
-                      format: MathInputFormat.TEX,
-                      expression: "",
-                    },
-                    basedOnTaskContext: "true",
-                    matchJumbledAndNested: "true",
-                    isExtending: "true",
-                    simpleAdditional: "true",
-                  });
-                  updateRulePackJSON(getValues());
+                  await append(
+                    // @ts-ignore
+                    CONSTRUCTOR_JSONS_INITIAL_STATE.rulePack.rules[0]
+                  );
                 }}
               >
                 <Icon path={mdiPlus} size={1.2} />

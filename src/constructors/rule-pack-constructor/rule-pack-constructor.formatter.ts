@@ -1,34 +1,74 @@
 import {
   RulePackConstructorInputs,
+  RulePackConstructorReceivedForm,
   RulePackConstructorSendForm,
   RulePackLink,
-  RulePackReceivedForm,
 } from "./rule-pack-constructor.types";
-import { convertInputStringListSeparatedByCommasToArray } from "../../redux/constructor-jsons/constructor-jsons.utils";
+import {
+  RuleConstructorInputs,
+  RuleConstructorReceivedForm,
+} from "../rule-constructor/rule-constructor.types";
+import {
+  convertMathInput,
+  MathInputFormat,
+} from "../../utils/kotlin-lib-functions";
 
 class RulePackConstructorFormatter {
   public static convertReceivedFormToConstructorInputs(
-    data: RulePackReceivedForm
+    data: RulePackConstructorReceivedForm
   ): RulePackConstructorInputs {
-    return {
+    const res = {
       ...data,
       rulePacks: data.rulePacks?.map((rp: RulePackLink) => {
         return rp.rulePackCode;
       }),
     };
+    if (res.rules) {
+      res.rules = res.rules.map((rule: RuleConstructorReceivedForm) => {
+        const formattedRule: RuleConstructorReceivedForm = { ...rule };
+        if (formattedRule.hasOwnProperty("leftStructureString")) {
+          delete formattedRule.leftStructureString;
+        }
+        if (formattedRule.hasOwnProperty("rightStructureString")) {
+          delete formattedRule.rightStructureString;
+        }
+        return formattedRule;
+      });
+    }
+    return res;
   }
 
   public static convertConstructorInputsToSendForm(
     data: RulePackConstructorInputs
   ): RulePackConstructorSendForm {
-    return {
-      ...data,
-      rulePacks: data.rulePacks
-        ? convertInputStringListSeparatedByCommasToArray(
-            data.rulePacks
-          ).map((rp: string) => ({ rulePackCode: rp }))
-        : [],
-    };
+    const res = { ...data };
+    if (res.rulePacks) {
+      // @ts-ignore
+      res.rulePacks = res.rulePacks.map((code: string) => ({
+        rulePackCode: code,
+      }));
+    }
+
+    if (res.rules) {
+      res.rules = res.rules.map((rule: RuleConstructorInputs) => {
+        const formattedRule = { ...rule };
+        // @ts-ignore
+        formattedRule.leftStructureString = convertMathInput(
+          rule.left.format,
+          MathInputFormat.STRUCTURE_STRING,
+          rule.left.expression
+        );
+        // @ts-ignore
+        formattedRule.rightStructureString = convertMathInput(
+          rule.right.format,
+          MathInputFormat.STRUCTURE_STRING,
+          rule.right.expression
+        );
+        return formattedRule;
+      });
+    }
+    // @ts-ignore
+    return res;
   }
 }
 

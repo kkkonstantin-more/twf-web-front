@@ -1,13 +1,20 @@
-import { RuleConstructorInputs } from "../rule-constructor/rule-constructor.types";
+import {
+  RuleConstructorInputs,
+  RuleConstructorReceivedForm,
+  RuleConstructorSendForm,
+} from "../rule-constructor/rule-constructor.types";
 
-export interface RulePackReceivedForm {
+export interface RulePackConstructorReceivedForm {
   namespaceCode: string;
   code: string;
   nameEn: string;
   nameRu: string;
+  descriptionShortRu: string;
+  descriptionShortEn: string;
+  descriptionRu: string;
+  descriptionEn: string;
   rulePacks?: RulePackLink[];
-  rules?: RuleConstructorInputs[];
-  otherData?: string;
+  rules?: RuleConstructorReceivedForm[];
 }
 
 export interface RulePackConstructorInputs {
@@ -15,9 +22,12 @@ export interface RulePackConstructorInputs {
   code: string;
   nameEn: string;
   nameRu: string;
-  rulePacks?: string[] | string;
+  descriptionShortRu: string;
+  descriptionShortEn: string;
+  descriptionRu: string;
+  descriptionEn: string;
+  rulePacks?: string[];
   rules?: RuleConstructorInputs[];
-  otherData?: string;
 }
 
 export interface RulePackConstructorSendForm {
@@ -25,9 +35,12 @@ export interface RulePackConstructorSendForm {
   code: string;
   nameEn: string;
   nameRu: string;
+  descriptionShortRu: string;
+  descriptionShortEn: string;
+  descriptionRu: string;
+  descriptionEn: string;
   rulePacks?: { rulePackCode: string }[];
-  rules?: RuleConstructorInputs[];
-  otherData?: string;
+  rules?: RuleConstructorSendForm[];
 }
 
 export interface RulePackLink {

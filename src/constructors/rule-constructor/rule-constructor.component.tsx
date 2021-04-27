@@ -27,6 +27,28 @@ const RuleConstructor = ({ index }: RuleConstructorProps): JSX.Element => {
       type: "text",
     },
     {
+      name: "descriptionShortRu",
+      label: "Краткое описание Ru",
+      type: "text",
+    },
+    {
+      name: "descriptionShortEn",
+      label: "Краткое описание En",
+      type: "text",
+    },
+    {
+      name: "descriptionRu",
+      label: "Описание Ru",
+      type: "text",
+      isTextArea: true,
+    },
+    {
+      name: "descriptionEn",
+      label: "Описание En",
+      type: "text",
+      isTextArea: true,
+    },
+    {
       name: `rules[${index}].left`,
       label: "Левая часть",
       type: "text",
@@ -42,6 +64,16 @@ const RuleConstructor = ({ index }: RuleConstructorProps): JSX.Element => {
       name: `rules[${index}].priority`,
       label: "Приоритет",
       type: "number",
+    },
+    {
+      name: `rules[${index}].normalizationType`,
+      label: "Тип нормализации",
+      type: "text",
+    },
+    {
+      name: `rules[${index}].weight`,
+      label: "Вес",
+      type: "text",
     },
     {
       name: `rules[${index}].isExtending`,
