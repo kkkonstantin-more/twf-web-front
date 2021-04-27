@@ -343,6 +343,15 @@ const CodeMirrorEditor = ({
     return changeObject.origin === "paste" && changeObject.text.length > 1;
   };
 
+  const isBracketInsideCommas = (
+    bracketChar: "{" | "}" | "[" | "]",
+    lineValue: string
+  ) => {
+    const bracketPosition = lineValue.indexOf(bracketChar);
+    const commaPosition = lineValue.lastIndexOf('"');
+    return commaPosition > bracketPosition;
+  };
+
   const getNotMatchingOpeningBracketsBeforeLine = (
     editor: CodeMirror.Editor,
     lineNum: number
@@ -352,10 +361,15 @@ const CodeMirrorEditor = ({
     while (searchLine < lineNum) {
       const lineValue = editor.getLine(searchLine);
       if (
-        !(lineValue.includes("[") && lineValue.includes("]")) &&
-        !(lineValue.includes("{") && lineValue.includes("}")) // TODO: find last position of '"' and position of '{', then if '"' is righter than '}' - ignore it
+        !(
+          lineValue.includes("[") &&
+          !isBracketInsideCommas("[", lineValue) &&
+          lineValue.includes("]") &&
+          !isBracketInsideCommas("]", lineValue)
+        ) &&
+        !(lineValue.includes("{") && lineValue.includes("}"))
       ) {
-        if (lineValue.includes("{")) {
+        if (lineValue.includes("{") && !isBracketInsideCommas("{", lineValue)) {
           brackets.push({
             char: "{",
             position: getPositions(
@@ -365,7 +379,10 @@ const CodeMirrorEditor = ({
               { line: searchLine, ch: 999 }
             )[0],
           });
-        } else if (lineValue.includes("[")) {
+        } else if (
+          lineValue.includes("[") &&
+          !isBracketInsideCommas("[", lineValue)
+        ) {
           brackets.push({
             char: "[",
             position: getPositions(
@@ -375,11 +392,17 @@ const CodeMirrorEditor = ({
               { line: searchLine, ch: 999 }
             )[0],
           });
-        } else if (lineValue.includes("}")) {
+        } else if (
+          lineValue.includes("}") &&
+          !isBracketInsideCommas("}", lineValue)
+        ) {
           if (brackets[brackets.length - 1].char === "{") {
             brackets.pop();
           }
-        } else if (lineValue.includes("]")) {
+        } else if (
+          lineValue.includes("]") &&
+          !isBracketInsideCommas("]", lineValue)
+        ) {
           if (brackets[brackets.length - 1].char === "[") {
             brackets.pop();
           }
@@ -403,7 +426,9 @@ const CodeMirrorEditor = ({
     let searchLine = openingBracket.position.from.line;
     if (
       editor.getLine(searchLine).includes(openingBracketChar) &&
-      editor.getLine(searchLine).includes(closingBracketChar)
+      !isBracketInsideCommas(openingBracketChar, editor.getLine(searchLine)) &&
+      editor.getLine(searchLine).includes(closingBracketChar) &&
+      !isBracketInsideCommas(openingBracketChar, editor.getLine(searchLine))
     ) {
       return {
         position: getWordPositions(
@@ -422,11 +447,22 @@ const CodeMirrorEditor = ({
       const lineValue = editor.getLine(searchLine);
       if (
         lineValue.includes(openingBracketChar) &&
-        lineValue.includes(closingBracketChar)
+        !isBracketInsideCommas(
+          openingBracketChar,
+          editor.getLine(searchLine)
+        ) &&
+        lineValue.includes(closingBracketChar) &&
+        !isBracketInsideCommas(closingBracketChar, editor.getLine(searchLine))
       ) {
-      } else if (lineValue.includes(openingBracketChar)) {
+      } else if (
+        lineValue.includes(openingBracketChar) &&
+        !isBracketInsideCommas(openingBracketChar, editor.getLine(searchLine))
+      ) {
         bracketsStack.push(openingBracketChar);
-      } else if (lineValue.includes(closingBracketChar)) {
+      } else if (
+        lineValue.includes(closingBracketChar) &&
+        !isBracketInsideCommas(closingBracketChar, editor.getLine(searchLine))
+      ) {
         if (bracketsStack[bracketsStack.length - 1] === openingBracketChar) {
           bracketsStack.pop();
         } else {
