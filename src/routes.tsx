@@ -7,6 +7,7 @@ import GameInfoPage from "./pages/game-info-page/game-info-page";
 import PlayerInfoPage from "./pages/player-info-page/player-info-page";
 import UsersPage from "./pages/users-page/users-page";
 import LevelInfoPage from "./pages/level-info-page/level-info-page";
+import SampleUserPage from "./pages/sample-user-page/sample-user-page";
 import ConstructorMenuPageComponent from "./pages/constructor-menu-page/constructor-menu-page.component";
 import SolveMathPage from "./pages/solve-math-page/solve-math-page";
 import ConstructorPage from "./pages/constructor-page/constructor-page.component";
@@ -35,6 +36,7 @@ const Routes: React.FC = () => {
       />
       <Route exact path={"/solve-math"} component={SolveMathPage} />
       <Route path={"/constructor"} component={ConstructorPage} />
+      <Route exact path={"/sample-user"} component={SampleUserPage} />
     </Switch>
   );
 };
