@@ -194,7 +194,18 @@ const TaskSetConstructor = ({
     {
       name: "subjectType",
       label: "Предметная область",
-      type: "text",
+      isMulti: false,
+      options: [
+        { value: "standart_math", label: "Стандартная математика" },
+        { value: "combinatorics", label: "Комбинаторика" },
+        //{ value: "derivations_integrals", label: "Производные и интегралы" },
+        //{ value: "probability_and_math_stat", label: "Мат. статистика и мат. вероятность" },
+        { value: "complex_numbers", label: "Комплексные числа" },
+        //{ value: "asymptotic_analysis", label: "Асимптотический анализ" },
+        //{ value: "set", label: "Множества" },
+        { value: "logic", label: "Математическая логика" },
+        { value: "physics", label: "Физика" },
+      ],
     },
     {
       name: "otherData",
@@ -337,8 +348,8 @@ const TaskSetConstructor = ({
                         return (
                           <div
                             className={`task-set-constructor__visualization-mode-switcher ${name === currentVisualizationMode
-                                ? "task-set-constructor__visualization-mode-switcher--active"
-                                : ""
+                              ? "task-set-constructor__visualization-mode-switcher--active"
+                              : ""
                               }`}
                             onClick={() => {
                               setCurrentVisualizationMode(name);
@@ -352,8 +363,8 @@ const TaskSetConstructor = ({
                   </div>
                   <div
                     className={`${currentVisualizationMode === "table"
-                        ? "form-levels-table"
-                        : "form-levels-list"
+                      ? "form-levels-table"
+                      : "form-levels-list"
                       }`}
                   >
                     {currentVisualizationMode === "list" && (
@@ -426,8 +437,8 @@ const TaskSetConstructor = ({
                     )}
                     <div
                       className={`${currentVisualizationMode === "list"
-                          ? "form-levels-list__selected-level"
-                          : ""
+                        ? "form-levels-list__selected-level"
+                        : ""
                         }`}
                     >
                       {fields.map((field, index: number) => {
