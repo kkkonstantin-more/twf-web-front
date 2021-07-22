@@ -92,12 +92,12 @@
     ]
   },
   "devDependencies": {
-    "@percy/cypress": "^2.3.2",
+    //"@percy/cypress": "^2.3.2",
     "@testing-library/react": "^9.5.0",
     "@types/enzyme": "^3.10.7",
     "@types/enzyme-adapter-react-16": "^1.0.6",
     "@types/jest-image-snapshot": "^4.1.1",
-    "cypress": "^5.3.0",
+    //"cypress": "^5.3.0",
     "enzyme": "^3.11.0",
     "enzyme-adapter-react-16": "^1.15.5",
     "enzyme-to-json": "^3.6.1",
