@@ -3,6 +3,9 @@ import React from "react";
 import "./ranks-section.scss";
 import translate from "../../../../translations/translate";
 
+import brainSvgImg from "../../../../assets/home-page-ranks-section/strong-brain.svg";
+import stairWaySvgImg from "../../../../assets/home-page-ranks-section/stairway.svg";
+
 const RanksSection: React.FC = () => {
   // translation vars
   const translationPrefix: string = "ranksSection";
@@ -14,16 +17,13 @@ const RanksSection: React.FC = () => {
     translationPrefix + ".intellectual",
     translationPrefix + ".expert",
   ];
-  // other
-  const brainSvgUrl: string = require("../../../../assets/home-page-ranks-section/strong-brain.svg");
-  const stairWaySvgUrl: string = require("../../../../assets/home-page-ranks-section/stairway.svg");
 
   return (
     <div className="ranks-section" id="ranksSection">
       <h1 className="section-title">{translate(titleId)}</h1>
       <div className="ranks-section__ranks">
         <img
-          src={brainSvgUrl}
+          src={brainSvgImg}
           alt="strong brain"
           className="ranks-section__svg-brain"
         />
@@ -40,7 +40,7 @@ const RanksSection: React.FC = () => {
         })}
       </div>
       <div className="ranks-section__image-and-text">
-        <img src={stairWaySvgUrl} alt="stairway" />
+        <img src={stairWaySvgImg} alt="stairway" />
         <p>{translate(sellingPhraseId)}</p>
       </div>
     </div>

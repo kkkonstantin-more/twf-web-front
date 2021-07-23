@@ -8,7 +8,7 @@ const PhoneGamePreview: React.FC = () => {
   // filling array with urls
   for (let i = 1; i < 10; i++) {
     gameScreenshotsUrls.push(
-      require(`../../assets/component-phone-game-preview/screenshots/screenshot-${i}.jpg`)
+      require(`../../assets/component-phone-game-preview/screenshots/screenshot-${i}.jpg`).default
     );
   }
 
