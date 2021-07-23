@@ -129,15 +129,15 @@ const MathQuillEditor: React.FC<MathQuillEditorProps> = ({
 
   const actions: { iconUrl: string; latexCmd: string }[] = [
     {
-      iconUrl: require("../../assets/math-symbols/sum.svg"),
+      iconUrl: require("../../assets/math-symbols/sum.svg").default,
       latexCmd: "\\sum",
     },
     {
-      iconUrl: require("../../assets/math-symbols/square-root.svg"),
+      iconUrl: require("../../assets/math-symbols/square-root.svg").default,
       latexCmd: "\\sqrt",
     },
     {
-      iconUrl: require("../../assets/math-symbols/pi.svg"),
+      iconUrl: require("../../assets/math-symbols/pi.svg").default,
       latexCmd: "\\pi",
     },
   ];

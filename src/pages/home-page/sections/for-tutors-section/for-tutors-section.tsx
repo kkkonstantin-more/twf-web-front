@@ -8,6 +8,8 @@ import { mdiRobot } from "@mdi/js";
 
 import "./for-tutors-section.scss";
 
+import bigSvgImg from "../../../../assets/home-page-for-tutors-section/teacher-and-desk.svg";
+
 interface TextWithSvgBlock {
   svgUrl: string;
   captionTextId: string;
@@ -20,8 +22,6 @@ const ForTutorsSection: React.FC = () => {
   const translationPrefix: string = "forTutorsSection";
   const titleId: string = translationPrefix + ".title";
   const mainTextId: string = translationPrefix + ".mainText";
-  // other
-  const bigSvgUrl: string = require("../../../../assets/home-page-for-tutors-section/teacher-and-desk.svg");
 
   const textWithSvgBlock: TextWithSvgBlock[] = [
     {
@@ -71,7 +71,7 @@ const ForTutorsSection: React.FC = () => {
       </div>
       <div className="for-tutors-section__svg-and-text">
         <img
-          src={bigSvgUrl}
+          src={bigSvgImg}
           alt="man in front of a desk"
           className="for-tutors-section__svg"
         />
