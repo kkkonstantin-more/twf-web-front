@@ -6,6 +6,8 @@ import PhoneGamePreview from "../../../../components/phone-game-preview/phone-ga
 
 import "./hero-section.scss";
 
+import googlePlayButtonImg from "../../../../assets/home-page-hero-section/google-play-button.png";
+
 const HeroSection: React.FC = () => {
   // translate vars
   const translationPrefix = "heroSection";
@@ -16,8 +18,6 @@ const HeroSection: React.FC = () => {
   const gamesLink: string = translationPrefix + ".gamesLink";
   const googlePlayAppURL: string =
     "https://play.google.com/store/apps/details?id=mathhelper.games.matify";
-
-  const googlePlayButtonUrl: string = require("../../../../assets/home-page-hero-section/google-play-button.png");
 
   return (
     <div className="hero-section__wrapper">
@@ -31,7 +31,7 @@ const HeroSection: React.FC = () => {
             <a href={googlePlayAppURL}>
               <button>
                 <img
-                  src={googlePlayButtonUrl}
+                  src={googlePlayButtonImg}
                   alt="google play button"
                   width="100%"
                   height="auto"

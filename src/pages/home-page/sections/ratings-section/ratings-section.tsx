@@ -12,6 +12,8 @@ import {
 
 import "./ratings-section.scss";
 
+import winnerCupImg from "../../../../assets/home-page-rating-section/winner-cup.svg";
+
 export interface UserData {
   name: string;
   points: number;
@@ -62,15 +64,13 @@ const RatingsSection: React.FC = () => {
   const linkId: string = translationPrefix + ".link";
   const sloganId: string = translationPrefix + ".slogan";
 
-  const svg = require("../../../../assets/home-page-rating-section/winner-cup.svg");
-
   return (
     <div className="ratings-section__wrapper" id="ratingsSection">
       <div className="ratings-section">
         <h1 className="section-title">{translate(titleId)}</h1>
         <div className="ratings-section__description">
           <img
-            src={svg}
+            src={winnerCupImg}
             width="100%"
             height="auto"
             alt="boy and girl are celebrating around winner's cup"

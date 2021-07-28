@@ -3,6 +3,8 @@ import translate from "../../../../translations/translate";
 
 import "./for-players-section.scss";
 
+import svgImg from "../../../../assets/home-page-for-players/girl-with-phone.svg";
+
 const ForPlayersSection: React.FC = () => {
   // translation vars
   const translationPrefix: string = "forPlayersSection";
@@ -15,8 +17,6 @@ const ForPlayersSection: React.FC = () => {
   ];
   const titleId: string = translationPrefix + ".title";
   const sellingPhraseId: string = translationPrefix + ".sellingPhrase";
-  // other vars
-  const svgUrl: string = require("../../../../assets/home-page-for-players/girl-with-phone.svg");
 
   return (
     <div className="for-players-section">
@@ -25,16 +25,15 @@ const ForPlayersSection: React.FC = () => {
       </h1>
       <div className="for-players-section__container">
         <div className="for-players-section__svg-and-selling-phrase">
-          <img src={svgUrl} alt="girl with a phone is sitting on the grass" />
+          <img src={svgImg} alt="girl with a phone is sitting on the grass" />
           <p>{translate(sellingPhraseId)}</p>
         </div>
         <div className="timeline">
           {instructionBlockIds.map((instruction: string, i: number) => (
             <div
               key={i}
-              className={`timeline__container ${
-                i % 2 !== 0 ? "right" : "left"
-              }`}
+              className={`timeline__container ${i % 2 !== 0 ? "right" : "left"
+                }`}
             >
               <div className="content">{translate(instruction)}</div>
               <div className="timeline__container__number">{++i}</div>

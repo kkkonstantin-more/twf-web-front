@@ -19,6 +19,8 @@ import navigationLinks, { LinkInterface } from "./navigation-links";
 
 import "./navigation-bar.scss";
 
+import logoImg from "../../assets/logo.svg";
+
 // props transported from App.tsx
 interface NavigationBarProps {
   setLanguage: React.Dispatch<string>;
@@ -29,7 +31,6 @@ const NavigationBar: React.FC<NavigationBarProps> = ({
   setLanguage,
   currentLanguage,
 }) => {
-  const logoUrl: string = require("../../assets/logo.svg");
   const [showMobileNavigation, setShowMobileNavigation] = useState<boolean>(
     false
   );
@@ -46,30 +47,27 @@ const NavigationBar: React.FC<NavigationBarProps> = ({
           href={pathname === "/" ? "#top" : "/"}
           className="navigation-bar__logo"
         >
-          <img src={logoUrl} alt="logo" width="100%" />
+          <img src={logoImg} alt="logo" width="100%" />
         </a>
         <div className="navigation-bar__language-switchers">
           <span
-            className={`navigation-bar__language-switcher ${
-              currentLanguage === LOCALES.RUSSIAN ? "active" : ""
-            }`}
+            className={`navigation-bar__language-switcher ${currentLanguage === LOCALES.RUSSIAN ? "active" : ""
+              }`}
             onClick={() => setLanguage(LOCALES.RUSSIAN)}
           >
             Ru
           </span>
           <span
-            className={`navigation-bar__language-switcher ${
-              currentLanguage === LOCALES.ENGLISH ? "active" : ""
-            }`}
+            className={`navigation-bar__language-switcher ${currentLanguage === LOCALES.ENGLISH ? "active" : ""
+              }`}
             onClick={() => setLanguage(LOCALES.ENGLISH)}
           >
             En
           </span>
         </div>
         <div
-          className={`navigation-bar__links ${
-            showMobileNavigation ? "open" : ""
-          }`}
+          className={`navigation-bar__links ${showMobileNavigation ? "open" : ""
+            }`}
         >
           <div
             style={{ display: showMobileNavigation ? "block" : "none" }}
