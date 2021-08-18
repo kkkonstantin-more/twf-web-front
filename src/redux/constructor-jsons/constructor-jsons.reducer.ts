@@ -67,16 +67,19 @@ const constructorJSONsReducer = (
           return {
             ...state,
             isNamespaceJSONValid: action.payload.isValid,
+            error: action.payload.error,
           };
         case ConstructorJSONType.RULE_PACK:
           return {
             ...state,
             isRulePackJSONValid: action.payload.isValid,
+            error: action.payload.error,
           };
         case ConstructorJSONType.TASK_SET:
           return {
             ...state,
             isTaskSetJSONValid: action.payload.isValid,
+            error: action.payload.error,
           };
       }
     default:

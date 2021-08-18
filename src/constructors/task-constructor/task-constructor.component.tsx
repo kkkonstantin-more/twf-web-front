@@ -137,6 +137,12 @@ const TaskConstructor = ({
       ],
     },
     {
+      name: `tasks[${index}].tags`,
+      label: "Теги",
+      type: "text",
+      isTextArea: true,
+    },
+    {
       name: `tasks[${index}].rulePacks`,
       label: "Пакеты правил",
       type: "text",

@@ -26,6 +26,7 @@ class RulePackConstructorFormatter {
         return rp.rulePackCode;
       }),
     };
+    console.log("RulePackConstructorFormatter rulePacks" + JSON.stringify(res.rules));
     if (res.rules) {
       res.rules = res.rules.map((rule: RuleConstructorReceivedForm) => {
         const formattedRule: RuleConstructorReceivedForm = { ...rule };
@@ -45,6 +46,7 @@ class RulePackConstructorFormatter {
     data: RulePackConstructorInputs
   ): RulePackConstructorSendForm {
     const res = { ...data };
+    console.log("convertConstructorInputsToSendForm rulePacks" + JSON.stringify(res.rules));
     if (res.rulePacks) {
       // @ts-ignore
       res.rulePacks = res.rulePacks.map((code: string) => ({

@@ -30,6 +30,7 @@ import {
   selectNamespaceJSON,
   selectRulePackJSON,
   selectTaskSetJSON,
+  selectJsonError,
 } from "../../redux/constructor-jsons/constructor-jsons.selectors";
 import {
   selectCurrentNamespaceHistoryChange,
@@ -54,6 +55,7 @@ const ConstructorPage = ({
   isTaskSetJSONValid,
   isRulePackJSONValid,
   isNamespaceJSONValid,
+                           jsonError,
 }: ConnectedProps<typeof connector>): JSX.Element => {
   const { url } = useRouteMatch();
   const { pathname } = useLocation();
@@ -133,7 +135,7 @@ const ConstructorPage = ({
                   !isCurrentJSONValid
                 ) {
                   alert(
-                    "Вы не можете переключиться в режим форм, если текущее значение JSON невалидное"
+                    "Вы не можете переключиться в режим форм, если текущее значение JSON невалидное: '" + jsonError + "'"
                   );
                 } else {
                   setCurrentEditingMode(option.value);
@@ -178,11 +180,13 @@ const mapStateToProps = createStructuredSelector<
     isNamespaceJSONValid: boolean;
     isTaskSetJSONValid: boolean;
     isRulePackJSONValid: boolean;
+    jsonError: string;
   }
 >({
   isNamespaceJSONValid: selectIsNamespaceJSONValid,
   isTaskSetJSONValid: selectIsTaskSetJSONValid,
   isRulePackJSONValid: selectIsRulePackJSONValid,
+  jsonError: selectJsonError,
 });
 
 const connector = connect(mapStateToProps);

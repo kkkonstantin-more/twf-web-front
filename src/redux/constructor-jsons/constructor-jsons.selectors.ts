@@ -35,3 +35,8 @@ export const selectIsRulePackJSONValid = createSelector(
   [selectConstructorJSONs],
   (JSONs: ConstructorJSONs) => JSONs.isRulePackJSONValid
 );
+
+export const selectJsonError = createSelector(
+    [selectConstructorJSONs],
+    (JSONs: ConstructorJSONs) => JSONs.error
+);

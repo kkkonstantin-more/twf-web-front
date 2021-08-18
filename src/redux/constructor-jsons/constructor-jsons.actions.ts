@@ -58,11 +58,13 @@ export const updateRulePackJSON = (
 
 export const setJSONValidity = (
   JSONType: ConstructorJSONType,
-  isValid: boolean
+  isValid: boolean,
+  error: string
 ): SetJSONValidityAction => ({
   type: SET_JSON_VALIDITY,
   payload: {
     JSONType,
     isValid,
+    error
   },
 });

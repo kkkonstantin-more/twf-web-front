@@ -266,7 +266,7 @@ const TaskSetConstructor = ({
     } else {
       setSelectedTask(null);
     }
-  }, [fields]);
+  }, [fields.length]);
 
   // fetching all necessary entities
   // TODO: catch blocks
@@ -373,7 +373,11 @@ const TaskSetConstructor = ({
                           return (
                             <div
                               key={field.id}
-                              onClick={() => setSelectedTask(index)}
+                              onClick={() => {
+                                console.log(index);
+                                setSelectedTask(index);
+                              }
+                              }
                               className={`form-levels-list__select-option ${index === selectedTask &&
                                 "form-levels-list__select-option--active"
                                 }`}
@@ -442,6 +446,8 @@ const TaskSetConstructor = ({
                         }`}
                     >
                       {fields.map((field, index: number) => {
+                        console.log("currentVisualizationMode=" + currentVisualizationMode);
+                        console.log("selectedTask=" + selectedTask);
                         return (
                           <TaskConstructor
                             key={field.id}

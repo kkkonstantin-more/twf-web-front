@@ -7,6 +7,7 @@ const CONSTRUCTOR_JSONS_INITIAL_STATE: ConstructorJSONs = {
   isNamespaceJSONValid: true,
   isRulePackJSONValid: true,
   isTaskSetJSONValid: true,
+  error: "",
   namespace: {
     code: "",
     allowRead: "true",
@@ -76,6 +77,7 @@ const CONSTRUCTOR_JSONS_INITIAL_STATE: ConstructorJSONs = {
         descriptionRu: "",
         descriptionEn: "",
         subjectType: "",
+        tags: "",
         originalExpression: {
           format: MathInputFormat.TEX,
           expression: "",

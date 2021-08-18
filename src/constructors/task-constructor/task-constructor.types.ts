@@ -39,6 +39,7 @@ export interface TaskConstructorReceivedForm {
   descriptionEn: string;
   descriptionRu: string;
   subjectType: string;
+  tags: any;
   originalExpressionStructureString: string;
   originalExpressionTex: string;
   originalExpressionPlainText: string;
@@ -78,6 +79,7 @@ export interface TaskConstructorInputs {
   descriptionEn: string;
   descriptionRu: string;
   subjectType: string;
+  tags: any;
   originalExpression: ExpressionInput;
   goalType: GoalType;
   goalExpression: ExpressionInput;

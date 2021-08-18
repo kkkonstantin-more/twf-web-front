@@ -113,6 +113,7 @@ const RulePackConstructor = ({
       options: allNamespaces.map((ns: string) => ({ label: ns, value: ns })),
       isMulti: false,
       disabled: creationMode === ConstructorCreationMode.EDIT,
+      // TODO: вписать значение по умолчанию из local-storage (src/utils/local-storage/last-edited-creation-type.ts); потом подтягивать с сервера
     },
     {
       name: "code",

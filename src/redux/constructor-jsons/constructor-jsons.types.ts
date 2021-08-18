@@ -9,6 +9,7 @@ export interface ConstructorJSONs {
   namespace: NamespaceConstructorInputs;
   taskSet: TaskSetConstructorInputs;
   rulePack: RulePackConstructorInputs;
+  error: string;
 }
 
 export enum ConstructorJSONType {
@@ -48,6 +49,7 @@ export interface SetJSONValidityAction {
   payload: {
     JSONType: ConstructorJSONType;
     isValid: boolean;
+    error: string;
   };
 }
 

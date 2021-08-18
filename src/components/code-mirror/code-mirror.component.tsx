@@ -842,7 +842,7 @@ const CodeMirrorEditor = ({
     removeAllErrors(editor);
     checkAllExpressionsInputFormats(editor, getAllExpressions(editor));
     checkAllExpressions(editor, getAllExpressions(editor));
-    checkAllExcessiveProps(editor);
+    checkAllExcessiveProps(editor);  // TODO: fix error, если закоммитить, то код падает дальше
   };
 
   // undo redo handling
@@ -927,24 +927,25 @@ const CodeMirrorEditor = ({
       editor.on("change", (editor, changeObject) => {
         // handle changes only if JSON is valid, store the last valid JSON while invalid
         try {
-          JSON.parse(editor.getValue());
-          setJSONValidity(constructorType, true);
+          const parsedJson = JSON.parse(editor.getValue());
+          setJSONValidity(constructorType, true, "");
           if (!isJSONValid) {
             addMultipleLinesChangeToHistory(
               lastValidValue,
               JSON.parse(editor.getValue()),
               constructorType
             );
-            lastValidValue = JSON.parse(editor.getValue());
+            lastValidValue = parsedJson;
             isJSONValid = true;
             updateTaskSetJSON(JSON.parse(editor.getValue()));
             checkAllErrors(editor);
             return;
           }
-          lastValidValue = JSON.parse(editor.getValue());
+          lastValidValue = parsedJson;
           isJSONValid = true;
-        } catch {
-          setJSONValidity(constructorType, false);
+        } catch (e: any) {
+          console.log(e.message);
+          setJSONValidity(constructorType, false, e.message);
           isJSONValid = false;
           return;
         }
@@ -1315,8 +1316,8 @@ const mapDispatchToProps = (dispatch: Dispatch<any>) => ({
   updateRulePackJSON: (rulePackJSON: RulePackConstructorInputs) => {
     return dispatch(updateRulePackJSON(rulePackJSON));
   },
-  setJSONValidity: (constructorType: ConstructorJSONType, isValid: boolean) =>
-    dispatch(setJSONValidity(constructorType, isValid)),
+  setJSONValidity: (constructorType: ConstructorJSONType, isValid: boolean, error: string) =>
+    dispatch(setJSONValidity(constructorType, isValid, error)),
   // version control
   addOneLineChangeToHistory: (
     oldVal: ExpressionChange,

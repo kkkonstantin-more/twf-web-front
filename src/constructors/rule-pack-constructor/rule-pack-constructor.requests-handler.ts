@@ -21,7 +21,7 @@ class RulePackConstructorRequestsHandler {
         return res.data;
       })
       .catch((e: AxiosError) => {
-        console.error("Error fetching all rule packs", e.response, e.message);
+        console.error("Error fetching all rule packs: no RulePacks found on server", e.response, e.message);
         throw e;
       });
   }

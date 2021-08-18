@@ -44,6 +44,7 @@ import {
 } from "../../utils/local-storage/last-edited-creation-type";
 // styles
 import "./namespace-constructor.styles.scss";
+import {AxiosError} from "axios";
 
 const NamespaceConstructorComponent = ({
   namespaceJSON,
@@ -188,9 +189,9 @@ const NamespaceConstructorComponent = ({
           data.code
         );
       })
-      .catch(() => {
+      .catch((e: AxiosError) => {
         setSuccessMsg(null);
-        setErrorMsg("Произошла ошибка!");
+        setErrorMsg("Произошла ошибка: '" + e.message + "'");
       });
   };
 
