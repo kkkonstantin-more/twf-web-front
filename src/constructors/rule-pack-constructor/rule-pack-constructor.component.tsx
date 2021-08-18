@@ -342,6 +342,7 @@ const RulePackConstructor = ({
                     // @ts-ignore
                     CONSTRUCTOR_JSONS_INITIAL_STATE.rulePack.rules[0]
                   );
+                  updateRulePackJSON(getValues());
                 }}
               >
                 <Icon path={mdiPlus} size={1.2} />

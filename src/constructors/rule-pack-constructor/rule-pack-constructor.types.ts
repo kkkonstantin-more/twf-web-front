@@ -50,5 +50,5 @@ export interface RulePackLink {
   rulePackCode: string;
   namespaceCode?: string;
   rulePackNameEn?: string;
-  rulePackNameRy?: string;
+  rulePackNameRu?: string;
 }
