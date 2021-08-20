@@ -340,6 +340,7 @@ const CodeMirrorEditor = ({
   const isMultipleLineAdd = (
     changeObject: CodeMirror.EditorChange
   ): boolean => {
+    console.log("isMultipleLineAdd called");
     return changeObject.origin === "paste" && changeObject.text.length > 1;
   };
 
@@ -727,14 +728,22 @@ const CodeMirrorEditor = ({
           typeof obj[key][0] === "object"
         ) {
           obj[key].forEach((item: any, i: number) => {
-            compareKeys(
-              obj[key][i],
-              exampleObj[key][0],
-              prefix + key + `[${i}].`
-            );
+              if (exampleObj[key] == null || exampleObj[key][0] == null) {
+                  excessiveProps.push(prefix + key + `[${i}].` + Object.keys(obj[key][i]).join(","));
+              } else {
+                  compareKeys(
+                      obj[key][i],
+                      exampleObj[key][0],
+                      prefix + key + `[${i}].`
+                  );
+              }
           });
         } else if (!Array.isArray(obj[key]) && typeof obj[key] === "object") {
-          compareKeys(obj[key], exampleObj[key], prefix + key + ".");
+            if (exampleObj[key] == null) {
+                excessiveProps.push(prefix + key + "." + Object.keys(obj[key]).join(","));
+            } else {
+                compareKeys(obj[key], exampleObj[key], prefix + key + ".");
+            }
         }
       });
     };
@@ -750,6 +759,11 @@ const CodeMirrorEditor = ({
         CMErrorType.EXCESSIVE_PROP
       );
     });
+    if (excessiveProps.length > 0) {
+        return excessiveProps[0];
+    } else {
+        return "";
+    }
   };
 
   const checkAllExpressions = (
@@ -842,7 +856,12 @@ const CodeMirrorEditor = ({
     removeAllErrors(editor);
     checkAllExpressionsInputFormats(editor, getAllExpressions(editor));
     checkAllExpressions(editor, getAllExpressions(editor));
-    checkAllExcessiveProps(editor);  // TODO: fix error, если закоммитить, то код падает дальше
+    const error = checkAllExcessiveProps(editor);
+    if (error) {
+        return error;
+    } else {
+        return "";
+    }
   };
 
   // undo redo handling
@@ -938,7 +957,11 @@ const CodeMirrorEditor = ({
             lastValidValue = parsedJson;
             isJSONValid = true;
             updateTaskSetJSON(JSON.parse(editor.getValue()));
-            checkAllErrors(editor);
+            const error = checkAllErrors(editor);
+            if (error !== "") {
+                setJSONValidity(constructorType, false, "unexpected property: " + error);
+                isJSONValid = false;
+            }
             return;
           }
           lastValidValue = parsedJson;

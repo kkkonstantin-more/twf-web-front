@@ -446,8 +446,6 @@ const TaskSetConstructor = ({
                         }`}
                     >
                       {fields.map((field, index: number) => {
-                        console.log("currentVisualizationMode=" + currentVisualizationMode);
-                        console.log("selectedTask=" + selectedTask);
                         return (
                           <TaskConstructor
                             key={field.id}
