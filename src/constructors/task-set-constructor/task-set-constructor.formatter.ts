@@ -110,42 +110,44 @@ class TaskSetConstructorFormatter {
           );
         }
 
-        if (taskCopy.goalExpression.format === MathInputFormat.TEX) {
-          taskCopy.goalExpressionTex = taskCopy.goalExpression.expression;
-          taskCopy.goalExpressionPlainText = convertMathInput(
-            MathInputFormat.TEX,
-            MathInputFormat.PLAIN_TEXT,
-            task.goalExpression.expression
-          );
-          taskCopy.goalExpressionStructureString = convertMathInput(
-            MathInputFormat.TEX,
-            MathInputFormat.STRUCTURE_STRING,
-            taskCopy.goalExpression.expression
-          );
-        } else if (taskCopy.goalExpression.format === MathInputFormat.PLAIN_TEXT) {
-          taskCopy.goalExpressionPlainText = taskCopy.goalExpression.expression;
-          taskCopy.goalExpressionTex = convertMathInput(
-            MathInputFormat.PLAIN_TEXT,
-            MathInputFormat.TEX,
-            taskCopy.goalExpression.expression
-          );
-          taskCopy.goalExpressionStructureString = convertMathInput(
-            MathInputFormat.PLAIN_TEXT,
-            MathInputFormat.STRUCTURE_STRING,
-            taskCopy.goalExpression.expression
-          );
-        } else if (taskCopy.goalExpression.format === MathInputFormat.STRUCTURE_STRING) {
-          taskCopy.goalExpressionStructureString = taskCopy.goalExpression.expression;
-          taskCopy.goalExpressionPlainText = convertMathInput(
-            MathInputFormat.STRUCTURE_STRING,
-            MathInputFormat.PLAIN_TEXT,
-            taskCopy.goalExpression.expression
-          );
-          taskCopy.goalExpressionTex = convertMathInput(
-            MathInputFormat.STRUCTURE_STRING,
-            MathInputFormat.TEX,
-            taskCopy.goalExpression.expression
-          );
+        if (taskCopy.goalExpression != null) {
+          if (taskCopy.goalExpression.format === MathInputFormat.TEX) {
+            taskCopy.goalExpressionTex = taskCopy.goalExpression.expression;
+            taskCopy.goalExpressionPlainText = convertMathInput(
+                MathInputFormat.TEX,
+                MathInputFormat.PLAIN_TEXT,
+                task.goalExpression.expression
+            );
+            taskCopy.goalExpressionStructureString = convertMathInput(
+                MathInputFormat.TEX,
+                MathInputFormat.STRUCTURE_STRING,
+                taskCopy.goalExpression.expression
+            );
+          } else if (taskCopy.goalExpression.format === MathInputFormat.PLAIN_TEXT) {
+            taskCopy.goalExpressionPlainText = taskCopy.goalExpression.expression;
+            taskCopy.goalExpressionTex = convertMathInput(
+                MathInputFormat.PLAIN_TEXT,
+                MathInputFormat.TEX,
+                taskCopy.goalExpression.expression
+            );
+            taskCopy.goalExpressionStructureString = convertMathInput(
+                MathInputFormat.PLAIN_TEXT,
+                MathInputFormat.STRUCTURE_STRING,
+                taskCopy.goalExpression.expression
+            );
+          } else if (taskCopy.goalExpression.format === MathInputFormat.STRUCTURE_STRING) {
+            taskCopy.goalExpressionStructureString = taskCopy.goalExpression.expression;
+            taskCopy.goalExpressionPlainText = convertMathInput(
+                MathInputFormat.STRUCTURE_STRING,
+                MathInputFormat.PLAIN_TEXT,
+                taskCopy.goalExpression.expression
+            );
+            taskCopy.goalExpressionTex = convertMathInput(
+                MathInputFormat.STRUCTURE_STRING,
+                MathInputFormat.TEX,
+                taskCopy.goalExpression.expression
+            );
+          }
         }
 
         if (task.rulePacks !== "") {

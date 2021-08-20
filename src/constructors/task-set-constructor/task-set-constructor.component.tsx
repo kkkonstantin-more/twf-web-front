@@ -69,6 +69,7 @@ import {
 } from "@mdi/js";
 // styles
 import "./task-set-constructor.styles.scss";
+import {AxiosError} from "axios";
 
 // creating context with FieldArray functions that will be used in task constructors
 // @ts-ignore
@@ -243,9 +244,9 @@ const TaskSetConstructor = ({
           data.code
         );
       })
-      .catch(() => {
+      .catch((e: AxiosError) => {
         setSuccessMsg(null);
-        setErrorMsg("Произошла ошибка!");
+        setErrorMsg("Произошла ошибка: '" + e.message + "'");
       });
   };
 

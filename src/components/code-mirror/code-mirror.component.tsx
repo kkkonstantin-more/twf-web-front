@@ -721,7 +721,9 @@ const CodeMirrorEditor = ({
 
       Object.keys(obj).forEach((key: string) => {
         if (!exampleKeys.includes(key)) {
-          excessiveProps.push(prefix + key);
+          if (exampleKeys.length > 0) { // because we are using fields with anu value
+            excessiveProps.push(prefix + key);
+          }
         } else if (
           Array.isArray(obj[key]) &&
           obj[key].length !== 0 &&
