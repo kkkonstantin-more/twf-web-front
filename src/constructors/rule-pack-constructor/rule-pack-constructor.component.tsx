@@ -60,6 +60,7 @@ import {
 } from "@mdi/js";
 // styles
 import "./rule-pack-constructor.scss";
+import {AxiosError} from "axios";
 
 const RulePackConstructor = ({
   rulePackJSON,
@@ -227,11 +228,15 @@ const RulePackConstructor = ({
     )
       .then(() => {
         setErrorMsg(null);
-        setSuccessMsg("Успех!");
+        setSuccessMsg(
+            creationMode === ConstructorCreationMode.EDIT
+                ? "Пакет правил успешно изменен!"
+                : "Пакет правил успешно создан!"
+        );
       })
-      .catch(() => {
+      .catch((e: AxiosError) => {
         setSuccessMsg(null);
-        setErrorMsg("Провал");
+        setErrorMsg("Произошла ошибка: '" + e.message + "'");
       });
   };
 
