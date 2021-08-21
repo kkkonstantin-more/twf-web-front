@@ -95,7 +95,7 @@ const CONSTRUCTOR_JSONS_INITIAL_STATE: ConstructorJSONs = {
         difficulty: 0,
         solution: {
           format: MathInputFormat.TEX,
-          expression: "",
+          logicPreposition: "",
         },
         solutionsStepsTree: "",
         rules: [

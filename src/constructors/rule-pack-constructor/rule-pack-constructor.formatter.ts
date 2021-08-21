@@ -13,7 +13,7 @@ import {
 } from "../task-constructor/task-constructor.types";
 import {
   RuleConstructorInputs,
-  RuleConstructorReceivedForm,
+  RuleConstructorReceivedForm, RuleConstructorSendForm,
 } from "../rule-constructor/rule-constructor.types";
 
 class RulePackConstructorFormatter {
@@ -57,23 +57,26 @@ class RulePackConstructorFormatter {
 
     if (res.rules) {
       res.rules = res.rules.map((rule: RuleConstructorInputs) => {
-        const formattedRule = { ...rule };
+        const formattedRule = { ...rule } as RuleConstructorSendForm;
 
         if (!rule.left && !rule.right) {
           return formattedRule;
         }
 
         // @ts-ignore
+
+        const left = rule.left as ExpressionInput;
         formattedRule.leftStructureString = convertMathInput(
-          rule.left.format,
+            left.format,
           MathInputFormat.STRUCTURE_STRING,
-          rule.left.expression
+          rule.left!!.expression
         );
         // @ts-ignore
+        const right = rule.right as ExpressionInput;
         formattedRule.rightStructureString = convertMathInput(
-          rule.right.format,
+            right.format,
           MathInputFormat.STRUCTURE_STRING,
-          rule.right.expression
+          rule.right!!.expression
         );
         return formattedRule;
       });

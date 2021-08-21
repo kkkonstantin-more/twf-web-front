@@ -952,19 +952,19 @@ const CodeMirrorEditor = ({
           setJSONValidity(constructorType, true, "");
           if (!isJSONValid) {
             addMultipleLinesChangeToHistory(
-              lastValidValue,
-              JSON.parse(editor.getValue()),
+              lastValidValue, parsedJson,
               constructorType
             );
             lastValidValue = parsedJson;
             isJSONValid = true;
-            updateTaskSetJSON(JSON.parse(editor.getValue()));
+            updateTaskSetJSON(parsedJson);
             const error = checkAllErrors(editor);
             if (error !== "") {
                 setJSONValidity(constructorType, false, "unexpected property: " + error);
                 isJSONValid = false;
             }
-            return; //TODO: проблема нереагирования на вставку вероятно в этом return
+            updateCurrentReduxJSON(parsedJson);
+            return;
           }
           lastValidValue = parsedJson;
           isJSONValid = true;

@@ -64,7 +64,7 @@ const TaskConstructor = ({
 
   // react-hook-form's fieldArray initialization and getting its needed tools
   // in order to manage rule constructors
-  const { fields: fieldsRules, append: appendRule, swap: swapRule, remove: removeRule } = useFieldArray<RuleConstructorInputs>(
+  const { fields: fieldsRules, append: appendRule, swap: swapRule, remove: removeRule } = useFieldArray<RuleConstructorInputs>(  //TODO: support case rules=null
     {
       control,
       name: `tasks[${index}].rules`,

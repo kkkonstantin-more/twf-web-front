@@ -31,7 +31,7 @@ export const taskConstructorDefaultValues: TaskConstructorInputs = {
   difficulty: 0,
   solution: {
     format: MathInputFormat.TEX,
-    expression: "",
+    logicPreposition: "",
   },
   solutionsStepsTree: "",
   rules: [

@@ -125,7 +125,7 @@ const ConstructorMenuPageComponent: React.FC = () => {
           action: () => history.push("/constructor/task-set/"),
         },
         {
-          name: "На основе уже существующей",
+          name: "На основе уже существующего",
           action: () => {
             setItems(
               taskSets.map((taskSet: TaskSetConstructorReceivedForm) => {

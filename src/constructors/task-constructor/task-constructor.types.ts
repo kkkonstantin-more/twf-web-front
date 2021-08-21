@@ -56,7 +56,7 @@ export interface TaskConstructorReceivedForm {
   stepsNumber: number;
   time: number;
   difficulty: number;
-  solution: ExpressionInput;
+  solution: any;
   solutionsStepsTree: any;
   hints: any;
   otherCheckSolutionData: any;
@@ -90,7 +90,7 @@ export interface TaskConstructorInputs {
   stepsNumber: number;
   time: number;
   difficulty: number;
-  solution: ExpressionInput;
+  solution: any;
   solutionsStepsTree: any;
   hints: any;
   otherCheckSolutionData: any;
