@@ -35,7 +35,7 @@ import { getGrantTypeUserReadableDescription } from "./namespace-constructor.uti
 import NamespaceConstructorFormatter from "./namespace-constructor.formatter";
 import { addLastEditedConstructorItemToLocalStorage } from "../../utils/last-edited-constructor-items-local-storage";
 import NamespaceConstructorRequestHandler from "./namespace-constructor.requests-handler";
-import { setConstructorValueDueToCreationMode } from "../utils";
+import {makeServerRequestErrorMessage, setConstructorValueDueToCreationMode} from "../utils";
 import {
   getLastEditedCreationMode,
   getLastExampleConstructorCode,
@@ -191,7 +191,7 @@ const NamespaceConstructorComponent = ({
       })
       .catch((e: AxiosError) => {
         setSuccessMsg(null);
-        setErrorMsg("Произошла ошибка: '" + e.message + "'");
+        setErrorMsg(makeServerRequestErrorMessage(e));
       });
   };
 

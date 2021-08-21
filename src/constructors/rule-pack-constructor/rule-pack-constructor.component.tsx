@@ -27,7 +27,7 @@ import getConstructorSubmitButtonAndTitleText from "../utiils/get-constructor-su
 import RulePackConstructorRequestsHandler from "./rule-pack-constructor.requests-handler";
 import NamespaceConstructorRequestHandler from "../namespace-constructor/namespace-constructor.requests-handler";
 import RulePackConstructorFormatter from "./rule-pack-constructor.formatter";
-import { setConstructorValueDueToCreationMode } from "../utils";
+import {makeServerRequestErrorMessage, setConstructorValueDueToCreationMode} from "../utils";
 import {
   getLastEditedCreationMode,
   getLastExampleConstructorCode,
@@ -236,7 +236,7 @@ const RulePackConstructor = ({
       })
       .catch((e: AxiosError) => {
         setSuccessMsg(null);
-        setErrorMsg("Произошла ошибка: '" + e.message + "'");
+        setErrorMsg(makeServerRequestErrorMessage(e));
       });
   };
 

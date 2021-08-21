@@ -9,6 +9,7 @@ import {
   ConstructorFormInput,
   ConstructorFormSelectInput,
 } from "../components/constructor-form/constructor-form.types";
+import {AxiosError} from "axios";
 
 export const filterReactSelectOptions = (options: any[]) => {
   return options.map((option: any) => {
@@ -39,6 +40,20 @@ export const formatConstructorSelect = (
   return selectedOption.hasOwnProperty("label")
     ? selectedOption.value
     : options.find((option: SelectOption) => option.value === selectedOption);
+};
+
+export const makeServerRequestErrorMessage = (
+    e: AxiosError
+) => {
+  if (e.response) {
+    if (e.response.data.error) {
+      return "Произошла ошибка: '" + e.response.data.error + "' -> '" + e.message + "'";
+    } else {
+      return "Произошла ошибка: '" + e.response.data + "' -> '" + e.message + "'";
+    }
+  } else {
+    return "Произошла ошибка: '" + e.message + "'";
+  }
 };
 
 export const setConstructorValueDueToCreationMode = async (

@@ -33,7 +33,7 @@ import TaskSetConstructorRequestsHandler from "./task-set-constructor.requests-h
 import TaskSetConstructorFormatter from "./task-set-constructor.formatter";
 import { addLastEditedConstructorItemToLocalStorage } from "../../utils/last-edited-constructor-items-local-storage";
 import RulePackConstructorRequestsHandler from "../rule-pack-constructor/rule-pack-constructor.requests-handler";
-import { setConstructorValueDueToCreationMode } from "../utils";
+import {makeServerRequestErrorMessage, setConstructorValueDueToCreationMode} from "../utils";
 // types
 import { RulePackConstructorReceivedForm } from "../rule-pack-constructor/rule-pack-constructor.types";
 import { RootState } from "../../redux/root-reducer";
@@ -246,7 +246,7 @@ const TaskSetConstructor = ({
       })
       .catch((e: AxiosError) => {
         setSuccessMsg(null);
-        setErrorMsg("Произошла ошибка: '" + e.message + "'");
+        setErrorMsg(makeServerRequestErrorMessage(e));
       });
   };
 
