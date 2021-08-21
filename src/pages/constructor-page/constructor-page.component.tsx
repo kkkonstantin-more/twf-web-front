@@ -117,36 +117,42 @@ const ConstructorPage = ({
     },
   ];
 
+  const editingModeSwitcherOptionsDiv = () => {
+    return (
+        <div className="constructor-page__editing-mode-switchers">
+          {editingModeSwitcherOptions.map((option: EditingModeSwitcherOption) => {
+            return (
+                <div
+                    key={option.value}
+                    className={`constructor-page__editing-mode-switcher ${
+                        currentEditingMode === option.value
+                            ? "constructor-page__editing-mode-switcher--active"
+                            : ""
+                        }`}
+                    onClick={() => {
+                      if (
+                          currentEditingMode === "textEditor" &&
+                          !isCurrentJSONValid
+                      ) {
+                        alert(
+                            "Вы не можете переключиться в режим форм, если текущее значение JSON невалидное: '" + jsonError + "'"
+                        );
+                      } else {
+                        setCurrentEditingMode(option.value);
+                      }
+                    }}
+                >
+                  {option.label}
+                </div>
+            );
+          })}
+        </div>
+    )
+  };
+
   return (
     <div className="constructor-page">
-      <div className="constructor-page__editing-mode-switchers">
-        {editingModeSwitcherOptions.map((option: EditingModeSwitcherOption) => {
-          return (
-            <div
-              key={option.value}
-              className={`constructor-page__editing-mode-switcher ${
-                currentEditingMode === option.value
-                  ? "constructor-page__editing-mode-switcher--active"
-                  : ""
-              }`}
-              onClick={() => {
-                if (
-                  currentEditingMode === "textEditor" &&
-                  !isCurrentJSONValid
-                ) {
-                  alert(
-                    "Вы не можете переключиться в режим форм, если текущее значение JSON невалидное: '" + jsonError + "'"
-                  );
-                } else {
-                  setCurrentEditingMode(option.value);
-                }
-              }}
-            >
-              {option.label}
-            </div>
-          );
-        })}
-      </div>
+      <Route component={editingModeSwitcherOptionsDiv} />
       <Switch>
         <Route
           exact
@@ -170,6 +176,7 @@ const ConstructorPage = ({
           }
         />
       </Switch>
+      <Route component={editingModeSwitcherOptionsDiv} />
     </div>
   );
 };
