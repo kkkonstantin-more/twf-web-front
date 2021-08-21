@@ -10,6 +10,7 @@ import {
 import { TaskConstructorInputs, TaskConstructorReceivedForm } from "../task-constructor/task-constructor.types";
 import { RuleConstructorReceivedForm, RuleConstructorInputs, RuleConstructorSendForm } from "../rule-constructor/rule-constructor.types";
 import { convertInputStringListSeparatedByCommasToArray } from "../../redux/constructor-jsons/constructor-jsons.utils";
+import { RulePackLink } from "../rule-pack-constructor/rule-pack-constructor.types";
 
 class TaskSetConstructorFormatter {
   public static convertReceivedFormToConstructorInputs(
@@ -58,8 +59,12 @@ class TaskSetConstructorFormatter {
   public static convertConstructorInputsToSendForm(
     data: TaskSetConstructorInputs
   ): TaskSetConstructorSendForm {
+    let res = {
+      ...data,
+      tasks: []
+    } as TaskSetConstructorSendForm;
     if (data.tasks) {
-      data.tasks.forEach((task: TaskConstructorInputs) => {
+      res.tasks = data.tasks.map((task: TaskConstructorInputs) => {
         const taskCopy: TaskConstructorReceivedForm = {
           ...task,
           originalExpressionPlainText: "",
@@ -152,11 +157,18 @@ class TaskSetConstructorFormatter {
 
         if (task.rulePacks !== "") {
           taskCopy.rulePacks = convertInputStringListSeparatedByCommasToArray(
-            task.rulePacks
-          ).map((rulePackCode: string) => ({
-            rulePackCode,
-          }));
+              task.rulePacks
+          ).map((rulePackCode: string) => {
+            console.log("rulePackCode", rulePackCode);
+            console.log("namespaceCode", taskCopy.namespaceCode);
+            return {
+              rulePackCode: rulePackCode,
+              namespaceCode: taskCopy.namespaceCode,
+            } as RulePackLink;
+          });
         }
+
+        console.log("task.rulePacks", taskCopy.rulePacks);
 
         [
           "otherGoalData",
@@ -197,16 +209,17 @@ class TaskSetConstructorFormatter {
             return formattedRule;
           });
         }
+        return taskCopy
       });
     }
 
-    if (!data.otherData) {
-      data.otherData = null;
+    if (!res.otherData) {
+      res.otherData = null;
     }
 
-    console.log(data);
+    console.log(res);
     // @ts-ignore
-    return data;
+    return res;
   }
 }
 

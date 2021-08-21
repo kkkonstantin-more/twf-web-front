@@ -51,6 +51,7 @@ class RulePackConstructorFormatter {
       // @ts-ignore
       res.rulePacks = res.rulePacks.map((code: string) => ({
         rulePackCode: code,
+        namespaceCode: data.namespaceCode
       }));
     }
 

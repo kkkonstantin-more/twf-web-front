@@ -65,6 +65,7 @@ class TaskSetConstructorRequestsHandler {
     data: TaskSetConstructorSendForm,
     requestType: "post" | "patch"
   ): Promise<Number> {
+    console.log("TaskSet", data);
     return axios({
       method: requestType,
       url: this.url,

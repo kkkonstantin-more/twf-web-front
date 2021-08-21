@@ -964,7 +964,7 @@ const CodeMirrorEditor = ({
                 setJSONValidity(constructorType, false, "unexpected property: " + error);
                 isJSONValid = false;
             }
-            return;
+            return; //TODO: проблема нереагирования на вставку вероятно в этом return
           }
           lastValidValue = parsedJson;
           isJSONValid = true;
