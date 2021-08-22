@@ -254,7 +254,7 @@ const SolveMathPage: React.FC = () => {
       return (
           <div className="solve-math">
             <h1 className="u-text-center u-mt-sm">{taskSet?.nameRu}</h1>
-            <div style={{width: "80%", margin: "2rem auto 0 auto"}}>
+            <div style={{width: "90%", margin: "2rem auto 0 auto"}}>
               <Steps
                   progressDot={true}
                   current={currentTaskIdx}
