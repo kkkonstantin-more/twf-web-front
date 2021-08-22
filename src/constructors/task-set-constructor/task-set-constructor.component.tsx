@@ -1,7 +1,7 @@
 // libs and hooks
 import React, { Dispatch, useEffect, useState } from "react";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
-import { useParams } from "react-router-dom";
+import {Link, useParams} from "react-router-dom";
 // custom hooks
 import useCreationMode from "../hooks/useCreationType";
 // redux
@@ -70,6 +70,7 @@ import {
 // styles
 import "./task-set-constructor.styles.scss";
 import {AxiosError} from "axios";
+import translate from "../../translations/translate";
 
 // creating context with FieldArray functions that will be used in task constructors
 // @ts-ignore
@@ -310,6 +311,22 @@ const TaskSetConstructor = ({
     });
   }, []);
 
+  const renderSolveMathLinkButton = () => {
+      if (taskSetCode) {
+          return (
+              <Link
+                  className={"btn u-mt-sm"}
+                  to={"/solve-math/" + taskSetCode}
+                  target={"_blank"}
+              >
+                  {"Решать созданный набор задач"}
+              </Link>
+          );
+      } else {
+          return;
+      }
+    };
+
   if (showSpinner) {
     return (
       <div style={{ margin: "2rem" }}>
@@ -516,6 +533,7 @@ const TaskSetConstructor = ({
                   <button type="submit" className="btn u-mt-sm">
                     {titleAndSubmitButtonText}
                   </button>
+                    {renderSolveMathLinkButton()}
                 </form>
               </TasksFieldArrayActionsContext.Provider>
             </FormProvider>

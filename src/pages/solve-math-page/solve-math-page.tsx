@@ -241,15 +241,24 @@ const SolveMathPage: React.FC = () => {
     currentTaskIdx,
   ]);
 
+  const getDirection = () => {
+    if (taskSet && taskSet?.tasks.length <= 5) {
+      return "horizontal";
+    } else {
+      return "vertical";
+    }
+  };
+
   if (isTaskSetFetched) {
     return (
       <div className="solve-math">
-        <h1 className="u-text-center u-mt-sm">Набор задач {taskSet?.nameRu}</h1>
+        <h1 className="u-text-center u-mt-sm">{taskSet?.nameRu}</h1>
         <div style={{ width: "80%", margin: "2rem auto 0 auto" }}>
           <Steps
             progressDot={true}
             current={currentTaskIdx}
             direction={"horizontal"}
+            style={{margin: "1rem 10rem 1rem 10rem"}}
           >
             {taskSet?.tasks.map(
               (task: TaskConstructorReceivedForm, i: number) => {
