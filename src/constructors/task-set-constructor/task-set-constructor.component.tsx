@@ -300,7 +300,7 @@ const TaskSetConstructor = ({
       async () => {
         const res = await TaskSetConstructorRequestsHandler.getOne(taskSetCode);
         return TaskSetConstructorFormatter.convertReceivedFormToConstructorInputs(
-          res
+          res.taskset
         );
       },
       getLastExampleConstructorCode(ConstructorJSONType.TASK_SET),

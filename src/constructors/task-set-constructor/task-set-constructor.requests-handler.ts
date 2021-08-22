@@ -8,6 +8,8 @@ import {
   TaskSetConstructorReceivedForm,
   TaskSetConstructorSendForm,
 } from "./task-set-constructor.types";
+import {TaskContextForm} from "../../pages/solve-math-page/solve-math-page.types";
+import {RulePackConstructorReceivedForm} from "../rule-pack-constructor/rule-pack-constructor.types";
 
 class TaskSetConstructorRequestsHandler {
   private static url = process.env.REACT_APP_SERVER_API + "/taskset/";
@@ -35,7 +37,7 @@ class TaskSetConstructorRequestsHandler {
 
   public static async getOne(
     code: string
-  ): Promise<TaskSetConstructorReceivedForm> {
+  ): Promise<TaskContextForm> {
     return axios({
       method: "get",
       url: this.url + "edit/" + code,
@@ -47,9 +49,13 @@ class TaskSetConstructorRequestsHandler {
         (
           res: AxiosResponse<{
             taskset: TaskSetConstructorReceivedForm;
+            rulePacks: RulePackConstructorReceivedForm[];
           }>
         ) => {
-          return res.data.taskset;
+          return {
+            taskset: res.data.taskset,
+            rulePacks: res.data.rulePacks,
+          } as TaskContextForm;
         }
       )
       .catch((e: AxiosError) => {

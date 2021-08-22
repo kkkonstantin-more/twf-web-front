@@ -18,13 +18,14 @@ import { TaskSetConstructorReceivedForm } from "../../constructors/task-set-cons
 import { addStyles } from "react-mathquill";
 // types
 import { TaskConstructorReceivedForm } from "../../constructors/task-constructor/task-constructor.types";
-import { SendLogForm } from "./solve-math-page.types";
+import {SendLogForm, TaskContextForm} from "./solve-math-page.types";
 
 // icons
 import { mdiArrowLeftBoldBox, mdiArrowRightBoldBox } from "@mdi/js";
 // styles
 import "./solve-math-page.scss";
 import "antd/dist/antd.compact.min.css";
+import {RulePackConstructorReceivedForm} from "../../constructors/rule-pack-constructor/rule-pack-constructor.types";
 
 // adding mathquill styles
 addStyles();
@@ -35,6 +36,7 @@ const SolveMathPage: React.FC = () => {
 
   const [isTaskSetFetched, setIsTaskSetFetched] = useState<boolean>(false);
   const [taskSet, setTaskSet] = useState<TaskSetConstructorReceivedForm>();
+  const [rulePacks, setRulePacks] = useState<RulePackConstructorReceivedForm[]>();
   const [currentTaskIdx, setCurrentTaskIdx] = useState<number>(0);
   const [solutions, setSolutions] = useState<string[]>([]);
   const [errMessages, setErrMessages] = useState<(string | null)[]>([]);
@@ -194,16 +196,17 @@ const SolveMathPage: React.FC = () => {
   // fetching taskSet
   useEffect(() => {
     TaskSetConstructorRequestsHandler.getOne(taskSetCode).then(
-      (res: TaskSetConstructorReceivedForm) => {
-        setTaskSet(res);
+      (res: TaskContextForm) => {
+        setTaskSet(res.taskset);
+        setRulePacks(res.rulePacks);
         setSolutions(
-          res.tasks.map(
+            res.taskset.tasks.map(
             (task: TaskConstructorReceivedForm) =>
               task.originalExpressionTex + "=...=" + task.goalExpressionTex
           )
         );
         setSolutions(
-          res.tasks.map((task: TaskConstructorReceivedForm) => {
+            res.taskset.tasks.map((task: TaskConstructorReceivedForm) => {
             return (
               task.originalExpressionTex + "=...=" + task.goalExpressionTex
             );
