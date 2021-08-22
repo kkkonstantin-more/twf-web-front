@@ -1,5 +1,6 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { getAuthToken } from "../../utils/local-storage/auth-token";
+import { ConstructorCreationMode } from "../common-types";
 import {
   RulePackConstructorSendForm,
   RulePackConstructorReceivedForm,
@@ -48,12 +49,12 @@ class RulePackConstructorRequestsHandler {
   }
 
   public static submitOne(
-    requestType: "post" | "patch",
+    creationMode: ConstructorCreationMode,
     data: RulePackConstructorSendForm
   ): Promise<number> {
     return axios({
-      method: requestType,
-      url: this.url,
+      method: "post",
+      url: this.url + (creationMode === ConstructorCreationMode.CREATE ? "create/" : "update/"),
       data,
       headers: {
         Authorization: "Bearer " + getAuthToken(),
@@ -64,7 +65,7 @@ class RulePackConstructorRequestsHandler {
       })
       .catch((e: AxiosError) => {
         console.error(
-          `Error trying to make rule-pack ${requestType} request. Rule-pack code: ${data.code}`,
+          `Error trying to make rule-pack post request. Rule-pack code: ${data.code}`,
           e.response,
           e.message
         );

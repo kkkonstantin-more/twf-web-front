@@ -35,7 +35,7 @@ import { getGrantTypeUserReadableDescription } from "./namespace-constructor.uti
 import NamespaceConstructorFormatter from "./namespace-constructor.formatter";
 import { addLastEditedConstructorItemToLocalStorage } from "../../utils/last-edited-constructor-items-local-storage";
 import NamespaceConstructorRequestHandler from "./namespace-constructor.requests-handler";
-import {makeServerRequestErrorMessage, setConstructorValueDueToCreationMode} from "../utils";
+import { makeServerRequestErrorMessage, setConstructorValueDueToCreationMode } from "../utils";
 import {
   getLastEditedCreationMode,
   getLastExampleConstructorCode,
@@ -44,7 +44,7 @@ import {
 } from "../../utils/local-storage/last-edited-creation-type";
 // styles
 import "./namespace-constructor.styles.scss";
-import {AxiosError} from "axios";
+import { AxiosError } from "axios";
 
 const NamespaceConstructorComponent = ({
   namespaceJSON,
@@ -174,7 +174,7 @@ const NamespaceConstructorComponent = ({
     creationMode: ConstructorCreationMode
   ): void => {
     NamespaceConstructorRequestHandler.submitOne(
-      creationMode === ConstructorCreationMode.EDIT ? "patch" : "post",
+      creationMode,
       NamespaceConstructorFormatter.convertConstructorInputsToSendForm(data)
     )
       .then(() => {

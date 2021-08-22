@@ -34,7 +34,7 @@ export const fetchLevelTabsStartAsync = (data: FetchLevelsRequestData) => {
     dispatch(fetchLevelTabsStart());
     axios({
       method: "post",
-      url: `${process.env.REACT_APP_SERVER_API}/activity_log/find_win_log_levels`,
+      url: `${process.env.REACT_APP_SERVER_API}/log/result/find/tasks`,
       data,
     })
       .then((res) => {

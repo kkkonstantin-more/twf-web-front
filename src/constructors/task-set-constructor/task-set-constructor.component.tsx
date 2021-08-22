@@ -1,7 +1,7 @@
 // libs and hooks
 import React, { Dispatch, useEffect, useState } from "react";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
-import {Link, useParams} from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 // custom hooks
 import useCreationMode from "../hooks/useCreationType";
 // redux
@@ -33,7 +33,7 @@ import TaskSetConstructorRequestsHandler from "./task-set-constructor.requests-h
 import TaskSetConstructorFormatter from "./task-set-constructor.formatter";
 import { addLastEditedConstructorItemToLocalStorage } from "../../utils/last-edited-constructor-items-local-storage";
 import RulePackConstructorRequestsHandler from "../rule-pack-constructor/rule-pack-constructor.requests-handler";
-import {makeServerRequestErrorMessage, setConstructorValueDueToCreationMode} from "../utils";
+import { makeServerRequestErrorMessage, setConstructorValueDueToCreationMode } from "../utils";
 // types
 import { RulePackConstructorReceivedForm } from "../rule-pack-constructor/rule-pack-constructor.types";
 import { RootState } from "../../redux/root-reducer";
@@ -69,7 +69,7 @@ import {
 } from "@mdi/js";
 // styles
 import "./task-set-constructor.styles.scss";
-import {AxiosError} from "axios";
+import { AxiosError } from "axios";
 import translate from "../../translations/translate";
 
 // creating context with FieldArray functions that will be used in task constructors
@@ -230,8 +230,8 @@ const TaskSetConstructor = ({
 
   const submitTaskSet = (data: TaskSetConstructorInputs) => {
     TaskSetConstructorRequestsHandler.submitOne(
-      TaskSetConstructorFormatter.convertConstructorInputsToSendForm(data),
-      creationMode === ConstructorCreationMode.EDIT ? "patch" : "post"
+      creationMode,
+      TaskSetConstructorFormatter.convertConstructorInputsToSendForm(data)
     )
       .then(() => {
         setErrorMsg(null);
@@ -312,20 +312,20 @@ const TaskSetConstructor = ({
   }, []);
 
   const renderSolveMathLinkButton = () => {
-      if (taskSetCode) {
-          return (
-              <Link
-                  className={"btn u-mt-sm"}
-                  to={"/solve-math/" + taskSetCode}
-                  target={"_blank"}
-              >
-                  {"Решать созданный набор задач"}
-              </Link>
-          );
-      } else {
-          return;
-      }
-    };
+    if (taskSetCode) {
+      return (
+        <Link
+          className={"btn u-mt-sm"}
+          to={"/solve-math/" + taskSetCode}
+          target={"_blank"}
+        >
+          {"Решать созданный набор задач"}
+        </Link>
+      );
+    } else {
+      return;
+    }
+  };
 
   if (showSpinner) {
     return (
@@ -533,7 +533,7 @@ const TaskSetConstructor = ({
                   <button type="submit" className="btn u-mt-sm">
                     {titleAndSubmitButtonText}
                   </button>
-                    {renderSolveMathLinkButton()}
+                  {renderSolveMathLinkButton()}
                 </form>
               </TasksFieldArrayActionsContext.Provider>
             </FormProvider>

@@ -27,7 +27,7 @@ import getConstructorSubmitButtonAndTitleText from "../utiils/get-constructor-su
 import RulePackConstructorRequestsHandler from "./rule-pack-constructor.requests-handler";
 import NamespaceConstructorRequestHandler from "../namespace-constructor/namespace-constructor.requests-handler";
 import RulePackConstructorFormatter from "./rule-pack-constructor.formatter";
-import {makeServerRequestErrorMessage, setConstructorValueDueToCreationMode} from "../utils";
+import { makeServerRequestErrorMessage, setConstructorValueDueToCreationMode } from "../utils";
 import {
   getLastEditedCreationMode,
   getLastExampleConstructorCode,
@@ -60,7 +60,7 @@ import {
 } from "@mdi/js";
 // styles
 import "./rule-pack-constructor.scss";
-import {AxiosError} from "axios";
+import { AxiosError } from "axios";
 
 const RulePackConstructor = ({
   rulePackJSON,
@@ -223,15 +223,15 @@ const RulePackConstructor = ({
 
   const submitRulePack = (data: RulePackConstructorInputs) => {
     RulePackConstructorRequestsHandler.submitOne(
-      creationMode === ConstructorCreationMode.EDIT ? "patch" : "post",
+      creationMode,
       RulePackConstructorFormatter.convertConstructorInputsToSendForm(data)
     )
       .then(() => {
         setErrorMsg(null);
         setSuccessMsg(
-            creationMode === ConstructorCreationMode.EDIT
-                ? "Пакет правил успешно изменен!"
-                : "Пакет правил успешно создан!"
+          creationMode === ConstructorCreationMode.EDIT
+            ? "Пакет правил успешно изменен!"
+            : "Пакет правил успешно создан!"
         );
       })
       .catch((e: AxiosError) => {

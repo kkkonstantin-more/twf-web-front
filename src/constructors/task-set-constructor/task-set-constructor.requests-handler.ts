@@ -2,6 +2,7 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
 // utils
 import { getAuthToken } from "../../utils/local-storage/auth-token";
+import { ConstructorCreationMode } from "../common-types";
 // types
 import {
   TaskSetConstructorReceivedForm,
@@ -62,12 +63,12 @@ class TaskSetConstructorRequestsHandler {
   }
 
   public static async submitOne(
+    creationMode: ConstructorCreationMode,
     data: TaskSetConstructorSendForm,
-    requestType: "post" | "patch"
   ): Promise<Number> {
     return axios({
-      method: requestType,
-      url: this.url,
+      method: "post",
+      url: this.url + (creationMode === ConstructorCreationMode.CREATE ? "create/" : "update/"),
       data,
       headers: {
         Authorization: "Bearer " + getAuthToken(),

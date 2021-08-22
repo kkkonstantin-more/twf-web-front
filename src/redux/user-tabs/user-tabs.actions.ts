@@ -34,7 +34,7 @@ export const fetchUserTabsStartAsync = (data: FetchUsersRequestData) => {
     dispatch(fetchUserTabsStart());
     axios({
       method: "post",
-      url: `${process.env.REACT_APP_SERVER_API}/activity_log/find_win_log_users`,
+      url: `${process.env.REACT_APP_SERVER_API}/log/result/find/users`,
       data,
     })
       .then((res) => {

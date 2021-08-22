@@ -2,6 +2,7 @@
 import axios, { AxiosError, AxiosResponse } from "axios";
 // utils
 import { getAuthToken } from "../../utils/local-storage/auth-token";
+import { ConstructorCreationMode } from "../common-types";
 // types
 import {
   NamespaceReceivedForm,
@@ -50,12 +51,12 @@ class NamespaceConstructorRequestHandler {
   }
 
   public static submitOne(
-    requestType: "post" | "patch",
+    creationMode: ConstructorCreationMode,
     data: NamespaceSendForm
   ): Promise<number> {
     return axios({
-      method: requestType,
-      url: this.url,
+      method: "post",
+      url: this.url + (creationMode === ConstructorCreationMode.CREATE ? "create/" : "update/"),
       data,
       headers: {
         Authorization: "Bearer " + getAuthToken(),
@@ -66,7 +67,7 @@ class NamespaceConstructorRequestHandler {
       })
       .catch((e: AxiosError) => {
         console.error(
-          `Error trying to make namespace ${requestType} request. Namespace code: ${data.code}`,
+          `Error trying to make namespace post request. Namespace code: ${data.code}`,
           e.response,
           e.message
         );

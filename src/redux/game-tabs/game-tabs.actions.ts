@@ -26,7 +26,7 @@ export const fetchGameTabsStartAsync = (data: FetchGamesRequestData) => {
     dispatch(fetchGameTabsStart());
     axios({
       method: "post",
-      url: `${process.env.REACT_APP_SERVER_API}/activity_log/find_win_log_games`,
+      url: `${process.env.REACT_APP_SERVER_API}/log/result/find/tasksets`,
       data,
     })
       .then((res) => {
