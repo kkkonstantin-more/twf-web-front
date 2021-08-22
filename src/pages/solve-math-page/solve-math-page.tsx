@@ -250,97 +250,105 @@ const SolveMathPage: React.FC = () => {
   };
 
   if (isTaskSetFetched) {
-    return (
-      <div className="solve-math">
-        <h1 className="u-text-center u-mt-sm">{taskSet?.nameRu}</h1>
-        <div style={{ width: "80%", margin: "2rem auto 0 auto" }}>
-          <Steps
-            progressDot={true}
-            current={currentTaskIdx}
-            direction={"horizontal"}
-            style={{margin: "1rem 10rem 1rem 10rem"}}
-          >
-            {taskSet?.tasks.map(
-              (task: TaskConstructorReceivedForm, i: number) => {
-                return (
-                  <Step
-                    key={i}
-                    style={{ cursor: "pointer" }}
-                    onClick={() => {
-                      onChangeCurrentTask(i);
+    if (taskSet?.tasks && taskSet?.tasks.length > 0) {
+      return (
+          <div className="solve-math">
+            <h1 className="u-text-center u-mt-sm">{taskSet?.nameRu}</h1>
+            <div style={{width: "80%", margin: "2rem auto 0 auto"}}>
+              <Steps
+                  progressDot={true}
+                  current={currentTaskIdx}
+                  direction={"horizontal"}
+                  style={{margin: "1rem 10rem 1rem 10rem"}}
+              >
+                {taskSet?.tasks.map(
+                    (task: TaskConstructorReceivedForm, i: number) => {
+                      return (
+                          <Step
+                              key={i}
+                              style={{cursor: "pointer"}}
+                              onClick={() => {
+                                onChangeCurrentTask(i);
+                              }}
+                              title={<b>{task.nameRu}</b>}
+                          />
+                      );
+                    }
+                )}
+              </Steps>
+            </div>
+            <div className="solve-math__tex-solution u-mt-md">
+              {mathField && <TexEditorActionsTab mathField={mathField}/>}
+              <EditableMathField
+                  latex={solutions[currentTaskIdx]}
+                  mathquillDidMount={(mathField: MathField) => {
+                    setMathField(mathField);
+                  }}
+                  style={{
+                    minWidth: "40rem",
+                    maxWidth: window.innerWidth - 100 + "px",
+                  }}
+              />
+            </div>
+            <ServerResponseAlert
+                errorMsg={errMessages[currentTaskIdx]}
+                successMsg={successMessages[currentTaskIdx]}
+                style={{marginTop: "2rem", maxWidth: window.innerWidth / 2}}
+            />
+            <div className="solve-math__buttons">
+              <div>
+                <ActionButton
+                    mdiIconPath={mdiArrowLeftBoldBox}
+                    size={2}
+                    margin={"0 1rem 0 0"}
+                    action={() => {
+                      onChangeCurrentTask(currentTaskIdx - 1);
                     }}
-                    title={<b>{task.nameRu}</b>}
-                  />
-                );
-              }
-            )}
-          </Steps>
-        </div>
-        <div className="solve-math__tex-solution u-mt-md">
-          {mathField && <TexEditorActionsTab mathField={mathField} />}
-          <EditableMathField
-            latex={solutions[currentTaskIdx]}
-            mathquillDidMount={(mathField: MathField) => {
-              setMathField(mathField);
-            }}
-            style={{
-              minWidth: "40rem",
-              maxWidth: window.innerWidth - 100 + "px",
-            }}
-          />
-        </div>
-        <ServerResponseAlert
-          errorMsg={errMessages[currentTaskIdx]}
-          successMsg={successMessages[currentTaskIdx]}
-          style={{ marginTop: "2rem", maxWidth: window.innerWidth / 2 }}
-        />
-        <div className="solve-math__buttons">
-          <div>
-            <ActionButton
-              mdiIconPath={mdiArrowLeftBoldBox}
-              size={2}
-              margin={"0 1rem 0 0"}
-              action={() => {
-                onChangeCurrentTask(currentTaskIdx - 1);
-              }}
-            />
-            <ActionButton
-              mdiIconPath={mdiArrowRightBoldBox}
-              size={2}
-              action={() => {
-                onChangeCurrentTask(currentTaskIdx + 1);
-              }}
-            />
+                />
+                <ActionButton
+                    mdiIconPath={mdiArrowRightBoldBox}
+                    size={2}
+                    action={() => {
+                      onChangeCurrentTask(currentTaskIdx + 1);
+                    }}
+                />
+              </div>
+              <div>
+                <button
+                    className="btn u-mr-sm"
+                    onClick={() => {
+                      if (mathField) {
+                        onCheckTex(mathField?.latex());
+                      }
+                    }}
+                >
+                  Проверить
+                </button>
+                <button
+                    className="btn"
+                    onClick={async () => {
+                      if (
+                          window.confirm(
+                              "Вы точно уверены, что хотите отправить все решения?"
+                          )
+                      ) {
+                        await onSendAllSolutions();
+                      }
+                    }}
+                >
+                  Завершить
+                </button>
+              </div>
+            </div>
           </div>
-          <div>
-            <button
-              className="btn u-mr-sm"
-              onClick={() => {
-                if (mathField) {
-                  onCheckTex(mathField?.latex());
-                }
-              }}
-            >
-              Проверить
-            </button>
-            <button
-              className="btn"
-              onClick={async () => {
-                if (
-                  window.confirm(
-                    "Вы точно уверены, что хотите отправить все решения?"
-                  )
-                ) {
-                  await onSendAllSolutions();
-                }
-              }}
-            >
-              Завершить
-            </button>
-          </div>
-        </div>
-      </div>
-    );
+      );
+    } else {
+      return (<ServerResponseAlert
+          errorMsg={"No tasks in taskset '" + taskSet?.nameEn + "' (code='" + taskSet?.code + "') found"}
+          successMsg={""}
+          style={{margin: "2rem"}}
+      />)
+    }
   } else {
     return <AppSpinner loading={!isTaskSetFetched} />;
   }
