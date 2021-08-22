@@ -13,7 +13,7 @@ export const taskRuleConstructorDefaultValues: RuleConstructorInputs = {
     normalizationType: "",
     isExtending: "true",
     weight: 0,
-    matchJumbledAndNested: "true",
+    matchJumbledAndNested: "false",
     right: {
         expression: "",
         format: MathInputFormat.TEX,
@@ -23,5 +23,5 @@ export const taskRuleConstructorDefaultValues: RuleConstructorInputs = {
         format: MathInputFormat.TEX,
     },
     priority: 0,
-    simpleAdditional: "true",
+    simpleAdditional: "false",
 };
