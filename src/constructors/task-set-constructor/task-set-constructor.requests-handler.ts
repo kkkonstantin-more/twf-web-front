@@ -10,6 +10,8 @@ import {
 } from "./task-set-constructor.types";
 import {TaskContextForm} from "../../pages/solve-math-page/solve-math-page.types";
 import {RulePackConstructorReceivedForm} from "../rule-pack-constructor/rule-pack-constructor.types";
+import {TaskConstructorReceivedForm} from "../task-constructor/task-constructor.types";
+import {RuleConstructorReceivedForm} from "../rule-constructor/rule-constructor.types";
 
 class TaskSetConstructorRequestsHandler {
   private static url = process.env.REACT_APP_SERVER_API + "/taskset/";
@@ -52,6 +54,11 @@ class TaskSetConstructorRequestsHandler {
             rulePacks: RulePackConstructorReceivedForm[];
           }>
         ) => {
+          res.data.taskset.tasks.forEach((task: TaskConstructorReceivedForm) => {
+            if (!task.rules) {
+              task.rules = []
+            }
+          });
           return {
             taskset: res.data.taskset,
             rulePacks: res.data.rulePacks,

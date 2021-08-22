@@ -52,7 +52,7 @@ export interface TaskConstructorReceivedForm {
   goalPattern: string;
   otherGoalData: any;
   rulePacks: RulePackLink[];
-  rules?: RuleConstructorReceivedForm[];
+  rules: RuleConstructorReceivedForm[];
   stepsNumber: number;
   time: number;
   difficulty: number;
@@ -86,7 +86,7 @@ export interface TaskConstructorInputs {
   goalPattern: string;
   otherGoalData: any;
   rulePacks: string[] | string;
-  rules?: RuleConstructorInputs[];
+  rules: RuleConstructorInputs[];
   stepsNumber: number;
   time: number;
   difficulty: number;
