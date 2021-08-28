@@ -1,20 +1,16 @@
-// @ts-nocheck
-import twfKotlinLibrary from "../local-libs/twf-kotlin-lib";
+// @ts-ignore
+const twf_js = window["twf_js"];
 
 // LIB API FUNCTIONS
 // format -> expression
-export const stringToExpression =
-  twfKotlinLibrary.api.stringToExpression_y630ta$;
-const structureStringToExpression =
-  twfKotlinLibrary.api.structureStringToExpression_69c2cy$;
-const texToExpression = twfKotlinLibrary.api.stringToExpression_y630ta$;
+export const stringToExpression = twf_js.stringToExpression;
+const structureStringToExpression = twf_js.structureStringToExpression;
+const texToExpression = twf_js.stringToExpression;
 
 // expression -> format
-const expressionToTexString =
-  twfKotlinLibrary.api.expressionToTexString_tvfpvg$;
-const expressionToStructureString =
-  twfKotlinLibrary.api.expressionToStructureString_6718cy$;
-const expressionToString = twfKotlinLibrary.api.expressionToString_tvfpvg$;
+const expressionToTexString = twf_js.expressionToTexString;
+const expressionToStructureString = twf_js.expressionToStructureString;
+const expressionToString = twf_js.expressionToString;
 
 class MathInputConvertingError extends Error {
   constructor(message: any) {
@@ -33,7 +29,7 @@ export const convertMathInput = (
   from: MathInputFormat,
   to: MathInputFormat,
   expression: string
-): string => {
+): string | any => {
   try {
     const expressionInLibFormat: any = (() => {
       if (from === MathInputFormat.PLAIN_TEXT) {
@@ -55,8 +51,9 @@ export const convertMathInput = (
     } else if (to === MathInputFormat.TEX) {
       return expressionToTexString(expressionInLibFormat);
     }
-  } catch (e) {
+  } catch (e: any) {
     console.error("ERROR WHILE DOING MATH CONVERTING", e.message, e);
+    return "ERROR WHILE GETTING ERROR FROM MATH INPUT: " + e.message
   }
 };
 
@@ -78,15 +75,17 @@ export const getErrorFromMathInput = (
     return expressionInLibFormat.nodeType.name$ === "ERROR"
       ? expressionInLibFormat.value
       : null;
-  } catch (e) {
+  } catch (e: any) {
     console.error("ERROR WHILE GETTING ERROR FROM MATH INPUT", e.message, e);
+    return "ERROR WHILE GETTING ERROR FROM MATH INPUT: " + e.message
   }
 };
 
+// @ts-ignore
 export const checkTex = (
   fullExpression?: string,
-  start: string,
-  end: string
+  start?: string,
+  end?: string
 ) => {
   try {
     const wellKnownFunctionsString = `
@@ -150,7 +149,7 @@ export const checkTex = (
       "cos(pi/2-x);;;sin(x);;;" +
       "sin(pi/2-x);;;cos(x)";
 
-    return twfKotlinLibrary.api.checkSolutionInTex_1yhbkg$(
+    return twf_js.checkSolutionInTex(
       fullExpression,
       start,
       undefined,
@@ -169,7 +168,7 @@ export const checkTex = (
       undefined,
       undefined
     );
-  } catch (e) {
+  } catch (e: any) {
     console.error("ERROR WHILE CHECKING TEX", e.message, e);
   }
 };

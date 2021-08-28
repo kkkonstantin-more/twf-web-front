@@ -86,6 +86,7 @@ import "./code-mirror.styles.scss";
 import TaskSetConstructorFormatter from "../../constructors/task-set-constructor/task-set-constructor.formatter";
 import copyToClipboard from "../../utils/copy-to-clipboard/copy-to-clipboard";
 import RulePackConstructorFormatter from "../../constructors/rule-pack-constructor/rule-pack-constructor.formatter";
+import {AxiosError} from "axios";
 
 // setup json linter
 const jsonlint = require("jsonlint-mod");
@@ -897,7 +898,7 @@ const CodeMirrorEditor = ({
           // @ts-ignore
           updateCurrentReduxJSON(currentHistoryChange.item);
         }
-      } catch (e) {
+      } catch (e: any) {
         console.error("ERROR WHILE UNDO/REDO", e.message);
         return;
       }
