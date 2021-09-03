@@ -45,5 +45,5 @@ export type RuleConstructorSendForm = RuleConstructorReceivedForm;
 
 export interface RuleConstructorProps {
   index: number;
-  defaultValue?: Partial<ArrayField<RuleConstructorInputs, "id">>;
+  defaultValue?: Partial<ArrayField<RuleConstructorInputs, "code">>;
 }

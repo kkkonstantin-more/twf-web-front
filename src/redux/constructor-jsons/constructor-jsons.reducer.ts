@@ -48,14 +48,12 @@ const constructorJSONsReducer = (
         ...state,
         taskSet: {
           ...convertAllStringListsInObjToArrays(action.payload, [
-            "subjectTypes",
             "rulePacks",
           ]),
           tasks: action.payload.tasks
             ? action.payload.tasks.map((task: TaskConstructorInputs) =>
                 convertAllStringListsInObjToArrays(task, [
                   "rulePacks",
-                  "subjectTypes",
                 ])
               )
             : [],

@@ -1,7 +1,7 @@
 export const convertInputStringListSeparatedByCommasToArray = (
-  inputStr: string | string[]
+  inputStr: string | string[] | undefined
 ): string[] => {
-  if (inputStr === "") {
+  if (inputStr === "" || inputStr === undefined) {
     return [];
   }
   return typeof inputStr === "string" ? inputStr.split(",") : inputStr;

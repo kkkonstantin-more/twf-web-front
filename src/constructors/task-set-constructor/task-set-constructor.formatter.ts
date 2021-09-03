@@ -24,7 +24,7 @@ class TaskSetConstructorFormatter {
     return {
       ...data,
       tasks: data.tasks.map((task: TaskConstructorReceivedForm) => {
-        const taskCopy: TaskConstructorInputs = { ...task, rulePacks: [] };
+        const taskCopy: TaskConstructorInputs = { ...task, rulePacks: [], tags: "" };
 
         // format expression inputs
         taskCopy.originalExpression = {
@@ -50,6 +50,29 @@ class TaskSetConstructorFormatter {
           });
         }
 
+        if (task.tags != null) {
+          task.tags.forEach(element => {
+            taskCopy.tags += element + ","
+          });
+        }
+
+        [
+          "otherGoalData",
+          "solution",
+          "solutionsStepsTree",
+          "hints",
+          "otherCheckSolutionData",
+          "otherAutoGenerationData",
+          "interestingFacts",
+          "otherAwardData",
+          "nextRecommendedTasks",
+          "otherData",
+        ].forEach((key: string) => {
+          if ((task as any)[key] != null) {
+            (taskCopy as any)[key] = JSON.stringify((task as any)[key])
+          }
+        });
+
         return taskCopy;
       }),
     };
@@ -73,6 +96,7 @@ class TaskSetConstructorFormatter {
           goalExpressionTex: "",
           goalExpressionStructureString: "",
           rulePacks: [],
+          tags: []
         };
         taskCopy.namespaceCode = data.namespaceCode;
 
@@ -165,8 +189,13 @@ class TaskSetConstructorFormatter {
           });
         }
 
+        if (task.tags) {
+          taskCopy.tags = convertInputStringListSeparatedByCommasToArray(task.tags)
+        }
+
         [
           "otherGoalData",
+          "solution",
           "otherCheckSolutionData",
           "otherAwardData",
           "otherAutoGenerationData",
@@ -178,6 +207,8 @@ class TaskSetConstructorFormatter {
         ].forEach((key: string) => {
           if ((task as any)[key] === "") {
             (taskCopy as any)[key] = null;
+          } else if ((task as any)[key] != null) {
+            (taskCopy as any)[key] = JSON.parse((task as any)[key])
           }
         });
 
