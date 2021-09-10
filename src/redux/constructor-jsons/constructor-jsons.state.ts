@@ -77,7 +77,7 @@ const CONSTRUCTOR_JSONS_INITIAL_STATE: ConstructorJSONs = {
         descriptionRu: "",
         descriptionEn: "",
         subjectType: "",
-        tags: "",
+        tags: [],
         originalExpression: {
           format: MathInputFormat.TEX,
           expression: "",

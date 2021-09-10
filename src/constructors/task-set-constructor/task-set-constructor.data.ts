@@ -13,7 +13,7 @@ export const taskConstructorDefaultValues: TaskConstructorInputs = {
   descriptionShortEn: "",
   descriptionShortRu: "",
   subjectType: "",
-  tags: "",
+  tags: [],
   originalExpression: {
     format: MathInputFormat.TEX,
     expression: "",

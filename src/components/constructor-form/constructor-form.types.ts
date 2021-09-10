@@ -17,6 +17,7 @@ export interface ConstructorFormSelectInput {
   label: string;
   options: LabeledValue[];
   isMulti: boolean;
+  isTags?: boolean;
   disabled?: boolean;
   isRendered?: boolean;
   isVisible?: boolean;

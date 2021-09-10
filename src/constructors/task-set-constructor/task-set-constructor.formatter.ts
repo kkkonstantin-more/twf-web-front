@@ -24,7 +24,7 @@ class TaskSetConstructorFormatter {
     return {
       ...data,
       tasks: data.tasks.map((task: TaskConstructorReceivedForm) => {
-        const taskCopy: TaskConstructorInputs = { ...task, rulePacks: [], tags: "" };
+        const taskCopy: TaskConstructorInputs = { ...task, rulePacks: [] };
 
         // format expression inputs
         taskCopy.originalExpression = {
@@ -47,12 +47,6 @@ class TaskSetConstructorFormatter {
           taskCopy.rules = taskCopy.rules.map((rule: RuleConstructorReceivedForm) => {
             const formattedRule: RuleConstructorInputs = { ...rule };
             return formattedRule;
-          });
-        }
-
-        if (task.tags != null) {
-          task.tags.forEach(element => {
-            taskCopy.tags += element + ","
           });
         }
 
@@ -189,10 +183,6 @@ class TaskSetConstructorFormatter {
           });
         }
 
-        if (task.tags) {
-          taskCopy.tags = convertInputStringListSeparatedByCommasToArray(task.tags)
-        }
-
         [
           "otherGoalData",
           "solution",
@@ -207,7 +197,7 @@ class TaskSetConstructorFormatter {
         ].forEach((key: string) => {
           if ((task as any)[key] === "") {
             (taskCopy as any)[key] = null;
-          } else if ((task as any)[key] != null) {
+          } else if ((task as any)[key] !== null) {
             (taskCopy as any)[key] = JSON.parse((task as any)[key])
           }
         });

@@ -79,13 +79,13 @@ export interface TaskConstructorInputs {
   descriptionEn: string;
   descriptionRu: string;
   subjectType: string;
-  tags: string;
+  tags: string[];
   originalExpression: ExpressionInput;
   goalType: GoalType;
   goalExpression: ExpressionInput;
   goalPattern: string;
   otherGoalData: any;
-  rulePacks: string[] | string;
+  rulePacks: string[];
   rules: RuleConstructorInputs[];
   stepsNumber: number;
   time: number;

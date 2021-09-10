@@ -14,6 +14,7 @@ export interface ConstructorSelectProps {
   onChange?: (value: string | string[]) => void;
   value?: string | string[];
   isMulti: boolean;
+  isTags?: boolean;
   isRendered?: boolean;
   isVisible?: boolean;
 }

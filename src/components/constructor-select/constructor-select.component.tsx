@@ -16,6 +16,7 @@ const ConstructorSelect = ({
   options,
   isMulti,
   value,
+  isTags = false,
   isRendered = true,
   isVisible = true,
   disabled = false,
@@ -37,7 +38,7 @@ const ConstructorSelect = ({
             ref={selectRef}
             disabled={disabled}
             value={value}
-            mode={isMulti ? "multiple" : undefined}
+            mode={isTags ? "tags" : isMulti ? "multiple" : undefined}
             showArrow={true}
             loading={options.length === 0}
             notFoundContent={
