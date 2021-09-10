@@ -3,14 +3,14 @@ const twf_js = window["twf_js"];
 
 // LIB API FUNCTIONS
 // format -> expression
-export const stringToExpression = twf_js.stringToExpression;
-const structureStringToExpression = twf_js.structureStringToExpression;
-const texToExpression = twf_js.stringToExpression;
+export const stringToExpression = twf_js?.stringToExpression;
+const structureStringToExpression = twf_js?.structureStringToExpression;
+const texToExpression = twf_js?.stringToExpression;
 
 // expression -> format
-const expressionToTexString = twf_js.expressionToTexString;
-const expressionToStructureString = twf_js.expressionToStructureString;
-const expressionToString = twf_js.expressionToString;
+const expressionToTexString = twf_js?.expressionToTexString;
+const expressionToStructureString = twf_js?.expressionToStructureString;
+const expressionToString = twf_js?.expressionToString;
 
 class MathInputConvertingError extends Error {
   constructor(message: any) {
@@ -149,7 +149,7 @@ export const checkTex = (
       "cos(pi/2-x);;;sin(x);;;" +
       "sin(pi/2-x);;;cos(x)";
 
-    return twf_js.checkSolutionInTex(
+    return twf_js?.checkSolutionInTex(
       fullExpression,
       start,
       undefined,
