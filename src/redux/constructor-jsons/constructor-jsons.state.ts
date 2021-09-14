@@ -65,6 +65,7 @@ const CONSTRUCTOR_JSONS_INITIAL_STATE: ConstructorJSONs = {
     descriptionRu: "",
     descriptionShortEn: "",
     descriptionShortRu: "",
+    tags: [],
     tasks: [
       {
         taskCreationType: "manual",

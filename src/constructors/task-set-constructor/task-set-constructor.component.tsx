@@ -210,6 +210,14 @@ const TaskSetConstructor = ({
       ],
     },
     {
+      name: "tags",
+      label: "Теги",
+      type: "text",
+      isMulti: false,
+      isTags: true,
+      options: [],
+    },
+    {
       name: "otherData",
       label: "Дополнительная информация",
       type: "text",

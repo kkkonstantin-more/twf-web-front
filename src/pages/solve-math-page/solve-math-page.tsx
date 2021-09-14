@@ -18,14 +18,14 @@ import { TaskSetConstructorReceivedForm } from "../../constructors/task-set-cons
 import { addStyles } from "react-mathquill";
 // types
 import { TaskConstructorReceivedForm } from "../../constructors/task-constructor/task-constructor.types";
-import {SendLogForm, TaskContextForm} from "./solve-math-page.types";
+import { SendLogForm, TaskContextForm } from "./solve-math-page.types";
 
 // icons
 import { mdiArrowLeftBoldBox, mdiArrowRightBoldBox } from "@mdi/js";
 // styles
 import "./solve-math-page.scss";
 import "antd/dist/antd.compact.min.css";
-import {RulePackConstructorReceivedForm} from "../../constructors/rule-pack-constructor/rule-pack-constructor.types";
+import { RulePackConstructorReceivedForm } from "../../constructors/rule-pack-constructor/rule-pack-constructor.types";
 
 // adding mathquill styles
 addStyles();
@@ -200,13 +200,13 @@ const SolveMathPage: React.FC = () => {
         setTaskSet(res.taskset);
         setRulePacks(res.rulePacks);
         setSolutions(
-            res.taskset.tasks.map(
+          res.taskset.tasks.map(
             (task: TaskConstructorReceivedForm) =>
               task.originalExpressionTex + "=...=" + task.goalExpressionTex
           )
         );
         setSolutions(
-            res.taskset.tasks.map((task: TaskConstructorReceivedForm) => {
+          res.taskset.tasks.map((task: TaskConstructorReceivedForm) => {
             return (
               task.originalExpressionTex + "=...=" + task.goalExpressionTex
             );
@@ -257,12 +257,12 @@ const SolveMathPage: React.FC = () => {
       return (
         <div className="solve-math">
           <h1 className="u-text-center u-mt-sm">{taskSet?.nameRu}</h1>
-          <div style={{ width: "90%", margin: "2rem auto 0 auto" }}>
+          <div style={{ width: "80%", margin: "2rem auto 0 auto", overflowX: "auto" }}>
             <Steps
               progressDot={true}
               current={currentTaskIdx}
               direction={"horizontal"}
-              style={{ margin: "1rem 10rem 1rem 10rem" }}
+              style={{ margin: "1rem 0 1rem 0" }}
             >
               {taskSet?.tasks.map(
                 (task: TaskConstructorReceivedForm, i: number) => {

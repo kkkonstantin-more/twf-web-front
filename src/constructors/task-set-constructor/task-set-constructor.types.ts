@@ -21,6 +21,7 @@ export interface TaskSetConstructorReceivedForm {
   subjectType: string;
   recommendedByCommunity: boolean;
   otherData: any;
+  tags: string[];
   tasks: TaskConstructorReceivedForm[];
 }
 
@@ -36,6 +37,7 @@ export interface TaskSetConstructorInputs {
   subjectType: string;
   recommendedByCommunity: boolean;
   otherData: any;
+  tags: string[];
   tasks: TaskConstructorInputs[];
 }
 export interface VisualizationMode {
