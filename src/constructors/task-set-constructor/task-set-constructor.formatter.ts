@@ -197,8 +197,9 @@ class TaskSetConstructorFormatter {
         ].forEach((key: string) => {
           if ((task as any)[key] === "") {
             (taskCopy as any)[key] = null;
-          } else if ((task as any)[key] !== null) {
-            (taskCopy as any)[key] = JSON.parse((task as any)[key])
+          } else if ((task as any)[key] != null) {
+            console.log(`field ${key} is not null and blank, it is: `, (task as any)[key]);
+            (taskCopy as any)[key] = (task as any)[key]
           }
         });
 
