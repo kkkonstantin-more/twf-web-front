@@ -61,6 +61,7 @@ import {
 // styles
 import "./rule-pack-constructor.scss";
 import { AxiosError } from "axios";
+import { SUBJECT_TYPE_OPTIONS } from "../constants/constants";
 
 const RulePackConstructor = ({
   rulePackJSON,
@@ -164,17 +165,7 @@ const RulePackConstructor = ({
       name: "subjectType",
       label: "Предметная область",
       isMulti: false,
-      options: [
-        { value: "standart_math", label: "Стандартная математика" },
-        { value: "combinatorics", label: "Комбинаторика" },
-        //{ value: "derivations_integrals", label: "Производные и интегралы" },
-        //{ value: "probability_and_math_stat", label: "Мат. статистика и мат. вероятность" },
-        { value: "complex_numbers", label: "Комплексные числа" },
-        //{ value: "asymptotic_analysis", label: "Асимптотический анализ" },
-        //{ value: "set", label: "Множества" },
-        { value: "logic", label: "Математическая логика" },
-        { value: "physics", label: "Физика" },
-      ],
+      options: SUBJECT_TYPE_OPTIONS,
     },
   ];
 
