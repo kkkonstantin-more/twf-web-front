@@ -27,7 +27,7 @@
   &__text-box {
     display: flex;
     flex-direction: column;
-    background-color: yellow;
+    background-color: rgba($color-primary-light, 0.8);
     border-radius: 5px;
     padding: 2rem;
     width: 50rem;
