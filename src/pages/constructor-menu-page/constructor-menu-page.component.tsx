@@ -464,7 +464,7 @@ const ConstructorMenuPageComponent: React.FC = () => {
       <AppModalComponent
         isOpen={showAllItemsModal}
         close={() => setShowAllItemsModal(false)}
-        width="50%"
+        width="70%"
         height="70%"
       >
         <SelectConstructorItemList

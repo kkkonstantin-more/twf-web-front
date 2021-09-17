@@ -242,7 +242,7 @@ const TaskSetConstructor = ({
         );
         addLastEditedConstructorItemToLocalStorage(
           "last-edited-task-sets",
-          data.code
+          data.nameEn
         );
       })
       .catch((e: AxiosError) => {

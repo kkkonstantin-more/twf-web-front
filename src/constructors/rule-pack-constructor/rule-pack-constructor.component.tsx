@@ -23,6 +23,7 @@ import RuleConstructor from "../rule-constructor/rule-constructor.component";
 import ConstructorForm from "../../components/constructor-form/constructor-form";
 import { ConstructorFormInput } from "../../components/constructor-form/constructor-form.types";
 // utils
+import { addLastEditedConstructorItemToLocalStorage } from "../../utils/last-edited-constructor-items-local-storage";
 import getConstructorSubmitButtonAndTitleText from "../utiils/get-constructor-submit-button-and-title-text";
 import RulePackConstructorRequestsHandler from "./rule-pack-constructor.requests-handler";
 import NamespaceConstructorRequestHandler from "../namespace-constructor/namespace-constructor.requests-handler";
@@ -223,6 +224,10 @@ const RulePackConstructor = ({
           creationMode === ConstructorCreationMode.EDIT
             ? "Пакет правил успешно изменен!"
             : "Пакет правил успешно создан!"
+        );
+        addLastEditedConstructorItemToLocalStorage(
+          "last-edited-rule-packs",
+          data.nameEn
         );
       })
       .catch((e: AxiosError) => {

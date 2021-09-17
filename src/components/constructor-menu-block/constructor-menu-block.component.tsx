@@ -32,7 +32,7 @@ const ConstructorMenuBlock = ({
             className="constructor-menu-block__option"
             onClick={(): any => createFromScratchBlock.action()}
           >
-            {createFromScratchBlock.name}
+            <div className="constructor-menu-block__option__text">{createFromScratchBlock.name}</div>
           </div>
         )}
         {isDataFetched &&
@@ -44,7 +44,7 @@ const ConstructorMenuBlock = ({
                   className="constructor-menu-block__option"
                   onClick={(): any => option.action()}
                 >
-                  {option.name}
+                  <div className="constructor-menu-block__option__text">{option.name}</div>
                 </div>
               );
             }
