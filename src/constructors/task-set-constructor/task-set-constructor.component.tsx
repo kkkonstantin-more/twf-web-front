@@ -73,6 +73,7 @@ import {
 import "./task-set-constructor.styles.scss";
 import { AxiosError } from "axios";
 import translate from "../../translations/translate";
+import AppSpinner from "../../components/app-spinner/app-spinner";
 
 // creating context with FieldArray functions that will be used in task constructors
 // @ts-ignore
@@ -142,6 +143,8 @@ const TaskSetConstructor = ({
     "table" | "list"
   >("list");
   const [selectedTask, setSelectedTask] = useState<number | null>(null);
+
+  const [isTasksetSubmitting, setIsTasksetSubmitting] = useState<boolean>(false);
 
   // show spinner while fetching
   const [showSpinner, setShowSpinner] = useState<boolean>(
@@ -229,6 +232,7 @@ const TaskSetConstructor = ({
   ];
 
   const submitTaskSet = (data: TaskSetConstructorInputs) => {
+    setIsTasksetSubmitting(true);
     TaskSetConstructorRequestsHandler.submitOne(
       creationMode,
       TaskSetConstructorFormatter.convertConstructorInputsToSendForm(data)
@@ -242,8 +246,12 @@ const TaskSetConstructor = ({
         );
         addLastEditedConstructorItemToLocalStorage(
           "last-edited-task-sets",
-          data.nameEn
+          {
+            code: data.code,
+            nameEn: data.nameEn,
+          },
         );
+        setIsTasksetSubmitting(false);
       })
       .catch((e: AxiosError) => {
         setSuccessMsg(null);
@@ -530,6 +538,7 @@ const TaskSetConstructor = ({
                     errorMsg={errorMsg}
                     successMsg={successMsg}
                   />
+                  {isTasksetSubmitting && <AppSpinner loading={isTasksetSubmitting} />}
                   <button type="submit" className="btn u-mt-sm">
                     {titleAndSubmitButtonText}
                   </button>

@@ -63,6 +63,7 @@ import {
 import "./rule-pack-constructor.scss";
 import { AxiosError } from "axios";
 import { SUBJECT_TYPE_OPTIONS } from "../constants/constants";
+import AppSpinner from "../../components/app-spinner/app-spinner";
 
 const RulePackConstructor = ({
   rulePackJSON,
@@ -103,6 +104,8 @@ const RulePackConstructor = ({
   // server response messages
   const [errorMsg, setErrorMsg] = useState<null | string>(null);
   const [successMsg, setSuccessMsg] = useState<null | string>(null);
+
+  const [isRulePackSubmitting, setIsRulePackSubmitting] = useState<boolean>(false);
 
   // show spinner while fetching
   const [showSpinner, setShowSpinner] = useState<boolean>(
@@ -214,6 +217,7 @@ const RulePackConstructor = ({
   ];
 
   const submitRulePack = (data: RulePackConstructorInputs) => {
+    setIsRulePackSubmitting(true);
     RulePackConstructorRequestsHandler.submitOne(
       creationMode,
       RulePackConstructorFormatter.convertConstructorInputsToSendForm(data)
@@ -227,8 +231,12 @@ const RulePackConstructor = ({
         );
         addLastEditedConstructorItemToLocalStorage(
           "last-edited-rule-packs",
-          data.nameEn
+          {
+            code: data.code,
+            nameEn: data.nameEn,
+          },
         );
+        setIsRulePackSubmitting(false);
       })
       .catch((e: AxiosError) => {
         setSuccessMsg(null);
@@ -363,6 +371,7 @@ const RulePackConstructor = ({
               {successMsg}
             </div>
           )}
+          {isRulePackSubmitting && <AppSpinner loading={isRulePackSubmitting} />}
           <button type="submit" className="btn u-mt-sm">
             {titleAndSubmitButtonText}
           </button>

@@ -45,6 +45,7 @@ import {
 // styles
 import "./namespace-constructor.styles.scss";
 import { AxiosError } from "axios";
+import AppSpinner from "../../components/app-spinner/app-spinner";
 
 const NamespaceConstructorComponent = ({
   namespaceJSON,
@@ -77,6 +78,8 @@ const NamespaceConstructorComponent = ({
   const [usersSelectOptions, setUsersSelectOptions] = useState<LabeledValue[]>(
     []
   );
+
+  const [isNamespaceSubmitting, setIsNamespaceSubmitting] = useState<boolean>(false);
 
   // show spinner while fetching
   const [showSpinner, setShowSpinner] = useState<boolean>(
@@ -173,6 +176,7 @@ const NamespaceConstructorComponent = ({
     data: NamespaceConstructorInputs,
     creationMode: ConstructorCreationMode
   ): void => {
+    setIsNamespaceSubmitting(true);
     NamespaceConstructorRequestHandler.submitOne(
       creationMode,
       NamespaceConstructorFormatter.convertConstructorInputsToSendForm(data)
@@ -186,8 +190,12 @@ const NamespaceConstructorComponent = ({
         );
         addLastEditedConstructorItemToLocalStorage(
           "last-edited-namespaces",
-          data.code
+          {
+            code: data.code,
+            nameEn: data.code,
+          },
         );
+        setIsNamespaceSubmitting(false);
       })
       .catch((e: AxiosError) => {
         setSuccessMsg(null);
@@ -216,6 +224,7 @@ const NamespaceConstructorComponent = ({
             constructorType={ConstructorJSONType.NAMESPACE}
           />
           <ServerResponseAlert errorMsg={errorMsg} successMsg={successMsg} />
+          {isNamespaceSubmitting && <AppSpinner loading={isNamespaceSubmitting} />}
           <button type="submit" className="btn u-mr-sm">
             {titleAndSubmitButtonText}
           </button>

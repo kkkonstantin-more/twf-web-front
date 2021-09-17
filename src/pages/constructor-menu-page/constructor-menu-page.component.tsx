@@ -159,11 +159,11 @@ const ConstructorMenuPageComponent: React.FC = () => {
           getLastEditedConstructorItemsFromLocalStorage(
             "last-edited-task-sets"
           )
-            .map((taskSet) => ({
-              name: taskSet,
+            .map(({ code, nameEn }) => ({
+              name: nameEn,
               action: () =>
                 // @ts-ignore
-                history.push("/constructor/task-set/" + taskSet),
+                history.push("/constructor/task-set/" + code),
             }))
             .concat([
               {
@@ -256,11 +256,11 @@ const ConstructorMenuPageComponent: React.FC = () => {
           getLastEditedConstructorItemsFromLocalStorage(
             "last-edited-namespaces"
           )
-            .map((namespaceCode) => ({
-              name: namespaceCode,
+            .map(({ code, nameEn }) => ({
+              name: nameEn,
               action: () =>
                 // @ts-ignore
-                history.push("/constructor/namespace/" + namespaceCode),
+                history.push("/constructor/namespace/" + code),
             }))
             .concat([
               {
@@ -351,11 +351,11 @@ const ConstructorMenuPageComponent: React.FC = () => {
           getLastEditedConstructorItemsFromLocalStorage(
             "last-edited-rule-packs"
           )
-            .map((rulePack) => ({
-              name: rulePack,
+            .map(({ code, nameEn }) => ({
+              name: nameEn,
               action: () =>
                 // @ts-ignore
-                history.push("/constructor/rule-pack/" + rulePack),
+                history.push("/constructor/rule-pack/" + code),
             }))
             .concat([
               {

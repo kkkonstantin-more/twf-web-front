@@ -3,35 +3,38 @@ type LastEditedConstructorItemsInLocalStorage =
   | "last-edited-task-sets"
   | "last-edited-namespaces";
 
+interface LastEditedConstructorItemInLocalStorageProps {
+  code: string,
+  nameEn: string | null,
+}
+
 export const addLastEditedConstructorItemToLocalStorage = (
   name: LastEditedConstructorItemsInLocalStorage,
-  code: string
+  val: LastEditedConstructorItemInLocalStorageProps,
 ): void => {
-  const items: string[] | null = localStorage.getItem(name)
+  const items: LastEditedConstructorItemInLocalStorageProps[] | null = localStorage.getItem(name)
     ? // @ts-ignore
-      localStorage.getItem(name).split(",")
+    JSON.parse(localStorage.getItem(name))
     : null;
   if (items) {
-    if (items.includes(code)) {
+    if (items.includes(val)) {
       localStorage.setItem(
         name,
-        [code, ...items.filter((item) => item !== code)].join(",")
+        JSON.stringify([val, ...items.filter((item) => item.code !== val.code)])
       );
-    } else if (items.length === 3) {
-      localStorage.setItem(name, [code, ...items.slice(1, 4)].join(","));
-    } else if (items.length < 3) {
-      localStorage.setItem(name, code + "," + items);
+    } else if (items.length <= 3) {
+      localStorage.setItem(name, JSON.stringify([val, ...items]));
     } else if (items.length > 3) {
       throw new Error("last edited items in local storage more than 3");
     }
   } else {
-    localStorage.setItem(name, code);
+    localStorage.setItem(name, JSON.stringify([val]));
   }
 };
 
 export const getLastEditedConstructorItemsFromLocalStorage = (
   name: LastEditedConstructorItemsInLocalStorage
-): string[] | null => {
+): LastEditedConstructorItemInLocalStorageProps[] | null => {
   const item = localStorage.getItem(name);
-  return item ? item.split(",") : null;
+  return item ? JSON.parse(item) : null;
 };
