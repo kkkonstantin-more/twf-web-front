@@ -36,6 +36,7 @@ const SolveMathPage: React.FC = () => {
 
   const [isTaskSetFetched, setIsTaskSetFetched] = useState<boolean>(false);
   const [taskSet, setTaskSet] = useState<TaskSetConstructorReceivedForm>();
+  const tasksRef: React.RefObject<HTMLDivElement> = React.createRef();
   const [rulePacks, setRulePacks] = useState<RulePackConstructorReceivedForm[]>();
   const [currentTaskIdx, setCurrentTaskIdx] = useState<number>(0);
   const [solutions, setSolutions] = useState<string[]>([]);
@@ -73,7 +74,7 @@ const SolveMathPage: React.FC = () => {
     currentTaskIdx: number
   ): SendLogForm => ({
     activityTypeCode,
-    appCode: "test_app_code",
+    appCode: "SOLVE_MATH_WEB",
     clientActionTs: new Date().toISOString(),
     currSolution: solution,
     difficulty: taskSet.tasks[currentTaskIdx].difficulty,
@@ -162,6 +163,14 @@ const SolveMathPage: React.FC = () => {
             i === prevIdx ? mathField.latex() : solution
           )
         );
+        let newScrollLeft = selectedTaskIdx * document.getElementsByClassName('ant-steps-item')[0].clientWidth;
+        let halfOfOfDiv = tasksRef.current!.clientWidth / 2;
+        if (newScrollLeft > halfOfOfDiv) {
+          tasksRef.current!.scrollLeft = newScrollLeft - halfOfOfDiv;
+        } else {
+          tasksRef.current!.scrollLeft = 0;
+        }
+
         return selectedTaskIdx;
       });
     }
@@ -257,7 +266,7 @@ const SolveMathPage: React.FC = () => {
       return (
         <div className="solve-math">
           <h1 className="u-text-center u-mt-sm">{taskSet?.nameRu}</h1>
-          <div style={{ width: "80%", margin: "2rem auto 0 auto", overflowX: "auto" }}>
+          <div style={{ width: "80%", margin: "2rem auto 0 auto", overflowX: "auto" }} ref={tasksRef}>
             <Steps
               progressDot={true}
               current={currentTaskIdx}

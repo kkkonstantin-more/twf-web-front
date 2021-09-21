@@ -2,7 +2,7 @@ import {RulePackConstructorReceivedForm} from "../../constructors/rule-pack-cons
 import {TaskSetConstructorReceivedForm} from "../../constructors/task-set-constructor/task-set-constructor.types";
 
 export interface SendLogForm {
-  appCode: "test_app_code";
+  appCode: "SOLVE_MATH_WEB";
   activityTypeCode: "interim" | "win" | "loose";
   // ISO date string
   clientActionTs: string;
