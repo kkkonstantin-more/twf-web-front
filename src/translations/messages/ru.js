@@ -10,6 +10,7 @@ import { workFieldsSectionRu } from "./pages/home-page/sections/work-fields-sect
 import { ranksSectionRu } from "./pages/home-page/sections/ranks-section";
 import { aboutUsSectionRu } from "./pages/home-page/sections/about-us-section";
 import { loginRegisterModalRu } from "./modals/login-register-modal";
+import { unauthorizedModalRu } from "./modals/unauthorized-modal";
 import { footerRu } from "./layouts/footer";
 import { gameInfoPageRu } from "./pages/game-info-page/game-info-page";
 import { playedGameUsersListRu } from "./pages/game-info-page/components/played-game-users-list";
@@ -38,6 +39,7 @@ export default {
     ...ranksSectionRu,
     ...aboutUsSectionRu,
     ...loginRegisterModalRu,
+    ...unauthorizedModalRu,
     ...footerRu,
     ...gameInfoPageRu,
     ...playedGameUsersListRu,

@@ -20,6 +20,8 @@ import navigationLinks, { LinkInterface } from "./navigation-links";
 import "./navigation-bar.scss";
 
 import logoImg from "../../assets/logo.svg";
+import axios from "axios";
+import UnauthorizedModal from "../../modals/unauthorized-modal";
 
 // props transported from App.tsx
 interface NavigationBarProps {
@@ -37,6 +39,18 @@ const NavigationBar: React.FC<NavigationBarProps> = ({
   const [showLoginRegisterModal, setShowLoginRegisterModal] = useState<boolean>(
     false
   );
+  const [showUnauthorizedModal, setShowUnauthorizedModal] = useState<boolean>(
+    false
+  );
+
+  axios.interceptors.response.use(function (config) {
+    return config;
+  }, (error) => {
+    if (error.response.status == 401) {
+      setShowUnauthorizedModal(true);
+    }
+    return Promise.reject(error);
+  });
 
   const { pathname } = useLocation();
 
@@ -122,6 +136,10 @@ const NavigationBar: React.FC<NavigationBarProps> = ({
         showModal={showLoginRegisterModal}
         setShowModal={(status: boolean) => setShowLoginRegisterModal(status)}
       />
+      <UnauthorizedModal
+          showModal={showUnauthorizedModal}
+          setShowModal={(status: boolean) => setShowUnauthorizedModal(status)}
+          setShowAuthModal={(status: boolean) => setShowLoginRegisterModal(status)}/>
     </div>
   );
 };

@@ -1,0 +1,9 @@
+.unauthorized-modal {
+  .modal-dialog {
+    border-radius: 5px;
+    padding: 5px;
+    &__form {
+      padding: 2rem;
+    }
+  }
+}
