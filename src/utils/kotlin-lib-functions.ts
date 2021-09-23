@@ -1,3 +1,19 @@
+// // @ts-ignore
+// import * as kotlin from "../local-libs/kotlin-lib/kotlin.js";
+//
+// // @ts-ignore
+// import * as twf_js from "../local-libs/kotlin-lib/twf_js.js";
+
+// const kotlin_script = document.createElement("script");
+// kotlin_script.src = "local-libs/kotlin-lib/kotlin.js";
+// kotlin_script.async = true;
+// document.body.appendChild(kotlin_script);
+//
+// const twf_js_script = document.createElement("script");
+// twf_js_script.src = "local-libs/kotlin-lib/twf_js.js";
+// twf_js_script.async = true;
+// document.body.appendChild(twf_js_script);
+
 // @ts-ignore
 const twf_js = window["twf_js"];
 
