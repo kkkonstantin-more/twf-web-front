@@ -10,6 +10,7 @@ import { workFieldsSectionEn } from "./pages/home-page/sections/work-fields-sect
 import { ranksSectionEn } from "./pages/home-page/sections/ranks-section";
 import { aboutUsSectionEn } from "./pages/home-page/sections/about-us-section";
 import { loginRegisterModalEn } from "./modals/login-register-modal";
+import { unauthorizedModalEn } from "./modals/unauthorized-modal";
 import { footerEn } from "./layouts/footer";
 import { gameInfoPageEn } from "./pages/game-info-page/game-info-page";
 import { playedGameUsersListEn } from "./pages/game-info-page/components/played-game-users-list";
@@ -38,6 +39,7 @@ export default {
     ...ranksSectionEn,
     ...aboutUsSectionEn,
     ...loginRegisterModalEn,
+    ...unauthorizedModalEn,
     ...footerEn,
     ...gameInfoPageEn,
     ...playedGameUsersListEn,
