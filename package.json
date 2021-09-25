@@ -107,6 +107,5 @@
     "snapshotSerializers": [
       "enzyme-to-json/serializer"
     ]
-  },
-  "homepage": "."
+  }
 }
