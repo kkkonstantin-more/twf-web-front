@@ -1,32 +1,15 @@
-// // @ts-ignore
-// import * as kotlin from "../local-libs/kotlin-lib/kotlin.js";
-//
-// // @ts-ignore
-// import * as twf_js from "../local-libs/kotlin-lib/twf_js.js";
-
-// const kotlin_script = document.createElement("script");
-// kotlin_script.src = "local-libs/kotlin-lib/kotlin.js";
-// kotlin_script.async = true;
-// document.body.appendChild(kotlin_script);
-//
-// const twf_js_script = document.createElement("script");
-// twf_js_script.src = "local-libs/kotlin-lib/twf_js.js";
-// twf_js_script.async = true;
-// document.body.appendChild(twf_js_script);
-
-// @ts-ignore
-const twf_js = window["twf_js"];
+const twf_js = (window as any)['twf_js'];
 
 // LIB API FUNCTIONS
 // format -> expression
-export const stringToExpression = twf_js?.stringToExpression;
-const structureStringToExpression = twf_js?.structureStringToExpression;
-const texToExpression = twf_js?.stringToExpression;
+export const stringToExpression = twf_js.stringToExpression;
+const structureStringToExpression = twf_js.structureStringToExpression;
+const texToExpression = twf_js.stringToExpression;
 
 // expression -> format
-const expressionToTexString = twf_js?.expressionToTexString;
-const expressionToStructureString = twf_js?.expressionToStructureString;
-const expressionToString = twf_js?.expressionToString;
+const expressionToTexString = twf_js.expressionToTexString;
+const expressionToStructureString = twf_js.expressionToStructureString;
+const expressionToString = twf_js.expressionToString;
 
 class MathInputConvertingError extends Error {
   constructor(message: any) {
@@ -104,68 +87,7 @@ export const checkTex = (
   end?: string
 ) => {
   try {
-    const wellKnownFunctionsString = `
-    ;;;0;;;
-    ;;;1;;;
-    +;;;-1;;;
-    -;;;-1;;;
-    *;;;-1;;;
-    /;;;-1;;;
-    ^;;;-1
-    `;
-    const expressionTransformationRulesString =
-      "sin(x)^2;;;1 - cos(x)^2;;;" +
-      "cos(x)^2;;;1 - sin(x)^2;;;" +
-      "cos(x)^2+sin(x)^2;;;1;;;" +
-      "tg(x);;;sin(x)/cos(x);;;" +
-      "ctg(x);;;cos(x)/sin(x);;;" +
-      "ctg(x)tg(x);;;1;;;" +
-      "tg(x)^2+1;;;1/cos(x)^2;;;" +
-      "ctg(x)^2+1;;;1/sin(x)^2;;;" +
-      "sin(x+y);;;sin(x)cos(y)+sin(y)cos(x);;;" +
-      "sin(x-y);;;sin(x)cos(y)-sin(y)cos(x);;;" +
-      "cos(x+y);;;cos(x)cos(y)-sin(x)sin(y);;;" +
-      "cos(x-y);;;cos(x)cos(y)+sin(x)sin(y);;;" +
-      "tg(x+y);;;(tg(x)+tg(y))/(1-tg(x)tg(y));;;" +
-      "tg(x-y);;;(tg(x)-tg(y))/(1+tg(x)tg(y));;;" +
-      "ctg(x+y);;;(ctg(x)ctg(y)-1)/(ctg(x)+ctg(y));;;" +
-      "ctg(x-y);;;(ctg(x)ctg(y)+1)/(ctg(x)-ctg(y));;;" +
-      "sin(2*x);;;2*sin(x)cos(x);;;" +
-      "sin(2*x);;;2*tg(x)/(1+(tg(x))^2);;;" +
-      "cos(2*x);;;cos(x)^2 - sin(x)^2;;;" +
-      "cos(2*x);;;2*cos(x)^2 - 1;;;" +
-      "cos(2*x);;;1 - 2*sin(x)^2;;;" +
-      "cos(2*x);;;(1-(tg(x))^2)/(1+(tg(x))^2);;;" +
-      "sin(x)^2;;;(1 - cos(2*x))/2;;;" +
-      "cos(x)^2;;;(1 + cos(2*x))/2;;;" +
-      "sin(x)+sin(y);;;2*sin((x+y)/2)*cos((x-y)/2);;;" +
-      "sin(x)-sin(y);;;2*sin((x-y)/2)*cos((x+y)/2);;;" +
-      "cos(x)+cos(y);;;2*cos((x+y)/2)*cos((x-y)/2);;;" +
-      "cos(x)-cos(y);;;2*sin((x+y)/2)*sin((x-y)/2);;;" +
-      "sin(x)sin(y);;;(cos(x-y)-cos(x+y))/2;;;" +
-      "sin(x)cos(y);;;(sin(x-y)+sin(x+y))/2;;;" +
-      "cos(x)cos(y);;;(cos(x-y)+cos(x+y))/2;;;" +
-      "sin(0);;;0;;;" +
-      "sin(pi/2);;;1;;;" +
-      "cos(0);;;1;;;" +
-      "cos(pi/2);;;0;;;" +
-      "sin(pi/6);;;1/2;;;" +
-      "sin(pi/4);;;2^0.5/2;;;" +
-      "sin(pi/3);;;3^0.5/2;;;" +
-      "cos(pi/3);;;1/2;;;" +
-      "cos(pi/4);;;2^0.5/2;;;" +
-      "cos(pi/6);;;3^0.5/2;;;" +
-      "cos(pi/6);;;3^0.5/2;;;" +
-      "cos(-x);;;cos(x);;;" +
-      "sin(-x);;;-sin(x);;;" +
-      "sin(pi-x);;;sin(x);;;" +
-      "cos(pi-x);;;-cos(x);;;" +
-      "sin(x+2*pi);;;sin(x);;;" +
-      "cos(x+2*pi);;;cos(x);;;" +
-      "cos(pi/2-x);;;sin(x);;;" +
-      "sin(pi/2-x);;;cos(x)";
-
-    return twf_js?.checkSolutionInTex(
+        return twf_js.checkSolutionInTex(
       fullExpression,
       start,
       undefined,
@@ -173,11 +95,11 @@ export const checkTex = (
       end,
       undefined,
       undefined,
-      wellKnownFunctionsString,
       undefined,
       undefined,
       undefined,
-      expressionTransformationRulesString,
+      undefined,
+      undefined,
       undefined,
       undefined,
       undefined,
