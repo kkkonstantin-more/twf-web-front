@@ -15,7 +15,12 @@ export const addLastEditedConstructorItemToLocalStorage = (
   const items: LastEditedConstructorItemInLocalStorageProps[] | null = localStorage.getItem(name)
     ? // @ts-ignore
     JSON.parse(localStorage.getItem(name))
-    : null;
+     : null;
+  // console.log("addLastEditedConstructorItemToLocalStorage");
+  // console.log(name);
+  // console.log(val);
+  // console.log(items);
+  // TODO: handle case correctly: 3 last viewed items must be shown
   if (items) {
     if (items.includes(val)) {
       localStorage.setItem(
@@ -25,7 +30,7 @@ export const addLastEditedConstructorItemToLocalStorage = (
     } else if (items.length <= 3) {
       localStorage.setItem(name, JSON.stringify([val, ...items]));
     } else if (items.length > 3) {
-      throw new Error("last edited items in local storage more than 3");
+      // throw new Error("last edited items in local storage more than 3");
     }
   } else {
     localStorage.setItem(name, JSON.stringify([val]));
