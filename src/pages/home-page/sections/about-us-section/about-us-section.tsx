@@ -42,9 +42,9 @@ const AboutUsSection: React.FC = () => {
     ...shuffleArray(horizontalPhotosUrls).slice(0, 3),
     ...shuffleArray(verticalPhotosUrls).slice(0, 3),
     ...shuffleArray(standardPhotosUrls).slice(0, 12),
-    ...shuffleArray(horizontalPhotosUrls),
-    ...shuffleArray(verticalPhotosUrls),
-    ...shuffleArray(standardPhotosUrls),
+    ...shuffleArray(horizontalPhotosUrls).slice(3, 6),
+    ...shuffleArray(verticalPhotosUrls).slice(3, 6),
+    ...shuffleArray(standardPhotosUrls).slice(12, 24),
   ]);
 
   const [photosSides, setPhotosSides] = useState<boolean[]>(
