@@ -55,7 +55,7 @@ const AboutUsSection: React.FC = () => {
     setTimeout(() => {
       const randomIdx = Math.floor(Math.random() * photosSides.length);
       setPhotosSides((prevState) => {
-        return prevState.map((side, i) => (i === randomIdx ? !side : side));
+        return prevState.map((side, i) => (i !== randomIdx));
       });
     }, 3000);
   }, [photosSides]);
@@ -93,7 +93,7 @@ const AboutUsSection: React.FC = () => {
                 />
                 <div
                   style={{
-                    backgroundImage: `url(${currentImagesUrls[(i + 1) % photosSides.length]})`,
+                    backgroundImage: `url(${currentImagesUrls[(i + 18) % photosSides.length]})`,
                   }}
                   className="about-us-section__photo about-us-section__photo--back"
                 />
