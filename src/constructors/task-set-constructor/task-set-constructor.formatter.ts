@@ -24,7 +24,11 @@ class TaskSetConstructorFormatter {
     return {
       ...data,
       tasks: data.tasks.map((task: TaskConstructorReceivedForm) => {
-        const taskCopy: TaskConstructorInputs = { ...task, rulePacks: [] };
+        const taskCopy: TaskConstructorInputs = {
+          ...task,
+          goalExpression: { format: MathInputFormat.TEX, expression: "" },
+          rulePacks: []
+        };
 
         // format expression inputs
         taskCopy.originalExpression = {
@@ -133,42 +137,46 @@ class TaskSetConstructorFormatter {
         }
 
         if (taskCopy.goalExpression != null) {
-          if (taskCopy.goalExpression.format === MathInputFormat.TEX) {
-            taskCopy.goalExpressionTex = taskCopy.goalExpression.expression;
-            taskCopy.goalExpressionPlainText = convertMathInput(
-              MathInputFormat.TEX,
-              MathInputFormat.PLAIN_TEXT,
-              task.goalExpression.expression
-            );
-            taskCopy.goalExpressionStructureString = convertMathInput(
-              MathInputFormat.TEX,
-              MathInputFormat.STRUCTURE_STRING,
-              taskCopy.goalExpression.expression
-            );
-          } else if (taskCopy.goalExpression.format === MathInputFormat.PLAIN_TEXT) {
-            taskCopy.goalExpressionPlainText = taskCopy.goalExpression.expression;
-            taskCopy.goalExpressionTex = convertMathInput(
-              MathInputFormat.PLAIN_TEXT,
-              MathInputFormat.TEX,
-              taskCopy.goalExpression.expression
-            );
-            taskCopy.goalExpressionStructureString = convertMathInput(
-              MathInputFormat.PLAIN_TEXT,
-              MathInputFormat.STRUCTURE_STRING,
-              taskCopy.goalExpression.expression
-            );
-          } else if (taskCopy.goalExpression.format === MathInputFormat.STRUCTURE_STRING) {
-            taskCopy.goalExpressionStructureString = taskCopy.goalExpression.expression;
-            taskCopy.goalExpressionPlainText = convertMathInput(
-              MathInputFormat.STRUCTURE_STRING,
-              MathInputFormat.PLAIN_TEXT,
-              taskCopy.goalExpression.expression
-            );
-            taskCopy.goalExpressionTex = convertMathInput(
-              MathInputFormat.STRUCTURE_STRING,
-              MathInputFormat.TEX,
-              taskCopy.goalExpression.expression
-            );
+          if (taskCopy.goalExpression.expression === null) {
+            taskCopy.goalExpression = null;
+          } else {
+            if (taskCopy.goalExpression.format === MathInputFormat.TEX) {
+              taskCopy.goalExpressionTex = taskCopy.goalExpression.expression;
+              taskCopy.goalExpressionPlainText = convertMathInput(
+                MathInputFormat.TEX,
+                MathInputFormat.PLAIN_TEXT,
+                task.goalExpression.expression
+              );
+              taskCopy.goalExpressionStructureString = convertMathInput(
+                MathInputFormat.TEX,
+                MathInputFormat.STRUCTURE_STRING,
+                taskCopy.goalExpression.expression
+              );
+            } else if (taskCopy.goalExpression.format === MathInputFormat.PLAIN_TEXT) {
+              taskCopy.goalExpressionPlainText = taskCopy.goalExpression.expression;
+              taskCopy.goalExpressionTex = convertMathInput(
+                MathInputFormat.PLAIN_TEXT,
+                MathInputFormat.TEX,
+                taskCopy.goalExpression.expression
+              );
+              taskCopy.goalExpressionStructureString = convertMathInput(
+                MathInputFormat.PLAIN_TEXT,
+                MathInputFormat.STRUCTURE_STRING,
+                taskCopy.goalExpression.expression
+              );
+            } else if (taskCopy.goalExpression.format === MathInputFormat.STRUCTURE_STRING) {
+              taskCopy.goalExpressionStructureString = taskCopy.goalExpression.expression;
+              taskCopy.goalExpressionPlainText = convertMathInput(
+                MathInputFormat.STRUCTURE_STRING,
+                MathInputFormat.PLAIN_TEXT,
+                taskCopy.goalExpression.expression
+              );
+              taskCopy.goalExpressionTex = convertMathInput(
+                MathInputFormat.STRUCTURE_STRING,
+                MathInputFormat.TEX,
+                taskCopy.goalExpression.expression
+              );
+            }
           }
         }
 
@@ -199,7 +207,7 @@ class TaskSetConstructorFormatter {
             (taskCopy as any)[key] = null;
           } else if ((task as any)[key] != null) {
             console.log(`field ${key} is not null and blank, it is: `, (task as any)[key]);
-            (taskCopy as any)[key] = (task as any)[key]
+            (taskCopy as any)[key] = JSON.parse((task as any)[key])
           }
         });
 

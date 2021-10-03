@@ -48,7 +48,7 @@ export interface TaskConstructorReceivedForm {
   goalExpressionStructureString: string;
   goalExpressionTex: string;
   goalExpressionPlainText: string;
-  goalExpression: ExpressionInput;
+  goalExpression: ExpressionInput | null;
   goalPattern: string;
   otherGoalData: any;
   rulePacks: RulePackLink[];
