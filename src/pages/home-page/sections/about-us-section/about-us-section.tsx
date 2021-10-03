@@ -32,10 +32,19 @@ const AboutUsSection: React.FC = () => {
     "https://vk.com/club195826752",
   ];
 
+  // const [currentImagesUrls, setCurrentImagesUrls] = useState([
+  //   ...shuffleArray(horizontalPhotosUrls).slice(0, horizontalPhotosUrls.length),
+  //   ...shuffleArray(verticalPhotosUrls).slice(0, verticalPhotosUrls.length),
+  //   ...shuffleArray(standardPhotosUrls).slice(0, standardPhotosUrls.length),
+  // ]);
+
   const [currentImagesUrls, setCurrentImagesUrls] = useState([
     ...shuffleArray(horizontalPhotosUrls).slice(0, 3),
     ...shuffleArray(verticalPhotosUrls).slice(0, 3),
     ...shuffleArray(standardPhotosUrls).slice(0, 12),
+    ...shuffleArray(horizontalPhotosUrls),
+    ...shuffleArray(verticalPhotosUrls),
+    ...shuffleArray(standardPhotosUrls),
   ]);
 
   const [photosSides, setPhotosSides] = useState<boolean[]>(
@@ -84,7 +93,7 @@ const AboutUsSection: React.FC = () => {
                 />
                 <div
                   style={{
-                    backgroundImage: `url(${currentImagesUrls[i]})`,
+                    backgroundImage: `url(${currentImagesUrls[(i + 1) % photosSides.length]})`,
                   }}
                   className="about-us-section__photo about-us-section__photo--back"
                 />
