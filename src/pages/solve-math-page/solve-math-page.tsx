@@ -92,7 +92,8 @@ const SolveMathPage: React.FC = () => {
       const res = checkTex(
         solutionInTex,
         taskSet?.tasks[currentTaskIdx].originalExpressionStructureString,
-        taskSet?.tasks[currentTaskIdx].goalExpressionStructureString
+        taskSet?.tasks[currentTaskIdx].goalExpressionStructureString,
+        rulePacks?.flatMap((rulePackConstructorReceivedForm: RulePackConstructorReceivedForm) => {return rulePackConstructorReceivedForm.rules!;})
       );
       if (res.errorMessage) {
         setSuccessMessages((prevState) => {

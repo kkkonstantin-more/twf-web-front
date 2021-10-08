@@ -1,10 +1,16 @@
+import {RuleConstructorReceivedForm} from "../constructors/rule-constructor/rule-constructor.types";
+
 const twf_js = (window as any)['twf_js'];
+// @ts-ignore
+// import twf_js from '../../public/kotlin-lib/twf_js';
 
 // LIB API FUNCTIONS
 // format -> expression
 export const stringToExpression = twf_js.stringToExpression;
 const structureStringToExpression = twf_js.structureStringToExpression;
+const expressionSubstitutionFromStructureStrings = twf_js.expressionSubstitutionFromStructureStrings;
 const texToExpression = twf_js.stringToExpression;
+// const getUserLogInPlainText = twf_js.getUserLogInPlainText;
 
 // expression -> format
 const expressionToTexString = twf_js.expressionToTexString;
@@ -80,13 +86,19 @@ export const getErrorFromMathInput = (
   }
 };
 
-// @ts-ignore
 export const checkTex = (
   fullExpression?: string,
   start?: string,
-  end?: string
+  end?: string,
+  rules?: Array<RuleConstructorReceivedForm>
 ) => {
   try {
+    let expressions;
+    if (rules) {
+      expressions = rules?.map(function(rule: RuleConstructorReceivedForm){
+        return expressionSubstitutionFromStructureStrings(rule.leftStructureString, rule.rightStructureString, rule.basedOnTaskContext, rule.matchJumbledAndNested, rule.simpleAdditional, rule.isExtending, rule.priority, rule.code, rule.nameEn, rule.nameRu);
+      });
+    }
         return twf_js.checkSolutionInTex(
       fullExpression,
       start,
@@ -99,7 +111,7 @@ export const checkTex = (
       undefined,
       undefined,
       undefined,
-      undefined,
+      expressions,
       undefined,
       undefined,
       undefined,
@@ -108,5 +120,6 @@ export const checkTex = (
     );
   } catch (e: any) {
     console.error("ERROR WHILE CHECKING TEX", e.message, e);
+    // console.log(getUserLogInPlainText())
   }
 };
