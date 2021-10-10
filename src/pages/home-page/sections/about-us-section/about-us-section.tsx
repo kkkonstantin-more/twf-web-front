@@ -48,14 +48,14 @@ const AboutUsSection: React.FC = () => {
   ]);
 
   const [photosSides, setPhotosSides] = useState<boolean[]>(
-    createArrayWithOneValue(true, currentImagesUrls.length)
+    createArrayWithOneValue(true, 18)
   );
 
   useEffect(() => {
     setTimeout(() => {
       const randomIdx = Math.floor(Math.random() * photosSides.length);
       setPhotosSides((prevState) => {
-        return prevState.map((side, i) => (i !== randomIdx));
+        return prevState.map((side, i) => (i !== randomIdx) ? side : !side);
       });
     }, 3000);
   }, [photosSides]);
@@ -81,10 +81,9 @@ const AboutUsSection: React.FC = () => {
             <div key={i} className="about-us-section__photo-3d-container">
               <div
                 className={`about-us-section__photo-container
-                  ${
-                    photosSides[i]
-                      ? ""
-                      : "about-us-section__photo-container--is-flipped"
+                  ${photosSides[i]
+                    ? ""
+                    : "about-us-section__photo-container--is-flipped"
                   }`}
               >
                 <div
@@ -93,7 +92,7 @@ const AboutUsSection: React.FC = () => {
                 />
                 <div
                   style={{
-                    backgroundImage: `url(${currentImagesUrls[(i + 18) % photosSides.length]})`,
+                    backgroundImage: `url(${currentImagesUrls[(i + 18) % currentImagesUrls.length]})`,
                   }}
                   className="about-us-section__photo about-us-section__photo--back"
                 />

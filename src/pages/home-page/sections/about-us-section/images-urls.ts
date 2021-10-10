@@ -31,7 +31,17 @@ const standardPhotosUrls = [
   require("../../../../assets/home-page-about-us-section/photo-grid/standard-photos/VladMosin-s-3.jpg").default,
 
   require("../../../../assets/home-page-about-us-section/photo-grid/standard-photos/VladMilshin-s-2.jpg").default,
-    //TODO: add 11 photos   найти пару фотографий Федора Александровича
+  require("../../../../assets/home-page-about-us-section/photo-grid/standard-photos/DanilPestryakov-s-1.jpg").default,
+  require("../../../../assets/home-page-about-us-section/photo-grid/standard-photos/IlyaKozlov-s-1.jpg").default,
+  require("../../../../assets/home-page-about-us-section/photo-grid/standard-photos/IlyaKozlov-s-2.jpg").default,
+  require("../../../../assets/home-page-about-us-section/photo-grid/standard-photos/IlyaKozlov-s-3.jpg").default,
+  require("../../../../assets/home-page-about-us-section/photo-grid/standard-photos/JuliaSmirnova-s-1.jpg").default,
+  require("../../../../assets/home-page-about-us-section/photo-grid/standard-photos/JuliaSmirnova-s-2.jpg").default,
+  require("../../../../assets/home-page-about-us-section/photo-grid/standard-photos/novikov_f_a-s-2.jpg").default,
+  require("../../../../assets/home-page-about-us-section/photo-grid/standard-photos/OlegPavlovsky-s-3.jpg").default,
+  require("../../../../assets/home-page-about-us-section/photo-grid/standard-photos/PavelDenisov-s-1.png").default,
+  require("../../../../assets/home-page-about-us-section/photo-grid/standard-photos/PavelDenisov-s-2.jpg").default,
+  require("../../../../assets/home-page-about-us-section/photo-grid/standard-photos/Ruslan-s-1.jpg").default,
 ];
 
 export { verticalPhotosUrls, horizontalPhotosUrls, standardPhotosUrls };
