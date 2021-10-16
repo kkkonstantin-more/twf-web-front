@@ -16,4 +16,5 @@ export interface ConstructorInputProps {
   onChange?: (value: string) => any;
   value?: any;
   isTextArea?: boolean;
+  width?: number;
 }

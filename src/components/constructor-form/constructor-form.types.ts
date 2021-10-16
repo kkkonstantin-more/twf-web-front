@@ -10,6 +10,7 @@ export interface ConstructorFormDefaultInput {
   isRendered?: boolean;
   isVisible?: boolean;
   isTextArea?: boolean;
+  width?: number;
 }
 
 export interface ConstructorFormSelectInput {
@@ -21,6 +22,7 @@ export interface ConstructorFormSelectInput {
   disabled?: boolean;
   isRendered?: boolean;
   isVisible?: boolean;
+  width?: number;
 }
 
 export interface ConstructorFormExpressionInput {
@@ -30,6 +32,7 @@ export interface ConstructorFormExpressionInput {
   disabled?: boolean;
   isRendered?: boolean;
   isVisible?: boolean;
+  width?: number;
 }
 
 export type ConstructorFormInput =

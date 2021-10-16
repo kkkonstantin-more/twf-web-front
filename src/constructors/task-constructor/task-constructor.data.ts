@@ -1,4 +1,15 @@
-import { GoalType } from "./task-constructor.types";
+import { GoalType, TaskType } from "./task-constructor.types";
+
+export const allPossibleTaskTypes = [
+  {
+    label: 'Доказательство',
+    value: TaskType.PROOF
+  },
+  {
+    label: 'Сведение',
+    value: TaskType.REDUCTION,
+  },
+];
 
 export const allPossibleGoalTypes = [
   GoalType.CUSTOM,
@@ -8,6 +19,37 @@ export const allPossibleGoalTypes = [
   GoalType.CNF,
   GoalType.DNF,
   GoalType.FACTORIZATION,
+];
+
+export const allPossibleReductionTypes = [
+  {
+    value: GoalType.COMPUTATION,
+    label: 'Вычисление'
+  },
+  {
+    value: GoalType.SIMPLIFICATION,
+    label: 'Упрощение'
+  },
+  {
+    value: GoalType.CNF,
+    label: 'x-КНФ'
+  },
+  {
+    value: GoalType.DNF,
+    label: 'x-ДНФ'
+  },
+  {
+    value: GoalType.FACTORIZATION,
+    label: 'Факторизация'
+  },
+];
+
+export const allPossibleXTypes = [
+  1, 2, 3, 4
+];
+
+export const allPossibleSignTypes = [
+  '=', '>', '>=', '<', '<='
 ];
 
 export const mockSubjectTypes: string[] = [

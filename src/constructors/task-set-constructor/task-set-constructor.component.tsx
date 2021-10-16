@@ -16,7 +16,7 @@ import CONSTRUCTOR_JSONS_INITIAL_STATE from "../../redux/constructor-jsons/const
 // lib components
 import Draggable from "react-draggable";
 // custom components
-import TaskConstructor from "../task-constructor/task-constructor.component";
+import TaskConstructorNew from "../task-constructor/task-constructor-new.component";
 import AppModal from "../../components/app-modal/app-modal.component";
 import ServerResponseAlert from "../../components/server-response-alert/server-response-alert.component";
 import { ClipLoader } from "react-spinners";
@@ -473,7 +473,7 @@ const TaskSetConstructor = ({
                     >
                       {fields.map((field, index: number) => {
                         return (
-                          <TaskConstructor
+                          <TaskConstructorNew
                             key={field.id}
                             index={index}
                             defaultValue={

@@ -22,6 +22,7 @@ const MixedInput = ({
   label,
   isRendered = true,
   isVisible = true,
+  width = 100,
 }: MixedInputProps) => {
   const modeTabs: ModeTab[] = [
     {
@@ -68,7 +69,7 @@ const MixedInput = ({
         style={
           style
             ? { ...style, display: isVisible ? "block" : "hidden" }
-            : { display: isVisible ? "block" : "hidden" }
+            : { display: isVisible ? "block" : "hidden", flexBasis: `${width - 1}%`, marginRight: '1%' }
         }
       >
         {label && <div className="label">{label}</div>}

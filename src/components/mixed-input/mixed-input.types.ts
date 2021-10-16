@@ -10,6 +10,7 @@ export interface MixedInputProps {
   style?: React.CSSProperties;
   isRendered?: boolean;
   isVisible?: boolean;
+  width?: number;
 }
 
 export interface ModeTab {

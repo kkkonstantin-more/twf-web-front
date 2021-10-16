@@ -17,6 +17,7 @@ const ConstructorInput = ({
   disabled = false,
   isExpressionInput = false,
   isTextArea = false,
+  width = 100,
 }: ConstructorInputProps): JSX.Element => {
   const { TextArea } = Input;
 
@@ -36,6 +37,8 @@ const ConstructorInput = ({
         style={{
           display: isVisible ? "block" : "none",
           marginBottom: isExpressionInput ? "2rem" : "1.5rem",
+          flexBasis: `${width - 1}%`,
+          marginRight: '1%'
         }}
       >
         <label>{label}</label>

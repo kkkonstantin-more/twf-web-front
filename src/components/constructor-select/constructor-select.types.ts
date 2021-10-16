@@ -17,4 +17,5 @@ export interface ConstructorSelectProps {
   isTags?: boolean;
   isRendered?: boolean;
   isVisible?: boolean;
+  width?: number;
 }
