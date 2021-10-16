@@ -104,7 +104,7 @@ export const checkTex = (
       start,
       undefined,
       "",
-      end,
+      end === null ? "" : end,
       undefined,
       undefined,
       undefined,
