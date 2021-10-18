@@ -212,15 +212,8 @@ const SolveMathPage: React.FC = () => {
         setSolutions(
           res.taskset.tasks.map(
             (task: TaskConstructorReceivedForm) =>
-              task.originalExpressionTex + "=...=" + task.goalExpressionTex
+              task.originalExpressionTex + "=..." + (task.goalExpressionTex === null ? '' : `=${task.goalExpressionTex}`)
           )
-        );
-        setSolutions(
-          res.taskset.tasks.map((task: TaskConstructorReceivedForm) => {
-            return (
-              task.originalExpressionTex + "=...=" + task.goalExpressionTex
-            );
-          })
         );
         setIsTaskSetFetched(true);
       }
