@@ -12,7 +12,7 @@ import NamespaceConstructorRequestHandler from "../../constructors/namespace-con
 import { getLastEditedConstructorItemsFromLocalStorage } from "../../utils/last-edited-constructor-items-local-storage";
 // types
 import { NamespaceReceivedForm } from "../../constructors/namespace-constructor/namespace-constructor.types";
-import { TaskSetConstructorReceivedForm } from "../../constructors/task-set-constructor/task-set-constructor.types";
+import { TaskSetConstructorLinkReceivedForm, TaskSetConstructorReceivedForm } from "../../constructors/task-set-constructor/task-set-constructor.types";
 import { FilterableSelectListItem } from "../../components/filterable-select-list/filterable-select-list.types";
 import { ConstructorMenuBlockProps } from "../../components/constructor-menu-block/constructor-menu-block.types";
 // icons
@@ -71,7 +71,7 @@ const ConstructorMenuPageComponent: React.FC = () => {
   const [rulePacks, setRulePacks] = useState<RulePackConstructorReceivedForm[]>(
     []
   );
-  const [taskSets, setTaskSets] = useState<TaskSetConstructorReceivedForm[]>(
+  const [taskSets, setTaskSets] = useState<TaskSetConstructorLinkReceivedForm[]>(
     []
   );
   const [namespaces, setNamespaces] = useState<NamespaceReceivedForm[]>([]);
@@ -82,8 +82,8 @@ const ConstructorMenuPageComponent: React.FC = () => {
   useEffect(() => {
     setIsFetched(false);
     if (currentTab === "taskSet") {
-      TaskSetConstructorRequestsHandler.getAll()
-        .then((res: TaskSetConstructorReceivedForm[]) => {
+      TaskSetConstructorRequestsHandler.getAllLinks()
+        .then((res: TaskSetConstructorLinkReceivedForm[]) => {
           setTaskSets(res);
           setIsFetched(true);
         })
@@ -128,7 +128,7 @@ const ConstructorMenuPageComponent: React.FC = () => {
           name: "На основе уже существующего",
           action: () => {
             setItems(
-              taskSets.map((taskSet: TaskSetConstructorReceivedForm) => {
+              taskSets.map((taskSet: TaskSetConstructorLinkReceivedForm) => {
                 const { code, nameRu, namespaceCode } = taskSet;
                 return {
                   code,
@@ -171,7 +171,7 @@ const ConstructorMenuPageComponent: React.FC = () => {
                 action: () => {
                   setItems(
                     taskSets.map(
-                      (taskSet: TaskSetConstructorReceivedForm) => {
+                      (taskSet: TaskSetConstructorLinkReceivedForm) => {
                         const { code, nameRu, namespaceCode } = taskSet;
                         return {
                           code,
@@ -194,7 +194,7 @@ const ConstructorMenuPageComponent: React.FC = () => {
               name: "Смотреть все",
               action: () => {
                 setItems(
-                  taskSets.map((taskSet: TaskSetConstructorReceivedForm) => {
+                  taskSets.map((taskSet: TaskSetConstructorLinkReceivedForm) => {
                     const { code, nameRu, namespaceCode } = taskSet;
                     return {
                       code,
