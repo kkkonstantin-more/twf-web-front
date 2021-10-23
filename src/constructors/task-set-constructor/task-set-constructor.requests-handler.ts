@@ -40,14 +40,14 @@ class TaskSetConstructorRequestsHandler {
   public static async getAllLinks(): Promise<TaskSetConstructorLinkReceivedForm[]> {
     return axios({
       method: "get",
-      url: this.url + "?form=cutted_link/",
+      url: this.url + "?form=cutted_link",
       headers: {
         Authorization: "Bearer " + getAuthToken(),
       },
     })
       .then(
         (
-          res: AxiosResponse<{ tasksets: TaskSetConstructorLinkReceivedForm[]}>
+          res: AxiosResponse<{ tasksets: TaskSetConstructorLinkReceivedForm[] }>
         ) => {
           return res.data.tasksets;
         }
