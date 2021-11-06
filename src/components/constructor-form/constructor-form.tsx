@@ -65,6 +65,7 @@ const ConstructorForm = ({
   updateNamespaceJSON,
   updateRulePackJSON,
 }: ConstructorFormProps & ConnectedProps<typeof connector>) => {
+  console.log(inputs);
   // react-hook-form core functions from parent component's context
   // ConstructorForm should be wrapped inside FormProvider component
   const { setValue, watch, reset, getValues } = useFormContext();

@@ -2,37 +2,29 @@ import { LabeledValue } from "antd/es/select";
 import { ConstructorJSONType } from "../../redux/constructor-jsons/constructor-jsons.types";
 import CSS from "csstype";
 
-export interface ConstructorFormDefaultInput {
+export interface ConstructorFormBase {
   name: string;
-  type: "text" | "number";
   label: string;
   disabled?: boolean;
   isRendered?: boolean;
   isVisible?: boolean;
-  isTextArea?: boolean;
   width?: number;
+  panel?: string;
 }
 
-export interface ConstructorFormSelectInput {
-  name: string;
-  label: string;
+export interface ConstructorFormDefaultInput extends ConstructorFormBase{
+  type: "text" | "number";
+  isTextArea?: boolean;
+}
+
+export interface ConstructorFormSelectInput extends ConstructorFormBase{
   options: LabeledValue[];
   isMulti: boolean;
   isTags?: boolean;
-  disabled?: boolean;
-  isRendered?: boolean;
-  isVisible?: boolean;
-  width?: number;
 }
 
-export interface ConstructorFormExpressionInput {
-  name: string;
-  label: string;
+export interface ConstructorFormExpressionInput extends ConstructorFormBase{
   isExpressionInput: true;
-  disabled?: boolean;
-  isRendered?: boolean;
-  isVisible?: boolean;
-  width?: number;
 }
 
 export type ConstructorFormInput =

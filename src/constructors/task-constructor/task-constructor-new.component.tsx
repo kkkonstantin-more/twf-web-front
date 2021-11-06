@@ -43,6 +43,8 @@ import {
 import "./task-constructor.styles.scss";
 import {addMultipleLinesChangeToHistory} from "../../redux/constructor-history/constructor-history.actions";
 import {taskRuleConstructorDefaultValues} from "./task-rule-constructor.data";
+import {ConstructorFormPanel} from "../../components/constructor-panels-form/constructor-panels-form.types";
+import ConstructorPanelsForm from "../../components/constructor-panels-form/constructor-panels-form";
 
 const TaskConstructorNew = ({
                               // task constructor props
@@ -88,6 +90,17 @@ const TaskConstructorNew = ({
   const taskTypeValue: string = watch(`tasks[${index}].taskType`);
   const reductionTypeValue: string = watch(`tasks[${index}].reductionType`);
 
+  const panels: ConstructorFormPanel[] = [
+    {
+      header: 'Суть задачи',
+      key: 'test1'
+    },
+    {
+      header: 'Условия',
+      key: 'test2'
+    },
+  ];
+
   const inputs: ConstructorFormInput[] = [
     {
       name: `tasks[${index}].subjectType`,
@@ -108,7 +121,7 @@ const TaskConstructorNew = ({
     },
     // поля для доказательства
     {
-      name: `tasks[${index}].originalExpression`,
+      name: `tasks[${index}].originalExpressionProof`,
       label: "Стартовое выражение доказательства",
       type: "text",
       isExpressionInput: true,
@@ -127,7 +140,7 @@ const TaskConstructorNew = ({
       width: 6
     },
     {
-      name: `tasks[${index}].goalExpression`,
+      name: `tasks[${index}].goalExpressionProof`,
       label: "Целевое выражение доказательства",
       type: "text",
       isExpressionInput: true,
@@ -136,7 +149,7 @@ const TaskConstructorNew = ({
     },
     // поля для сведения
     {
-      name: `tasks[${index}].originalExpression`,
+      name: `tasks[${index}].originalExpressionReduction`,
       label: "Стартовое выражение сведения",
       type: "text",
       isExpressionInput: true,
@@ -206,7 +219,8 @@ const TaskConstructorNew = ({
     return inputs.filter((input: ConstructorFormInput) => {
       const prefix = `tasks[${index}].`;
       const {name} = input;
-      return basicInputNames.includes(name.replace(prefix, ""));
+      return (input.isRendered === undefined || input.isRendered) &&
+        basicInputNames.includes(name.replace(prefix, ""));
     });
   });
 
@@ -217,7 +231,7 @@ const TaskConstructorNew = ({
   ].map((basicInputs: ConstructorFormInput[]) => {
     return inputs
       .filter((input: ConstructorFormInput) => {
-        return !basicInputs.includes(input);
+        return (input.isRendered === undefined || input.isRendered) && !basicInputs.includes(input);
       })
       .map((input: ConstructorFormInput) => {
         return {
@@ -420,12 +434,14 @@ const TaskConstructorNew = ({
               }
             )}
           </div>
-          <ConstructorForm
+
+          <ConstructorPanelsForm
             inputs={
               taskCreationType === "auto"
                 ? autoTaskBasicInputs.concat(autoTasksAddInputs)
                 : manualTaskBasicInputs.concat(manualTasksAddInputs)
             }
+            panels={panels}
             constructorType={ConstructorJSONType.TASK_SET}
             showUndoRedoPanel={false}
             className="d-flex flex-wrap align-items-end"
