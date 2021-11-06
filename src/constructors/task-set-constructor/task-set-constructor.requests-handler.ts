@@ -5,16 +5,16 @@ import { getAuthToken } from "../../utils/local-storage/auth-token";
 import { ConstructorCreationMode } from "../common-types";
 // types
 import {
+  TaskSetConstructorLinkReceivedForm,
   TaskSetConstructorReceivedForm,
   TaskSetConstructorSendForm,
 } from "./task-set-constructor.types";
-import {TaskContextForm} from "../../pages/solve-math-page/solve-math-page.types";
-import {RulePackConstructorReceivedForm} from "../rule-pack-constructor/rule-pack-constructor.types";
-import {TaskConstructorReceivedForm} from "../task-constructor/task-constructor.types";
-import {RuleConstructorReceivedForm} from "../rule-constructor/rule-constructor.types";
+import { TaskContextForm } from "../../pages/solve-math-page/solve-math-page.types";
+import { RulePackConstructorReceivedForm } from "../rule-pack-constructor/rule-pack-constructor.types";
+import { TaskConstructorReceivedForm } from "../task-constructor/task-constructor.types";
 
 class TaskSetConstructorRequestsHandler {
-  private static url = process.env.REACT_APP_SERVER_API + "/taskset/";
+  private static url = process.env.REACT_APP_SERVER_API + "/taskset";
 
   public static async getAll(): Promise<TaskSetConstructorReceivedForm[]> {
     return axios({
@@ -37,12 +37,33 @@ class TaskSetConstructorRequestsHandler {
       });
   }
 
+  public static async getAllLinks(): Promise<TaskSetConstructorLinkReceivedForm[]> {
+    return axios({
+      method: "get",
+      url: this.url + "?form=cutted_link",
+      headers: {
+        Authorization: "Bearer " + getAuthToken(),
+      },
+    })
+      .then(
+        (
+          res: AxiosResponse<{ tasksets: TaskSetConstructorLinkReceivedForm[] }>
+        ) => {
+          return res.data.tasksets;
+        }
+      )
+      .catch((e: AxiosError) => {
+        console.error("Error fetching all tasksets' links", e.message, e.response);
+        throw e;
+      });
+  }
+
   public static async getOne(
     code: string
   ): Promise<TaskContextForm> {
     return axios({
       method: "get",
-      url: this.url + "edit/" + code,
+      url: this.url + "/edit/" + code,
       headers: {
         Authorization: "Bearer " + getAuthToken(),
       },
@@ -81,7 +102,7 @@ class TaskSetConstructorRequestsHandler {
   ): Promise<Number> {
     return axios({
       method: "post",
-      url: this.url + (creationMode === ConstructorCreationMode.CREATE ? "create/" : "update/"),
+      url: this.url + (creationMode === ConstructorCreationMode.CREATE ? "/create/" : "/update/"),
       data,
       headers: {
         Authorization: "Bearer " + getAuthToken(),

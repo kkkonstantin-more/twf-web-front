@@ -9,6 +9,12 @@ export interface TaskLinkInput {
   taskCode: string;
 }
 
+export interface TaskSetConstructorLinkReceivedForm {
+  code: string;
+  nameRu: string;
+  namespaceCode: string;
+}
+
 export interface TaskSetConstructorReceivedForm {
   code: string;
   namespaceCode: string;

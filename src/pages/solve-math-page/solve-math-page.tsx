@@ -143,8 +143,8 @@ const SolveMathPage: React.FC = () => {
     if (
       mathField &&
       taskSet &&
-      currentTaskIdx >= 0 &&
-      currentTaskIdx < taskSet?.tasks.length
+      selectedTaskIdx >= 0 &&
+      selectedTaskIdx < taskSet?.tasks.length
     ) {
       setCurrentTaskIdx((prevIdx: number) => {
         if (mathField.latex() !== lastSentLogSolution) {
@@ -212,15 +212,8 @@ const SolveMathPage: React.FC = () => {
         setSolutions(
           res.taskset.tasks.map(
             (task: TaskConstructorReceivedForm) =>
-              task.originalExpressionTex + "=...=" + task.goalExpressionTex
+              `${task.originalExpressionTex}=...${task.goalExpressionTex === null || task.goalExpressionTex == '' ? '' : `=${task.goalExpressionTex}`}`
           )
-        );
-        setSolutions(
-          res.taskset.tasks.map((task: TaskConstructorReceivedForm) => {
-            return (
-              task.originalExpressionTex + "=...=" + task.goalExpressionTex
-            );
-          })
         );
         setIsTaskSetFetched(true);
       }
