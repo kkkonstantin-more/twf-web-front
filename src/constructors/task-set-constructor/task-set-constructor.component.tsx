@@ -377,6 +377,7 @@ const TaskSetConstructor = ({
                               ? "task-set-constructor__visualization-mode-switcher--active"
                               : ""
                               }`}
+                            key={mode.iconUrl}
                             onClick={() => {
                               setCurrentVisualizationMode(name);
                             }}
