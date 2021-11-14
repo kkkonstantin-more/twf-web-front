@@ -2,7 +2,6 @@
 import React, {useState} from "react";
 import {useFieldArray, useFormContext} from "react-hook-form";
 // custom constants
-import {SUBJECT_TYPE_OPTIONS} from "../constants/constants";
 // redux
 import {connect, ConnectedProps} from "react-redux";
 import {updateTaskSetJSON} from "../../redux/constructor-jsons/constructor-jsons.actions";
@@ -13,18 +12,11 @@ import ActionButton from "../../components/action-button/action-button.component
 import ConstructorForm from "../../components/constructor-form/constructor-form";
 // types
 import {ActionButtonProps} from "../../components/action-button/action-button.types";
-import {GoalType, TaskConstructorProps, TaskType} from "./task-constructor.types";
+import {TaskConstructorProps} from "./task-constructor.types";
 import {ConstructorJSONType} from "../../redux/constructor-jsons/constructor-jsons.types";
 import {TaskSetConstructorInputs} from "../task-set-constructor/task-set-constructor.types";
 import {ConstructorFormInput} from "../../components/constructor-form/constructor-form.types";
 import {RuleConstructorInputs} from "../rule-constructor/rule-constructor.types"
-// data
-import {
-  allPossibleReductionTypes,
-  allPossibleSignTypes,
-  allPossibleTaskTypes,
-  allPossibleXTypes,
-} from "./task-constructor.data";
 // icons
 import Icon from "@mdi/react";
 import {
@@ -45,6 +37,7 @@ import {addMultipleLinesChangeToHistory} from "../../redux/constructor-history/c
 import {taskRuleConstructorDefaultValues} from "./task-rule-constructor.data";
 import {ConstructorFormPanel} from "../../components/constructor-panels-form/constructor-panels-form.types";
 import ConstructorPanelsForm from "../../components/constructor-panels-form/constructor-panels-form";
+import {getFields} from "../../components/constructor-fields/constructor-fields";
 
 const TaskConstructorNew = ({
                               // task constructor props
@@ -85,100 +78,18 @@ const TaskConstructorNew = ({
 
   const [showAddFields, setShowAddFields] = useState(false);
 
-  // watch in order to conditionally render dependent fields
-  const goalTypeValue: string = watch(`tasks[${index}].goalType`);
-  const taskTypeValue: string = watch(`tasks[${index}].taskType`);
-  const reductionTypeValue: string = watch(`tasks[${index}].reductionType`);
-
   const panels: ConstructorFormPanel[] = [
     {
-      header: 'Суть задачи',
-      key: 'test1'
+      header: 'Предметная область + тип',
+      key: 'subject_task_type'
     },
     {
-      header: 'Условия',
-      key: 'test2'
+      header: 'Суть задачи',
+      key: 'essence'
     },
   ];
 
-  const inputs: ConstructorFormInput[] = [
-    {
-      name: `tasks[${index}].subjectType`,
-      label: "Предметная область",
-      isMulti: false,
-      options: SUBJECT_TYPE_OPTIONS,
-      width: 15
-    },
-    {
-      name: `tasks[${index}].taskType`,
-      label: "Тип задачи",
-      options: allPossibleTaskTypes.map((item) => ({
-        label: item.label,
-        value: item.value,
-      })),
-      isMulti: false,
-      width: 12
-    },
-    // поля для доказательства
-    {
-      name: `tasks[${index}].originalExpressionProof`,
-      label: "Стартовое выражение доказательства",
-      type: "text",
-      isExpressionInput: true,
-      isRendered: taskTypeValue === TaskType.PROOF,
-      width: 32
-    },
-    {
-      name: `tasks[${index}].sign`,
-      label: "Знак",
-      options: allPossibleSignTypes.map((item: string) => ({
-        label: item,
-        value: item,
-      })),
-      isMulti: false,
-      isRendered: taskTypeValue == TaskType.PROOF,
-      width: 6
-    },
-    {
-      name: `tasks[${index}].goalExpressionProof`,
-      label: "Целевое выражение доказательства",
-      type: "text",
-      isExpressionInput: true,
-      isRendered: taskTypeValue === TaskType.PROOF,
-      width: 32
-    },
-    // поля для сведения
-    {
-      name: `tasks[${index}].originalExpressionReduction`,
-      label: "Стартовое выражение сведения",
-      type: "text",
-      isExpressionInput: true,
-      isRendered: taskTypeValue === TaskType.REDUCTION,
-      width: 53
-    },
-    {
-      name: `tasks[${index}].reductionType`,
-      label: "Свести к",
-      options: allPossibleReductionTypes.map((item) => ({
-        label: item.label,
-        value: item.value,
-      })),
-      isMulti: false,
-      isRendered: taskTypeValue === TaskType.REDUCTION,
-      width: 12
-    },
-    {
-      name: `tasks[${index}].x_nf`,
-      label: "X",
-      options: allPossibleXTypes.map((item: number) => ({
-        label: item,
-        value: item,
-      })),
-      isMulti: false,
-      isRendered: taskTypeValue == TaskType.REDUCTION &&  ([GoalType.CNF, GoalType.DNF] as Array<String>).includes(reductionTypeValue),
-      width: 5
-    },
-  ];
+  const inputs: ConstructorFormInput[] = getFields(index, watch);
 
   const manualTaskBasicInputsNames = [
     "nameEn",
@@ -195,9 +106,14 @@ const TaskConstructorNew = ({
     "goalPattern",
     // helpers inputs
     "taskType",
-    "reductionType",
-    "x_nf",
-    "sign"
+    "sign",
+    "computationGoalType",
+    "numType",
+    "concreteAnswers",
+    "maxWeight",
+    "reductionGoalType",
+    "minMultipliers",
+    "varsList",
   ];
 
   const autoTaskBasicInputsNames = [
@@ -219,8 +135,7 @@ const TaskConstructorNew = ({
     return inputs.filter((input: ConstructorFormInput) => {
       const prefix = `tasks[${index}].`;
       const {name} = input;
-      return (input.isRendered === undefined || input.isRendered) &&
-        basicInputNames.includes(name.replace(prefix, ""));
+      return (input.isRendered === undefined || input.isRendered) && basicInputNames.includes(name.replace(prefix, ""));
     });
   });
 

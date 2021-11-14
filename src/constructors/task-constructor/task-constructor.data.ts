@@ -1,15 +1,4 @@
-import { GoalType, TaskType } from "./task-constructor.types";
-
-export const allPossibleTaskTypes = [
-  {
-    label: 'Доказательство',
-    value: TaskType.PROOF
-  },
-  {
-    label: 'Сведение',
-    value: TaskType.REDUCTION,
-  },
-];
+import { GoalType } from "./task-constructor.types";
 
 export const allPossibleGoalTypes = [
   GoalType.CUSTOM,
@@ -46,10 +35,6 @@ export const allPossibleReductionTypes = [
 
 export const allPossibleXTypes = [
   1, 2, 3, 4
-];
-
-export const allPossibleSignTypes = [
-  '=', '>', '>=', '<', '<='
 ];
 
 export const mockSubjectTypes: string[] = [

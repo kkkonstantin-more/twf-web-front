@@ -7,11 +7,6 @@ export interface ExpressionInput {
   expression: string;
 }
 
-export enum TaskType {
-  PROOF = "PROOF",
-  REDUCTION = "REDUCTION",
-}
-
 export enum GoalType {
   CUSTOM = "CUSTOM",
   EXPRESSION = "EXPRESSION",

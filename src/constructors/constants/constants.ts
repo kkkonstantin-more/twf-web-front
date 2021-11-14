@@ -9,3 +9,11 @@ export const SUBJECT_TYPE_OPTIONS = [
     { value: "logic", label: "Математическая логика" },
     { value: "physics", label: "Физика" },
 ];
+
+export enum SubjectType {
+    STANDARD_MATH = 'standard_math',
+    COMBINATORICS = 'combinatorics',
+    COMPLEX_NUMBERS = 'complex_numbers',
+    LOGIC = 'logic',
+    PHYSICS = 'physics',
+}
