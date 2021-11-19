@@ -17,3 +17,8 @@ export enum ReductionGoalType {
   POLYNOMIAL = "POLYNOMIAL",
   // OTHER = "OTHER",
 }
+
+export enum Panel {
+  SUBJECT_TASK_TYPE = 'subject_task_type',
+  MAIN_CONDITIONS = 'main_conditions',
+}

@@ -1,4 +1,4 @@
-import {ComputationGoalType, ReductionGoalType, TaskType} from "./constructor-fields.type";
+import {ComputationGoalType, Panel, ReductionGoalType, TaskType} from "./constructor-fields.type";
 import {SubjectType} from "../../constructors/constants/constants";
 import {ConstructorFormInput} from "../constructor-form/constructor-form.types";
 import {LabeledValue} from "antd/es/select";
@@ -66,10 +66,19 @@ const numTypeField: ConstructorFormInput = {
   width: 6
 }
 
+const countAnswersOptions: LabeledValue[] = [1, 2, 3, 4, 5].map(el => {return {label: el, value: el}});
+
+const countAnswersField: ConstructorFormInput = {
+  name: "countAnswers",
+  label: "Количество ответов",
+  options: countAnswersOptions,
+  isMulti: false,
+  width: 8
+}
+
 const concreteAnswersField: ConstructorFormInput = {
-  //todo это поле должна быть возможность задать каждый вариант в отдельном MathQuil
   name: "concreteAnswers",
-  label: "Перечень ответов",
+  label: "Ответ ",
   type: "text",
   isExpressionInput: true,
   width: 32
@@ -154,7 +163,7 @@ const computationAdditionalFields: {[key in ComputationGoalType] : ConstructorFo
     numTypeField
   ],
   [ComputationGoalType.CONCRETE_ANSWERS] : [
-    concreteAnswersField
+    countAnswersField
   ],
   [ComputationGoalType.PATTERN] : [
     goalPatternField
@@ -175,21 +184,34 @@ const reductionAdditionalFields: {[key in ReductionGoalType] : ConstructorFormIn
 
 }
 
-export const getEssenceFields = (subjectType: SubjectType, taskType: TaskType, computationalGoalType: ComputationGoalType, reductionGoalType: ReductionGoalType): ConstructorFormInput[] => {
+export const getEssenceFields = (subjectType: SubjectType, taskType: TaskType, computationalGoalType: ComputationGoalType, reductionGoalType: ReductionGoalType, countAnswers: number): ConstructorFormInput[] => {
   if (!subjectType || !taskType) {
     return [];
   }
 
   let inputs = fieldsMapping[subjectType][taskType];
 
-
   if (taskType == TaskType.COMPUTATION && computationalGoalType) {
-    inputs = inputs.concat(computationAdditionalFields[computationalGoalType])
+    inputs = [...inputs, ...computationAdditionalFields[computationalGoalType]]
+
+    if (computationalGoalType == ComputationGoalType.CONCRETE_ANSWERS && countAnswers) {
+      let answers = [];
+      for (let i = 0; i < countAnswers; i++) {
+        let field = {...concreteAnswersField};
+        field.name = `${field.name}[${i}]`;
+        field.label = `${field.label} ${i + 1}`;
+        answers.push(field);
+      }
+      inputs = [...inputs, ...answers];
+    }
   }
 
   if (taskType == TaskType.REDUCTION && reductionGoalType) {
-    inputs = inputs.concat(reductionAdditionalFields[reductionGoalType])
+    inputs = [...inputs, ...reductionAdditionalFields[reductionGoalType]]
   }
 
-  return inputs;
+  return inputs.map(input => {
+    input.panel = Panel.MAIN_CONDITIONS;
+    return input;
+  });
 }

@@ -38,6 +38,7 @@ import {taskRuleConstructorDefaultValues} from "./task-rule-constructor.data";
 import {ConstructorFormPanel} from "../../components/constructor-panels-form/constructor-panels-form.types";
 import ConstructorPanelsForm from "../../components/constructor-panels-form/constructor-panels-form";
 import {getFields} from "../../components/constructor-fields/constructor-fields";
+import {formPanels} from "../../components/constructor-fields/constructor-fields.data";
 
 const TaskConstructorNew = ({
                               // task constructor props
@@ -78,16 +79,7 @@ const TaskConstructorNew = ({
 
   const [showAddFields, setShowAddFields] = useState(false);
 
-  const panels: ConstructorFormPanel[] = [
-    {
-      header: 'Предметная область + тип',
-      key: 'subject_task_type'
-    },
-    {
-      header: 'Суть задачи',
-      key: 'essence'
-    },
-  ];
+  const panels = formPanels;
 
   const inputs: ConstructorFormInput[] = getFields(index, watch);
 
@@ -105,10 +97,12 @@ const TaskConstructorNew = ({
     "goalNumberProperty",
     "goalPattern",
     // helpers inputs
+    "startExpression",
     "taskType",
     "sign",
     "computationGoalType",
     "numType",
+    "countAnswers",
     "concreteAnswers",
     "maxWeight",
     "reductionGoalType",
@@ -139,6 +133,8 @@ const TaskConstructorNew = ({
     });
   });
 
+  console.log(manualTaskBasicInputs);
+
   // get additional inputs
   const [manualTasksAddInputs, autoTasksAddInputs] = [
     manualTaskBasicInputs,
@@ -158,6 +154,8 @@ const TaskConstructorNew = ({
         };
       });
   });
+
+  console.log(manualTasksAddInputs);
 
   const updateTasks = async (action: () => Promise<void>) => {
     const oldValue = await getValues();

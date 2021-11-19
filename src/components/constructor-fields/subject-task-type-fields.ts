@@ -1,5 +1,5 @@
 import {SUBJECT_TYPE_OPTIONS, SubjectType} from "../../constructors/constants/constants";
-import {TaskType} from "./constructor-fields.type";
+import {Panel, TaskType} from "./constructor-fields.type";
 import {ConstructorFormInput} from "../constructor-form/constructor-form.types";
 import {LabeledValue} from "antd/es/select";
 
@@ -12,14 +12,15 @@ export const getSubjectTaskTypeFields = (subjectType: SubjectType): ConstructorF
       isMulti: false,
       options: SUBJECT_TYPE_OPTIONS,
       width: 15,
-      panel: 'essence'
+      panel: Panel.SUBJECT_TASK_TYPE
     },
     {
       name: `taskType`,
       label: "Тип задачи",
       options: taskTypeOption[subjectType],
       isMulti: false,
-      width: 12
+      width: 12,
+      panel: Panel.SUBJECT_TASK_TYPE
     }
   ]
 }
