@@ -20,5 +20,9 @@ export enum ReductionGoalType {
 
 export enum Panel {
   SUBJECT_TASK_TYPE = 'subject_task_type',
-  MAIN_CONDITIONS = 'main_conditions',
+  BASIC_CONDITIONS = 'basic_conditions',
+  ADD_CONDITIONS = 'add_conditions',
+  TAGS = 'tags',
+  RULE_PACKS = 'rule_packs',
+  TEXT_DESC = 'text_desc',
 }

@@ -1,6 +1,6 @@
 // libs and hooks
 import React, {useState} from "react";
-import {useFieldArray, useFormContext} from "react-hook-form";
+import {ArrayField, useFieldArray, useFormContext} from "react-hook-form";
 // custom constants
 // redux
 import {connect, ConnectedProps} from "react-redux";
@@ -20,14 +20,14 @@ import {RuleConstructorInputs} from "../rule-constructor/rule-constructor.types"
 // icons
 import Icon from "@mdi/react";
 import {
-  mdiArrowDown,
+  mdiArrowDown, mdiArrowExpandDown,
   mdiArrowExpandLeft,
-  mdiArrowExpandRight,
+  mdiArrowExpandRight, mdiArrowExpandUp,
   mdiArrowUp,
   mdiClose,
   mdiContentCopy,
   mdiFileEye,
-  mdiPlayCircle,
+  mdiPlayCircle, mdiPlus,
   mdiRobot,
   mdiWrench,
 } from "@mdi/js";
@@ -35,10 +35,10 @@ import {
 import "./task-constructor.styles.scss";
 import {addMultipleLinesChangeToHistory} from "../../redux/constructor-history/constructor-history.actions";
 import {taskRuleConstructorDefaultValues} from "./task-rule-constructor.data";
-import {ConstructorFormPanel} from "../../components/constructor-panels-form/constructor-panels-form.types";
 import ConstructorPanelsForm from "../../components/constructor-panels-form/constructor-panels-form";
 import {getFields} from "../../components/constructor-fields/constructor-fields";
 import {formPanels} from "../../components/constructor-fields/constructor-fields.data";
+import TaskRuleConstructor from "./task-rule-constructor.component";
 
 const TaskConstructorNew = ({
                               // task constructor props
@@ -81,7 +81,7 @@ const TaskConstructorNew = ({
 
   const panels = formPanels;
 
-  const inputs: ConstructorFormInput[] = getFields(index, watch);
+  const inputs: ConstructorFormInput[] = getFields(index, watch, rulePacks);
 
   const manualTaskBasicInputsNames = [
     "nameEn",
@@ -108,6 +108,7 @@ const TaskConstructorNew = ({
     "reductionGoalType",
     "minMultipliers",
     "varsList",
+    "tags"
   ];
 
   const autoTaskBasicInputsNames = [
@@ -133,8 +134,6 @@ const TaskConstructorNew = ({
     });
   });
 
-  console.log(manualTaskBasicInputs);
-
   // get additional inputs
   const [manualTasksAddInputs, autoTasksAddInputs] = [
     manualTaskBasicInputs,
@@ -154,8 +153,6 @@ const TaskConstructorNew = ({
         };
       });
   });
-
-  console.log(manualTasksAddInputs);
 
   const updateTasks = async (action: () => Promise<void>) => {
     const oldValue = await getValues();
@@ -349,11 +346,7 @@ const TaskConstructorNew = ({
           </div>
 
           <ConstructorPanelsForm
-            inputs={
-              taskCreationType === "auto"
-                ? autoTaskBasicInputs.concat(autoTasksAddInputs)
-                : manualTaskBasicInputs.concat(manualTasksAddInputs)
-            }
+            inputs={inputs}
             panels={panels}
             constructorType={ConstructorJSONType.TASK_SET}
             showUndoRedoPanel={false}

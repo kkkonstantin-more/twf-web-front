@@ -8,6 +8,22 @@ export const formPanels: ConstructorFormPanel[] = [
   },
   {
     header: 'Основные условия',
-    key: Panel.MAIN_CONDITIONS
+    key: Panel.BASIC_CONDITIONS
+  },
+  {
+    header: 'При условиях',
+    key: Panel.ADD_CONDITIONS
+  },
+  {
+    header: 'Теги',
+    key: Panel.TAGS
+  },
+  {
+    header: 'Пакеты правил',
+    key: Panel.RULE_PACKS
+  },
+  {
+    header: 'Текстовое описание',
+    key: Panel.TEXT_DESC
   },
 ];

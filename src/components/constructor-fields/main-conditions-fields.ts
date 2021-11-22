@@ -211,7 +211,7 @@ export const getEssenceFields = (subjectType: SubjectType, taskType: TaskType, c
   }
 
   return inputs.map(input => {
-    input.panel = Panel.MAIN_CONDITIONS;
+    input.panel = Panel.BASIC_CONDITIONS;
     return input;
   });
 }
