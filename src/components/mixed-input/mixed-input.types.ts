@@ -11,6 +11,7 @@ export interface MixedInputProps {
   isRendered?: boolean;
   isVisible?: boolean;
   width?: number;
+  deleteInput?: () => void;
 }
 
 export interface ModeTab {

@@ -25,6 +25,7 @@ export interface ConstructorFormSelectInput extends ConstructorFormBaseInput{
 
 export interface ConstructorFormExpressionInput extends ConstructorFormBaseInput{
   isExpressionInput: true;
+  deleteInput?: () => void;
 }
 
 export type ConstructorFormInput =

@@ -1,6 +1,6 @@
 import {ComputationGoalType, Panel, ReductionGoalType, TaskType} from "./constructor-fields.type";
 import {SubjectType} from "../../constructors/constants/constants";
-import {ConstructorFormInput} from "../constructor-form/constructor-form.types";
+import {ConstructorFormExpressionInput, ConstructorFormInput} from "../constructor-form/constructor-form.types";
 import {LabeledValue} from "antd/es/select";
 
 const startExpressionField: ConstructorFormInput = {
@@ -76,10 +76,9 @@ const countAnswersField: ConstructorFormInput = {
   width: 8
 }
 
-const concreteAnswersField: ConstructorFormInput = {
+const concreteAnswersField: ConstructorFormExpressionInput = {
   name: "concreteAnswers",
   label: "Ответ ",
-  type: "text",
   isExpressionInput: true,
   width: 32
 }
@@ -184,7 +183,7 @@ const reductionAdditionalFields: {[key in ReductionGoalType] : ConstructorFormIn
 
 }
 
-export const getMainConditionsFields = (subjectType: SubjectType, taskType: TaskType, computationalGoalType: ComputationGoalType, reductionGoalType: ReductionGoalType, countAnswers: number): ConstructorFormInput[] => {
+export const getMainConditionsFields = (subjectType: SubjectType, taskType: TaskType, computationalGoalType: ComputationGoalType, reductionGoalType: ReductionGoalType, countAnswers: number, removeAnswer: (num: number) => void): ConstructorFormInput[] => {
   if (!subjectType || !taskType) {
     return [];
   }
@@ -195,11 +194,12 @@ export const getMainConditionsFields = (subjectType: SubjectType, taskType: Task
     inputs = [...inputs, ...computationAdditionalFields[computationalGoalType]]
 
     if (computationalGoalType == ComputationGoalType.CONCRETE_ANSWERS && countAnswers) {
-      let answers = [];
+      let answers: Array<ConstructorFormExpressionInput> = [];
       for (let i = 0; i < countAnswers; i++) {
         let field = {...concreteAnswersField};
         field.name = `${field.name}[${i}]`;
         field.label = `${field.label} ${i + 1}`;
+        field.deleteInput = () => {removeAnswer(i)}
         answers.push(field);
       }
       inputs = [...inputs, ...answers];

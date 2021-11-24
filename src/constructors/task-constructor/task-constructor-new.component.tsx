@@ -55,7 +55,7 @@ const TaskConstructorNew = ({
 
   // react-hook-form core functions from parent component's context
   // TaskConstructor should be wrapped inside FormProvider component
-  const {control, getValues, watch} = useFormContext();
+  const {control, getValues, watch, setValue} = useFormContext();
 
   // react-hook-form's fieldArray initialization and getting its needed tools
   // in order to manage rule constructors
@@ -81,7 +81,7 @@ const TaskConstructorNew = ({
 
   const panels = formPanels;
 
-  const inputs: ConstructorFormInput[] = getFields(index, watch, rulePacks);
+  const inputs: ConstructorFormInput[] = getFields(index, watch, setValue, rulePacks);
 
   const manualTaskBasicInputsNames = [
     "nameEn",
@@ -352,62 +352,6 @@ const TaskConstructorNew = ({
             showUndoRedoPanel={false}
             className="d-flex flex-wrap align-items-end"
           />
-          {/*<h3>Правила:</h3>*/}
-          {/*<div className="rule-pack-constructor__rules">*/}
-          {/*  {fieldsRules.map(*/}
-          {/*    (*/}
-          {/*      field: Partial<ArrayField<RuleConstructorInputs, "id">>,*/}
-          {/*      fieldIdx: number*/}
-          {/*    ) => {*/}
-          {/*      return (*/}
-          {/*        <div className="rule-pack-constructor__rule" key={fieldIdx}>*/}
-          {/*          <b>{fieldIdx + 1}.</b>*/}
-          {/*          <div className="rule-pack-constructor__action-buttons">*/}
-          {/*            {rulesActionButtons.map(*/}
-          {/*              (button: ActionButtonProps, buttonIdx: number) => {*/}
-          {/*                return (*/}
-          {/*                  <ActionButton*/}
-          {/*                    key={buttonIdx}*/}
-          {/*                    mdiIconPath={button.mdiIconPath}*/}
-          {/*                    size={1.5}*/}
-          {/*                    action={() => {*/}
-          {/*                      button.action(fieldIdx);*/}
-          {/*                    }}*/}
-          {/*                    margin="0 1rem 0 0"*/}
-          {/*                  />*/}
-          {/*                );*/}
-          {/*              }*/}
-          {/*            )}*/}
-          {/*          </div>*/}
-          {/*          <TaskRuleConstructor*/}
-          {/*            key={field.id}*/}
-          {/*            index={fieldIdx}*/}
-          {/*            taskIndex={index}*/}
-          {/*            defaultValue={fieldsRules[fieldIdx]}*/}
-          {/*          />*/}
-          {/*        </div>*/}
-          {/*      );*/}
-          {/*    }*/}
-          {/*  )}*/}
-          {/*  <div className="rule-pack-constructor__action-buttons">*/}
-          {/*    <button*/}
-          {/*      type="button"*/}
-          {/*      className="btn u-mr-sm"*/}
-          {/*      onClick={async () => {*/}
-          {/*        await onAddRule();*/}
-          {/*      }}*/}
-          {/*    >*/}
-          {/*      <Icon path={mdiPlus} size={1.2}/>*/}
-          {/*      <span>правило</span>*/}
-          {/*    </button>*/}
-          {/*  </div>*/}
-          {/*</div>*/}
-          {/*<ActionButton*/}
-          {/*  mdiIconPath={showAddFields ? mdiArrowExpandUp : mdiArrowExpandDown}*/}
-          {/*  size={2}*/}
-          {/*  action={() => setShowAddFields(!showAddFields)}*/}
-          {/*  margin={"2rem 0 0 0"}*/}
-          {/*/>*/}
         </div>
       );
     }

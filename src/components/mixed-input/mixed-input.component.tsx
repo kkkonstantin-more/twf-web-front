@@ -12,6 +12,8 @@ import {
 import { MixedInputProps, ModeTab } from "./mixed-input.types";
 // styles
 import "./mixed-input.styles.scss";
+import Icon from "@mdi/react";
+import {mdiClose} from "@mdi/js";
 
 const MixedInput = ({
   format,
@@ -23,6 +25,7 @@ const MixedInput = ({
   isRendered = true,
   isVisible = true,
   width = 100,
+  deleteInput = undefined,
 }: MixedInputProps) => {
   const modeTabs: ModeTab[] = [
     {
@@ -72,7 +75,8 @@ const MixedInput = ({
             : { display: isVisible ? "block" : "hidden", flexBasis: `${width - 1}%`, marginRight: '1%' }
         }
       >
-        {label && <div className="label">{label}</div>}
+        {label && <div className="label">{label} {deleteInput &&  <button className="btn" style={{padding: 0, marginBottom: 5}} type="button" onClick={deleteInput}><Icon path={mdiClose} size={1}/></button>}</div>}
+
         <div className="mixed-input__mode-tabs">
           {modeTabs.map((tab: ModeTab) => {
             const { label, format } = tab;
