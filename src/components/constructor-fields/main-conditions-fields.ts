@@ -184,7 +184,7 @@ const reductionAdditionalFields: {[key in ReductionGoalType] : ConstructorFormIn
 
 }
 
-export const getEssenceFields = (subjectType: SubjectType, taskType: TaskType, computationalGoalType: ComputationGoalType, reductionGoalType: ReductionGoalType, countAnswers: number): ConstructorFormInput[] => {
+export const getMainConditionsFields = (subjectType: SubjectType, taskType: TaskType, computationalGoalType: ComputationGoalType, reductionGoalType: ReductionGoalType, countAnswers: number): ConstructorFormInput[] => {
   if (!subjectType || !taskType) {
     return [];
   }
