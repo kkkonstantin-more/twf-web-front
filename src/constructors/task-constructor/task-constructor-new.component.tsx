@@ -38,7 +38,6 @@ import {taskRuleConstructorDefaultValues} from "./task-rule-constructor.data";
 import ConstructorPanelsForm from "../../components/constructor-panels-form/constructor-panels-form";
 import {getFields} from "../../components/constructor-fields/constructor-fields";
 import {formPanels} from "../../components/constructor-fields/constructor-fields.data";
-import TaskRuleConstructor from "./task-rule-constructor.component";
 
 const TaskConstructorNew = ({
                               // task constructor props

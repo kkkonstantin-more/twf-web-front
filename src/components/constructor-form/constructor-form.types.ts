@@ -10,6 +10,7 @@ export interface ConstructorFormBaseInput {
   isVisible?: boolean;
   width?: number;
   panel?: string;
+  defaultValue?: string;
 }
 
 export interface ConstructorFormDefaultInput extends ConstructorFormBaseInput{
@@ -25,13 +26,17 @@ export interface ConstructorFormSelectInput extends ConstructorFormBaseInput{
 
 export interface ConstructorFormExpressionInput extends ConstructorFormBaseInput{
   isExpressionInput: true;
-  deleteInput?: () => void;
+}
+
+export interface ConstructorFormMultipleExpressionInput extends ConstructorFormBaseInput{
+  isMultipleExpressionInput: true;
 }
 
 export type ConstructorFormInput =
   | ConstructorFormDefaultInput
   | ConstructorFormSelectInput
-  | ConstructorFormExpressionInput;
+  | ConstructorFormExpressionInput
+  | ConstructorFormMultipleExpressionInput;
 
 export interface ConstructorFormProps {
   inputs: ConstructorFormInput[];

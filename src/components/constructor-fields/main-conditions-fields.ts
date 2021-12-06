@@ -1,6 +1,10 @@
 import {ComputationGoalType, Panel, ReductionGoalType, TaskType} from "./constructor-fields.type";
 import {SubjectType} from "../../constructors/constants/constants";
-import {ConstructorFormExpressionInput, ConstructorFormInput} from "../constructor-form/constructor-form.types";
+import {
+  ConstructorFormDefaultInput,
+  ConstructorFormInput,
+  ConstructorFormMultipleExpressionInput
+} from "../constructor-form/constructor-form.types";
 import {LabeledValue} from "antd/es/select";
 
 const startExpressionField: ConstructorFormInput = {
@@ -66,21 +70,19 @@ const numTypeField: ConstructorFormInput = {
   width: 6
 }
 
-const countAnswersOptions: LabeledValue[] = [1, 2, 3, 4, 5].map(el => {return {label: el, value: el}});
-
-const countAnswersField: ConstructorFormInput = {
-  name: "countAnswers",
-  label: "Количество ответов",
-  options: countAnswersOptions,
-  isMulti: false,
-  width: 8
+const concreteAnswersCountField: ConstructorFormDefaultInput = {
+  name: "concreteAnswersCount",
+  label: "",
+  isVisible: false,
+  type: "number",
+  defaultValue: "1"
 }
 
-const concreteAnswersField: ConstructorFormExpressionInput = {
+const concreteAnswersField: ConstructorFormMultipleExpressionInput = {
   name: "concreteAnswers",
-  label: "Ответ ",
-  isExpressionInput: true,
-  width: 32
+  label: "Ответы",
+  isMultipleExpressionInput: true,
+  width: 100
 }
 
 const goalPatternField: ConstructorFormInput = {
@@ -162,7 +164,8 @@ const computationAdditionalFields: {[key in ComputationGoalType] : ConstructorFo
     numTypeField
   ],
   [ComputationGoalType.CONCRETE_ANSWERS] : [
-    countAnswersField
+    concreteAnswersField,
+    concreteAnswersCountField
   ],
   [ComputationGoalType.PATTERN] : [
     goalPatternField
@@ -183,7 +186,7 @@ const reductionAdditionalFields: {[key in ReductionGoalType] : ConstructorFormIn
 
 }
 
-export const getMainConditionsFields = (subjectType: SubjectType, taskType: TaskType, computationalGoalType: ComputationGoalType, reductionGoalType: ReductionGoalType, countAnswers: number, removeAnswer: (num: number) => void): ConstructorFormInput[] => {
+export const getMainConditionsFields = (subjectType: SubjectType, taskType: TaskType, computationalGoalType: ComputationGoalType, reductionGoalType: ReductionGoalType): ConstructorFormInput[] => {
   if (!subjectType || !taskType) {
     return [];
   }
@@ -192,18 +195,6 @@ export const getMainConditionsFields = (subjectType: SubjectType, taskType: Task
 
   if (taskType == TaskType.COMPUTATION && computationalGoalType) {
     inputs = [...inputs, ...computationAdditionalFields[computationalGoalType]]
-
-    if (computationalGoalType == ComputationGoalType.CONCRETE_ANSWERS && countAnswers) {
-      let answers: Array<ConstructorFormExpressionInput> = [];
-      for (let i = 0; i < countAnswers; i++) {
-        let field = {...concreteAnswersField};
-        field.name = `${field.name}[${i}]`;
-        field.label = `${field.label} ${i + 1}`;
-        field.deleteInput = () => {removeAnswer(i)}
-        answers.push(field);
-      }
-      inputs = [...inputs, ...answers];
-    }
   }
 
   if (taskType == TaskType.REDUCTION && reductionGoalType) {

@@ -18,6 +18,7 @@ const ConstructorInput = ({
   isExpressionInput = false,
   isTextArea = false,
   width = 100,
+  defaultValue = "",
 }: ConstructorInputProps): JSX.Element => {
   const { TextArea } = Input;
 
@@ -61,7 +62,7 @@ const ConstructorInput = ({
             style={{
               display: isExpressionInput ? "none" : "block",
             }}
-            value={value}
+            value={value || defaultValue}
             name={isExpressionInput ? name + ".expression" : name}
             type={type}
             onChange={(event: ChangeEvent<HTMLInputElement>) => {

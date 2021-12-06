@@ -6,7 +6,7 @@ import {
 } from "../redux/constructor-jsons/constructor-jsons.types";
 import {
   ConstructorFormExpressionInput,
-  ConstructorFormInput,
+  ConstructorFormInput, ConstructorFormMultipleExpressionInput,
   ConstructorFormSelectInput,
 } from "../components/constructor-form/constructor-form.types";
 import {AxiosError} from "axios";
@@ -30,6 +30,14 @@ export const isExpressionInput = (
 ): input is ConstructorFormExpressionInput => {
   return (
     (input as ConstructorFormExpressionInput).isExpressionInput !== undefined
+  );
+};
+
+export const isMultipleExpressionInput = (
+  input: ConstructorFormInput
+): input is ConstructorFormMultipleExpressionInput => {
+  return (
+    (input as ConstructorFormMultipleExpressionInput).isMultipleExpressionInput !== undefined
   );
 };
 

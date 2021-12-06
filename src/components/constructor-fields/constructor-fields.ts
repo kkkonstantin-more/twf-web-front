@@ -14,24 +14,10 @@ export const getFields = (index: number, watch: any, setValue: any, rulePacks: s
   const taskType: TaskType = watch(`tasks[${index}].taskType`);
   const computationalGoalType: ComputationGoalType = watch(`tasks[${index}].computationGoalType`);
   const reductionGoalType: ReductionGoalType = watch(`tasks[${index}].reductionGoalType`);
-  const countAnswers: number = watch(`tasks[${index}].countAnswers`);
-
-  const removeAnswer = (num: number) => {
-    if (countAnswers == 1) {
-      return;
-    }
-    for (let i = num; i < countAnswers - 1; i++) {
-      setValue(`tasks[${index}].concreteAnswers[${i}]`, watch(`tasks[${index}].concreteAnswers[${i + 1}]`));
-    }
-    for (let i = countAnswers - 1; i < countAnswers; i++) {
-      setValue(`tasks[${index}].concreteAnswers[${i}]`, '')
-    }
-    setValue(`tasks[${index}].countAnswers`, countAnswers - 1)
-  }
 
   let inputs = [
     ...getSubjectTaskTypeFields(subjectType),
-    ...getMainConditionsFields(subjectType, taskType, computationalGoalType, reductionGoalType, countAnswers, removeAnswer),
+    ...getMainConditionsFields(subjectType, taskType, computationalGoalType, reductionGoalType),
     ...getAddConditionsFields(),
     ...getTagsFields(),
     ...getRulePacksFields(rulePacks),
