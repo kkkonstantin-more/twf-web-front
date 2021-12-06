@@ -7,7 +7,7 @@ import {
 import {
   ConstructorFormExpressionInput,
   ConstructorFormInput, ConstructorFormMultipleExpressionInput,
-  ConstructorFormSelectInput,
+  ConstructorFormSelectInput, ConstructorRulesInput,
 } from "../components/constructor-form/constructor-form.types";
 import {AxiosError} from "axios";
 
@@ -38,6 +38,14 @@ export const isMultipleExpressionInput = (
 ): input is ConstructorFormMultipleExpressionInput => {
   return (
     (input as ConstructorFormMultipleExpressionInput).isMultipleExpressionInput !== undefined
+  );
+};
+
+export const isRulesInput = (
+  input: ConstructorFormInput
+): input is ConstructorRulesInput => {
+  return (
+    (input as ConstructorRulesInput).isRulesInput !== undefined
   );
 };
 

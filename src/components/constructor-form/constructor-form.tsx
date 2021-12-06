@@ -45,8 +45,9 @@ import {
   ConstructorFormProps,
 } from "./constructor-form.types";
 // utils
-import {isExpressionInput, isMultipleExpressionInput, isSelectInput} from "../../constructors/utils";
+import {isExpressionInput, isMultipleExpressionInput, isRulesInput, isSelectInput} from "../../constructors/utils";
 import MultipleMixedInput from "../multiple-mixed-input/multiple-mixed-input.component";
+import RulesInput from "../rules-input/rules-input.component";
 
 const ConstructorForm = ({
   // constructor form props
@@ -203,6 +204,16 @@ const ConstructorForm = ({
         } else if (isMultipleExpressionInput(input)) {
           return (
             <MultipleMixedInput
+              {...input}
+              watch={watch}
+              onChangeInputValue={onChangeInputValue}
+              key={name}
+              constructorType={constructorType}
+            />
+          );
+        }else if (isRulesInput(input)) {
+          return (
+            <RulesInput
               {...input}
               watch={watch}
               onChangeInputValue={onChangeInputValue}

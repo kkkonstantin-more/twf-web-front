@@ -44,7 +44,6 @@ const MultipleMixedInput = (
           watch(`${name}[${i + 1}]`) || {expression: " ", format: MathInputFormat.TEX},
           constructorType);
       }
-      setAnswersCount( 1)
       setAnswersCount( answersCount - 1)
     }
   }

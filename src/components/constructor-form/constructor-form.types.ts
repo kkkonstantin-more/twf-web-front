@@ -32,11 +32,16 @@ export interface ConstructorFormMultipleExpressionInput extends ConstructorFormB
   isMultipleExpressionInput: true;
 }
 
+export interface ConstructorRulesInput extends ConstructorFormBaseInput{
+  isRulesInput: true;
+}
+
 export type ConstructorFormInput =
   | ConstructorFormDefaultInput
   | ConstructorFormSelectInput
   | ConstructorFormExpressionInput
-  | ConstructorFormMultipleExpressionInput;
+  | ConstructorFormMultipleExpressionInput
+  | ConstructorRulesInput;
 
 export interface ConstructorFormProps {
   inputs: ConstructorFormInput[];
