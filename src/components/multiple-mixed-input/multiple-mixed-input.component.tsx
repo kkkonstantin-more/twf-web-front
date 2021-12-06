@@ -39,9 +39,13 @@ const MultipleMixedInput = (
         return;
       }
       for (let i = num; i < answersCount; i++) {
+        const newValue = watch(`${name}[${i + 1}]`) || {expression: " ", format: MathInputFormat.TEX};
+        if (newValue.expression === "") {
+          newValue.expression = " ";
+        }
         onChangeInputValue(`${name}[${i}]`,
           watch(`${name}[${i}]`),
-          watch(`${name}[${i + 1}]`) || {expression: " ", format: MathInputFormat.TEX},
+          newValue,
           constructorType);
       }
       setAnswersCount( answersCount - 1)

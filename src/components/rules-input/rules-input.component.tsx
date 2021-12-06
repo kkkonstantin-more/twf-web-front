@@ -20,7 +20,7 @@ const RulesInput = (
   }: RulesInputProps
 ) => {
   const rulesCountName = `${name}Count`
-  const rulesCount = watch(rulesCountName);
+  const rulesCount = watch(rulesCountName) || 1;
   const setRulesCount = (count: number) => {
     onChangeInputValue(rulesCountName, rulesCount, count, constructorType)
   };
@@ -39,9 +39,16 @@ const RulesInput = (
         return;
       }
       for (let i = num; i < rulesCount; i++) {
+        const newValue = watch(`${name}[${i + 1}]`) || { left: {expression: " ", format: MathInputFormat.TEX}, right: {expression: " ", format: MathInputFormat.TEX} };
+        if (newValue.right.expression === "") {
+          newValue.right.expression = " ";
+        }
+        if (newValue.left.expression === "") {
+          newValue.left.expression = " ";
+        }
         onChangeInputValue(`${name}[${i}]`,
           watch(`${name}[${i}]`),
-          watch(`${name}[${i + 1}]`) || { left: {expression: " ", format: MathInputFormat.TEX}, right: {expression: " ", format: MathInputFormat.TEX} },
+          newValue,
           constructorType);
       }
       setRulesCount( rulesCount - 1)
