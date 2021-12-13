@@ -205,7 +205,6 @@ const ConstructorForm = ({
           return (
             <MultipleMixedInput
               {...input}
-              watch={watch}
               onChangeInputValue={onChangeInputValue}
               key={name}
               constructorType={constructorType}
@@ -215,7 +214,6 @@ const ConstructorForm = ({
           return (
             <RulesInput
               {...input}
-              watch={watch}
               onChangeInputValue={onChangeInputValue}
               key={name}
               constructorType={constructorType}

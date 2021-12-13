@@ -8,7 +8,6 @@ export interface RulesInputProps {
   isRendered?: boolean;
   isVisible?: boolean;
   width?: number;
-  watch: any;
   onChangeInputValue: any;
   constructorType: ConstructorJSONType;
 }

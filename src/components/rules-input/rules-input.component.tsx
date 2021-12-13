@@ -5,10 +5,12 @@ import {mdiClose, mdiNumericPositive1} from "@mdi/js";
 import "./rules-input.styles.scss";
 import MixedInput from "../mixed-input/mixed-input.component";
 import {MathInputFormat} from "../../utils/kotlin-lib-functions";
+import {ArrayField, useFieldArray, useFormContext} from "react-hook-form";
+import {RuleConstructorInputs} from "../../constructors/rule-constructor/rule-constructor.types";
+import {taskRuleConstructorDefaultValues} from "../../constructors/task-constructor/task-rule-constructor.data";
 
 const RulesInput = (
   {
-    watch,
     onChangeInputValue,
     constructorType,
     name,
@@ -19,41 +21,19 @@ const RulesInput = (
     width = 100,
   }: RulesInputProps
 ) => {
-  const rulesCountName = `${name}Count`
-  const rulesCount = watch(rulesCountName) || 1;
-  const setRulesCount = (count: number) => {
-    onChangeInputValue(rulesCountName, rulesCount, count, constructorType)
-  };
 
-  const incrementRulesCount = () => {
-    if (rulesCount == 5) {
-      alert('5 maximum rules are allowed');
-      return;
-    }
-    setRulesCount(rulesCount + 1);
-  };
+  // react-hook-form core functions from parent component's context
+  // TaskConstructor should be wrapped inside FormProvider component
+  const { control } = useFormContext();
 
-  const removeRule = (num: number) => {
-    return () => {
-      if (rulesCount == 1) {
-        return;
-      }
-      for (let i = num; i < rulesCount; i++) {
-        const newValue = watch(`${name}[${i + 1}]`) || { left: {expression: " ", format: MathInputFormat.TEX}, right: {expression: " ", format: MathInputFormat.TEX} };
-        if (newValue.right.expression === "") {
-          newValue.right.expression = " ";
-        }
-        if (newValue.left.expression === "") {
-          newValue.left.expression = " ";
-        }
-        onChangeInputValue(`${name}[${i}]`,
-          watch(`${name}[${i}]`),
-          newValue,
-          constructorType);
-      }
-      setRulesCount( rulesCount - 1)
+  // react-hook-form's fieldArray initialization and getting its needed tools
+  // in order to manage rule constructors
+  const { fields: fieldsRules, append: appendRule, remove: removeRule } = useFieldArray<RuleConstructorInputs>(
+    {
+      control,
+      name: name,
     }
-  }
+  );
 
   return (
     <div
@@ -64,93 +44,89 @@ const RulesInput = (
           : { display: isVisible ? "block" : "hidden", flexBasis: `${width - 1}%`, marginRight: '1%' }
       }>
       {label && <div className="label">{label}</div>}
-      {Array.from(Array(rulesCount).keys()).map((num) => {
-        const leftInputName = `${name}[${num}].left`
-        const leftFormatName = `${leftInputName}.format`
-        const leftExpressionName = `${leftInputName}.expression`
-        const rightInputName = `${name}[${num}].right`
-        const rightFormatName = `${rightInputName}.format`
-        const rightExpressionName = `${rightInputName}.expression`
+      {fieldsRules.map(
+        (
+          field: Partial<ArrayField<RuleConstructorInputs>>,
+          fieldIdx: number
+        ) => {
+          return (
+            <div key={field.id}>
+              <div style={{display: 'inline-block', width: '40%'}}>
+                <MixedInput
+                  style={style}
+                  isRendered={isRendered}
+                  isVisible={isVisible}
+                  width={width}
+                  format={field.left!.format}
+                  expression={field.left!.expression}
+                  onChangeExpression={(value: string) => {
+                    onChangeInputValue(
+                      `${name}[${fieldIdx}].left.expression`,
+                      field.left!.expression,
+                      value,
+                      constructorType
+                    );
+                  }}
+                  onChangeFormat={(value: MathInputFormat) => {
+                    onChangeInputValue(
+                      `${name}[${fieldIdx}].left.format`,
+                      field.left!.format,
+                      value,
+                      constructorType
+                    );
+                  }}
+                />
+              </div>
+              <div style={{display: 'inline-block', width: '1%'}}>
+                =
+              </div>
+              <div style={{display: 'inline-block', width: '40%'}}>
+                <MixedInput
+                  style={style}
+                  isRendered={isRendered}
+                  isVisible={isVisible}
+                  width={width}
+                  format={field.right!.format}
+                  expression={field.right!.expression}
+                  onChangeExpression={(value: string) => {
+                    onChangeInputValue(
+                      `${name}[${fieldIdx}].right.expression`,
+                      field.right!.expression,
+                      value,
+                      constructorType
+                    );
+                  }}
+                  onChangeFormat={(value: MathInputFormat) => {
+                    onChangeInputValue(
+                      `${name}[${fieldIdx}].right.format`,
+                      field.right!.format,
+                      value,
+                      constructorType
+                    );
+                  }}
+                />
+              </div>
 
-        return (
-          <div key={leftInputName}>
-            <div style={{display: 'inline-block', width: '40%'}}>
-              <MixedInput
-                style={style}
-                isRendered={isRendered}
-                isVisible={isVisible}
-                width={width}
-                format={watch(leftFormatName)}
-                expression={watch(leftExpressionName)}
-                onChangeExpression={(value: string) => {
-                  onChangeInputValue(
-                    leftExpressionName,
-                    watch(leftExpressionName),
-                    value,
-                    constructorType
-                  );
-                }}
-                onChangeFormat={(value: MathInputFormat) => {
-                  onChangeInputValue(
-                    leftFormatName,
-                    watch(leftFormatName),
-                    value,
-                    constructorType
-                  );
-                }}
-              />
-            </div>
-            <div style={{display: 'inline-block', width: '1%'}}>
-              =
-            </div>
-            <div style={{display: 'inline-block', width: '40%'}}>
-              <MixedInput
-                style={style}
-                isRendered={isRendered}
-                isVisible={isVisible}
-                width={width}
-                format={watch(rightFormatName)}
-                expression={watch(rightExpressionName)}
-                onChangeExpression={(value: string) => {
-                  onChangeInputValue(
-                    rightExpressionName,
-                    watch(rightExpressionName),
-                    value,
-                    constructorType
-                  );
-                }}
-                onChangeFormat={(value: MathInputFormat) => {
-                  onChangeInputValue(
-                    rightFormatName,
-                    watch(rightFormatName),
-                    value,
-                    constructorType
-                  );
-                }}
-              />
-            </div>
-
-            <button
-              className="btn"
-              style={{padding: 0, marginBottom: 5}}
-              type="button"
-              onClick={removeRule(num)}
-            >
-              <Icon path={mdiClose} size={1}/>
-            </button>
-            {num == rulesCount - 1 &&
-            <button
+              <button
                 className="btn"
-                style={{padding: 0, marginBottom: 5, marginLeft: 5}}
+                style={{padding: 0, marginBottom: 5}}
                 type="button"
-                onClick={incrementRulesCount}
-            >
-                <Icon path={mdiNumericPositive1} size={1}/>
-            </button>}
-          </div>
-        )
-      })}
-
+                onClick={() => {if(fieldsRules.length > 1) removeRule(fieldIdx)}}
+              >
+                <Icon path={mdiClose} size={1}/>
+              </button>
+              {fieldIdx == fieldsRules.length - 1 &&
+              <button
+                  className="btn"
+                  style={{padding: 0, marginBottom: 5, marginLeft: 5}}
+                  type="button"
+                  onClick={() => {if(fieldsRules.length < 5) appendRule({ ...taskRuleConstructorDefaultValues })}}
+              >
+                  <Icon path={mdiNumericPositive1} size={1}/>
+              </button>}
+            </div>
+          )
+        })}
     </div>
   );
 };

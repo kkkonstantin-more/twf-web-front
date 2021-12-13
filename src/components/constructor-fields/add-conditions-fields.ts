@@ -1,17 +1,5 @@
-import {
-  ConstructorFormDefaultInput,
-  ConstructorFormInput,
-  ConstructorFormMultipleExpressionInput, ConstructorRulesInput
-} from "../constructor-form/constructor-form.types";
+import {ConstructorFormInput, ConstructorRulesInput} from "../constructor-form/constructor-form.types";
 import {Panel} from "./constructor-fields.type";
-
-const rulesCountField: ConstructorFormDefaultInput = {
-  name: "rulesCount",
-  label: "",
-  isVisible: false,
-  type: "number",
-  defaultValue: "1"
-}
 
 const rulesField: ConstructorRulesInput = {
   name: "rules",
@@ -22,8 +10,7 @@ const rulesField: ConstructorRulesInput = {
 
 export const getAddConditionsFields = (): ConstructorFormInput[] => {
   return [
-    rulesField,
-    rulesCountField
+    rulesField
   ].map(input => {
     input.panel = Panel.ADD_CONDITIONS;
     return input;

@@ -1,10 +1,6 @@
 import {ComputationGoalType, Panel, ReductionGoalType, TaskType} from "./constructor-fields.type";
 import {SubjectType} from "../../constructors/constants/constants";
-import {
-  ConstructorFormDefaultInput,
-  ConstructorFormInput,
-  ConstructorFormMultipleExpressionInput
-} from "../constructor-form/constructor-form.types";
+import {ConstructorFormInput, ConstructorFormMultipleExpressionInput} from "../constructor-form/constructor-form.types";
 import {LabeledValue} from "antd/es/select";
 
 const startExpressionField: ConstructorFormInput = {
@@ -70,16 +66,8 @@ const numTypeField: ConstructorFormInput = {
   width: 6
 }
 
-const concreteAnswersCountField: ConstructorFormDefaultInput = {
-  name: "concreteAnswersCount",
-  label: "",
-  isVisible: false,
-  type: "number",
-  defaultValue: "1"
-}
-
 const concreteAnswersField: ConstructorFormMultipleExpressionInput = {
-  name: "concreteAnswers",
+  name: "otherGoalData.hiddenGoalExpressions",
   label: "Ответы",
   isMultipleExpressionInput: true,
   width: 100
@@ -164,8 +152,7 @@ const computationAdditionalFields: {[key in ComputationGoalType] : ConstructorFo
     numTypeField
   ],
   [ComputationGoalType.CONCRETE_ANSWERS] : [
-    concreteAnswersField,
-    concreteAnswersCountField
+    concreteAnswersField
   ],
   [ComputationGoalType.PATTERN] : [
     goalPatternField
