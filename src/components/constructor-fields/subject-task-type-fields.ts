@@ -36,7 +36,7 @@ const computationTaskType: LabeledValue = {
 }
 
 const reductionTaskType: LabeledValue = {
-  label: 'Сведение',
+  label: 'Сокращение',
   value: TaskType.REDUCTION
 }
 

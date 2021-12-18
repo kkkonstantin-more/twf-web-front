@@ -10,7 +10,6 @@ export interface ConstructorFormBaseInput {
   isVisible?: boolean;
   width?: number;
   panel?: string;
-  defaultValue?: string;
 }
 
 export interface ConstructorFormDefaultInput extends ConstructorFormBaseInput{

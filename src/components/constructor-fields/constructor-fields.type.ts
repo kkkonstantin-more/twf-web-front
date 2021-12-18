@@ -12,6 +12,11 @@ export enum ComputationGoalType {
 }
 
 export enum ReductionGoalType {
+  NUMBER_TYPE = "NUMBER_TYPE",
+  CONCRETE_ANSWERS = "CONCRETE_ANSWERS",
+  PATTERN = "PATTERN",
+  WEIGHT = "WEIGHT",
+
   FACTORIZATION = "FACTORIZATION",
   REDUCTION = "REDUCTION",
   POLYNOMIAL = "POLYNOMIAL",

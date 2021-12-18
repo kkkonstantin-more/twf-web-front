@@ -13,6 +13,9 @@ export const taskConstructorDefaultValues: TaskConstructorInputs = {
   descriptionShortEn: "",
   descriptionShortRu: "",
   subjectType: "",
+  taskType: "",
+  computationGoalType: "",
+  reductionGoalType: "",
   tags: [],
   originalExpression: {
     format: MathInputFormat.TEX,

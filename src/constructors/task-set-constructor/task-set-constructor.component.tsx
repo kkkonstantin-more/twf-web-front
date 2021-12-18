@@ -401,7 +401,6 @@ const TaskSetConstructor = ({
                             <div
                               key={field.id}
                               onClick={() => {
-                                console.log(index);
                                 setSelectedTask(index);
                               }
                               }

@@ -4,7 +4,7 @@ import {ConstructorFormInput, ConstructorFormMultipleExpressionInput} from "../c
 import {LabeledValue} from "antd/es/select";
 
 const startExpressionField: ConstructorFormInput = {
-  name: "startExpression",
+  name: "originalExpression",
   label: "Стартовое выражение",
   type: "text",
   isExpressionInput: true,
@@ -22,7 +22,7 @@ const goalExpressionField: ConstructorFormInput = {
 const signOptions: LabeledValue[] = ['=', '>', '>=', '<', '<='].map(el => {return {label: el, value: el}});
 
 const signField: ConstructorFormInput = {
-  name: "sign",
+  name: "otherGoalData.comparisonType",
   label: "Знак",
   options: signOptions,
   isMulti: false,
@@ -53,13 +53,13 @@ const computationGoalType: ConstructorFormInput = {
   label: "Результат вычисления",
   options: computationGoalTypeOptions,
   isMulti: false,
-  width: 12
+  width: 14
 }
 
 const numTypeOptions: LabeledValue[] = ['N', 'Z', 'Q', 'R', 'C'].map(el => {return {label: el, value: el}});
 
 const numTypeField: ConstructorFormInput = {
-  name: "numType",
+  name: "otherGoalData.numberType",
   label: "Тип числа",
   options: numTypeOptions,
   isMulti: false,
@@ -86,6 +86,7 @@ const maxWeightField: ConstructorFormInput = {
 }
 
 const reductionGoalTypeOptions: LabeledValue[] = [
+  ...computationGoalTypeOptions,
   {
     label: 'Разложение на множители',
     value: ReductionGoalType.FACTORIZATION
@@ -105,17 +106,17 @@ const reductionGoalType: ConstructorFormInput = {
   label: "Результат сведения",
   options: reductionGoalTypeOptions,
   isMulti: false,
-  width: 6
+  width: 14
 }
 
 const minMultipliersField: ConstructorFormInput = {
-  name: "minMultipliers",
+  name: "otherGoalData.minMultipliersNumber",
   label: "Минимальное число множителей",
   type: "text",
 }
 
 const varsListField: ConstructorFormInput = {
-  name: "varsList",
+  name: "otherGoalData.listOfVariables",
   label: "Относительно переменных",
   type: "text",
 }
@@ -171,6 +172,18 @@ const reductionAdditionalFields: {[key in ReductionGoalType] : ConstructorFormIn
     varsListField
   ],
 
+  [ComputationGoalType.NUMBER_TYPE] : [
+    numTypeField
+  ],
+  [ComputationGoalType.CONCRETE_ANSWERS] : [
+    concreteAnswersField
+  ],
+  [ComputationGoalType.PATTERN] : [
+    goalPatternField
+  ],
+  [ComputationGoalType.WEIGHT] : [
+    maxWeightField
+  ],
 }
 
 export const getMainConditionsFields = (subjectType: SubjectType, taskType: TaskType, computationalGoalType: ComputationGoalType, reductionGoalType: ReductionGoalType): ConstructorFormInput[] => {

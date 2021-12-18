@@ -3,18 +3,26 @@ import {
   TaskSetConstructorReceivedForm,
   TaskSetConstructorSendForm,
 } from "./task-set-constructor.types";
-import {
-  convertMathInput,
-  MathInputFormat,
-} from "../../utils/kotlin-lib-functions";
+import {convertMathInput, MathInputFormat,} from "../../utils/kotlin-lib-functions";
 import {
   ExpressionInput,
+  GoalType,
   TaskConstructorInputs,
   TaskConstructorReceivedForm
 } from "../task-constructor/task-constructor.types";
-import { RuleConstructorReceivedForm, RuleConstructorInputs, RuleConstructorSendForm } from "../rule-constructor/rule-constructor.types";
-import { convertInputStringListSeparatedByCommasToArray } from "../../redux/constructor-jsons/constructor-jsons.utils";
-import { RulePackLink } from "../rule-pack-constructor/rule-pack-constructor.types";
+import {
+  RuleConstructorInputs,
+  RuleConstructorReceivedForm,
+  RuleConstructorSendForm
+} from "../rule-constructor/rule-constructor.types";
+import {convertInputStringListSeparatedByCommasToArray} from "../../redux/constructor-jsons/constructor-jsons.utils";
+import {RulePackLink} from "../rule-pack-constructor/rule-pack-constructor.types";
+import {
+  ComputationGoalType,
+  ReductionGoalType,
+  TaskType
+} from "../../components/constructor-fields/constructor-fields.type";
+import CONSTRUCTOR_JSONS_INITIAL_STATE from "../../redux/constructor-jsons/constructor-jsons.state";
 
 class TaskSetConstructorFormatter {
   public static convertReceivedFormToConstructorInputs(
@@ -24,11 +32,76 @@ class TaskSetConstructorFormatter {
     return {
       ...data,
       tasks: data.tasks.map((task: TaskConstructorReceivedForm) => {
+
+        let taskType: TaskType;
+
+        switch (task.goalType) {
+          case GoalType.EXPRESSION:
+            taskType = TaskType.PROOF;
+            break;
+          case GoalType.COMPUTATION:
+            taskType = TaskType.COMPUTATION;
+            break;
+          default:
+            taskType = TaskType.REDUCTION;
+        }
+
+        if (task.otherGoalData === null) {
+          task.otherGoalData = {}
+        }
+
+        let computationGoalType = "";
+        let reductionGoalType = "";
+
+        if (task.otherGoalData.numberType) {
+          computationGoalType = ComputationGoalType.NUMBER_TYPE;
+          reductionGoalType = ReductionGoalType.NUMBER_TYPE;
+        }
+        if (task.otherGoalData.hiddenGoalExpressions) {
+          computationGoalType = ComputationGoalType.CONCRETE_ANSWERS;
+          reductionGoalType = ReductionGoalType.CONCRETE_ANSWERS;
+        }
+        if (task.otherGoalData.operationWeight) {
+          computationGoalType = ComputationGoalType.WEIGHT;
+          reductionGoalType = ReductionGoalType.WEIGHT;
+        }
+        if (task.goalPattern) {
+          computationGoalType = ComputationGoalType.PATTERN;
+          reductionGoalType = ReductionGoalType.PATTERN;
+        }
+        if (task.goalType == GoalType.FACTORIZATION) {
+          reductionGoalType = ReductionGoalType.FACTORIZATION;
+        }
+        if (task.goalType == GoalType.REDUCTION) {
+          reductionGoalType = ReductionGoalType.REDUCTION;
+        }
+        if (task.goalType == GoalType.POLYNOM) {
+          reductionGoalType = ReductionGoalType.POLYNOMIAL;
+        }
+
         const taskCopy: TaskConstructorInputs = {
           ...task,
-          goalExpression: { format: MathInputFormat.TEX, expression: "" },
+          taskType: taskType,
+          computationGoalType: computationGoalType,
+          reductionGoalType: reductionGoalType,
+          goalExpression: {format: MathInputFormat.TEX, expression: ""},
           rulePacks: []
         };
+        const otherGoalDataDefault = {
+          comparisonType: "=",
+          minMultipliersNumber: 1,
+          listOfVariables: "",
+          hiddenGoalExpressions: [""]
+        }
+
+        taskCopy.otherGoalData = {...otherGoalDataDefault, ...taskCopy.otherGoalData};
+
+        taskCopy.otherGoalData.hiddenGoalExpressions = taskCopy.otherGoalData.hiddenGoalExpressions.map((expr: string) => {
+          return {
+            format: MathInputFormat.TEX,
+            expression: expr ? convertMathInput(MathInputFormat.STRUCTURE_STRING, MathInputFormat.TEX, expr) : expr
+          }
+        })
 
         // format expression inputs
         taskCopy.originalExpression = {
@@ -49,13 +122,31 @@ class TaskSetConstructorFormatter {
 
         if (taskCopy.rules) {
           taskCopy.rules = taskCopy.rules.map((rule: RuleConstructorReceivedForm) => {
-            const formattedRule: RuleConstructorInputs = { ...rule };
+            if (rule.leftStructureString && !rule.left) {
+              rule.left = {
+                format: MathInputFormat.TEX,
+                expression: convertMathInput(MathInputFormat.STRUCTURE_STRING
+                  , MathInputFormat.TEX, rule.leftStructureString)
+              };
+            }
+            if (rule.rightStructureString && !rule.right) {
+              rule.right = {
+                format: MathInputFormat.TEX,
+                expression: convertMathInput(MathInputFormat.STRUCTURE_STRING
+                  , MathInputFormat.TEX, rule.rightStructureString)
+              };
+            }
+            let formattedRule: RuleConstructorInputs = {...rule};
             return formattedRule;
           });
+
+          if (taskCopy.rules.length == 0) {
+            taskCopy.rules = CONSTRUCTOR_JSONS_INITIAL_STATE.taskSet.tasks[0].rules;
+          }
         }
 
         [
-          "otherGoalData",
+          // "otherGoalData",
           "solution",
           "solutionsStepsTree",
           "hints",
@@ -192,7 +283,7 @@ class TaskSetConstructorFormatter {
         }
 
         [
-          "otherGoalData",
+          // "otherGoalData",
           "solution",
           "otherCheckSolutionData",
           "otherAwardData",
@@ -213,7 +304,7 @@ class TaskSetConstructorFormatter {
 
         if (task.rules) {
           taskCopy.rules = task.rules.map((rule: RuleConstructorInputs) => {
-            const formattedRule: RuleConstructorSendForm = { ...rule };
+            const formattedRule: RuleConstructorSendForm = {...rule};
 
             if (!rule.left && !rule.right) {
               return formattedRule;

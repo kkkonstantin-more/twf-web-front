@@ -15,6 +15,8 @@ export enum GoalType {
   CNF = "CNF",
   DNF = "DNF",
   FACTORIZATION = "FACTORIZATION",
+  REDUCTION = "REDUCTION",
+  POLYNOM = "POLYNOM",
   UNKNOWN = "UNKNOWN",
 }
 
@@ -79,6 +81,9 @@ export interface TaskConstructorInputs {
   descriptionEn: string;
   descriptionRu: string;
   subjectType: string;
+  taskType: string;
+  computationGoalType: string;
+  reductionGoalType: string;
   tags: string[];
   originalExpression: ExpressionInput;
   goalType: GoalType;
