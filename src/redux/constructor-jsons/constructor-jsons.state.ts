@@ -92,7 +92,7 @@ const CONSTRUCTOR_JSONS_INITIAL_STATE: ConstructorJSONs = {
           expression: "",
         },
         goalPattern: "",
-        otherGoalData: {hiddenGoalExpressions: [{format: MathInputFormat.TEX, expression: ""}], comparisonType: "=", minMultipliersNumber: 1, listOfVariables: ""},
+        otherGoalData: {hiddenGoalExpressions: [{format: MathInputFormat.TEX, expression: ""}], comparisonType: "=", minMultipliersNumber: 1, listOfVariables: "", operationWeight: 5},
         rulePacks: [],
         stepsNumber: 0,
         time: 0,

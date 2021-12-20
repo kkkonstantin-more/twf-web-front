@@ -23,6 +23,10 @@ import {
   TaskType
 } from "../../components/constructor-fields/constructor-fields.type";
 import CONSTRUCTOR_JSONS_INITIAL_STATE from "../../redux/constructor-jsons/constructor-jsons.state";
+import {
+  computationAdditionalFields,
+  reductionAdditionalFields
+} from "../../components/constructor-fields/main-conditions-fields";
 
 class TaskSetConstructorFormatter {
   public static convertReceivedFormToConstructorInputs(
@@ -87,20 +91,18 @@ class TaskSetConstructorFormatter {
           goalExpression: {format: MathInputFormat.TEX, expression: ""},
           rulePacks: []
         };
-        const otherGoalDataDefault = {
-          comparisonType: "=",
-          minMultipliersNumber: 1,
-          listOfVariables: "",
-          hiddenGoalExpressions: [""]
-        }
+        const otherGoalDataDefault = CONSTRUCTOR_JSONS_INITIAL_STATE.taskSet.tasks[0].otherGoalData;
 
         taskCopy.otherGoalData = {...otherGoalDataDefault, ...taskCopy.otherGoalData};
 
-        taskCopy.otherGoalData.hiddenGoalExpressions = taskCopy.otherGoalData.hiddenGoalExpressions.map((expr: string) => {
+        taskCopy.otherGoalData.hiddenGoalExpressions = taskCopy.otherGoalData.hiddenGoalExpressions.map((expr: any) => {
+          if (expr.format) {
+            return expr;
+          }
           return {
             format: MathInputFormat.TEX,
             expression: expr ? convertMathInput(MathInputFormat.STRUCTURE_STRING, MathInputFormat.TEX, expr) : expr
-          }
+          };
         })
 
         // format expression inputs
@@ -189,6 +191,62 @@ class TaskSetConstructorFormatter {
         };
         taskCopy.namespaceCode = data.namespaceCode;
 
+        // @ts-ignore
+        delete taskCopy['taskType'];
+        // @ts-ignore
+        delete taskCopy['computationGoalType'];
+        // @ts-ignore
+        delete taskCopy['reductionGoalType'];
+
+
+        switch (task.taskType) {
+          case TaskType.PROOF:
+            taskCopy.goalType = GoalType.EXPRESSION;
+            break;
+          case TaskType.COMPUTATION:
+            taskCopy.goalType = GoalType.COMPUTATION;
+            break;
+          default:
+            switch (task.reductionGoalType) {
+              case ReductionGoalType.REDUCTION:
+                taskCopy.goalType = GoalType.REDUCTION;
+                break;
+              case ReductionGoalType.FACTORIZATION:
+                taskCopy.goalType = GoalType.FACTORIZATION;
+                break;
+              case ReductionGoalType.POLYNOMIAL:
+                taskCopy.goalType = GoalType.POLYNOM;
+                break;
+              default:
+                taskCopy.goalType = GoalType.CUSTOM;
+            }
+        }
+        let fields: Array<string> = [];
+        if (task.taskType == TaskType.REDUCTION) {
+          fields = computationAdditionalFields[task.computationGoalType as ComputationGoalType].map(field => {
+            return field.name.replace('otherGoalData.', '');
+          })
+        } else if (task.taskType == TaskType.COMPUTATION) {
+          fields = reductionAdditionalFields[task.reductionGoalType as ReductionGoalType].map(field => {
+            return field.name.replace('otherGoalData.', '');
+          })
+        }
+        let newOtherGoalData: any = {};
+        fields.forEach(field => {
+          if (field in task.otherGoalData) {
+            newOtherGoalData[field] = task.otherGoalData[field];
+          }
+        })
+        taskCopy.otherGoalData = newOtherGoalData;
+
+        if (taskCopy.otherGoalData.hiddenGoalExpressions) {
+          taskCopy.otherGoalData.hiddenGoalExpressions = taskCopy.otherGoalData.hiddenGoalExpressions.filter((expr: ExpressionInput) => {
+            return expr.expression && expr.expression.trim()
+          }).map((expr: ExpressionInput) => {
+            return convertMathInput(expr.format, MathInputFormat.STRUCTURE_STRING, expr.expression);
+          })
+        }
+
         if (taskCopy.originalExpression.format === MathInputFormat.TEX) {
           taskCopy.originalExpressionTex = taskCopy.originalExpression.expression;
           taskCopy.originalExpressionPlainText = convertMathInput(
@@ -228,7 +286,7 @@ class TaskSetConstructorFormatter {
         }
 
         if (taskCopy.goalExpression != null) {
-          if (taskCopy.goalExpression.expression === null) {
+          if (!taskCopy.goalExpression.expression) {
             taskCopy.goalExpression = null;
           } else {
             if (taskCopy.goalExpression.format === MathInputFormat.TEX) {
@@ -303,12 +361,10 @@ class TaskSetConstructorFormatter {
         });
 
         if (task.rules) {
-          taskCopy.rules = task.rules.map((rule: RuleConstructorInputs) => {
+          taskCopy.rules = task.rules.filter((rule: RuleConstructorInputs) => {
+            return rule.left && rule.right && rule.left.expression.trim() && rule.right.expression.trim();
+          }).map((rule: RuleConstructorInputs) => {
             const formattedRule: RuleConstructorSendForm = {...rule};
-
-            if (!rule.left && !rule.right) {
-              return formattedRule;
-            }
 
             // @ts-ignore
             const left = rule.left as ExpressionInput;

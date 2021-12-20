@@ -77,12 +77,14 @@ const goalPatternField: ConstructorFormInput = {
   name: "goalPattern",
   label: "Патерн цели",
   type: "text",
+  width: 40
 }
 
 const maxWeightField: ConstructorFormInput = {
-  name: "maxWeight",
+  name: "otherGoalData.operationWeight",
   label: "Вес не больше чем",
   type: "text",
+  width: 40
 }
 
 const reductionGoalTypeOptions: LabeledValue[] = [
@@ -106,19 +108,21 @@ const reductionGoalType: ConstructorFormInput = {
   label: "Результат сведения",
   options: reductionGoalTypeOptions,
   isMulti: false,
-  width: 14
+  width: 20
 }
 
 const minMultipliersField: ConstructorFormInput = {
   name: "otherGoalData.minMultipliersNumber",
   label: "Минимальное число множителей",
   type: "text",
+  width: 40
 }
 
 const varsListField: ConstructorFormInput = {
   name: "otherGoalData.listOfVariables",
   label: "Относительно переменных",
   type: "text",
+  width: 40
 }
 
 
@@ -148,7 +152,7 @@ const fieldsMapping: {[key in SubjectType] : {[key in TaskType]: ConstructorForm
   [SubjectType.PHYSICS]: {},
 }
 
-const computationAdditionalFields: {[key in ComputationGoalType] : ConstructorFormInput[]} = {
+export const computationAdditionalFields: {[key in ComputationGoalType] : ConstructorFormInput[]} = {
   [ComputationGoalType.NUMBER_TYPE] : [
     numTypeField
   ],
@@ -163,7 +167,7 @@ const computationAdditionalFields: {[key in ComputationGoalType] : ConstructorFo
   ],
 }
 
-const reductionAdditionalFields: {[key in ReductionGoalType] : ConstructorFormInput[]} = {
+export  const reductionAdditionalFields: {[key in ReductionGoalType] : ConstructorFormInput[]} = {
   [ReductionGoalType.FACTORIZATION] : [
     minMultipliersField
   ],
