@@ -217,6 +217,12 @@ class TaskSetConstructorFormatter {
               case ReductionGoalType.POLYNOMIAL:
                 taskCopy.goalType = GoalType.POLYNOM;
                 break;
+
+              case ReductionGoalType.WEIGHT:
+              case ReductionGoalType.NUMBER_TYPE:
+              case ReductionGoalType.CONCRETE_ANSWERS:
+                taskCopy.goalType = GoalType.SIMPLIFICATION;
+                break;
               default:
                 taskCopy.goalType = GoalType.CUSTOM;
             }

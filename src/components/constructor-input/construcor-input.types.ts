@@ -17,5 +17,4 @@ export interface ConstructorInputProps {
   value?: any;
   isTextArea?: boolean;
   width?: number;
-  defaultValue?: string;
 }
